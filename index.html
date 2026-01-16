@@ -3,27 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Skin Updates | Designer Red</title>
+    <title>Skin Updates | Expressive Red</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
 
     <style>
         :root {
+            /* M3 Expressive Red Palette */
             --md-sys-color-primary: #BC161F;
             --md-sys-color-on-primary: #FFFFFF;
             --md-sys-color-primary-container: #FFDAD9;
             --md-sys-color-on-primary-container: #410005;
-            --md-sys-color-surface: #FFFFFF; /* Pure white for that Google look */
-            --md-sys-color-on-surface: #1C1B1F;
-            --md-sys-color-outline-variant: #E1E1E1;
+            --md-sys-color-surface: #FFF8F7;
+            --md-sys-color-on-surface: #201A19;
+            --md-sys-color-surface-variant: #F5DDDA;
+            --md-sys-color-on-surface-variant: #534341;
             
-            --md-sys-shape-extra-large: 32px;
+            /* Shapes */
+            --md-sys-shape-extra-large: 28px;
+            --md-sys-shape-medium: 16px;
         }
 
+        /* --- GOOGLE CURSOR SETUP --- */
         * { 
             box-sizing: border-box; 
-            cursor: none !important; /* Hide system cursor */
+            cursor: none !important; /* Hides system cursor */
         }
 
         body {
@@ -35,63 +40,71 @@
             overflow-x: hidden;
         }
 
-        /* --- THE GOOGLE DESIGN CURSOR --- */
         #cursor-dot {
             width: 6px;
             height: 6px;
             background-color: var(--md-sys-color-primary);
             position: fixed;
+            top: 0;
+            left: 0;
             pointer-events: none;
             z-index: 10000;
             border-radius: 50%;
-            transform: translate(-50%, -50%);
+            transform: translate3d(-50%, -50%, 0);
         }
 
         #cursor-outline {
-            width: 35px;
-            height: 35px;
-            border: 1.5px solid #000;
+            width: 34px;
+            height: 34px;
+            border: 1.2px solid #fff; 
             position: fixed;
+            top: 0;
+            left: 0;
             pointer-events: none;
             z-index: 9999;
             border-radius: 50%;
-            transform: translate(-50%, -50%);
-            /* THE SECRET SAUCE: Difference mode creates the Google inversion */
-            mix-blend-mode: difference;
-            border-color: #fff; 
-            transition: width 0.4s cubic-bezier(0.19, 1, 0.22, 1), 
-                        height 0.4s cubic-bezier(0.19, 1, 0.22, 1), 
+            mix-blend-mode: difference; /* The Google Inversion Effect */
+            transform: translate3d(-50%, -50%, 0);
+            transition: width 0.4s cubic-bezier(0.2, 0, 0, 1), 
+                        height 0.4s cubic-bezier(0.2, 0, 0, 1), 
                         background-color 0.4s;
         }
 
-        /* Hover state for interactive items */
-        .cursor-hover-active {
-            width: 100px !important;
-            height: 100px !important;
+        /* Hover state for the cursor */
+        .cursor-active {
+            width: 90px;
+            height: 90px;
             background-color: rgba(255, 255, 255, 1);
+            border-color: transparent;
         }
 
-        /* --- Navigation --- */
+        /* --- NAVIGATION --- */
         nav {
-            padding: 32px 48px;
+            padding: 20px 32px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             position: sticky;
             top: 0;
-            background: rgba(255,255,255,0.8);
-            backdrop-filter: blur(10px);
             z-index: 100;
+            background: rgba(255, 248, 247, 0.8);
+            backdrop-filter: blur(12px);
         }
 
         .nav-widget {
+            background-color: var(--md-sys-color-surface-variant);
+            padding: 8px 16px;
+            border-radius: var(--md-sys-shape-medium);
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
             font-weight: 600;
             font-size: 0.85rem;
-            letter-spacing: 0.5px;
-            color: #555;
+        }
+
+        .weather-widget {
+            background-color: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-primary);
         }
 
         .logo {
@@ -100,98 +113,76 @@
             color: var(--md-sys-color-primary);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
-            letter-spacing: -0.5px;
         }
 
-        /* --- Hero Section --- */
+        /* --- CONTENT --- */
         .hero {
-            padding: 120px 48px 60px;
-            max-width: 1400px;
-            margin: 0 auto;
+            padding: 80px 32px 40px;
+            text-align: center;
         }
 
         .hero h1 {
-            font-size: clamp(3rem, 10vw, 7rem);
+            font-size: clamp(3rem, 10vw, 5rem);
             font-weight: 800;
-            line-height: 0.9;
+            line-height: 1;
             margin: 0;
-            letter-spacing: -4px;
-            color: #000;
+            letter-spacing: -3px;
         }
 
-        .hero p {
-            font-size: 1.5rem;
-            color: #555;
-            max-width: 700px;
-            margin-top: 40px;
-            line-height: 1.4;
-        }
-
-        /* --- Update Grid --- */
         .updates-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-            gap: 1px; /* Creates thin line separators like Google Design */
-            background-color: var(--md-sys-color-outline-variant);
-            border-top: 1px solid var(--md-sys-color-outline-variant);
-            border-bottom: 1px solid var(--md-sys-color-outline-variant);
-            margin-top: 80px;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 24px;
+            padding: 32px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
         .update-card {
-            background-color: #fff;
-            padding: 60px 48px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            min-height: 450px;
-            transition: background-color 0.3s;
+            background-color: var(--md-sys-color-surface-variant);
+            border-radius: var(--md-sys-shape-extra-large);
+            padding: 40px;
+            transition: transform 0.4s cubic-bezier(0.2, 0, 0, 1), background-color 0.3s;
         }
 
         .update-card:hover {
+            transform: translateY(-10px);
             background-color: var(--md-sys-color-primary-container);
         }
 
         .tag {
-            font-weight: 800;
+            background: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            padding: 4px 12px;
+            border-radius: 100px;
             font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: var(--md-sys-color-primary);
-            margin-bottom: 24px;
-        }
-
-        .update-card h2 {
-            font-size: 2.5rem;
             font-weight: 800;
-            letter-spacing: -1.5px;
-            margin: 0 0 20px 0;
+            display: inline-block;
+            margin-bottom: 16px;
         }
 
-        .fab-button {
+        .fab {
             position: fixed;
-            bottom: 40px;
-            right: 40px;
-            background-color: #000; /* High contrast black FAB */
-            color: #fff;
+            bottom: 32px;
+            right: 32px;
             width: 80px;
             height: 80px;
-            border-radius: 50%;
+            border-radius: 28px;
+            background-color: #000;
+            color: #fff;
             display: flex;
             align-items: center;
             justify-content: center;
             border: none;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             z-index: 1000;
         }
 
-        @media (max-width: 800px) {
+        @media (max-width: 750px) {
             .logo { position: static; transform: none; }
-            .hero h1 { letter-spacing: -2px; }
             * { cursor: auto !important; }
             #cursor-dot, #cursor-outline { display: none; }
         }
@@ -205,70 +196,59 @@
     <nav>
         <div class="nav-widget">
             <span class="material-symbols-rounded" style="font-size: 18px;">schedule</span>
-            <span id="digital-clock">00:00</span>
+            <span id="clock">00:00</span>
         </div>
 
         <div class="logo">
-            <span class="material-symbols-rounded" style="font-variation-settings: 'FILL' 1;">pentagon</span>
+            <span class="material-symbols-rounded">checkroom</span>
             SKIN_UPDATES
         </div>
 
-        <div class="nav-widget">
-            <span id="temp">72°F</span>
+        <div class="nav-widget weather-widget">
+            <span>72°F</span>
             <span class="material-symbols-rounded" style="font-size: 18px;">wb_sunny</span>
         </div>
     </nav>
 
     <header class="hero">
-        <div class="tag">Release Journal</div>
         <h1>Expressive<br><span style="color: var(--md-sys-color-primary);">Red.</span></h1>
-        <p>A curated collection of skin updates and visual improvements, built on the foundations of Material 3.</p>
     </header>
 
     <main class="updates-grid">
         <article class="update-card">
-            <div>
-                <div class="tag">v2.1.0</div>
-                <h2>Crimson Vanguard</h2>
-                <p>An exploration of metallic surfaces and deep primary reds.</p>
-            </div>
-            <span class="material-symbols-rounded" style="font-size: 40px;">arrow_outward</span>
+            <div class="tag">NEW</div>
+            <h2>Crimson Vanguard</h2>
+            <p>Exploring deep red textures and metallic finishes.</p>
+        </article>
+
+        <article class="update-card" style="background-color: var(--md-sys-color-primary-container);">
+            <div class="tag" style="background: var(--md-sys-color-on-primary-container);">UPDATE</div>
+            <h2 style="color: var(--md-sys-color-on-primary-container);">Ruby Physics</h2>
+            <p style="color: var(--md-sys-color-on-primary-container);">Refined glow patterns for all expressive red skins.</p>
         </article>
 
         <article class="update-card">
-            <div>
-                <div class="tag">Maintenance</div>
-                <h2>Texture Physics</h2>
-                <p>Refining how light interacts with crimson pigments in-game.</p>
-            </div>
-            <span class="material-symbols-rounded" style="font-size: 40px;">arrow_outward</span>
-        </article>
-
-        <article class="update-card">
-            <div>
-                <div class="tag">Upcoming</div>
-                <h2>Ruby Eclipse</h2>
-                <p>The final evolution of the expressive red design system.</p>
-            </div>
-            <span class="material-symbols-rounded" style="font-size: 40px;">arrow_outward</span>
+            <div class="tag">UPCOMING</div>
+            <h2>Eclipse</h2>
+            <p>The final evolution of our current design system.</p>
         </article>
     </main>
 
-    <button class="fab-button">
+    <button class="fab">
         <span class="material-symbols-rounded" style="font-size: 32px;">add</span>
     </button>
 
     <script>
-        // Clock Logic
+        // 1. Clock
         function updateClock() {
             const now = new Date();
-            document.getElementById('digital-clock').textContent = 
+            document.getElementById('clock').textContent = 
                 String(now.getHours()).padStart(2, '0') + ":" + String(now.getMinutes()).padStart(2, '0');
         }
         setInterval(updateClock, 1000);
         updateClock();
 
-        // High-Precision Cursor Logic
+        // 2. Exact Google Cursor Physics
         const dot = document.getElementById('cursor-dot');
         const outline = document.getElementById('cursor-outline');
 
@@ -278,26 +258,26 @@
         window.addEventListener('mousemove', (e) => {
             mouseX = e.clientX;
             mouseY = e.clientY;
-            dot.style.left = mouseX + 'px';
-            dot.style.top = mouseY + 'px';
+            // Immediate movement for the center dot
+            dot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
         });
 
-        function lerp() {
-            // Lower = more lag/liquid feel
+        function render() {
+            // Lerp (Linear Interpolation) for that "laggy" feel
+            // 0.12 is the weight of the lag.
             outlineX += (mouseX - outlineX) * 0.12;
             outlineY += (mouseY - outlineY) * 0.12;
 
-            outline.style.left = outlineX + 'px';
-            outline.style.top = outlineY + 'px';
-            requestAnimationFrame(lerp);
+            outline.style.transform = `translate3d(${outlineX}px, ${outlineY}px, 0)`;
+            requestAnimationFrame(render);
         }
-        lerp();
+        render();
 
-        // Interaction Growth
-        const links = document.querySelectorAll('.update-card, button, nav');
-        links.forEach(link => {
-            link.addEventListener('mouseenter', () => outline.classList.add('cursor-hover-active'));
-            link.addEventListener('mouseleave', () => outline.classList.remove('cursor-hover-active'));
+        // 3. Hover Interaction
+        const interactives = document.querySelectorAll('.update-card, button, nav, .nav-widget');
+        interactives.forEach(el => {
+            el.addEventListener('mouseenter', () => outline.classList.add('cursor-active'));
+            el.addEventListener('mouseleave', () => outline.classList.remove('cursor-active'));
         });
     </script>
 
