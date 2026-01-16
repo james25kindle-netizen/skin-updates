@@ -125,5 +125,114 @@
             transform: translateY(-8px) scale(1.02);
             background-color: var(--md-sys-color-primary-container);
             border-color: var(--md-sys-color-primary);
-            box-shadow: var(--
+            box-shadow: var(--md-sys-elevation-2);
+        }
 
+        .update-card .tag {
+            background: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            padding: 6px 16px;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 16px;
+        }
+
+        .update-card h2 {
+            margin: 0 0 12px 0;
+            font-size: 1.75rem;
+            font-weight: 800;
+        }
+
+        .fab-button {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            background-color: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            width: 72px;
+            height: 72px;
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--md-sys-elevation-2);
+            cursor: pointer;
+            transition: 0.2s;
+            border: none;
+        }
+
+        .fab-button:hover {
+            border-radius: 16px;
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 700px) {
+            .logo { display: none; }
+            .hero h1 { font-size: 3rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="nav-widget">
+            <span class="material-symbols-rounded">schedule</span>
+            <span id="digital-clock">00:00</span>
+        </div>
+
+        <div class="logo">
+            <span class="material-symbols-rounded">checkroom</span>
+            SKIN_UPDATES
+        </div>
+
+        <div class="nav-widget weather-widget">
+            <span>72°F</span>
+            <span class="material-symbols-rounded">partly_sunny</span>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <h1>Freshly <span style="color: var(--md-sys-color-primary);">Red.</span></h1>
+        <p>The latest skin releases, updates, and community highlights, delivered in Material 3 style.</p>
+    </header>
+
+    <main class="updates-grid">
+        <article class="update-card">
+            <div class="tag">NEW RELEASE</div>
+            <h2>Crimson Vanguard</h2>
+            <p>A deep red metallic finish with expressive glow effects. Available now in the store.</p>
+            <span class="material-symbols-rounded" style="position: absolute; bottom: 24px; right: 24px; opacity: 0.2; font-size: 48px;">shutter_speed</span>
+        </article>
+
+        <article class="update-card" style="background-color: var(--md-sys-color-primary-container);">
+            <div class="tag" style="background: var(--md-sys-color-on-primary-container);">PATCH NOTES</div>
+            <h2 style="color: var(--md-sys-color-on-primary-container);">v2.4 Texture Fix</h2>
+            <p style="color: var(--md-sys-color-on-primary-container);">Improved the glossiness of red textures across all hero skins for better visibility.</p>
+        </article>
+
+        <article class="update-card">
+            <div class="tag">UPCOMING</div>
+            <h2>Ruby Eclipse</h2>
+            <p>The season finale skin has been leaked. Prepare for the most expressive red yet.</p>
+        </article>
+    </main>
+
+    <button class="fab-button">
+        <span class="material-symbols-rounded" style="font-size: 36px;">add</span>
+    </button>
+
+    <script>
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('digital-clock').textContent = `${hours}:${minutes}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+
+</body>
+</html>
