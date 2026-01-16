@@ -3,35 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Skin Updates | Expressive Red</title>
+    <title>Skin Updates | Designer Red</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
 
     <style>
         :root {
-            /* M3 Expressive Red Palette */
             --md-sys-color-primary: #BC161F;
             --md-sys-color-on-primary: #FFFFFF;
             --md-sys-color-primary-container: #FFDAD9;
             --md-sys-color-on-primary-container: #410005;
+            --md-sys-color-surface: #FFFFFF; /* Pure white for that Google look */
+            --md-sys-color-on-surface: #1C1B1F;
+            --md-sys-color-outline-variant: #E1E1E1;
             
-            --md-sys-color-surface: #FFF8F7;
-            --md-sys-color-on-surface: #201A19;
-            --md-sys-color-surface-variant: #F5DDDA;
-            --md-sys-color-on-surface-variant: #534341;
-            
-            /* Shapes & Shadows */
-            --md-sys-shape-extra-large: 28px;
-            --md-sys-shape-medium: 16px;
-            --md-sys-elevation-1: 0 2px 4px rgba(0,0,0,0.05);
-            --md-sys-elevation-2: 0 4px 12px rgba(188, 22, 31, 0.15);
+            --md-sys-shape-extra-large: 32px;
         }
 
         * { 
             box-sizing: border-box; 
-            /* Hide system cursor everywhere */
-            cursor: none !important; 
+            cursor: none !important; /* Hide system cursor */
         }
 
         body {
@@ -43,10 +35,10 @@
             overflow-x: hidden;
         }
 
-        /* --- GOOGLE DESIGN CURSOR --- */
-        .cursor-dot {
-            width: 8px;
-            height: 8px;
+        /* --- THE GOOGLE DESIGN CURSOR --- */
+        #cursor-dot {
+            width: 6px;
+            height: 6px;
             background-color: var(--md-sys-color-primary);
             position: fixed;
             pointer-events: none;
@@ -55,241 +47,257 @@
             transform: translate(-50%, -50%);
         }
 
-        .cursor-outline {
-            width: 40px;
-            height: 40px;
-            border: 2px solid var(--md-sys-color-primary);
+        #cursor-outline {
+            width: 35px;
+            height: 35px;
+            border: 1.5px solid #000;
             position: fixed;
             pointer-events: none;
             z-index: 9999;
             border-radius: 50%;
             transform: translate(-50%, -50%);
-            transition: width 0.3s, height 0.3s, background-color 0.3s, opacity 0.3s;
-            /* Creates the color-inversion effect on hover */
+            /* THE SECRET SAUCE: Difference mode creates the Google inversion */
             mix-blend-mode: difference;
-            border-color: #ffffff; 
+            border-color: #fff; 
+            transition: width 0.4s cubic-bezier(0.19, 1, 0.22, 1), 
+                        height 0.4s cubic-bezier(0.19, 1, 0.22, 1), 
+                        background-color 0.4s;
         }
 
-        /* Hover effect for the cursor */
-        .cursor-active {
-            width: 80px;
-            height: 80px;
-            background-color: rgba(255, 255, 255, 0.15);
-            border-color: transparent;
+        /* Hover state for interactive items */
+        .cursor-hover-active {
+            width: 100px !important;
+            height: 100px !important;
+            background-color: rgba(255, 255, 255, 1);
         }
 
         /* --- Navigation --- */
         nav {
-            padding: 16px 24px;
+            padding: 32px 48px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background-color: var(--md-sys-color-surface);
             position: sticky;
             top: 0;
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(10px);
             z-index: 100;
         }
 
         .nav-widget {
-            background-color: var(--md-sys-color-surface-variant);
-            color: var(--md-sys-color-on-surface-variant);
-            padding: 8px 16px;
-            border-radius: var(--md-sys-shape-medium);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
             font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .weather-widget {
-            background-color: var(--md-sys-color-primary-container);
-            color: var(--md-sys-color-primary);
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            color: #555;
         }
 
         .logo {
             font-weight: 800;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: var(--md-sys-color-primary);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
+            letter-spacing: -0.5px;
         }
 
-        /* --- Content --- */
+        /* --- Hero Section --- */
         .hero {
-            padding: 60px 24px;
-            text-align: center;
-        }
-
-        .hero h1 {
-            font-size: clamp(2.5rem, 8vw, 4.5rem);
-            font-weight: 800;
-            margin: 0;
-            letter-spacing: -2px;
-        }
-
-        .updates-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 24px;
-            padding: 24px;
-            max-width: 1200px;
+            padding: 120px 48px 60px;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
+        .hero h1 {
+            font-size: clamp(3rem, 10vw, 7rem);
+            font-weight: 800;
+            line-height: 0.9;
+            margin: 0;
+            letter-spacing: -4px;
+            color: #000;
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            color: #555;
+            max-width: 700px;
+            margin-top: 40px;
+            line-height: 1.4;
+        }
+
+        /* --- Update Grid --- */
+        .updates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 1px; /* Creates thin line separators like Google Design */
+            background-color: var(--md-sys-color-outline-variant);
+            border-top: 1px solid var(--md-sys-color-outline-variant);
+            border-bottom: 1px solid var(--md-sys-color-outline-variant);
+            margin-top: 80px;
+        }
+
         .update-card {
-            background-color: var(--md-sys-color-surface-variant);
-            border-radius: var(--md-sys-shape-extra-large);
-            padding: 32px;
-            transition: all 0.4s cubic-bezier(0.2, 0, 0, 1);
-            position: relative;
-            overflow: hidden;
+            background-color: #fff;
+            padding: 60px 48px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 450px;
+            transition: background-color 0.3s;
         }
 
         .update-card:hover {
-            transform: translateY(-8px);
             background-color: var(--md-sys-color-primary-container);
-            box-shadow: var(--md-sys-elevation-2);
         }
 
         .tag {
-            background: var(--md-sys-color-primary);
-            color: var(--md-sys-color-on-primary);
-            padding: 6px 16px;
-            border-radius: 100px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            display: inline-block;
-            margin-bottom: 16px;
+            font-weight: 800;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--md-sys-color-primary);
+            margin-bottom: 24px;
+        }
+
+        .update-card h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            margin: 0 0 20px 0;
         }
 
         .fab-button {
             position: fixed;
-            bottom: 32px;
-            right: 32px;
-            background-color: var(--md-sys-color-primary);
-            color: var(--md-sys-color-on-primary);
-            width: 72px;
-            height: 72px;
-            border-radius: 24px;
+            bottom: 40px;
+            right: 40px;
+            background-color: #000; /* High contrast black FAB */
+            color: #fff;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: var(--md-sys-elevation-2);
             border: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             z-index: 1000;
         }
 
-        @media (max-width: 700px) {
-            .logo { display: none; }
-            /* Show system cursor on mobile as custom cursors don't work well on touch */
+        @media (max-width: 800px) {
+            .logo { position: static; transform: none; }
+            .hero h1 { letter-spacing: -2px; }
             * { cursor: auto !important; }
-            .cursor-dot, .cursor-outline { display: none; }
+            #cursor-dot, #cursor-outline { display: none; }
         }
     </style>
 </head>
 <body>
 
-    <div class="cursor-dot" id="dot"></div>
-    <div class="cursor-outline" id="outline"></div>
+    <div id="cursor-dot"></div>
+    <div id="cursor-outline"></div>
 
     <nav>
         <div class="nav-widget">
-            <span class="material-symbols-rounded">schedule</span>
+            <span class="material-symbols-rounded" style="font-size: 18px;">schedule</span>
             <span id="digital-clock">00:00</span>
         </div>
 
         <div class="logo">
-            <span class="material-symbols-rounded">checkroom</span>
+            <span class="material-symbols-rounded" style="font-variation-settings: 'FILL' 1;">pentagon</span>
             SKIN_UPDATES
         </div>
 
-        <div class="nav-widget weather-widget">
-            <span>72°F</span>
-            <span class="material-symbols-rounded">partly_sunny</span>
+        <div class="nav-widget">
+            <span id="temp">72°F</span>
+            <span class="material-symbols-rounded" style="font-size: 18px;">wb_sunny</span>
         </div>
     </nav>
 
     <header class="hero">
-        <h1>Freshly <span style="color: var(--md-sys-color-primary);">Red.</span></h1>
-        <p>The latest skin updates, delivered in Material 3 Expressive style.</p>
+        <div class="tag">Release Journal</div>
+        <h1>Expressive<br><span style="color: var(--md-sys-color-primary);">Red.</span></h1>
+        <p>A curated collection of skin updates and visual improvements, built on the foundations of Material 3.</p>
     </header>
 
     <main class="updates-grid">
         <article class="update-card">
-            <div class="tag">NEW RELEASE</div>
-            <h2>Crimson Vanguard</h2>
-            <p>A deep red metallic finish with expressive glow effects.</p>
-        </article>
-
-        <article class="update-card" style="background-color: var(--md-sys-color-primary-container);">
-            <div class="tag" style="background: var(--md-sys-color-on-primary-container);">PATCH NOTES</div>
-            <h2 style="color: var(--md-sys-color-on-primary-container);">v2.4 Texture Fix</h2>
-            <p style="color: var(--md-sys-color-on-primary-container);">Improved the glossiness of red textures across all hero skins.</p>
+            <div>
+                <div class="tag">v2.1.0</div>
+                <h2>Crimson Vanguard</h2>
+                <p>An exploration of metallic surfaces and deep primary reds.</p>
+            </div>
+            <span class="material-symbols-rounded" style="font-size: 40px;">arrow_outward</span>
         </article>
 
         <article class="update-card">
-            <div class="tag">UPCOMING</div>
-            <h2>Ruby Eclipse</h2>
-            <p>The season finale skin has been leaked. Prepare for the most expressive red yet.</p>
+            <div>
+                <div class="tag">Maintenance</div>
+                <h2>Texture Physics</h2>
+                <p>Refining how light interacts with crimson pigments in-game.</p>
+            </div>
+            <span class="material-symbols-rounded" style="font-size: 40px;">arrow_outward</span>
+        </article>
+
+        <article class="update-card">
+            <div>
+                <div class="tag">Upcoming</div>
+                <h2>Ruby Eclipse</h2>
+                <p>The final evolution of the expressive red design system.</p>
+            </div>
+            <span class="material-symbols-rounded" style="font-size: 40px;">arrow_outward</span>
         </article>
     </main>
 
     <button class="fab-button">
-        <span class="material-symbols-rounded" style="font-size: 36px;">add</span>
+        <span class="material-symbols-rounded" style="font-size: 32px;">add</span>
     </button>
 
     <script>
-        /* --- CLOCK LOGIC --- */
+        // Clock Logic
         function updateClock() {
             const now = new Date();
             document.getElementById('digital-clock').textContent = 
-                String(now.getHours()).padStart(2, '0') + ":" + 
-                String(now.getMinutes()).padStart(2, '0');
+                String(now.getHours()).padStart(2, '0') + ":" + String(now.getMinutes()).padStart(2, '0');
         }
         setInterval(updateClock, 1000);
         updateClock();
 
-        /* --- GOOGLE CURSOR LOGIC --- */
-        const dot = document.getElementById('dot');
-        const outline = document.getElementById('outline');
+        // High-Precision Cursor Logic
+        const dot = document.getElementById('cursor-dot');
+        const outline = document.getElementById('cursor-outline');
 
-        let mouseX = 0, mouseY = 0; // Actual mouse position
-        let outlineX = 0, outlineY = 0; // Delayed "lag" position
+        let mouseX = 0, mouseY = 0;
+        let outlineX = 0, outlineY = 0;
 
         window.addEventListener('mousemove', (e) => {
             mouseX = e.clientX;
             mouseY = e.clientY;
-            
-            // Dot follows mouse exactly
             dot.style.left = mouseX + 'px';
             dot.style.top = mouseY + 'px';
         });
 
-        function animateCursor() {
-            // "Lerp" math: move 10% of the distance to the mouse every frame
-            let distX = mouseX - outlineX;
-            let distY = mouseY - outlineY;
-
-            outlineX = outlineX + (distX * 0.1);
-            outlineY = outlineY + (distY * 0.1);
+        function lerp() {
+            // Lower = more lag/liquid feel
+            outlineX += (mouseX - outlineX) * 0.12;
+            outlineY += (mouseY - outlineY) * 0.12;
 
             outline.style.left = outlineX + 'px';
             outline.style.top = outlineY + 'px';
-
-            requestAnimationFrame(animateCursor);
+            requestAnimationFrame(lerp);
         }
-        animateCursor();
+        lerp();
 
-        // Cursor Grow Effect on Interactive Elements
-        const interactives = document.querySelectorAll('button, .update-card, .nav-widget');
-        interactives.forEach(el => {
-            el.addEventListener('mouseenter', () => outline.classList.add('cursor-active'));
-            el.addEventListener('mouseleave', () => outline.classList.remove('cursor-active'));
+        // Interaction Growth
+        const links = document.querySelectorAll('.update-card, button, nav');
+        links.forEach(link => {
+            link.addEventListener('mouseenter', () => outline.classList.add('cursor-hover-active'));
+            link.addEventListener('mouseleave', () => outline.classList.remove('cursor-hover-active'));
         });
     </script>
 
