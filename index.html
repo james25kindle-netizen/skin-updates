@@ -1,277 +1,167 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Skin Log | Material 3</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pix Updates | Skin Log</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
+    <style>
+        :root {
+            --primary: #BC161F; --surface: #FFF8F7; --surface-variant: #F5DDDA;
+            --on-surface: #201A19; --card-bg: rgba(255, 255, 255, 0.7);
+            --radius-xl: 32px; --radius-pill: 100px;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        body.dark-theme {
+            --primary: #FFB4AB; --surface: #1A1110; --surface-variant: #332120;
+            --on-surface: #F1DFDD; --card-bg: rgba(43, 33, 32, 0.7);
+        }
+        
+        * { cursor: none !important; }
+        body { margin: 0; background: var(--surface); color: var(--on-surface); font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; height: 100vh; }
 
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
+        /* --- VIDEO BACKGROUND MIXING --- */
+        .video-bg-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; pointer-events: none;
+            /* This creates the fade/mix effect */
+            mask-image: radial-gradient(circle at 30% 50%, black 20%, transparent 70%);
+            -webkit-mask-image: radial-gradient(circle at 30% 50%, black 20%, transparent 70%);
+        }
+        #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; }
 
-<style>
-:root {
-    --primary: #BC161F;
-    --surface: #FFF8F7;
-    --surface-variant: #F5DDDA;
-    --on-surface: #201A19;
-    --card-bg: rgba(255,255,255,0.8);
-    --radius-xl: 32px;
-    --radius-pill: 100px;
-    transition: all .8s cubic-bezier(.4,0,.2,1);
-}
+        /* --- MAGNETIC CURSOR --- */
+        #cursor-dot { width: 6px; height: 6px; background: var(--primary); position: fixed; pointer-events: none; z-index: 10001; border-radius: 50%; }
+        #cursor-outline { width: 30px; height: 30px; border: 1.5px solid #fff; position: fixed; pointer-events: none; z-index: 10000; border-radius: 50%; mix-blend-mode: difference; transition: width 0.4s, height 0.4s; }
+        .cursor-morph { background: white !important; border: none !important; }
 
-body.dark-theme {
-    --primary: #FFB4AB;
-    --surface: #1A1110;
-    --surface-variant: #332120;
-    --on-surface: #F1DFDD;
-    --card-bg: rgba(43,33,32,.85);
-}
+        nav { padding: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
+        .widget { padding: 8px 16px; background: var(--surface-variant); border-radius: var(--radius-pill); display: flex; align-items: center; gap: 12px; font-weight: 700; }
+        .jiggle-target { pointer-events: none; transition: transform 0.1s ease-out; }
 
-/* hide real cursor */
-* { cursor: none !important; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 40px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; position: relative; z-index: 10; }
+        .hero-title { grid-column: span 3; font-size: clamp(3rem, 8vw, 5rem); font-weight: 800; letter-spacing: -4px; text-align: center; margin: 20px 0; }
+        
+        .card { background: var(--card-bg); border-radius: var(--radius-xl); padding: 32px; backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); }
+        .card.main { grid-column: span 2; background: var(--surface-variant); }
+        .badge { background: var(--primary); color: white; padding: 4px 12px; border-radius: var(--radius-pill); font-size: 0.7rem; font-weight: 900; margin-bottom: 16px; width: fit-content; }
 
-body {
-    margin: 0;
-    background: transparent;
-    color: var(--on-surface);
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-}
-
-/* ================= VIDEO BACKGROUND ================= */
-.bg-video {
-    position: fixed;
-    inset: 0;
-    z-index: -2;
-    overflow: hidden;
-}
-
-.bg-video video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    opacity: .55;
-    filter: saturate(1.1) contrast(1.05);
-}
-
-/* material fade overlay */
-.bg-video::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background:
-        radial-gradient(circle at 50% 30%, transparent 0%, var(--surface) 70%),
-        linear-gradient(to bottom, rgba(0,0,0,.25), var(--surface));
-}
-
-/* ================= CURSOR ================= */
-#cursor-dot {
-    width: 6px;
-    height: 6px;
-    background: var(--primary);
-    position: fixed;
-    pointer-events: none;
-    z-index: 10001;
-    border-radius: 50%;
-}
-
-#cursor-outline {
-    width: 30px;
-    height: 30px;
-    border: 1.5px solid #fff;
-    position: fixed;
-    pointer-events: none;
-    z-index: 10000;
-    border-radius: 50%;
-    mix-blend-mode: difference;
-    transition: width .4s, height .4s, border-radius .4s;
-}
-
-.cursor-morph { background: white !important; border: none !important; }
-
-/* ================= UI ================= */
-nav {
-    padding: 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.interactive { position: relative; }
-
-.widget {
-    padding: 8px 16px;
-    background: var(--surface-variant);
-    border-radius: var(--radius-pill);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-weight: 700;
-}
-
-.jiggle-target { pointer-events: none; }
-
-.container {
-    max-width: 1100px;
-    margin: auto;
-    padding: 0 40px 120px;
-    display: grid;
-    grid-template-columns: repeat(3,1fr);
-    gap: 24px;
-}
-
-.hero-title {
-    grid-column: span 3;
-    font-size: clamp(3rem,8vw,5rem);
-    font-weight: 800;
-    letter-spacing: -4px;
-    text-align: center;
-    margin: 40px 0;
-}
-
-.card {
-    background: var(--card-bg);
-    border-radius: var(--radius-xl);
-    padding: 32px;
-}
-
-.card.main {
-    grid-column: span 2;
-    background: var(--surface-variant);
-}
-
-.badge {
-    background: var(--primary);
-    color: white;
-    padding: 4px 12px;
-    border-radius: var(--radius-pill);
-    font-size: .7rem;
-    font-weight: 900;
-    width: fit-content;
-    margin-bottom: 16px;
-}
-
-.fab-container {
-    position: fixed;
-    bottom: 40px;
-    right: 40px;
-}
-
-.fab {
-    height: 80px;
-    padding: 0 24px;
-    background: var(--on-surface);
-    color: var(--surface);
-    border-radius: 28px;
-    border: none;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-weight: 800;
-}
-
-/* mobile */
-@media (max-width: 800px) {
-    * { cursor: auto !important; }
-    #cursor-dot, #cursor-outline { display: none; }
-    .bg-video video { opacity: .35; }
-}
-</style>
+        .fab-container { position: fixed; bottom: 40px; right: 40px; z-index: 20; }
+        .fab { height: 80px; padding: 0 24px; background: var(--on-surface); color: var(--surface); border-radius: 28px; border: none; display: flex; align-items: center; gap: 12px; font-weight: 800; }
+    </style>
 </head>
-
 <body>
 
-<!-- VIDEO BACKGROUND -->
-<div class="bg-video">
-    <video autoplay muted loop playsinline>
-        <source src="skin-preview.mp4" type="video/mp4">
-    </video>
-</div>
+    <div id="cursor-dot"></div>
+    <div id="cursor-outline"></div>
 
-<div id="cursor-dot"></div>
-<div id="cursor-outline"></div>
-
-<nav>
-    <div class="widget interactive">
-        <span class="material-symbols-rounded jiggle-target">schedule</span>
-        <span id="clock" class="jiggle-target">--:--</span>
+    <div class="video-bg-container">
+        <video id="bg-video" autoplay muted loop playsinline>
+            <source src="your-video.mp4" type="video/mp4">
+        </video>
     </div>
 
-    <div class="interactive" style="font-weight:900;color:var(--primary)">
-        <span class="jiggle-target">PIX UPDATES</span>
+    <nav>
+        <div class="widget interactive">
+            <span class="material-symbols-rounded jiggle-target">schedule</span>
+            <span id="clock" class="jiggle-target">--:--</span>
+        </div>
+        <div class="interactive" style="font-weight: 900; color: var(--primary); letter-spacing: -1px; font-size: 1.2rem;">
+            <span class="jiggle-target">PIX UPDATES</span>
+        </div>
+        <div class="widget interactive">
+            <span id="temp" class="jiggle-target">--°</span>
+            <div id="weather-icon-container" class="jiggle-target"></div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="hero-title">Skin <span style="color: var(--primary);">Updates.</span></div>
+        <div class="card main interactive">
+            <span class="badge jiggle-target">V3.0 ACTIVE</span>
+            <h2 class="jiggle-target">The Ember Knight</h2>
+            <p class="jiggle-target">The current featured skin. Includes custom lava flows and visor highlights.</p>
+        </div>
+        <div class="card interactive">
+            <span class="badge jiggle-target">HISTORY</span>
+            <h3 class="jiggle-target">Latest Changes</h3>
+            <p class="jiggle-target" style="line-height: 1.8;">
+                • Ember Knight Added<br>
+                • Glove Padding Fixed<br>
+                • Base Mesh Optimized
+            </p>
+        </div>
+    </main>
+
+    <div class="fab-container">
+        <button class="fab interactive">
+            <span class="material-symbols-rounded jiggle-target" style="font-size: 32px;">download</span>
+            <span class="jiggle-target">DOWNLOAD SKIN</span>
+        </button>
     </div>
 
-    <div class="widget interactive">
-        <span id="temp" class="jiggle-target">--°</span>
-    </div>
-</nav>
+    <script>
+        // Weather & Clock
+        const ICONS = {
+            sunny: `<svg viewBox="0 0 24 24" fill="none" class="jiggle-target" style="width:32px"><circle cx="12" cy="12" r="5" fill="#F9BC05"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41" stroke="#F9BC05" stroke-width="2" stroke-linecap="round"/></svg>`,
+            night: `<svg viewBox="0 0 24 24" fill="none" class="jiggle-target" style="width:32px"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z" fill="#8AB4F8"/></svg>`
+        };
 
-<main class="container">
-    <div class="hero-title">Skin <span style="color:var(--primary)">Updates.</span></div>
+        function updateUI() {
+            const now = new Date();
+            let h = now.getHours();
+            document.getElementById('clock').textContent = `${h % 12 || 12}:${String(now.getMinutes()).padStart(2, '0')} ${h >= 12 ? 'PM' : 'AM'}`;
+            const isNight = h >= 18 || h < 6;
+            document.body.classList.toggle('dark-theme', isNight);
+            return isNight;
+        }
 
-    <div class="card main interactive">
-        <span class="badge jiggle-target">V3.0 ACTIVE</span>
-        <h2 class="jiggle-target">The Ember Knight</h2>
-        <p class="jiggle-target">Added flowing lava textures and optimized for 1.20+</p>
-    </div>
+        async function fetchWeather() {
+            const isNight = updateUI();
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                try {
+                    const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&current_weather=true&temperature_unit=fahrenheit`);
+                    const data = await res.json();
+                    document.getElementById('temp').textContent = Math.round(data.current_weather.temperature) + "°F";
+                    document.getElementById('weather-icon-container').innerHTML = isNight ? ICONS.night : ICONS.sunny;
+                } catch (e) { console.error("Weather error"); }
+            });
+        }
+        setInterval(updateUI, 1000); fetchWeather();
 
-    <div class="card interactive">
-        <span class="badge jiggle-target">HISTORY</span>
-        <p class="jiggle-target">v3.0 — Ember Knight<br>v2.4 — Pixel Fixes</p>
-    </div>
-</main>
+        // Magnetic Physics
+        const dot = document.querySelector('#cursor-dot');
+        const outline = document.querySelector('#cursor-outline');
+        let mX = 0, mY = 0, oX = 0, oY = 0, hover = false, target = null;
 
-<div class="fab-container">
-    <button class="fab interactive">
-        <span class="material-symbols-rounded jiggle-target">download</span>
-        <span class="jiggle-target">DOWNLOAD</span>
-    </button>
-</div>
+        window.onmousemove = (e) => { mX = e.clientX; mY = e.clientY; };
 
-<script>
-/* clock + theme */
-function tick(){
-    const d=new Date();
-    const h=d.getHours();
-    const m=String(d.getMinutes()).padStart(2,"0");
-    clock.textContent=`${h%12||12}:${m} ${h>=12?"PM":"AM"}`;
-    document.body.classList.toggle("dark-theme",h>=18||h<6);
-}
-setInterval(tick,1000);tick();
+        function render() {
+            dot.style.transform = `translate3d(${mX-3}px, ${mY-3}px, 0)`;
+            if (hover && target) {
+                const r = target.getBoundingClientRect();
+                const cX = r.left + r.width/2; const cY = r.top + r.height/2;
+                oX += (cX + (mX - cX) * 0.1 - oX) * 0.15;
+                oY += (cY + (mY - cY) * 0.1 - oY) * 0.15;
+                outline.style.width = r.width + "px"; outline.style.height = r.height + "px";
+                outline.style.borderRadius = getComputedStyle(target).borderRadius;
+                target.querySelectorAll('.jiggle-target').forEach(i => {
+                    i.style.transform = `translate(${(mX-cX)*0.15}px, ${(mY-cY)*0.15}px)`;
+                });
+            } else {
+                oX += (mX - oX) * 0.12; oY += (mY - oY) * 0.12;
+                outline.style.width = "30px"; outline.style.height = "30px"; outline.style.borderRadius = "50%";
+            }
+            outline.style.transform = `translate3d(${oX - parseFloat(outline.style.width)/2}px, ${oY - parseFloat(outline.style.height)/2}px, 0)`;
+            requestAnimationFrame(render);
+        }
+        render();
 
-/* cursor */
-const dot=cursorDot=document.getElementById("cursor-dot");
-const outline=document.getElementById("cursor-outline");
-let x=0,y=0,ox=0,oy=0,hover=null;
-
-window.onmousemove=e=>{x=e.clientX;y=e.clientY};
-
-(function anim(){
-    dot.style.transform=`translate(${x-3}px,${y-3}px)`;
-    if(hover){
-        const r=hover.getBoundingClientRect();
-        ox+=(r.left+r.width/2-ox)*.15;
-        oy+=(r.top+r.height/2-oy)*.15;
-        outline.style.width=r.width+"px";
-        outline.style.height=r.height+"px";
-        outline.style.borderRadius=getComputedStyle(hover).borderRadius;
-    } else {
-        ox+=(x-ox)*.12; oy+=(y-oy)*.12;
-        outline.style.width="30px";
-        outline.style.height="30px";
-        outline.style.borderRadius="50%";
-    }
-    outline.style.transform=`translate(${ox-outline.offsetWidth/2}px,${oy-outline.offsetHeight/2}px)`;
-    requestAnimationFrame(anim);
-})();
-
-document.querySelectorAll(".interactive").forEach(el=>{
-    el.onmouseenter=()=>{hover=el;outline.classList.add("cursor-morph");dot.style.opacity=0};
-    el.onmouseleave=()=>{hover=null;outline.classList.remove("cursor-morph");dot.style.opacity=1};
-});
-</script>
-
+        document.querySelectorAll('.interactive').forEach(el => {
+            el.onmouseenter = () => { hover = true; target = el; outline.classList.add('cursor-morph'); dot.style.opacity = 0; };
+            el.onmouseleave = () => { hover = false; el.querySelectorAll('.jiggle-target').forEach(i => i.style.transform = ''); target = null; outline.classList.remove('cursor-morph'); dot.style.opacity = 1; };
+        });
+    </script>
 </body>
 </html>
