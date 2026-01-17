@@ -110,7 +110,7 @@
             margin-bottom: 16px;
         }
 
-        .jiggle-target { transition: transform 0.1s ease-out; }
+        .jiggle-target { transition: transform 0.1s ease-out; display: inline-block; }
 
         /* --- FAB (DOWNLOAD BUTTON) --- */
         .fab-container {
@@ -183,7 +183,7 @@
     </main>
 
     <div class="fab-container">
-        <a href="#" download style="text-decoration: none;">
+        <a href="myskin.png" download style="text-decoration: none;">
             <button class="fab interactive">
                 <span class="material-symbols-rounded jiggle-target" style="font-size: 32px;">download</span>
                 <span class="jiggle-target">DOWNLOAD SKIN</span>
@@ -214,12 +214,19 @@
                 document.getElementById('temp').textContent = temp + "°F";
                 const img = document.getElementById('weather-asset');
                 
-                // Set images based on the files you provided
-                if (code <= 1) {
-                    img.src = 'image_8e31d0.png'; // Your Sun image
+                // MAPPING TO ALL YOUR FILES
+                if (code === 0) {
+                    img.src = 'image_8e31d0.png'; // Clear
+                } else if (code <= 3) {
+                    img.src = 'image_8e3262.png'; // Cloudy
+                } else if (code <= 48) {
+                    img.src = 'image_8e9440.png'; // Fog
+                } else if (code <= 67) {
+                    img.src = 'image_057984.png'; // Rain
                 } else {
-                    img.src = 'image_8e3262.png'; // Your Cloud image
+                    img.src = 'image_8ea2c8.png'; // Snow/Other
                 }
+                
                 img.style.display = 'block';
             } catch (e) { console.error("Weather asset failed"); }
         });
@@ -238,7 +245,7 @@
                 const cX = r.left + r.width/2;
                 const cY = r.top + r.height/2;
                 oX += (cX + (mX - cX) * 0.1 - oX) * 0.15;
-                oY += (centerY = r.top + r.height/2 + (mY - (r.top + r.height/2)) * 0.1 - oY) * 0.15;
+                oY += (cY + (mY - cY) * 0.1 - oY) * 0.15;
                 
                 outline.style.width = r.width + "px";
                 outline.style.height = r.height + "px";
