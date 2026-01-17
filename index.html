@@ -25,7 +25,8 @@
         #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; transition: opacity 0.5s; }
 
         #cursor-dot { width: 6px; height: 6px; background: var(--primary); position: fixed; pointer-events: none; z-index: 10001; border-radius: 50%; }
-        #cursor-outline { width: 30px; height: 30px; border: 1.5px solid #fff; position: fixed; pointer-events: none; z-index: 10000; border-radius: 50%; mix-blend-mode: difference; transition: width 0.4s, height 0.4s; }
+        #cursor-outline { width: 30px; height: 30px; border: 1.5px solid #fff; position: fixed; pointer-events: none; z-index: 10000; border-radius: 50%; mix-blend-mode: difference; transition: width 0.4s, height 0.4s, border-radius 0.4s; }
+        .cursor-morph { background: white !important; border: none !important; }
 
         nav { padding: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
         .widget { padding: 8px 16px; background: var(--surface-variant); border-radius: var(--radius-pill); display: flex; align-items: center; gap: 12px; font-weight: 700; }
@@ -37,25 +38,34 @@
         .card.main { grid-column: span 2; background: var(--surface-variant); }
         .badge { background: var(--primary); color: white; padding: 4px 12px; border-radius: var(--radius-pill); font-size: 0.7rem; font-weight: 900; margin-bottom: 16px; width: fit-content; }
 
-        .history-item { padding: 12px; border-radius: 16px; display: block; width: 100%; text-align: left; border: none; background: transparent; color: inherit; font-family: inherit; margin-bottom: 4px; }
+        .history-item { padding: 12px; border-radius: 16px; display: block; width: 100%; text-align: left; border: none; background: transparent; color: inherit; font-family: inherit; margin-bottom: 4px; pointer-events: auto; }
         .history-item.active { border-left: 4px solid var(--primary); background: rgba(0,0,0,0.05); font-weight: 800; }
 
         .fab-container { position: fixed; bottom: 40px; right: 40px; z-index: 20; display: flex; gap: 16px; }
         .fab { height: 80px; padding: 0 24px; background: var(--on-surface); color: var(--surface); border-radius: 28px; border: none; display: flex; align-items: center; gap: 12px; font-weight: 800; }
         .fab.admin { background: var(--primary); display: none; }
 
-        #admin-modal {
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9);
-            background: var(--surface); padding: 40px; border-radius: var(--radius-xl);
-            z-index: 10002; display: none; flex-direction: column; gap: 16px; width: 400px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3); opacity: 0; transition: 0.3s;
+        /* MODAL FIX: Using pointer-events to prevent blocking */
+        #admin-modal-overlay {
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background: rgba(0,0,0,0.5); z-index: 10002;
+            display: none; align-items: center; justify-content: center;
+            backdrop-filter: blur(5px);
         }
-        #admin-modal.open { display: flex; opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        #admin-modal-overlay.open { display: flex; }
+        #admin-modal {
+            background: var(--surface); padding: 40px; border-radius: var(--radius-xl);
+            display: flex; flex-direction: column; gap: 16px; width: 400px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
         input, textarea { background: var(--surface-variant); border: none; padding: 16px; border-radius: 16px; font-family: inherit; font-weight: 600; color: var(--on-surface); }
         .save-btn { background: var(--on-surface); color: var(--surface); padding: 16px; border-radius: 16px; border: none; font-weight: 800; }
+        
+        .weather-img { width: 32px; height: 32px; display: flex; align-items: center; }
+        .weather-img svg { width: 100%; height: 100%; }
     </style>
 </head>
-<body class="dark-theme">
+<body>
 
     <div id="cursor-dot"></div>
     <div id="cursor-outline"></div>
@@ -65,50 +75,66 @@
     </div>
 
     <nav>
-        <div class="widget"><span>schedule</span> <span id="clock">--:--</span></div>
-        <div style="font-weight: 900; color: var(--primary);">PIX UPDATES</div>
-        <div class="widget"><span id="temp">--°</span> <div id="weather-icon-container"></div></div>
+        <div class="widget interactive">
+            <span class="material-symbols-rounded">schedule</span> 
+            <span id="clock">--:--</span>
+        </div>
+        <div class="interactive" style="font-weight: 900; color: var(--primary);">PIX UPDATES</div>
+        <div class="widget interactive">
+            <span id="temp">--°</span> 
+            <div id="weather-icon-container" class="weather-img"></div>
+        </div>
     </nav>
 
     <main class="container">
         <div class="hero-title">Skin <span style="color: var(--primary);">Updates.</span></div>
-        <div class="card main">
+        <div class="card main interactive">
             <span id="skin-badge" class="badge">--</span>
             <h2 id="skin-name">--</h2>
             <p id="skin-desc">--</p>
         </div>
-        <div class="card">
+        <div class="card interactive">
             <span class="badge">GALLERY</span>
             <div id="history-list"></div>
         </div>
     </main>
 
     <div class="fab-container">
-        <button id="admin-trigger" class="fab admin" onclick="toggleModal()">
+        <button id="admin-trigger" class="fab admin interactive" onclick="toggleModal()">
             <span class="material-symbols-rounded">add</span>
             <span>ADD NEW SKIN</span>
         </button>
-        <button class="fab" onclick="alert('Starting Download...')">
+        <button id="main-download-btn" class="fab interactive">
             <span class="material-symbols-rounded">download</span>
             <span>DOWNLOAD</span>
         </button>
     </div>
 
-    <div id="admin-modal">
-        <h2 style="margin-top:0">New Skin Entry</h2>
-        <input type="text" id="new-name" placeholder="Skin Name">
-        <input type="text" id="new-ver" placeholder="Version (e.g. v3.5)">
-        <input type="text" id="new-video" placeholder="Video filename (e.g. neon.mp4)">
-        <textarea id="new-desc" placeholder="Description"></textarea>
-        <button class="save-btn" onclick="addNewSkin()">SAVE TO DATABASE</button>
-        <button onclick="toggleModal()" style="background:none; border:none; color:var(--primary); font-weight:800;">CANCEL</button>
-        <button onclick="clearDatabase()" style="font-size: 10px; margin-top: 10px; opacity: 0.5;">Clear All Data</button>
+    <div id="admin-modal-overlay">
+        <div id="admin-modal">
+            <h2 style="margin-top:0">New Skin Entry</h2>
+            <input type="text" id="new-name" placeholder="Skin Name">
+            <input type="text" id="new-ver" placeholder="Version (e.g. v3.5)">
+            <input type="text" id="new-video" placeholder="Video filename (e.g. neon.mp4)">
+            <input type="text" id="new-file" placeholder="Skin Image (e.g. skin.png)">
+            <textarea id="new-desc" placeholder="Description"></textarea>
+            <button class="save-btn interactive" onclick="addNewSkin()">SAVE TO DATABASE</button>
+            <button class="interactive" onclick="toggleModal()" style="background:none; border:none; color:var(--primary); font-weight:800;">CANCEL</button>
+        </div>
     </div>
 
     <script>
-        // --- DATA PERSISTENCE ---
-        const DEFAULT_SKINS = [{ id: 0, name: "The Ember Knight", version: "v3.0", desc: "Custom lava flows and visor highlights.", video: "ember_knight.mp4" }];
+        // --- WEATHER ICONS DATA ---
+        const ICONS = {
+            sunny: `<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="5" fill="#F9BC05"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41" stroke="#F9BC05" stroke-width="2" stroke-linecap="round"/></svg>`,
+            cloudy: `<svg viewBox="0 0 24 24" fill="none"><path d="M17.5 19c2.5 0 4.5-2 4.5-4.5S20 10 17.5 10c-.2 0-.4 0-.6.1C15.8 7.6 13.1 6 10 6c-3.9 0-7 3.1-7 7s3.1 7 7 7h7.5z" fill="#BDC1C6"/></svg>`,
+            night: `<svg viewBox="0 0 24 24" fill="none"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z" fill="#8AB4F8"/></svg>`
+        };
+
+        // --- SKIN DATABASE ---
+        const DEFAULT_SKINS = [{ id: 0, name: "The Ember Knight", version: "v3.0", desc: "Custom lava flows and visor highlights.", video: "ember_knight.mp4", file: "ember.png" }];
         let skinData = JSON.parse(localStorage.getItem('pix_skins')) || DEFAULT_SKINS;
+        let currentSkinIndex = 0;
 
         function saveAndRender() {
             localStorage.setItem('pix_skins', JSON.stringify(skinData));
@@ -120,32 +146,44 @@
             list.innerHTML = '';
             skinData.forEach((skin, i) => {
                 const btn = document.createElement('button');
-                btn.className = `history-item ${i === 0 ? 'active' : ''}`;
+                btn.className = `history-item interactive ${i === currentSkinIndex ? 'active' : ''}`;
                 btn.innerHTML = `<strong>${skin.version}</strong> — ${skin.name}`;
-                btn.onclick = () => switchSkin(i);
+                btn.onclick = (e) => { e.stopPropagation(); switchSkin(i); };
                 list.appendChild(btn);
             });
         }
 
         function switchSkin(index) {
+            currentSkinIndex = index;
             const skin = skinData[index];
             document.getElementById('skin-name').innerText = skin.name;
             document.getElementById('skin-badge').innerText = skin.version + (index === 0 ? " ACTIVE" : "");
             document.getElementById('skin-desc').innerText = skin.desc;
+            
             const video = document.getElementById('bg-video');
             video.src = skin.video;
+            
+            // Update download button behavior
+            document.getElementById('main-download-btn').onclick = () => {
+                const link = document.createElement('a');
+                link.href = skin.file;
+                link.download = skin.file;
+                link.click();
+            };
+            
             renderGallery();
         }
 
-        function toggleModal() { document.getElementById('admin-modal').classList.toggle('open'); }
+        function toggleModal() { document.getElementById('admin-modal-overlay').classList.toggle('open'); }
 
         function addNewSkin() {
             const newSkin = {
                 id: Date.now(),
-                name: document.getElementById('new-name').value,
-                version: document.getElementById('new-ver').value,
-                desc: document.getElementById('new-desc').value,
-                video: document.getElementById('new-video').value
+                name: document.getElementById('new-name').value || "Unnamed Skin",
+                version: document.getElementById('new-ver').value || "v1.0",
+                desc: document.getElementById('new-desc').value || "No description.",
+                video: document.getElementById('new-video').value || "",
+                file: document.getElementById('new-file').value || ""
             };
             skinData.unshift(newSkin);
             saveAndRender();
@@ -153,47 +191,76 @@
             toggleModal();
         }
 
-        function clearDatabase() {
-            if(confirm("Wipe all added skins?")) {
-                localStorage.removeItem('pix_skins');
-                location.reload();
+        // --- A+S+D TRIGGER ---
+        const keys = {};
+        window.onkeydown = (e) => {
+            keys[e.key.toLowerCase()] = true;
+            if (keys['a'] && keys['s'] && keys['d']) {
+                const adminBtn = document.getElementById('admin-trigger');
+                adminBtn.style.display = (adminBtn.style.display === 'flex') ? 'none' : 'flex';
             }
-        }
+        };
+        window.onkeyup = (e) => { keys[e.key.toLowerCase()] = false; };
 
-        // --- A+S+D KEY TRIGGER ---
-        const keysPressed = {};
-        window.addEventListener('keydown', (e) => {
-            keysPressed[e.key.toLowerCase()] = true;
-            if (keysPressed['a'] && keysPressed['s'] && keysPressed['d']) {
-                const btn = document.getElementById('admin-trigger');
-                btn.style.display = (btn.style.display === 'flex') ? 'none' : 'flex';
-            }
-        });
-        window.addEventListener('keyup', (e) => {
-            delete keysPressed[e.key.toLowerCase()];
-        });
-
-        // Basic UI logic
-        function updateUI() {
+        // --- WEATHER & UI ---
+        async function updateWeather() {
             const now = new Date();
+            const isNight = now.getHours() >= 18 || now.getHours() < 6;
+            document.body.classList.toggle('dark-theme', isNight);
             document.getElementById('clock').textContent = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        }
-        setInterval(updateUI, 1000); updateUI();
-        saveAndRender();
-        switchSkin(0);
 
-        // Cursor logic
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                try {
+                    const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&current_weather=true&temperature_unit=fahrenheit`);
+                    const data = await res.json();
+                    const code = data.current_weather.weathercode;
+                    document.getElementById('temp').textContent = Math.round(data.current_weather.temperature) + "°";
+                    
+                    let icon = isNight ? ICONS.night : ICONS.sunny;
+                    if (code > 0 && code <= 3) icon = ICONS.cloudy;
+                    document.getElementById('weather-icon-container').innerHTML = icon;
+                } catch (e) { console.log("Weather failed"); }
+            });
+        }
+
+        // --- MOUSE PHYSICS ---
         const dot = document.querySelector('#cursor-dot');
         const outline = document.querySelector('#cursor-outline');
-        let mX = 0, mY = 0, oX = 0, oY = 0;
+        let mX = 0, mY = 0, oX = 0, oY = 0, hover = false, target = null;
+
         window.onmousemove = (e) => { mX = e.clientX; mY = e.clientY; };
-        function render() {
+
+        function animateCursor() {
             dot.style.transform = `translate3d(${mX-3}px, ${mY-3}px, 0)`;
-            oX += (mX - oX) * 0.12; oY += (mY - oY) * 0.12;
-            outline.style.transform = `translate3d(${oX - 15}px, ${oY - 15}px, 0)`;
-            requestAnimationFrame(render);
+            if (hover && target) {
+                const r = target.getBoundingClientRect();
+                const cX = r.left + r.width/2; const cY = r.top + r.height/2;
+                oX += (cX - oX) * 0.15; oY += (cY - oY) * 0.15;
+                outline.style.width = r.width + "px"; outline.style.height = r.height + "px";
+                outline.style.borderRadius = getComputedStyle(target).borderRadius;
+            } else {
+                oX += (mX - oX) * 0.12; oY += (mY - oY) * 0.12;
+                outline.style.width = "30px"; outline.style.height = "30px"; outline.style.borderRadius = "50%";
+            }
+            outline.style.transform = `translate3d(${oX - parseFloat(outline.style.width)/2}px, ${oY - parseFloat(outline.style.height)/2}px, 0)`;
+            requestAnimationFrame(animateCursor);
         }
-        render();
+
+        // Delegate hover events
+        document.body.addEventListener('mouseover', (e) => {
+            const el = e.target.closest('.interactive');
+            if (el) { hover = true; target = el; outline.classList.add('cursor-morph'); dot.style.opacity = 0; }
+        });
+        document.body.addEventListener('mouseout', (e) => {
+            if (e.target.closest('.interactive')) { hover = false; target = null; outline.classList.remove('cursor-morph'); dot.style.opacity = 1; }
+        });
+
+        // Start everything
+        updateWeather();
+        setInterval(updateWeather, 60000);
+        saveAndRender();
+        switchSkin(0);
+        animateCursor();
     </script>
 </body>
 </html>
