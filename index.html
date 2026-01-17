@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pix Updates | Admin</title>
+    <title>Pix Updates | Magnetic Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
     <style>
@@ -28,15 +28,23 @@
         #cursor-outline { width: 30px; height: 30px; border: 1.5px solid #fff; position: fixed; pointer-events: none; z-index: 10000; border-radius: 50%; mix-blend-mode: difference; transition: all 0.2s ease-out; }
         .cursor-morph { background: white !important; border: none !important; }
 
+        /* THE MAGNETIC ENGINE CLASS */
+        .magnetic-content { 
+            display: block;
+            pointer-events: none; 
+            transition: transform 0.1s ease-out; 
+            will-change: transform;
+        }
+
         nav { padding: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
         .widget { padding: 8px 16px; background: var(--surface-variant); border-radius: var(--radius-pill); display: flex; align-items: center; gap: 12px; font-weight: 700; }
         
         .container { max-width: 1100px; margin: 0 auto; padding: 0 40px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; position: relative; z-index: 10; }
         .hero-title { grid-column: span 3; font-size: clamp(3rem, 8vw, 5rem); font-weight: 800; letter-spacing: -4px; text-align: center; margin: 20px 0; }
         
-        .card { background: var(--card-bg); border-radius: var(--radius-xl); padding: 32px; backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); }
+        .card { background: var(--card-bg); border-radius: var(--radius-xl); padding: 32px; backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); position: relative; overflow: hidden; }
         .card.main { grid-column: span 2; background: var(--surface-variant); }
-        .badge { background: var(--primary); color: white; padding: 4px 12px; border-radius: var(--radius-pill); font-size: 0.7rem; font-weight: 900; margin-bottom: 16px; width: fit-content; }
+        .badge { background: var(--primary); color: white; padding: 4px 12px; border-radius: var(--radius-pill); font-size: 0.7rem; font-weight: 900; margin-bottom: 16px; width: fit-content; display: inline-block; }
 
         .history-item { padding: 12px; border-radius: 16px; display: block; width: 100%; text-align: left; border: none; background: transparent; color: inherit; font-family: inherit; margin-bottom: 4px; transition: background 0.2s; }
         .history-item.active { border-left: 4px solid var(--primary); background: rgba(0,0,0,0.05); font-weight: 800; }
@@ -45,17 +53,15 @@
         .fab { height: 80px; padding: 0 24px; background: var(--on-surface); color: var(--surface); border-radius: 28px; border: none; display: flex; align-items: center; gap: 12px; font-weight: 800; }
         .fab.admin { background: var(--primary); display: none; }
 
-        /* ADMIN MODAL STYLES */
         #admin-modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index: 10002; display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         #admin-modal-overlay.open { display: flex; }
         #admin-modal { background: var(--surface); padding: 40px; border-radius: var(--radius-xl); display: flex; flex-direction: column; gap: 16px; width: 450px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); max-height: 90vh; overflow-y: auto; }
-        input, textarea { background: var(--surface-variant); border: none; padding: 16px; border-radius: 16px; font-family: inherit; font-weight: 600; color: var(--on-surface); }
+        
+        input, textarea { background: var(--surface-variant); border: none; padding: 16px; border-radius: 16px; font-family: inherit; font-weight: 600; color: var(--on-surface); outline: none; }
         .save-btn { background: var(--on-surface); color: var(--surface); padding: 16px; border-radius: 16px; border: none; font-weight: 800; }
         
-        /* DELETE SECTION STYLES */
         .admin-list-item { display: flex; justify-content: space-between; align-items: center; background: var(--surface-variant); padding: 12px 16px; border-radius: 16px; margin-bottom: 8px; }
         .delete-btn { background: #ff4444; color: white; border: none; padding: 8px; border-radius: 12px; transition: transform 0.2s; }
-        .delete-btn:hover { transform: scale(1.1); }
     </style>
 </head>
 <body>
@@ -68,68 +74,151 @@
     </div>
 
     <nav>
-        <div class="widget interactive"><span class="material-symbols-rounded">schedule</span> <span id="clock">--:--</span></div>
-        <div class="interactive" style="font-weight: 900; color: var(--primary);">PIX UPDATES</div>
-        <div class="widget interactive"><span id="temp">--°</span> <div id="weather-icon-container"></div></div>
+        <div class="widget interactive">
+            <div class="magnetic-content" style="display:flex; align-items:center; gap:12px;">
+                <span class="material-symbols-rounded">schedule</span> <span id="clock">--:--</span>
+            </div>
+        </div>
+        <div class="interactive" style="font-weight: 900; color: var(--primary); letter-spacing: -1px;">
+            <div class="magnetic-content">PIX UPDATES</div>
+        </div>
+        <div class="widget interactive">
+            <div class="magnetic-content" style="display:flex; align-items:center; gap:12px;">
+                <span id="temp">72°</span> <div id="weather-icon-container"></div>
+            </div>
+        </div>
     </nav>
 
     <main class="container">
         <div class="hero-title">Skin <span style="color: var(--primary);">Updates.</span></div>
+        
         <div class="card main interactive">
-            <span id="skin-badge" class="badge">--</span>
-            <h2 id="skin-name">--</h2>
-            <p id="skin-desc">--</p>
+            <div class="magnetic-content">
+                <span id="skin-badge" class="badge">--</span>
+                <h2 id="skin-name" style="margin: 10px 0; font-size: 2.5rem;">--</h2>
+                <p id="skin-desc" style="opacity: 0.7; line-height: 1.6;">--</p>
+            </div>
         </div>
+
         <div class="card interactive">
-            <span class="badge">GALLERY</span>
-            <div id="history-list"></div>
+            <div class="magnetic-content">
+                <span class="badge">GALLERY</span>
+                <div id="history-list" style="margin-top: 10px;"></div>
+            </div>
         </div>
     </main>
 
     <div class="fab-container">
         <button id="admin-trigger" class="fab admin interactive" onclick="toggleModal()">
-            <span class="material-symbols-rounded">add</span>
-            <span>ADD/MANAGE</span>
+            <div class="magnetic-content" style="display:flex; align-items:center; gap:12px;">
+                <span class="material-symbols-rounded">add</span>
+                <span>ADD/MANAGE</span>
+            </div>
         </button>
         <button id="main-download-btn" class="fab interactive">
-            <span class="material-symbols-rounded">download</span>
-            <span>DOWNLOAD</span>
+            <div class="magnetic-content" style="display:flex; align-items:center; gap:12px;">
+                <span class="material-symbols-rounded">download</span>
+                <span>DOWNLOAD</span>
+            </div>
         </button>
     </div>
 
     <div id="admin-modal-overlay">
         <div id="admin-modal">
             <h2 style="margin:0">Admin Panel</h2>
-            <p style="opacity:0.6; font-size:12px; margin-bottom:10px;">Add a new skin or delete old ones below.</p>
-            
             <input type="text" id="new-name" placeholder="Skin Name">
-            <input type="text" id="new-ver" placeholder="Version (v1.0)">
-            <input type="text" id="new-video" placeholder="Video.mp4">
-            <input type="text" id="new-file" placeholder="Skin.png">
+            <input type="text" id="new-ver" placeholder="Version">
+            <input type="text" id="new-video" placeholder="Video URL">
+            <input type="text" id="new-file" placeholder="File Name">
             <textarea id="new-desc" placeholder="Description"></textarea>
             <button class="save-btn interactive" onclick="addNewSkin()">SAVE TO DATABASE</button>
-
-            <h3 style="margin: 20px 0 10px 0; font-size: 14px;">Manage Database</h3>
-            <div id="admin-skin-manager"></div>
-
-            <button class="interactive" onclick="toggleModal()" style="background:none; border:none; color:var(--primary); font-weight:800; margin-top:10px;">CLOSE PANEL</button>
+            <div id="admin-skin-manager" style="margin-top: 20px;"></div>
+            <button class="interactive" onclick="toggleModal()" style="background:none; border:none; color:var(--primary); font-weight:800;">CLOSE</button>
         </div>
     </div>
 
     <script>
         const ICONS = {
-            sunny: `<svg viewBox="0 0 24 24" fill="none" style="width:32px"><circle cx="12" cy="12" r="5" fill="#F9BC05"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41" stroke="#F9BC05" stroke-width="2" stroke-linecap="round"/></svg>`,
-            night: `<svg viewBox="0 0 24 24" fill="none" style="width:32px"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z" fill="#8AB4F8"/></svg>`
+            sunny: `<svg viewBox="0 0 24 24" fill="#F9BC05" style="width:28px"><circle cx="12" cy="12" r="5"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41" stroke="#F9BC05" stroke-width="2"/></svg>`,
+            night: `<svg viewBox="0 0 24 24" fill="#8AB4F8" style="width:28px"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>`
         };
 
         const DEFAULT_SKINS = [{ id: 0, name: "The Ember Knight", version: "v3.0", desc: "Custom lava flows and visor highlights.", video: "ember_knight.mp4", file: "ember.png" }];
         let skinData = JSON.parse(localStorage.getItem('pix_skins')) || DEFAULT_SKINS;
         let currentSkinIndex = 0;
 
-        function saveAndRender() {
-            localStorage.setItem('pix_skins', JSON.stringify(skinData));
+        // --- THE UPDATED MAGNETIC ENGINE ---
+        const dot = document.querySelector('#cursor-dot');
+        const outline = document.querySelector('#cursor-outline');
+        let mX = 0, mY = 0, oX = 0, oY = 0, target = null;
+
+        window.onmousemove = (e) => {
+            mX = e.clientX;
+            mY = e.clientY;
+
+            const hovered = document.elementFromPoint(mX, mY);
+            const hit = hovered ? hovered.closest('.interactive') : null;
+
+            if (hit) {
+                target = hit;
+                outline.classList.add('cursor-morph');
+                dot.style.opacity = 0;
+                
+                // Content Pull Calculation
+                const rect = target.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                
+                // Pull 25% towards cursor
+                const pullX = (mX - centerX) * 0.25; 
+                const pullY = (mY - centerY) * 0.25;
+
+                const content = target.querySelector('.magnetic-content');
+                if (content) {
+                    content.style.transform = `translate3d(${pullX}px, ${pullY}px, 0)`;
+                }
+            } else {
+                if (target) {
+                    const content = target.querySelector('.magnetic-content');
+                    if (content) content.style.transform = `translate3d(0,0,0)`;
+                }
+                target = null;
+                outline.classList.remove('cursor-morph');
+                dot.style.opacity = 1;
+            }
+        };
+
+        function animate() {
+            dot.style.transform = `translate3d(${mX-3}px, ${mY-3}px, 0)`;
+            if (target) {
+                const r = target.getBoundingClientRect();
+                const cX = r.left + r.width/2; 
+                const cY = r.top + r.height/2;
+                oX += (cX - oX) * 0.15; 
+                oY += (cY - oY) * 0.15;
+                outline.style.width = r.width + "px"; 
+                outline.style.height = r.height + "px";
+                outline.style.borderRadius = getComputedStyle(target).borderRadius;
+            } else {
+                oX += (mX - oX) * 0.12; 
+                oY += (mY - oY) * 0.12;
+                outline.style.width = "30px"; 
+                outline.style.height = "30px"; 
+                outline.style.borderRadius = "50%";
+            }
+            outline.style.transform = `translate3d(${oX - parseFloat(outline.style.width)/2}px, ${oY - parseFloat(outline.style.height)/2}px, 0)`;
+            requestAnimationFrame(animate);
+        }
+
+        // --- CORE SYSTEM FUNCTIONS ---
+        function switchSkin(index) {
+            currentSkinIndex = index;
+            const skin = skinData[index];
+            document.getElementById('skin-name').innerText = skin.name;
+            document.getElementById('skin-badge').innerText = skin.version;
+            document.getElementById('skin-desc').innerText = skin.desc;
+            document.getElementById('bg-video').src = skin.video;
             renderGallery();
-            renderAdminManager();
         }
 
         function renderGallery() {
@@ -138,7 +227,7 @@
             skinData.forEach((skin, i) => {
                 const btn = document.createElement('button');
                 btn.className = `history-item interactive ${i === currentSkinIndex ? 'active' : ''}`;
-                btn.innerHTML = `<strong>${skin.version}</strong> — ${skin.name}`;
+                btn.innerHTML = `<div class="magnetic-content"><strong>${skin.version}</strong> — ${skin.name}</div>`;
                 btn.onclick = () => switchSkin(i);
                 list.appendChild(btn);
             });
@@ -150,67 +239,12 @@
             skinData.forEach((skin, i) => {
                 const item = document.createElement('div');
                 item.className = 'admin-list-item';
-                item.innerHTML = `
-                    <div style="font-size:14px;"><strong>${skin.version}</strong> ${skin.name}</div>
-                    <button class="delete-btn interactive" onclick="deleteSkin(${i})">
-                        <span class="material-symbols-rounded" style="font-size:20px;">delete</span>
-                    </button>
-                `;
+                item.innerHTML = `<div><strong>${skin.version}</strong> ${skin.name}</div>
+                    <button class="delete-btn interactive" onclick="deleteSkin(${i})">Delete</button>`;
                 manager.appendChild(item);
             });
         }
 
-        function switchSkin(index) {
-            currentSkinIndex = index;
-            const skin = skinData[index];
-            document.getElementById('skin-name').innerText = skin.name;
-            document.getElementById('skin-badge').innerText = skin.version + (index === 0 ? " ACTIVE" : "");
-            document.getElementById('skin-desc').innerText = skin.desc;
-            const video = document.getElementById('bg-video');
-            video.src = skin.video;
-            document.getElementById('main-download-btn').onclick = () => alert("Downloading: " + skin.file);
-            renderGallery();
-        }
-
-        function deleteSkin(index) {
-            if (skinData.length <= 1) return alert("You must keep at least one skin!");
-            if (confirm("Delete this skin from database?")) {
-                skinData.splice(index, 1);
-                currentSkinIndex = 0;
-                saveAndRender();
-                switchSkin(0);
-            }
-        }
-
-        function addNewSkin() {
-            const newSkin = {
-                id: Date.now(),
-                name: document.getElementById('new-name').value || "New Skin",
-                version: document.getElementById('new-ver').value || "v1.0",
-                desc: document.getElementById('new-desc').value || "Description here.",
-                video: document.getElementById('new-video').value || "",
-                file: document.getElementById('new-file').value || ""
-            };
-            skinData.unshift(newSkin);
-            saveAndRender();
-            switchSkin(0);
-            toggleModal();
-        }
-
-        function toggleModal() { document.getElementById('admin-modal-overlay').classList.toggle('open'); }
-
-        // A+S+D Detection
-        const keys = {};
-        window.onkeydown = (e) => {
-            keys[e.key.toLowerCase()] = true;
-            if (keys['a'] && keys['s'] && keys['d']) {
-                const btn = document.getElementById('admin-trigger');
-                btn.style.display = (btn.style.display === 'flex') ? 'none' : 'flex';
-            }
-        };
-        window.onkeyup = (e) => { keys[e.key.toLowerCase()] = false; };
-
-        // Basic UI & Cursor
         function updateUI() {
             const now = new Date();
             const isNight = now.getHours() >= 18 || now.getHours() < 6;
@@ -219,37 +253,41 @@
             document.getElementById('weather-icon-container').innerHTML = isNight ? ICONS.night : ICONS.sunny;
         }
 
-        const dot = document.querySelector('#cursor-dot');
-        const outline = document.querySelector('#cursor-outline');
-        let mX = 0, mY = 0, oX = 0, oY = 0, hover = false, target = null;
-        window.onmousemove = (e) => { mX = e.clientX; mY = e.clientY; };
-
-        function animate() {
-            dot.style.transform = `translate3d(${mX-3}px, ${mY-3}px, 0)`;
-            if (hover && target) {
-                const r = target.getBoundingClientRect();
-                const cX = r.left + r.width/2; const cY = r.top + r.height/2;
-                oX += (cX - oX) * 0.15; oY += (cY - oY) * 0.15;
-                outline.style.width = r.width + "px"; outline.style.height = r.height + "px";
-                outline.style.borderRadius = getComputedStyle(target).borderRadius;
-            } else {
-                oX += (mX - oX) * 0.12; oY += (mY - oY) * 0.12;
-                outline.style.width = "30px"; outline.style.height = "30px"; outline.style.borderRadius = "50%";
-            }
-            outline.style.transform = `translate3d(${oX - parseFloat(outline.style.width)/2}px, ${oY - parseFloat(outline.style.height)/2}px, 0)`;
-            requestAnimationFrame(animate);
+        function addNewSkin() {
+            const s = {
+                id: Date.now(),
+                name: document.getElementById('new-name').value || "Unnamed",
+                version: document.getElementById('new-ver').value || "v1.0",
+                desc: document.getElementById('new-desc').value || "",
+                video: document.getElementById('new-video').value || "",
+                file: document.getElementById('new-file').value || ""
+            };
+            skinData.unshift(s);
+            localStorage.setItem('pix_skins', JSON.stringify(skinData));
+            location.reload();
         }
 
-        document.body.addEventListener('mouseover', (e) => {
-            const el = e.target.closest('.interactive');
-            if (el) { hover = true; target = el; outline.classList.add('cursor-morph'); dot.style.opacity = 0; }
-        });
-        document.body.addEventListener('mouseout', (e) => {
-            if (e.target.closest('.interactive')) { hover = false; target = null; outline.classList.remove('cursor-morph'); dot.style.opacity = 1; }
-        });
+        function toggleModal() { 
+            document.getElementById('admin-modal-overlay').classList.toggle('open'); 
+            renderAdminManager();
+        }
 
-        updateUI(); setInterval(updateUI, 60000);
-        saveAndRender(); switchSkin(0); animate();
+        // Init
+        updateUI();
+        setInterval(updateUI, 1000); // Fixed clock to update every second
+        switchSkin(0);
+        animate();
+
+        // Admin Key Combo
+        const keys = {};
+        window.onkeydown = (e) => {
+            keys[e.key.toLowerCase()] = true;
+            if (keys['a'] && keys['s'] && keys['d']) {
+                const b = document.getElementById('admin-trigger');
+                b.style.display = (b.style.display === 'flex') ? 'none' : 'flex';
+            }
+        };
+        window.onkeyup = (e) => { keys[e.key.toLowerCase()] = false; };
     </script>
 </body>
 </html>
