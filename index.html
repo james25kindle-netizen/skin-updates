@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pix Updates | Skin Gallery</title>
+    <title>Pix Updates | Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
     <style>
@@ -21,24 +21,15 @@
         * { cursor: none !important; }
         body { margin: 0; background: var(--surface); color: var(--on-surface); font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; height: 100vh; }
 
-        /* VIDEO MASKING */
-        .video-bg-container {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1; pointer-events: none;
-            mask-image: radial-gradient(circle at 30% 50%, black 20%, transparent 70%);
-            -webkit-mask-image: radial-gradient(circle at 30% 50%, black 20%, transparent 70%);
-        }
+        .video-bg-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; mask-image: radial-gradient(circle at 30% 50%, black 20%, transparent 70%); -webkit-mask-image: radial-gradient(circle at 30% 50%, black 20%, transparent 70%); }
         #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; transition: opacity 0.5s; }
 
-        /* CURSOR */
         #cursor-dot { width: 6px; height: 6px; background: var(--primary); position: fixed; pointer-events: none; z-index: 10001; border-radius: 50%; }
         #cursor-outline { width: 30px; height: 30px; border: 1.5px solid #fff; position: fixed; pointer-events: none; z-index: 10000; border-radius: 50%; mix-blend-mode: difference; transition: width 0.4s, height 0.4s; }
-        .cursor-morph { background: white !important; border: none !important; }
 
         nav { padding: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
         .widget { padding: 8px 16px; background: var(--surface-variant); border-radius: var(--radius-pill); display: flex; align-items: center; gap: 12px; font-weight: 700; }
-        .jiggle-target { pointer-events: none; transition: transform 0.1s ease-out; }
-
+        
         .container { max-width: 1100px; margin: 0 auto; padding: 0 40px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; position: relative; z-index: 10; }
         .hero-title { grid-column: span 3; font-size: clamp(3rem, 8vw, 5rem); font-weight: 800; letter-spacing: -4px; text-align: center; margin: 20px 0; }
         
@@ -46,154 +37,163 @@
         .card.main { grid-column: span 2; background: var(--surface-variant); }
         .badge { background: var(--primary); color: white; padding: 4px 12px; border-radius: var(--radius-pill); font-size: 0.7rem; font-weight: 900; margin-bottom: 16px; width: fit-content; }
 
-        /* HISTORY LIST STYLING */
-        .history-item { 
-            padding: 12px; border-radius: 16px; transition: background 0.3s; 
-            display: block; width: 100%; text-align: left; border: none; background: transparent;
-            color: inherit; font-family: inherit; font-size: 1rem;
-        }
-        .history-item:hover { background: rgba(0,0,0,0.05); }
-        .history-item.active { border-left: 4px solid var(--primary); background: rgba(0,0,0,0.03); font-weight: 800; }
+        .history-item { padding: 12px; border-radius: 16px; display: block; width: 100%; text-align: left; border: none; background: transparent; color: inherit; font-family: inherit; margin-bottom: 4px; }
+        .history-item.active { border-left: 4px solid var(--primary); background: rgba(0,0,0,0.05); font-weight: 800; }
 
-        .fab-container { position: fixed; bottom: 40px; right: 40px; z-index: 20; }
+        .fab-container { position: fixed; bottom: 40px; right: 40px; z-index: 20; display: flex; gap: 16px; }
         .fab { height: 80px; padding: 0 24px; background: var(--on-surface); color: var(--surface); border-radius: 28px; border: none; display: flex; align-items: center; gap: 12px; font-weight: 800; }
+        .fab.admin { background: var(--primary); display: none; }
+
+        #admin-modal {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9);
+            background: var(--surface); padding: 40px; border-radius: var(--radius-xl);
+            z-index: 10002; display: none; flex-direction: column; gap: 16px; width: 400px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3); opacity: 0; transition: 0.3s;
+        }
+        #admin-modal.open { display: flex; opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        input, textarea { background: var(--surface-variant); border: none; padding: 16px; border-radius: 16px; font-family: inherit; font-weight: 600; color: var(--on-surface); }
+        .save-btn { background: var(--on-surface); color: var(--surface); padding: 16px; border-radius: 16px; border: none; font-weight: 800; }
     </style>
 </head>
-<body>
+<body class="dark-theme">
 
     <div id="cursor-dot"></div>
     <div id="cursor-outline"></div>
 
     <div class="video-bg-container">
-        <video id="bg-video" autoplay muted loop playsinline src="ember_knight.mp4"></video>
+        <video id="bg-video" autoplay muted loop playsinline></video>
     </div>
 
     <nav>
-        <div class="widget interactive">
-            <span class="material-symbols-rounded jiggle-target">schedule</span>
-            <span id="clock" class="jiggle-target">--:--</span>
-        </div>
-        <div class="interactive" style="font-weight: 900; color: var(--primary); letter-spacing: -1px; font-size: 1.2rem;">
-            <span class="jiggle-target">PIX UPDATES</span>
-        </div>
-        <div class="widget interactive">
-            <span id="temp" class="jiggle-target">--°</span>
-            <div id="weather-icon-container" class="jiggle-target"></div>
-        </div>
+        <div class="widget"><span>schedule</span> <span id="clock">--:--</span></div>
+        <div style="font-weight: 900; color: var(--primary);">PIX UPDATES</div>
+        <div class="widget"><span id="temp">--°</span> <div id="weather-icon-container"></div></div>
     </nav>
 
     <main class="container">
         <div class="hero-title">Skin <span style="color: var(--primary);">Updates.</span></div>
-        
-        <div class="card main interactive">
-            <span id="skin-badge" class="badge jiggle-target">V3.0 ACTIVE</span>
-            <h2 id="skin-name" class="jiggle-target">The Ember Knight</h2>
-            <p id="skin-desc" class="jiggle-target">The current featured skin. Includes custom lava flows and visor highlights.</p>
+        <div class="card main">
+            <span id="skin-badge" class="badge">--</span>
+            <h2 id="skin-name">--</h2>
+            <p id="skin-desc">--</p>
         </div>
-
-        <div class="card interactive">
-            <span class="badge jiggle-target">HISTORY</span>
-            <h3 class="jiggle-target">Gallery</h3>
-            <div id="history-list">
-                </div>
+        <div class="card">
+            <span class="badge">GALLERY</span>
+            <div id="history-list"></div>
         </div>
     </main>
 
     <div class="fab-container">
-        <button id="download-btn" class="fab interactive">
-            <span class="material-symbols-rounded jiggle-target" style="font-size: 32px;">download</span>
-            <span class="jiggle-target">DOWNLOAD SKIN</span>
+        <button id="admin-trigger" class="fab admin" onclick="toggleModal()">
+            <span class="material-symbols-rounded">add</span>
+            <span>ADD NEW SKIN</span>
+        </button>
+        <button class="fab" onclick="alert('Starting Download...')">
+            <span class="material-symbols-rounded">download</span>
+            <span>DOWNLOAD</span>
         </button>
     </div>
 
+    <div id="admin-modal">
+        <h2 style="margin-top:0">New Skin Entry</h2>
+        <input type="text" id="new-name" placeholder="Skin Name">
+        <input type="text" id="new-ver" placeholder="Version (e.g. v3.5)">
+        <input type="text" id="new-video" placeholder="Video filename (e.g. neon.mp4)">
+        <textarea id="new-desc" placeholder="Description"></textarea>
+        <button class="save-btn" onclick="addNewSkin()">SAVE TO DATABASE</button>
+        <button onclick="toggleModal()" style="background:none; border:none; color:var(--primary); font-weight:800;">CANCEL</button>
+        <button onclick="clearDatabase()" style="font-size: 10px; margin-top: 10px; opacity: 0.5;">Clear All Data</button>
+    </div>
+
     <script>
-        // --- SKIN DATABASE ---
-        const skinData = [
-            { id: 0, name: "THE ONE", version: "v1.2", desc: "bruh.", video: "monster-blocks-in-minecraft.1920x1080.mp4", file: "ember.png" },
-            { id: 1, name: "Glove Padding Fix", version: "v2.4", desc: "Reduced outer layer thickness on hands to prevent clipping.", video: "your-video.mp4", file: "glove_fix.png" },
-            { id: 2, name: "Base Mesh", version: "v1.0", desc: "The original foundation of the Pix skin series.", video: "base_mesh.mp4", file: "base.png" }
-        ];
+        // --- DATA PERSISTENCE ---
+        const DEFAULT_SKINS = [{ id: 0, name: "The Ember Knight", version: "v3.0", desc: "Custom lava flows and visor highlights.", video: "ember_knight.mp4" }];
+        let skinData = JSON.parse(localStorage.getItem('pix_skins')) || DEFAULT_SKINS;
 
-        function switchSkin(index) {
-            const skin = skinData[index];
-            
-            // Update Text
-            document.getElementById('skin-name').innerText = skin.name;
-            document.getElementById('skin-badge').innerText = skin.version + (index === 0 ? " ACTIVE" : "");
-            document.getElementById('skin-desc').innerText = skin.desc;
-            
-            // Update Video
-            const video = document.getElementById('bg-video');
-            video.style.opacity = 0;
-            setTimeout(() => {
-                video.src = skin.video;
-                video.load();
-                video.style.opacity = 0.6;
-            }, 500);
+        function saveAndRender() {
+            localStorage.setItem('pix_skins', JSON.stringify(skinData));
+            renderGallery();
+        }
 
-            // Update Active State in List
-            document.querySelectorAll('.history-item').forEach((btn, i) => {
-                btn.classList.toggle('active', i === index);
+        function renderGallery() {
+            const list = document.getElementById('history-list');
+            list.innerHTML = '';
+            skinData.forEach((skin, i) => {
+                const btn = document.createElement('button');
+                btn.className = `history-item ${i === 0 ? 'active' : ''}`;
+                btn.innerHTML = `<strong>${skin.version}</strong> — ${skin.name}`;
+                btn.onclick = () => switchSkin(i);
+                list.appendChild(btn);
             });
         }
 
-        // Initialize History List
-        const listContainer = document.getElementById('history-list');
-        skinData.forEach((skin, i) => {
-            const btn = document.createElement('button');
-            btn.className = `history-item interactive ${i === 0 ? 'active' : ''}`;
-            btn.innerHTML = `<span class="jiggle-target"><strong>${skin.version}</strong> — ${skin.name}</span>`;
-            btn.onclick = () => switchSkin(i);
-            listContainer.appendChild(btn);
+        function switchSkin(index) {
+            const skin = skinData[index];
+            document.getElementById('skin-name').innerText = skin.name;
+            document.getElementById('skin-badge').innerText = skin.version + (index === 0 ? " ACTIVE" : "");
+            document.getElementById('skin-desc').innerText = skin.desc;
+            const video = document.getElementById('bg-video');
+            video.src = skin.video;
+            renderGallery();
+        }
+
+        function toggleModal() { document.getElementById('admin-modal').classList.toggle('open'); }
+
+        function addNewSkin() {
+            const newSkin = {
+                id: Date.now(),
+                name: document.getElementById('new-name').value,
+                version: document.getElementById('new-ver').value,
+                desc: document.getElementById('new-desc').value,
+                video: document.getElementById('new-video').value
+            };
+            skinData.unshift(newSkin);
+            saveAndRender();
+            switchSkin(0);
+            toggleModal();
+        }
+
+        function clearDatabase() {
+            if(confirm("Wipe all added skins?")) {
+                localStorage.removeItem('pix_skins');
+                location.reload();
+            }
+        }
+
+        // --- A+S+D KEY TRIGGER ---
+        const keysPressed = {};
+        window.addEventListener('keydown', (e) => {
+            keysPressed[e.key.toLowerCase()] = true;
+            if (keysPressed['a'] && keysPressed['s'] && keysPressed['d']) {
+                const btn = document.getElementById('admin-trigger');
+                btn.style.display = (btn.style.display === 'flex') ? 'none' : 'flex';
+            }
+        });
+        window.addEventListener('keyup', (e) => {
+            delete keysPressed[e.key.toLowerCase()];
         });
 
-        // --- Weather & Clock ---
-        const ICONS = {
-            sunny: `<svg viewBox="0 0 24 24" fill="none" class="jiggle-target" style="width:32px"><circle cx="12" cy="12" r="5" fill="#F9BC05"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41" stroke="#F9BC05" stroke-width="2" stroke-linecap="round"/></svg>`,
-            night: `<svg viewBox="0 0 24 24" fill="none" class="jiggle-target" style="width:32px"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z" fill="#8AB4F8"/></svg>`
-        };
-
+        // Basic UI logic
         function updateUI() {
             const now = new Date();
-            let h = now.getHours();
-            document.getElementById('clock').textContent = `${h % 12 || 12}:${String(now.getMinutes()).padStart(2, '0')} ${h >= 12 ? 'PM' : 'AM'}`;
-            document.body.classList.toggle('dark-theme', h >= 18 || h < 6);
+            document.getElementById('clock').textContent = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
         }
         setInterval(updateUI, 1000); updateUI();
+        saveAndRender();
+        switchSkin(0);
 
-        // --- Magnetic Cursor ---
+        // Cursor logic
         const dot = document.querySelector('#cursor-dot');
         const outline = document.querySelector('#cursor-outline');
-        let mX = 0, mY = 0, oX = 0, oY = 0, hover = false, target = null;
+        let mX = 0, mY = 0, oX = 0, oY = 0;
         window.onmousemove = (e) => { mX = e.clientX; mY = e.clientY; };
-
         function render() {
             dot.style.transform = `translate3d(${mX-3}px, ${mY-3}px, 0)`;
-            if (hover && target) {
-                const r = target.getBoundingClientRect();
-                const cX = r.left + r.width/2; const cY = r.top + r.height/2;
-                oX += (cX + (mX - cX) * 0.1 - oX) * 0.15;
-                oY += (cY + (mY - cY) * 0.1 - oY) * 0.15;
-                outline.style.width = r.width + "px"; outline.style.height = r.height + "px";
-                outline.style.borderRadius = getComputedStyle(target).borderRadius;
-            } else {
-                oX += (mX - oX) * 0.12; oY += (mY - oY) * 0.12;
-                outline.style.width = "30px"; outline.style.height = "30px"; outline.style.borderRadius = "50%";
-            }
-            outline.style.transform = `translate3d(${oX - parseFloat(outline.style.width)/2}px, ${oY - parseFloat(outline.style.height)/2}px, 0)`;
+            oX += (mX - oX) * 0.12; oY += (mY - oY) * 0.12;
+            outline.style.transform = `translate3d(${oX - 15}px, ${oY - 15}px, 0)`;
             requestAnimationFrame(render);
         }
         render();
-
-        // Re-attach hover listeners for dynamic elements
-        document.addEventListener('mouseover', e => {
-            const el = e.target.closest('.interactive');
-            if (el) { hover = true; target = el; outline.classList.add('cursor-morph'); dot.style.opacity = 0; }
-        });
-        document.addEventListener('mouseout', e => {
-            const el = e.target.closest('.interactive');
-            if (el) { hover = false; target = null; outline.classList.remove('cursor-morph'); dot.style.opacity = 1; }
-        });
     </script>
 </body>
 </html>
