@@ -25,7 +25,7 @@
         #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; transition: opacity 0.5s; }
 
         #cursor-dot { width: 6px; height: 6px; background: var(--primary); position: fixed; pointer-events: none; z-index: 10001; border-radius: 50%; }
-        #cursor-outline { width: 30px; height: 30px; border: 1.5px solid #fff; position: fixed; pointer-events: none; z-index: 10000; border-radius: 50%; mix-blend-mode: difference; transition: width 0.4s, height 0.4s, border-radius 0.4s; }
+        #cursor-outline { width: 30px; height: 30px; border: 1.5px solid #fff; position: fixed; pointer-events: none; z-index: 10000; border-radius: 50%; mix-blend-mode: difference; transition: all 0.2s ease-out; }
         .cursor-morph { background: white !important; border: none !important; }
 
         nav { padding: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
@@ -38,31 +38,24 @@
         .card.main { grid-column: span 2; background: var(--surface-variant); }
         .badge { background: var(--primary); color: white; padding: 4px 12px; border-radius: var(--radius-pill); font-size: 0.7rem; font-weight: 900; margin-bottom: 16px; width: fit-content; }
 
-        .history-item { padding: 12px; border-radius: 16px; display: block; width: 100%; text-align: left; border: none; background: transparent; color: inherit; font-family: inherit; margin-bottom: 4px; pointer-events: auto; }
+        .history-item { padding: 12px; border-radius: 16px; display: block; width: 100%; text-align: left; border: none; background: transparent; color: inherit; font-family: inherit; margin-bottom: 4px; transition: background 0.2s; }
         .history-item.active { border-left: 4px solid var(--primary); background: rgba(0,0,0,0.05); font-weight: 800; }
 
         .fab-container { position: fixed; bottom: 40px; right: 40px; z-index: 20; display: flex; gap: 16px; }
         .fab { height: 80px; padding: 0 24px; background: var(--on-surface); color: var(--surface); border-radius: 28px; border: none; display: flex; align-items: center; gap: 12px; font-weight: 800; }
         .fab.admin { background: var(--primary); display: none; }
 
-        /* MODAL FIX: Using pointer-events to prevent blocking */
-        #admin-modal-overlay {
-            position: fixed; top:0; left:0; width:100%; height:100%;
-            background: rgba(0,0,0,0.5); z-index: 10002;
-            display: none; align-items: center; justify-content: center;
-            backdrop-filter: blur(5px);
-        }
+        /* ADMIN MODAL STYLES */
+        #admin-modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index: 10002; display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         #admin-modal-overlay.open { display: flex; }
-        #admin-modal {
-            background: var(--surface); padding: 40px; border-radius: var(--radius-xl);
-            display: flex; flex-direction: column; gap: 16px; width: 400px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-        }
+        #admin-modal { background: var(--surface); padding: 40px; border-radius: var(--radius-xl); display: flex; flex-direction: column; gap: 16px; width: 450px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); max-height: 90vh; overflow-y: auto; }
         input, textarea { background: var(--surface-variant); border: none; padding: 16px; border-radius: 16px; font-family: inherit; font-weight: 600; color: var(--on-surface); }
         .save-btn { background: var(--on-surface); color: var(--surface); padding: 16px; border-radius: 16px; border: none; font-weight: 800; }
         
-        .weather-img { width: 32px; height: 32px; display: flex; align-items: center; }
-        .weather-img svg { width: 100%; height: 100%; }
+        /* DELETE SECTION STYLES */
+        .admin-list-item { display: flex; justify-content: space-between; align-items: center; background: var(--surface-variant); padding: 12px 16px; border-radius: 16px; margin-bottom: 8px; }
+        .delete-btn { background: #ff4444; color: white; border: none; padding: 8px; border-radius: 12px; transition: transform 0.2s; }
+        .delete-btn:hover { transform: scale(1.1); }
     </style>
 </head>
 <body>
@@ -75,15 +68,9 @@
     </div>
 
     <nav>
-        <div class="widget interactive">
-            <span class="material-symbols-rounded">schedule</span> 
-            <span id="clock">--:--</span>
-        </div>
+        <div class="widget interactive"><span class="material-symbols-rounded">schedule</span> <span id="clock">--:--</span></div>
         <div class="interactive" style="font-weight: 900; color: var(--primary);">PIX UPDATES</div>
-        <div class="widget interactive">
-            <span id="temp">--°</span> 
-            <div id="weather-icon-container" class="weather-img"></div>
-        </div>
+        <div class="widget interactive"><span id="temp">--°</span> <div id="weather-icon-container"></div></div>
     </nav>
 
     <main class="container">
@@ -102,7 +89,7 @@
     <div class="fab-container">
         <button id="admin-trigger" class="fab admin interactive" onclick="toggleModal()">
             <span class="material-symbols-rounded">add</span>
-            <span>ADD NEW SKIN</span>
+            <span>ADD/MANAGE</span>
         </button>
         <button id="main-download-btn" class="fab interactive">
             <span class="material-symbols-rounded">download</span>
@@ -112,26 +99,29 @@
 
     <div id="admin-modal-overlay">
         <div id="admin-modal">
-            <h2 style="margin-top:0">New Skin Entry</h2>
+            <h2 style="margin:0">Admin Panel</h2>
+            <p style="opacity:0.6; font-size:12px; margin-bottom:10px;">Add a new skin or delete old ones below.</p>
+            
             <input type="text" id="new-name" placeholder="Skin Name">
-            <input type="text" id="new-ver" placeholder="Version (e.g. v3.5)">
-            <input type="text" id="new-video" placeholder="Video filename (e.g. neon.mp4)">
-            <input type="text" id="new-file" placeholder="Skin Image (e.g. skin.png)">
+            <input type="text" id="new-ver" placeholder="Version (v1.0)">
+            <input type="text" id="new-video" placeholder="Video.mp4">
+            <input type="text" id="new-file" placeholder="Skin.png">
             <textarea id="new-desc" placeholder="Description"></textarea>
             <button class="save-btn interactive" onclick="addNewSkin()">SAVE TO DATABASE</button>
-            <button class="interactive" onclick="toggleModal()" style="background:none; border:none; color:var(--primary); font-weight:800;">CANCEL</button>
+
+            <h3 style="margin: 20px 0 10px 0; font-size: 14px;">Manage Database</h3>
+            <div id="admin-skin-manager"></div>
+
+            <button class="interactive" onclick="toggleModal()" style="background:none; border:none; color:var(--primary); font-weight:800; margin-top:10px;">CLOSE PANEL</button>
         </div>
     </div>
 
     <script>
-        // --- WEATHER ICONS DATA ---
         const ICONS = {
-            sunny: `<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="5" fill="#F9BC05"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41" stroke="#F9BC05" stroke-width="2" stroke-linecap="round"/></svg>`,
-            cloudy: `<svg viewBox="0 0 24 24" fill="none"><path d="M17.5 19c2.5 0 4.5-2 4.5-4.5S20 10 17.5 10c-.2 0-.4 0-.6.1C15.8 7.6 13.1 6 10 6c-3.9 0-7 3.1-7 7s3.1 7 7 7h7.5z" fill="#BDC1C6"/></svg>`,
-            night: `<svg viewBox="0 0 24 24" fill="none"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z" fill="#8AB4F8"/></svg>`
+            sunny: `<svg viewBox="0 0 24 24" fill="none" style="width:32px"><circle cx="12" cy="12" r="5" fill="#F9BC05"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41" stroke="#F9BC05" stroke-width="2" stroke-linecap="round"/></svg>`,
+            night: `<svg viewBox="0 0 24 24" fill="none" style="width:32px"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z" fill="#8AB4F8"/></svg>`
         };
 
-        // --- SKIN DATABASE ---
         const DEFAULT_SKINS = [{ id: 0, name: "The Ember Knight", version: "v3.0", desc: "Custom lava flows and visor highlights.", video: "ember_knight.mp4", file: "ember.png" }];
         let skinData = JSON.parse(localStorage.getItem('pix_skins')) || DEFAULT_SKINS;
         let currentSkinIndex = 0;
@@ -139,6 +129,7 @@
         function saveAndRender() {
             localStorage.setItem('pix_skins', JSON.stringify(skinData));
             renderGallery();
+            renderAdminManager();
         }
 
         function renderGallery() {
@@ -148,8 +139,24 @@
                 const btn = document.createElement('button');
                 btn.className = `history-item interactive ${i === currentSkinIndex ? 'active' : ''}`;
                 btn.innerHTML = `<strong>${skin.version}</strong> — ${skin.name}`;
-                btn.onclick = (e) => { e.stopPropagation(); switchSkin(i); };
+                btn.onclick = () => switchSkin(i);
                 list.appendChild(btn);
+            });
+        }
+
+        function renderAdminManager() {
+            const manager = document.getElementById('admin-skin-manager');
+            manager.innerHTML = '';
+            skinData.forEach((skin, i) => {
+                const item = document.createElement('div');
+                item.className = 'admin-list-item';
+                item.innerHTML = `
+                    <div style="font-size:14px;"><strong>${skin.version}</strong> ${skin.name}</div>
+                    <button class="delete-btn interactive" onclick="deleteSkin(${i})">
+                        <span class="material-symbols-rounded" style="font-size:20px;">delete</span>
+                    </button>
+                `;
+                manager.appendChild(item);
             });
         }
 
@@ -159,29 +166,28 @@
             document.getElementById('skin-name').innerText = skin.name;
             document.getElementById('skin-badge').innerText = skin.version + (index === 0 ? " ACTIVE" : "");
             document.getElementById('skin-desc').innerText = skin.desc;
-            
             const video = document.getElementById('bg-video');
             video.src = skin.video;
-            
-            // Update download button behavior
-            document.getElementById('main-download-btn').onclick = () => {
-                const link = document.createElement('a');
-                link.href = skin.file;
-                link.download = skin.file;
-                link.click();
-            };
-            
+            document.getElementById('main-download-btn').onclick = () => alert("Downloading: " + skin.file);
             renderGallery();
         }
 
-        function toggleModal() { document.getElementById('admin-modal-overlay').classList.toggle('open'); }
+        function deleteSkin(index) {
+            if (skinData.length <= 1) return alert("You must keep at least one skin!");
+            if (confirm("Delete this skin from database?")) {
+                skinData.splice(index, 1);
+                currentSkinIndex = 0;
+                saveAndRender();
+                switchSkin(0);
+            }
+        }
 
         function addNewSkin() {
             const newSkin = {
                 id: Date.now(),
-                name: document.getElementById('new-name').value || "Unnamed Skin",
+                name: document.getElementById('new-name').value || "New Skin",
                 version: document.getElementById('new-ver').value || "v1.0",
-                desc: document.getElementById('new-desc').value || "No description.",
+                desc: document.getElementById('new-desc').value || "Description here.",
                 video: document.getElementById('new-video').value || "",
                 file: document.getElementById('new-file').value || ""
             };
@@ -191,46 +197,34 @@
             toggleModal();
         }
 
-        // --- A+S+D TRIGGER ---
+        function toggleModal() { document.getElementById('admin-modal-overlay').classList.toggle('open'); }
+
+        // A+S+D Detection
         const keys = {};
         window.onkeydown = (e) => {
             keys[e.key.toLowerCase()] = true;
             if (keys['a'] && keys['s'] && keys['d']) {
-                const adminBtn = document.getElementById('admin-trigger');
-                adminBtn.style.display = (adminBtn.style.display === 'flex') ? 'none' : 'flex';
+                const btn = document.getElementById('admin-trigger');
+                btn.style.display = (btn.style.display === 'flex') ? 'none' : 'flex';
             }
         };
         window.onkeyup = (e) => { keys[e.key.toLowerCase()] = false; };
 
-        // --- WEATHER & UI ---
-        async function updateWeather() {
+        // Basic UI & Cursor
+        function updateUI() {
             const now = new Date();
             const isNight = now.getHours() >= 18 || now.getHours() < 6;
             document.body.classList.toggle('dark-theme', isNight);
             document.getElementById('clock').textContent = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-
-            navigator.geolocation.getCurrentPosition(async (pos) => {
-                try {
-                    const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&current_weather=true&temperature_unit=fahrenheit`);
-                    const data = await res.json();
-                    const code = data.current_weather.weathercode;
-                    document.getElementById('temp').textContent = Math.round(data.current_weather.temperature) + "°";
-                    
-                    let icon = isNight ? ICONS.night : ICONS.sunny;
-                    if (code > 0 && code <= 3) icon = ICONS.cloudy;
-                    document.getElementById('weather-icon-container').innerHTML = icon;
-                } catch (e) { console.log("Weather failed"); }
-            });
+            document.getElementById('weather-icon-container').innerHTML = isNight ? ICONS.night : ICONS.sunny;
         }
 
-        // --- MOUSE PHYSICS ---
         const dot = document.querySelector('#cursor-dot');
         const outline = document.querySelector('#cursor-outline');
         let mX = 0, mY = 0, oX = 0, oY = 0, hover = false, target = null;
-
         window.onmousemove = (e) => { mX = e.clientX; mY = e.clientY; };
 
-        function animateCursor() {
+        function animate() {
             dot.style.transform = `translate3d(${mX-3}px, ${mY-3}px, 0)`;
             if (hover && target) {
                 const r = target.getBoundingClientRect();
@@ -243,10 +237,9 @@
                 outline.style.width = "30px"; outline.style.height = "30px"; outline.style.borderRadius = "50%";
             }
             outline.style.transform = `translate3d(${oX - parseFloat(outline.style.width)/2}px, ${oY - parseFloat(outline.style.height)/2}px, 0)`;
-            requestAnimationFrame(animateCursor);
+            requestAnimationFrame(animate);
         }
 
-        // Delegate hover events
         document.body.addEventListener('mouseover', (e) => {
             const el = e.target.closest('.interactive');
             if (el) { hover = true; target = el; outline.classList.add('cursor-morph'); dot.style.opacity = 0; }
@@ -255,12 +248,8 @@
             if (e.target.closest('.interactive')) { hover = false; target = null; outline.classList.remove('cursor-morph'); dot.style.opacity = 1; }
         });
 
-        // Start everything
-        updateWeather();
-        setInterval(updateWeather, 60000);
-        saveAndRender();
-        switchSkin(0);
-        animateCursor();
+        updateUI(); setInterval(updateUI, 60000);
+        saveAndRender(); switchSkin(0); animate();
     </script>
 </body>
 </html>
