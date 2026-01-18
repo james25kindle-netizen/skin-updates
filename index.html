@@ -18,68 +18,66 @@
         }
         
         * { cursor: none; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-        #admin-modal-overlay *, a { cursor: auto !important; }
 
         body { 
             margin: 0; background: var(--surface); color: var(--on-surface); 
             font-family: 'Google Sans Flex', sans-serif; overflow: hidden; height: 100vh; 
         }
 
-        .video-bg-container { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; 
-            mask-image: radial-gradient(circle at 70% 50%, black 40%, transparent 95%);
-            background: #000;
-        }
-        #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; pointer-events: none; }
-
-        /* --- YOUR MATERIAL 3 ORBIT LOADER (Integrated) --- */
-        .m3-loading {
-            width: 32px; /* Scaled down for the widget */
-            height: 32px;
-            position: relative;
-            display: none; /* Hidden by default */
+        /* --- EXPRESSIVE REFRESH LOADER (Inside Widget) --- */
+        .weather-refresh-container {
+            width: 28px;
+            height: 28px;
+            display: none; /* Hidden until refresh starts */
             place-items: center;
         }
 
-        .m3-loading span {
-            position: absolute;
-            width: 6px; /* Scaled down */
-            height: 6px; /* Scaled down */
+        .expressive-morph {
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 30%, var(--primary), #6750a4);
             border-radius: 50%;
-            background: var(--primary);
-            animation: orbit 1.8s cubic-bezier(.4,0,.2,1) infinite;
+            animation: 
+                pulse 1.2s cubic-bezier(.4,0,.2,1) infinite, 
+                morph 1.8s cubic-bezier(.4,0,.2,1) infinite;
         }
 
-        .m3-loading span:nth-child(1) { animation-delay: 0s; }
-        .m3-loading span:nth-child(2) { animation-delay: .15s; }
-        .m3-loading span:nth-child(3) { animation-delay: .3s; }
-
-        @keyframes orbit {
-            0% {
-                transform: rotate(0deg) translateX(10px) scale(0.6);
-                opacity: .4;
-            }
-            40% {
-                opacity: 1;
-                transform: rotate(140deg) translateX(10px) scale(1);
-            }
-            100% {
-                transform: rotate(360deg) translateX(10px) scale(0.6);
-                opacity: .4;
-            }
+        @keyframes pulse {
+            0%   { transform: scale(0.8); }
+            50%  { transform: scale(1.1); }
+            100% { transform: scale(0.8); }
         }
 
-        /* --- CURSOR ENGINE --- */
+        @keyframes morph {
+            0%   { border-radius: 50%; }
+            33%  { border-radius: 38% 62% 55% 45%; }
+            66%  { border-radius: 62% 38% 45% 55%; }
+            100% { border-radius: 50%; }
+        }
+
+        /* --- VIDEO BACKGROUND --- */
+        .video-bg-container { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; 
+            background: #000;
+        }
+
+        #bg-video { 
+            width: 100%; height: 100%; object-fit: cover; 
+            opacity: 0.7;
+            pointer-events: none;
+            filter: saturate(1.1) contrast(1.05);
+            mask-image: radial-gradient(circle at 70% 50%, black 40%, transparent 95%);
+        }
+
+        /* --- UI ELEMENTS --- */
         #cursor-dot, #cursor-outline { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 10001; border-radius: 50%; will-change: transform; }
         #cursor-dot { width: 6px; height: 6px; background: var(--primary); }
         #cursor-outline { width: 30px; height: 30px; border: 1.5px solid var(--on-surface); mix-blend-mode: difference; transition: width 0.2s, height 0.2s, border-radius 0.2s; }
         .cursor-morph { background: white !important; border: none !important; }
 
-        /* --- NAV & WIDGETS --- */
         nav { padding: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
         .widget { padding: 12px 20px; background: var(--surface-variant); border-radius: var(--radius-pill); display: flex; align-items: center; gap: 12px; font-weight: 700; text-decoration: none; color: inherit; transition: background 0.3s; }
         
-        /* --- LAYOUT --- */
         .main-layout { display: grid; grid-template-columns: 1fr 380px; gap: 40px; max-width: 1400px; margin: 0 auto; padding: 0 40px; }
         .hero-section { display: flex; flex-direction: column; justify-content: center; height: 60vh; }
         .hero-title { font-size: 6rem; font-weight: 900; letter-spacing: -5px; line-height: 0.9; margin: 0; pointer-events: none; }
@@ -91,17 +89,11 @@
         }
 
         .badge { background: var(--primary); color: white; padding: 6px 14px; border-radius: var(--radius-pill); font-size: 0.75rem; font-weight: 800; width: fit-content; }
-        .gallery-list { overflow-y: auto; padding-right: 8px; flex-grow: 1; }
         .history-item { padding: 16px; border-radius: 20px; display: block; width: 100%; text-align: left; border: none; background: transparent; color: inherit; font-family: inherit; margin-bottom: 8px; transition: all 0.2s; }
         .history-item.active { background: var(--surface-variant); font-weight: 800; border-left: 6px solid var(--primary); }
 
         .fab-container { position: fixed; bottom: 40px; left: 40px; display: flex; gap: 16px; }
         .fab { height: 70px; padding: 0 28px; background: var(--on-surface); color: var(--surface); border-radius: 24px; border: none; display: flex; align-items: center; gap: 12px; font-weight: 800; text-decoration: none; }
-        .fab.admin { background: var(--primary); display: none; }
-
-        #admin-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 20000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        #admin-modal { background: var(--surface); padding: 40px; border-radius: var(--radius-xl); width: 500px; display: flex; flex-direction: column; gap: 15px; max-height: 90vh; }
-        input, textarea { padding: 16px; border-radius: 12px; border: 1px solid var(--surface-variant); background: var(--surface); font-family: inherit; width: 100%; outline: none; }
     </style>
 </head>
 <body>
@@ -115,24 +107,19 @@
 
     <nav>
         <div class="widget interactive">
-            <div class="mag"><span class="material-symbols-rounded">schedule</span> <span id="clock">--:--</span></div>
+            <span class="material-symbols-rounded">schedule</span> <span id="clock">--:--</span>
         </div>
         <a href="https://www.google.com/search?q=weather" target="_blank" class="widget interactive" id="weather-widget">
-            <div class="mag" style="display:flex; align-items:center; gap:12px;">
-                <div id="orbit-loader" class="m3-loading">
-                    <span></span><span></span><span></span>
-                </div>
-                <span id="temp">--°</span> 
-                <div id="weather-icon"></div>
+            <div id="refresh-loader" class="weather-refresh-container">
+                <div class="expressive-morph"></div>
             </div>
+            <span id="temp">--°</span> 
+            <div id="weather-icon"></div>
         </a>
     </nav>
 
     <div class="main-layout">
-        <div class="hero-section">
-            <h1 class="hero-title">PIX<br><span style="color: var(--primary);">UPDATES</span></h1>
-        </div>
-
+        <div class="hero-section"><h1 class="hero-title">PIX<br><span style="color: var(--primary);">UPDATES</span></h1></div>
         <div class="unified-panel">
             <div class="active-info">
                 <span id="skin-badge" class="badge">--</span>
@@ -145,24 +132,7 @@
     </div>
 
     <div class="fab-container">
-        <button id="admin-trigger" class="fab admin interactive" onclick="toggleModal(true)">
-            <span class="material-symbols-rounded">settings</span> <span>ADMIN</span>
-        </button>
-        <button class="fab interactive">
-            <span class="material-symbols-rounded">download</span> <span>GET SKIN</span>
-        </button>
-    </div>
-
-    <div id="admin-modal-overlay">
-        <div id="admin-modal">
-            <h2 style="margin:0">Admin Control</h2>
-            <input type="text" id="new-name" placeholder="Skin Name">
-            <input type="text" id="new-ver" placeholder="Version (V4.0)">
-            <input type="text" id="new-video" placeholder="Video Link">
-            <textarea id="new-desc" placeholder="Update Description"></textarea>
-            <button style="background:var(--on-surface); color:var(--surface); padding:16px; border:none; border-radius:12px; font-weight:900;" onclick="addNewSkin()">SAVE VERSION</button>
-            <button onclick="toggleModal(false)" style="background:none; border:none; color:var(--primary); font-weight:700;">CLOSE</button>
-        </div>
+        <button class="fab interactive"><span class="material-symbols-rounded">download</span> <span>GET SKIN</span></button>
     </div>
 
     <script>
@@ -173,11 +143,14 @@
         let skinData = JSON.parse(localStorage.getItem(DB_KEY)) || [DEFAULT];
         let currentIdx = 0;
 
-        // WEATHER
         async function fetchWeather() {
-            const loader = document.getElementById('orbit-loader');
+            const loader = document.getElementById('refresh-loader');
+            const temp = document.getElementById('temp');
             const icon = document.getElementById('weather-icon');
-            loader.style.display = 'grid'; // Shows the 3 spans
+
+            // Start Refreshing State
+            loader.style.display = 'grid'; 
+            temp.style.opacity = '0.3';
             icon.style.display = 'none';
 
             try {
@@ -185,20 +158,28 @@
                 const geo = await geoReq.json();
                 const weatherReq = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${geo.latitude}&longitude=${geo.longitude}&current_weather=true&temperature_unit=fahrenheit`);
                 const weather = await weatherReq.json();
-                document.getElementById('temp').textContent = Math.round(weather.current_weather.temperature) + "°F";
-                const isNight = weather.current_weather.is_day === 0;
-                document.body.classList.toggle('dark-theme', isNight);
-                icon.innerHTML = isNight ? ICONS.moon : ICONS.sun;
-            } catch (e) { document.getElementById('temp').textContent = "72°F"; }
-            
-            // Artificial delay to see the animation
-            setTimeout(() => { 
-                loader.style.display = 'none'; 
-                icon.style.display = 'block'; 
-            }, 2500);
+                
+                // Artificial delay to show off the "Refreshing" morphing shape
+                setTimeout(() => {
+                    temp.textContent = Math.round(weather.current_weather.temperature) + "°F";
+                    const isNight = weather.current_weather.is_day === 0;
+                    document.body.classList.toggle('dark-theme', isNight);
+                    icon.innerHTML = isNight ? ICONS.moon : ICONS.sun;
+
+                    // Restore UI
+                    loader.style.display = 'none';
+                    temp.style.opacity = '1';
+                    icon.style.display = 'block';
+                }, 2000);
+
+            } catch (e) { 
+                temp.textContent = "72°F";
+                loader.style.display = 'none';
+                temp.style.opacity = '1';
+            }
         }
 
-        // CURSOR
+        // --- CURSOR & CLOCK (KEEPING YOUR LOGIC) ---
         const dot = document.querySelector('#cursor-dot');
         const outline = document.querySelector('#cursor-outline');
         let mX = 0, mY = 0, oX = 0, oY = 0, target = null;
@@ -212,21 +193,19 @@
             }
         });
 
-        function animate() {
+        function animateCursor() {
             dot.style.transform = `translate3d(${mX-3}px, ${mY-3}px, 0)`;
             if (target) {
                 const r = target.getBoundingClientRect();
-                oX += (r.left + r.width/2 - oX) * 0.15;
-                oY += (r.top + r.height/2 - oY) * 0.15;
-                outline.style.width = r.width + "px";
-                outline.style.height = r.height + "px";
+                oX += (r.left + r.width/2 - oX) * 0.15; oY += (r.top + r.height/2 - oY) * 0.15;
+                outline.style.width = r.width + "px"; outline.style.height = r.height + "px";
                 outline.style.borderRadius = getComputedStyle(target).borderRadius;
             } else {
                 oX += (mX - oX) * 0.15; oY += (mY - oY) * 0.15;
                 outline.style.width = "30px"; outline.style.height = "30px"; outline.style.borderRadius = "50%";
             }
             outline.style.transform = `translate3d(${oX - parseFloat(outline.style.width)/2}px, ${oY - parseFloat(outline.style.height)/2}px, 0)`;
-            requestAnimationFrame(animate);
+            requestAnimationFrame(animateCursor);
         }
 
         function updateDisplay() {
@@ -235,6 +214,7 @@
             document.getElementById('skin-badge').textContent = skin.version;
             document.getElementById('skin-desc').textContent = skin.desc;
             document.getElementById('bg-video').src = skin.video;
+
             const list = document.getElementById('history-list');
             list.innerHTML = '';
             skinData.forEach((s, i) => {
@@ -246,32 +226,11 @@
             });
         }
 
-        function addNewSkin() {
-            const n = document.getElementById('new-name').value;
-            const v = document.getElementById('new-ver').value;
-            const vid = document.getElementById('new-video').value;
-            const d = document.getElementById('new-desc').value;
-            if(!n || !v || !vid) return;
-            skinData.unshift({ name: n, version: v, video: vid, desc: d });
-            localStorage.setItem(DB_KEY, JSON.stringify(skinData));
-            currentIdx = 0; updateDisplay(); toggleModal(false);
-        }
-
-        function toggleModal(show) { document.getElementById('admin-modal-overlay').style.display = show ? 'flex' : 'none'; }
-
-        // Secret Admin Access (A+S+D)
-        const keys = {};
-        window.onkeydown = (e) => {
-            keys[e.key.toLowerCase()] = true;
-            if (keys['a'] && keys['s'] && keys['d']) document.getElementById('admin-trigger').style.display = 'flex';
-        };
-        window.onkeyup = (e) => keys[e.key.toLowerCase()] = false;
-
         fetchWeather();
         setInterval(fetchWeather, 300000);
         setInterval(() => { document.getElementById('clock').textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); }, 1000);
         updateDisplay();
-        animate();
+        animateCursor();
     </script>
 </body>
 </html>
