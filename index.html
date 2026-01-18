@@ -222,4 +222,9 @@
 
         fetchWeather();
         setInterval(fetchWeather, 300000);
-        setInterval(() => { document.getElementById('clock').textContent = new Date
+        setInterval(() => { document.getElementById('clock').textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); }, 1000);
+        updateDisplay();
+        animate();
+    </script>
+</body>
+</html>
