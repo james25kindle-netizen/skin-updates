@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pix Updates | M3 Expressive</title>
+    <title>Pix Updates | M3 Expressive Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
     <style>
@@ -32,8 +32,8 @@
         }
         #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; pointer-events: none; }
 
-        /* M3 EXPRESSIVE MORPHING LOADER */
-        .m3-loader-container {
+        /* --- OFFICIAL M3 EXPRESSIVE MORPHING LOADER --- */
+        .m3-expressive-container {
             width: 28px; height: 28px;
             display: none;
             position: relative;
@@ -45,9 +45,9 @@
             animation: m3-spin 2s linear infinite;
         }
 
-        /* This replicates the "Wavy/Morphing" effect from the link */
+        /* This replicates the official Polygons from M3 Expressive */
         .m3-morph-path {
-            animation: m3-morph 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+            animation: m3-shape-cycle 4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
         }
 
         @keyframes m3-spin {
@@ -55,22 +55,25 @@
             to { transform: rotate(360deg); }
         }
 
-        @keyframes m3-morph {
+        @keyframes m3-shape-cycle {
             0%, 100% { d: path("M24,4C12.95,4,4,12.95,4,24s8.95,20,20,20s20-8.95,20-20S35.05,4,24,4z"); } /* Circle */
-            25% { d: path("M24,4c10,0,16,6,16,16s-6,16-16,16s-16-6-16-16S14,4,24,4z"); } /* Squircle */
-            50% { d: path("M24,8c6,0,12,2,12,16s-6,16-12,16s-12-2-12-16S18,8,24,8z"); } /* Expressive Oval */
-            75% { d: path("M24,4c8,0,14,4,14,14s-6,22-14,22s-14-12-14-22S16,4,24,4z"); } /* Petal Shape */
+            20% { d: path("M24,4l17,7l3,17l-13,15l-19,0l-13-15l3-17z"); } /* Heptagon */
+            40% { d: path("M24,4c10,0,16,6,16,16s-6,16-16,16s-16-6-16-16S14,4,24,4z"); } /* Squircle */
+            60% { d: path("M24,8c6,0,12,2,12,16s-6,16-12,16s-12-2-12-16S18,8,24,8z"); } /* Expressive Oval */
+            80% { d: path("M24,4c8,0,14,4,14,14s-6,22-14,22s-14-12-14-22S16,4,24,4z"); } /* Petal */
         }
 
-        /* CURSOR ENGINE */
+        /* --- CURSOR ENGINE --- */
         #cursor-dot, #cursor-outline { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 10001; border-radius: 50%; will-change: transform; }
         #cursor-dot { width: 6px; height: 6px; background: var(--primary); }
         #cursor-outline { width: 30px; height: 30px; border: 1.5px solid var(--on-surface); mix-blend-mode: difference; transition: width 0.2s, height 0.2s, border-radius 0.2s; }
         .cursor-morph { background: white !important; border: none !important; }
 
+        /* --- NAV & WIDGETS --- */
         nav { padding: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
         .widget { padding: 12px 20px; background: var(--surface-variant); border-radius: var(--radius-pill); display: flex; align-items: center; gap: 12px; font-weight: 700; text-decoration: none; color: inherit; transition: background 0.3s; }
         
+        /* --- LAYOUT --- */
         .main-layout { display: grid; grid-template-columns: 1fr 380px; gap: 40px; max-width: 1400px; margin: 0 auto; padding: 0 40px; }
         .hero-section { display: flex; flex-direction: column; justify-content: center; height: 60vh; }
         .hero-title { font-size: 6rem; font-weight: 900; letter-spacing: -5px; line-height: 0.9; margin: 0; pointer-events: none; }
@@ -110,7 +113,7 @@
         </div>
         <a href="https://www.google.com/search?q=weather" target="_blank" class="widget interactive" id="weather-widget">
             <div class="mag" style="display:flex; align-items:center; gap:12px;">
-                <div id="m3-loader-box" class="m3-loader-container">
+                <div id="m3-loader-box" class="m3-expressive-container">
                     <svg class="m3-morph-svg" viewBox="0 0 48 48">
                         <path class="m3-morph-path" d="M24,4C12.95,4,4,12.95,4,24s8.95,20,20,20s20-8.95,20-20S35.05,4,24,4z" />
                     </svg>
@@ -141,17 +144,17 @@
         <button id="admin-trigger" class="fab admin interactive" onclick="toggleModal(true)">
             <span class="material-symbols-rounded">settings</span> <span>ADMIN</span>
         </button>
-        <button class="fab interactive" onclick="alert('Downloading...')">
+        <button class="fab interactive">
             <span class="material-symbols-rounded">download</span> <span>GET SKIN</span>
         </button>
     </div>
 
     <div id="admin-modal-overlay">
         <div id="admin-modal">
-            <h2 style="margin:0">Admin Panel</h2>
+            <h2 style="margin:0">Admin Control</h2>
             <input type="text" id="new-name" placeholder="Skin Name">
-            <input type="text" id="new-ver" placeholder="Version (V4.0)">
-            <input type="text" id="new-video" placeholder="Video URL">
+            <input type="text" id="new-ver" placeholder="Version (e.g. V4.0)">
+            <input type="text" id="new-video" placeholder="Video URL (.mp4)">
             <textarea id="new-desc" placeholder="What's new?"></textarea>
             <button style="background:var(--on-surface); color:var(--surface); padding:16px; border:none; border-radius:12px; font-weight:900;" onclick="addNewSkin()">SAVE VERSION</button>
             <button onclick="toggleModal(false)" style="background:none; border:none; color:var(--primary); font-weight:700;">CLOSE</button>
@@ -160,7 +163,7 @@
 
     <script>
         const ICONS = { sun: `<span class="material-symbols-rounded" style="color:#F9BC05">sunny</span>`, moon: `<span class="material-symbols-rounded" style="color:#8AB4F8">dark_mode</span>` };
-        const DB_KEY = 'pix_db_m3_expressive';
+        const DB_KEY = 'pix_db_m3_final';
         const DEFAULT = { name: "The Ember Knight", version: "V3.0", desc: "Custom lava flows and visor highlights.", video: "https://assets.mixkit.co/videos/preview/mixkit-abstract-flowing-red-and-orange-background-34444-large.mp4" };
 
         let skinData = JSON.parse(localStorage.getItem(DB_KEY)) || [DEFAULT];
@@ -184,7 +187,7 @@
                 icon.innerHTML = isNight ? ICONS.moon : ICONS.sun;
             } catch (e) { document.getElementById('temp').textContent = "72°F"; }
             
-            setTimeout(() => { loader.style.display = 'none'; icon.style.display = 'block'; }, 2000);
+            setTimeout(() => { loader.style.display = 'none'; icon.style.display = 'block'; }, 2500); // Wait longer to show off the morph
         }
 
         // CURSOR
