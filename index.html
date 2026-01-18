@@ -32,34 +32,36 @@
         }
         #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; pointer-events: none; }
 
-        /* CURSOR HARDWARE ACCELERATED */
+        /* --- CURSOR ENGINE --- */
         #cursor-dot, #cursor-outline { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 10001; border-radius: 50%; will-change: transform; }
         #cursor-dot { width: 6px; height: 6px; background: var(--primary); }
         #cursor-outline { width: 30px; height: 30px; border: 1.5px solid var(--on-surface); mix-blend-mode: difference; transition: width 0.2s, height 0.2s, border-radius 0.2s; }
         .cursor-morph { background: white !important; border: none !important; }
 
+        /* --- NAV & WIDGETS --- */
         nav { padding: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
         .widget { padding: 12px 20px; background: var(--surface-variant); border-radius: var(--radius-pill); display: flex; align-items: center; gap: 12px; font-weight: 700; text-decoration: none; color: inherit; transition: background 0.3s; }
         
-        /* MATERIAL 3 EXPRESSIVE LOADER */
-        .expressive-loader {
+        /* --- M3 EXPRESSIVE WAVY LOADER --- */
+        .m3-expressive-loader {
             width: 24px; height: 24px;
             display: none;
-            transform: rotate(-90deg);
-            animation: m3-rotate 2s linear infinite;
+            animation: m3-rotate 1.4s linear infinite;
         }
-        .expressive-loader .indicator {
+        .m3-indicator {
             stroke-dasharray: 1, 200;
             stroke-dashoffset: 0;
-            animation: m3-dash 1.5s ease-in-out infinite;
+            stroke: var(--primary);
+            animation: m3-morph 1.4s cubic-bezier(0.45, 0, 0.55, 1) infinite;
         }
-        @keyframes m3-rotate { 100% { transform: rotate(270deg); } }
-        @keyframes m3-dash {
+        @keyframes m3-rotate { to { transform: rotate(360deg); } }
+        @keyframes m3-morph {
             0% { stroke-dasharray: 1, 200; stroke-dashoffset: 0; }
-            50% { stroke-dasharray: 89, 200; stroke-dashoffset: -35px; }
-            100% { stroke-dasharray: 89, 200; stroke-dashoffset: -124px; }
+            50% { stroke-dasharray: 100, 200; stroke-dashoffset: -15px; }
+            100% { stroke-dasharray: 100, 200; stroke-dashoffset: -125px; }
         }
 
+        /* --- LAYOUT --- */
         .main-layout { display: grid; grid-template-columns: 1fr 380px; gap: 40px; max-width: 1400px; margin: 0 auto; padding: 0 40px; }
         .hero-section { display: flex; flex-direction: column; justify-content: center; height: 60vh; }
         .hero-title { font-size: 6rem; font-weight: 900; letter-spacing: -5px; line-height: 0.9; margin: 0; pointer-events: none; }
@@ -99,10 +101,10 @@
         <div class="widget interactive">
             <div class="mag"><span class="material-symbols-rounded">schedule</span> <span id="clock">--:--</span></div>
         </div>
-        <a href="https://www.google.com/search?q=weather" target="_blank" class="widget interactive" id="weather-widget">
+        <a href="https://www.google.com/search?q=google+weather" target="_blank" class="widget interactive" id="weather-widget">
             <div class="mag" style="display:flex; align-items:center; gap:10px;">
-                <svg id="m3-loader" class="expressive-loader" viewBox="0 0 48 48">
-                    <circle class="indicator" cx="24" cy="24" r="18" fill="none" stroke="var(--primary)" stroke-width="4" stroke-linecap="round" />
+                <svg id="m3-loader" class="m3-expressive-loader" viewBox="0 0 48 48">
+                    <circle class="m3-indicator" cx="24" cy="24" r="18" fill="none" stroke-width="5" stroke-linecap="round" />
                 </svg>
                 <span id="temp">--°</span> 
                 <div id="weather-icon"></div>
@@ -130,19 +132,19 @@
         <button id="admin-trigger" class="fab admin interactive" onclick="toggleModal(true)">
             <span class="material-symbols-rounded">settings</span> <span>ADMIN</span>
         </button>
-        <button class="fab interactive" onclick="alert('Downloading Skin...')">
+        <button class="fab interactive">
             <span class="material-symbols-rounded">download</span> <span>GET SKIN</span>
         </button>
     </div>
 
     <div id="admin-modal-overlay">
         <div id="admin-modal">
-            <h2 style="margin:0">Admin Panel</h2>
+            <h2 style="margin:0">Admin Control</h2>
             <div class="admin-scroll-area">
                 <input type="text" id="new-name" placeholder="Skin Name">
-                <input type="text" id="new-ver" placeholder="Version (V4.0)">
-                <input type="text" id="new-video" placeholder="Video URL">
-                <textarea id="new-desc" placeholder="What's new?"></textarea>
+                <input type="text" id="new-ver" placeholder="Version (e.g. V3.1)">
+                <input type="text" id="new-video" placeholder="Video MP4 Link">
+                <textarea id="new-desc" placeholder="Update Description"></textarea>
                 <button style="background:var(--on-surface); color:var(--surface); padding:16px; border:none; border-radius:12px; font-weight:900;" onclick="addNewSkin()">SAVE VERSION</button>
                 <div id="db-list" style="margin-top:20px;"></div>
             </div>
@@ -156,13 +158,13 @@
             moon: `<span class="material-symbols-rounded" style="color:#8AB4F8">dark_mode</span>`
         };
 
-        const DB_KEY = 'pix_db_final';
+        const DB_KEY = 'pix_db_final_v1';
         const DEFAULT = { name: "The Ember Knight", version: "V3.0", desc: "Custom lava flows and visor highlights.", video: "https://assets.mixkit.co/videos/preview/mixkit-abstract-flowing-red-and-orange-background-34444-large.mp4" };
 
         let skinData = JSON.parse(localStorage.getItem(DB_KEY)) || [DEFAULT];
         let currentIdx = 0;
 
-        // WEATHER
+        // --- WEATHER ENGINE ---
         async function fetchWeather() {
             const loader = document.getElementById('m3-loader');
             const icon = document.getElementById('weather-icon');
@@ -172,8 +174,11 @@
             icon.style.display = 'none';
 
             try {
+                // Get approximate location by IP
                 const geoReq = await fetch('https://ipapi.co/json/');
                 const geo = await geoReq.json();
+                
+                // Get weather for those coordinates
                 const weatherReq = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${geo.latitude}&longitude=${geo.longitude}&current_weather=true&temperature_unit=fahrenheit`);
                 const weather = await weatherReq.json();
                 
@@ -182,8 +187,10 @@
                 document.body.classList.toggle('dark-theme', isNight);
                 icon.innerHTML = isNight ? ICONS.moon : ICONS.sun;
             } catch (e) {
+                // Fallback if APIs fail
                 tempEl.textContent = "72°F";
             } finally {
+                // Keep wavy loader visible for 1.5s so it feels smooth
                 setTimeout(() => {
                     loader.style.display = 'none';
                     icon.style.display = 'block';
@@ -191,7 +198,7 @@
             }
         }
 
-        // CURSOR
+        // --- CURSOR LOGIC ---
         const dot = document.querySelector('#cursor-dot');
         const outline = document.querySelector('#cursor-outline');
         let mX = 0, mY = 0, oX = 0, oY = 0, target = null;
@@ -242,7 +249,7 @@
             requestAnimationFrame(animate);
         }
 
-        // DATA
+        // --- SKIN DATA MGMT ---
         function updateDisplay() {
             const skin = skinData[currentIdx] || skinData[0];
             document.getElementById('skin-name').textContent = skin.name;
@@ -268,6 +275,7 @@
             skinData.forEach((s, i) => {
                 const item = document.createElement('div');
                 item.className = 'db-item';
+                item.style.cssText = "display:flex; justify-content:space-between; align-items:center; background:var(--surface-variant); padding:12px; border-radius:12px; margin-bottom:8px;";
                 item.innerHTML = `<div><strong>${s.version}</strong> ${s.name}</div>
                     <button onclick="deleteSkin(${i})" style="background:#ff4444; color:white; border:none; padding:8px; border-radius:10px;"><span class="material-symbols-rounded">delete</span></button>`;
                 container.appendChild(item);
@@ -302,6 +310,7 @@
             outline.style.display = show ? 'none' : 'block';
         }
 
+        // Secret Admin Access (Press A+S+D)
         const keys = {};
         window.onkeydown = (e) => {
             keys[e.key.toLowerCase()] = true;
@@ -309,8 +318,9 @@
         };
         window.onkeyup = (e) => keys[e.key.toLowerCase()] = false;
 
+        // Init Everything
         fetchWeather();
-        setInterval(fetchWeather, 300000);
+        setInterval(fetchWeather, 300000); // 5 Mins Refresh
         setInterval(() => {
             document.getElementById('clock').textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
         }, 1000);
