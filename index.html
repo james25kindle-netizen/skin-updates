@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pix Updates | Pro Edition</title>
+    <title>Pix Updates | M3 Pro Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
     <style>
         :root {
             --primary: #BC161F; --surface: #FFF8F7; --surface-variant: #F5DDDA;
             --on-surface: #201A19; --card-bg: rgba(255, 255, 255, 0.85);
-            --radius-xl: 32px; --radius-pill: 100px; --blur-val: 30px;
+            --radius-xl: 32px; --radius-pill: 100px;
         }
         body.dark-theme {
             --primary: #FFB4AB; --surface: #1A1110; --surface-variant: #332120;
@@ -26,29 +26,24 @@
             font-family: 'Google Sans Flex', sans-serif; overflow: hidden; height: 100vh; 
         }
 
+        /* FIXED MASK: Changed to Linear to prevent "Black Hole" overlap */
         .video-bg-container { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; 
-            mask-image: radial-gradient(circle at 70% 50%, black 40%, transparent 95%);
-            background: #000;
+            position: fixed; inset: 0; z-index: -1; background: #000;
+            mask-image: linear-gradient(to right, black 30%, transparent 90%);
         }
         #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; pointer-events: none; transition: opacity 0.5s; }
 
-        /* CURSOR ENGINE */
+        /* CURSOR ENGINE (Your Stable Logic) */
         #cursor-dot, #cursor-outline { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 10001; border-radius: 50%; will-change: transform; }
         body.sys-cursor #cursor-dot, body.sys-cursor #cursor-outline { display: none; }
         #cursor-dot { width: 6px; height: 6px; background: var(--primary); }
         #cursor-outline { width: 30px; height: 30px; border: 1.5px solid var(--on-surface); mix-blend-mode: difference; transition: width 0.2s, height 0.2s, border-radius 0.2s; }
         .cursor-morph { background: white !important; border: none !important; }
 
-        /* NAV & WIDGETS */
+        /* NAV & SETTINGS PANE */
         nav { padding: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
-        .widget { padding: 12px 20px; background: var(--surface-variant); border-radius: var(--radius-pill); display: flex; align-items: center; gap: 12px; font-weight: 700; text-decoration: none; color: inherit; }
+        .widget { padding: 12px 20px; background: var(--surface-variant); border-radius: var(--radius-pill); display: flex; align-items: center; gap: 12px; font-weight: 700; color: inherit; }
         
-        /* SETTINGS PILL BUTTON */
-        .settings-trigger { background: none; border: none; display: flex; align-items: center; justify-content: center; padding: 4px; border-radius: 50%; margin-left: 8px; transition: background 0.2s; color: inherit; }
-        .settings-trigger:hover { background: rgba(0,0,0,0.1); }
-
-        /* SETTINGS PANE */
         #settings-pane {
             position: fixed; right: -400px; top: 0; bottom: 0; width: 380px;
             background: var(--surface); z-index: 10000; padding: 40px;
@@ -57,25 +52,24 @@
         }
         #settings-pane.open { right: 0; }
         .setting-group { margin-bottom: 24px; border-bottom: 1px solid var(--surface-variant); padding-bottom: 15px; }
-        .setting-item { margin-bottom: 12px; }
-        label { font-size: 0.7rem; font-weight: 900; opacity: 0.6; text-transform: uppercase; display: block; margin-bottom: 8px; }
 
         /* THEME PRESETS */
-        .theme-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .theme-btn { padding: 12px; border-radius: 12px; border: 2px solid transparent; background: var(--surface-variant); font-weight: 700; display: flex; align-items: center; gap: 8px; font-size: 0.8rem; }
+        .theme-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .theme-btn { padding: 12px; border-radius: 12px; border: 2px solid transparent; background: var(--surface-variant); font-weight: 700; font-size: 0.75rem; cursor: pointer; }
         .theme-btn.active { border-color: var(--primary); }
-        .color-dot { width: 12px; height: 12px; border-radius: 50%; }
 
-        /* LAYOUT */
-        .main-layout { display: grid; grid-template-columns: 1fr 380px; gap: 40px; max-width: 1400px; margin: 0 auto; padding: 0 40px; }
-        .hero-section { display: flex; flex-direction: column; justify-content: center; height: 60vh; }
+        /* LAYOUT (Your Stable Grid) */
+        .main-layout { display: grid; grid-template-columns: 1fr 380px; gap: 40px; max-width: 1400px; margin: 0 auto; padding: 0 40px; align-items: center; height: 70vh; }
         .hero-title { font-size: 6rem; font-weight: 900; letter-spacing: -5px; line-height: 0.9; margin: 0; pointer-events: none; }
 
         .unified-panel { 
             background: var(--card-bg); border-radius: var(--radius-xl); padding: 32px; 
-            backdrop-filter: blur(var(--blur-val)); border: 1px solid rgba(255,255,255,0.1);
-            display: flex; flex-direction: column; gap: 24px; max-height: 75vh; margin-top: 20px;
+            backdrop-filter: blur(30px); border: 1px solid rgba(255,255,255,0.1);
+            display: flex; flex-direction: column; gap: 24px; max-height: 75vh;
         }
+        .gallery-list { overflow-y: auto; flex-grow: 1; }
+        .history-item { padding: 16px; border-radius: 20px; display: block; width: 100%; text-align: left; border: none; background: transparent; color: inherit; font-family: inherit; margin-bottom: 8px; }
+        .history-item.active { background: var(--surface-variant); font-weight: 800; border-left: 6px solid var(--primary); }
     </style>
 </head>
 <body>
@@ -86,51 +80,36 @@
     <div id="settings-pane">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
             <h2 style="margin:0">Settings</h2>
-            <button onclick="toggleSettings(false)" style="background:none; border:none;"><span class="material-symbols-rounded">close</span></button>
+            <button onclick="toggleSettings(false)" style="background:none; border:none; cursor:pointer;"><span class="material-symbols-rounded">close</span></button>
         </div>
 
         <div class="setting-group">
-            <div class="setting-item">
-                <label>Greeting Name</label>
-                <input type="text" id="user-name" placeholder="Enter Name..." oninput="updateGreeting(this.value)" style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--surface-variant);">
-            </div>
+            <label style="font-size:0.7rem; font-weight:900; opacity:0.6;">CUSTOM GREETING</label>
+            <input type="text" id="user-name" placeholder="Your Name..." oninput="updateGreeting(this.value)" style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--surface-variant); margin-top:8px;">
         </div>
 
         <div class="setting-group">
-            <label>Material You Presets</label>
+            <label style="font-size:0.7rem; font-weight:900; opacity:0.6;">MATERIAL YOU THEMES</label>
             <div class="theme-grid">
-                <button class="theme-btn active" id="btn-tonal" onclick="applyM3Theme('tonal')"><div class="color-dot" style="background:#BC161F"></div> Crimson</button>
-                <button class="theme-btn" id="btn-ocean" onclick="applyM3Theme('ocean')"><div class="color-dot" style="background:#006495"></div> Oceanic</button>
-                <button class="theme-btn" id="btn-nature" onclick="applyM3Theme('nature')"><div class="color-dot" style="background:#48692E"></div> Organic</button>
-                <button class="theme-btn" id="btn-mono" onclick="applyM3Theme('mono')"><div class="color-dot" style="background:#616161"></div> Mono</button>
+                <button class="theme-btn active" id="btn-tonal" onclick="applyM3Theme('tonal')">Crimson</button>
+                <button class="theme-btn" id="btn-ocean" onclick="applyM3Theme('ocean')">Oceanic</button>
+                <button class="theme-btn" id="btn-nature" onclick="applyM3Theme('nature')">Organic</button>
+                <button class="theme-btn" id="btn-mono" onclick="applyM3Theme('mono')">Mono</button>
             </div>
         </div>
 
         <div class="setting-group">
-            <div class="setting-item">
-                <label>Video Opacity</label>
-                <input type="range" min="0" max="100" value="70" oninput="document.getElementById('bg-video').style.opacity = this.value/100" style="width:100%">
-            </div>
-            <div class="setting-item">
-                <label>Clock Format</label>
-                <select id="clock-fmt" onchange="localStorage.setItem('fmt24', this.value)" style="width:100%; padding:10px; border-radius:8px;">
-                    <option value="12">12-Hour</option>
-                    <option value="24">24-Hour</option>
+            <label style="font-size:0.7rem; font-weight:900; opacity:0.6;">PREFERENCES</label>
+            <div style="margin-top:10px; display:flex; flex-direction:column; gap:10px;">
+                <select onchange="localStorage.setItem('fmt24', this.value)" style="width:100%; padding:10px; border-radius:8px;">
+                    <option value="12">12-Hour Clock</option>
+                    <option value="24">24-Hour Clock</option>
                 </select>
-            </div>
-            <div class="setting-item">
-                <label>Cursor Style</label>
                 <select onchange="document.body.classList.toggle('sys-cursor', this.value === 'sys')" style="width:100%; padding:10px; border-radius:8px;">
-                    <option value="custom">Custom Orbit</option>
-                    <option value="sys">System Default</option>
+                    <option value="custom">Custom Orbit Cursor</option>
+                    <option value="sys">System Cursor</option>
                 </select>
             </div>
-        </div>
-
-        <div style="display:flex; gap:10px;">
-            <button onclick="exportData()" style="flex:1; padding:12px; border-radius:10px; border:none; background:var(--surface-variant); font-weight:800; font-size:0.7rem;">EXPORT JSON</button>
-            <button onclick="document.getElementById('import-file').click()" style="flex:1; padding:12px; border-radius:10px; border:none; background:var(--surface-variant); font-weight:800; font-size:0.7rem;">IMPORT JSON</button>
-            <input type="file" id="import-file" hidden onchange="importData(event)">
         </div>
     </div>
 
@@ -138,11 +117,9 @@
 
     <nav>
         <div class="widget interactive">
-            <div class="mag" style="display:flex; align-items:center;">
-                <span class="material-symbols-rounded">schedule</span> 
-                <span id="clock" style="margin-left:8px">--:--</span>
-                <button class="settings-trigger" onclick="toggleSettings(true)"><span class="material-symbols-rounded" style="font-size:18px">settings</span></button>
-            </div>
+            <span class="material-symbols-rounded">schedule</span> 
+            <span id="clock" style="margin-left:8px">--:--</span>
+            <button onclick="toggleSettings(true)" style="background:none; border:none; margin-left:10px; display:flex; color:inherit; cursor:pointer;"><span class="material-symbols-rounded" style="font-size:18px">settings</span></button>
         </div>
         <div class="widget interactive">
             <span id="temp">--°</span> <span class="material-symbols-rounded">sunny</span>
@@ -155,7 +132,7 @@
         </div>
         <div class="unified-panel">
             <div class="active-info">
-                <span id="skin-badge" class="badge" style="background:var(--primary); color:white; padding:4px 12px; border-radius:100px; font-weight:900; font-size:0.7rem;">--</span>
+                <span id="skin-badge" style="background:var(--primary); color:white; padding:4px 12px; border-radius:100px; font-weight:900; font-size:0.75rem;">--</span>
                 <h2 id="skin-name" style="margin: 15px 0 10px 0; font-size: 1.8rem;">--</h2>
                 <p id="skin-desc" style="opacity: 0.6; font-size: 0.9rem; line-height: 1.4;">--</p>
             </div>
@@ -172,8 +149,7 @@
             mono: { primary:'#616161', surface:'#F2F2F2', variant:'#E2E2E2', on:'#1A1A1C', video:'https://assets.mixkit.co/videos/preview/mixkit-gray-and-white-smoke-texture-background-34499-large.mp4' }
         };
 
-        const DB_KEY = 'pix_db_orbit_v1';
-        let skinData = JSON.parse(localStorage.getItem(DB_KEY)) || [{ name: "The Ember Knight", version: "V3.0", desc: "Custom lava flows.", video: "https://assets.mixkit.co/videos/preview/mixkit-abstract-flowing-red-and-orange-background-34444-large.mp4" }];
+        let skinData = JSON.parse(localStorage.getItem('pix_db_orbit_v1')) || [{ name: "The Ember Knight", version: "V3.0", desc: "Custom lava flows.", video: "https://assets.mixkit.co/videos/preview/mixkit-abstract-flowing-red-and-orange-background-34444-large.mp4" }];
         let currentIdx = 0;
 
         function toggleSettings(show) { document.getElementById('settings-pane').classList.toggle('open', show); }
@@ -197,22 +173,7 @@
             localStorage.setItem('pix_user', val);
         }
 
-        function exportData() {
-            const blob = new Blob([JSON.stringify(skinData)], {type:'application/json'});
-            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'pix_backup.json'; a.click();
-        }
-
-        function importData(e) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                skinData = JSON.parse(event.target.result);
-                localStorage.setItem(DB_KEY, JSON.stringify(skinData));
-                updateDisplay();
-            };
-            reader.readAsText(e.target.files[0]);
-        }
-
-        // --- CURSOR & CLOCK (From your stable code) ---
+        // --- STABLE CURSOR LOGIC ---
         const dot = document.querySelector('#cursor-dot');
         const outline = document.querySelector('#cursor-outline');
         let mX = 0, mY = 0, oX = 0, oY = 0, target = null;
