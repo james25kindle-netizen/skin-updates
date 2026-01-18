@@ -3,105 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pix Updates | M3 Expressive Orbit</title>
+    <title>Pix Updates | Expressive Poly</title>
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
     <style>
         :root {
-            --primary: #BC161F; --surface: #FFF8F7; --surface-variant: #F5DDDA;
+            --primary: #BC161F; 
+            --m3-purple: #6750A4; /* Your Flutter Purple */
+            --surface: #FFF8F7; --surface-variant: #F5DDDA;
             --on-surface: #201A19; --card-bg: rgba(255, 255, 255, 0.85);
             --radius-xl: 32px; --radius-pill: 100px;
         }
         body.dark-theme {
-            --primary: #FFB4AB; --surface: #1A1110; --surface-variant: #332120;
+            --surface: #1A1110; --surface-variant: #332120;
             --on-surface: #F1DFDD; --card-bg: rgba(43, 33, 32, 0.85);
         }
         
         * { cursor: none; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-        #admin-modal-overlay *, a { cursor: auto !important; }
+        body { margin: 0; background: var(--surface); color: var(--on-surface); font-family: 'Google Sans Flex', sans-serif; overflow: hidden; height: 100vh; }
 
-        body { 
-            margin: 0; background: var(--surface); color: var(--on-surface); 
-            font-family: 'Google Sans Flex', sans-serif; overflow: hidden; height: 100vh; 
-        }
+        .video-bg-container { position: fixed; inset: 0; z-index: -1; background: #000; mask-image: radial-gradient(circle at 70% 50%, black 40%, transparent 95%); }
+        #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; }
 
-        .video-bg-container { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; 
-            mask-image: radial-gradient(circle at 70% 50%, black 40%, transparent 95%);
-            background: #000;
-        }
-        #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; pointer-events: none; }
-
-        /* --- YOUR MATERIAL 3 ORBIT LOADER (Integrated) --- */
-        .m3-loading {
-            width: 32px; /* Scaled down for the widget */
-            height: 32px;
+        /* --- M3 EXPRESSIVE POLYGON LOADER --- */
+        .m3-poly-container {
+            width: 64px; height: 64px; /* As per your BoxConstraints */
+            display: none;
             position: relative;
-            display: none; /* Hidden by default */
-            place-items: center;
         }
 
-        .m3-loading span {
-            position: absolute;
-            width: 6px; /* Scaled down */
-            height: 6px; /* Scaled down */
-            border-radius: 50%;
-            background: var(--primary);
-            animation: orbit 1.8s cubic-bezier(.4,0,.2,1) infinite;
+        .m3-poly-svg {
+            width: 100%; height: 100%;
+            fill: var(--m3-purple);
+            animation: m3-rotate 2.5s linear infinite;
         }
 
-        .m3-loading span:nth-child(1) { animation-delay: 0s; }
-        .m3-loading span:nth-child(2) { animation-delay: .15s; }
-        .m3-loading span:nth-child(3) { animation-delay: .3s; }
-
-        @keyframes orbit {
-            0% {
-                transform: rotate(0deg) translateX(10px) scale(0.6);
-                opacity: .4;
-            }
-            40% {
-                opacity: 1;
-                transform: rotate(140deg) translateX(10px) scale(1);
-            }
-            100% {
-                transform: rotate(360deg) translateX(10px) scale(0.6);
-                opacity: .4;
-            }
+        .m3-poly-path {
+            animation: m3-morph-sequence 4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
         }
 
-        /* --- CURSOR ENGINE --- */
-        #cursor-dot, #cursor-outline { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 10001; border-radius: 50%; will-change: transform; }
-        #cursor-dot { width: 6px; height: 6px; background: var(--primary); }
-        #cursor-outline { width: 30px; height: 30px; border: 1.5px solid var(--on-surface); mix-blend-mode: difference; transition: width 0.2s, height 0.2s, border-radius 0.2s; }
+        @keyframes m3-rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes m3-morph-sequence {
+            0%, 100% { d: path("M24,4c-1.5,0-3,2.5-4,4.5S16,13,14,14s-4.5,1-4.5,2.5s2.5,3,4.5,4s4,2.5,5,4.5s1,4.5,2.5,4.5s3-2.5,4-4.5s4-2.5,6-3.5s4.5-1,4.5-2.5s-2.5-3-4.5-4S32,13,31,11s-1-4.5-2.5-4.5S25.5,4,24,4z"); } /* Soft Burst */
+            33% { d: path("M24,4 L42,18 L36,40 L12,40 L6,18 Z"); } /* Pentagon */
+            66% { d: path("M12,12 h24 a12,12 0 0 1 0,24 h-24 a12,12 0 0 1 0,-24 z"); } /* Pill */
+        }
+
+        /* --- REST OF UI --- */
+        #cursor-dot, #cursor-outline { position: fixed; pointer-events: none; z-index: 10001; border-radius: 50%; will-change: transform; }
+        #cursor-dot { width: 6px; height: 6px; background: var(--m3-purple); }
+        #cursor-outline { width: 30px; height: 30px; border: 1.5px solid var(--on-surface); mix-blend-mode: difference; transition: all 0.2s; }
         .cursor-morph { background: white !important; border: none !important; }
 
-        /* --- NAV & WIDGETS --- */
         nav { padding: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
-        .widget { padding: 12px 20px; background: var(--surface-variant); border-radius: var(--radius-pill); display: flex; align-items: center; gap: 12px; font-weight: 700; text-decoration: none; color: inherit; transition: background 0.3s; }
+        .widget { padding: 12px 24px; background: var(--surface-variant); border-radius: var(--radius-pill); display: flex; align-items: center; gap: 16px; font-weight: 700; text-decoration: none; color: inherit; }
         
-        /* --- LAYOUT --- */
         .main-layout { display: grid; grid-template-columns: 1fr 380px; gap: 40px; max-width: 1400px; margin: 0 auto; padding: 0 40px; }
-        .hero-section { display: flex; flex-direction: column; justify-content: center; height: 60vh; }
-        .hero-title { font-size: 6rem; font-weight: 900; letter-spacing: -5px; line-height: 0.9; margin: 0; pointer-events: none; }
+        .hero-title { font-size: 6rem; font-weight: 900; letter-spacing: -5px; line-height: 0.9; margin-top: 20vh; }
 
-        .unified-panel { 
-            background: var(--card-bg); border-radius: var(--radius-xl); padding: 32px; 
-            backdrop-filter: blur(30px); border: 1px solid rgba(255,255,255,0.1);
-            display: flex; flex-direction: column; gap: 24px; max-height: 75vh; margin-top: 20px;
-        }
+        .unified-panel { background: var(--card-bg); border-radius: var(--radius-xl); padding: 32px; backdrop-filter: blur(30px); display: flex; flex-direction: column; gap: 24px; max-height: 70vh; }
+        .badge { background: var(--m3-purple); color: white; padding: 6px 14px; border-radius: var(--radius-pill); font-size: 0.75rem; font-weight: 800; }
+        .history-item { padding: 16px; border-radius: 20px; width: 100%; text-align: left; border: none; background: transparent; color: inherit; margin-bottom: 8px; transition: 0.2s; font-family: inherit; }
+        .history-item.active { background: var(--surface-variant); font-weight: 800; border-left: 6px solid var(--m3-purple); }
 
-        .badge { background: var(--primary); color: white; padding: 6px 14px; border-radius: var(--radius-pill); font-size: 0.75rem; font-weight: 800; width: fit-content; }
-        .gallery-list { overflow-y: auto; padding-right: 8px; flex-grow: 1; }
-        .history-item { padding: 16px; border-radius: 20px; display: block; width: 100%; text-align: left; border: none; background: transparent; color: inherit; font-family: inherit; margin-bottom: 8px; transition: all 0.2s; }
-        .history-item.active { background: var(--surface-variant); font-weight: 800; border-left: 6px solid var(--primary); }
-
-        .fab-container { position: fixed; bottom: 40px; left: 40px; display: flex; gap: 16px; }
-        .fab { height: 70px; padding: 0 28px; background: var(--on-surface); color: var(--surface); border-radius: 24px; border: none; display: flex; align-items: center; gap: 12px; font-weight: 800; text-decoration: none; }
-        .fab.admin { background: var(--primary); display: none; }
-
-        #admin-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 20000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        #admin-modal { background: var(--surface); padding: 40px; border-radius: var(--radius-xl); width: 500px; display: flex; flex-direction: column; gap: 15px; max-height: 90vh; }
-        input, textarea { padding: 16px; border-radius: 12px; border: 1px solid var(--surface-variant); background: var(--surface); font-family: inherit; width: 100%; outline: none; }
+        .fab { position: fixed; bottom: 40px; left: 40px; height: 70px; padding: 0 30px; background: var(--on-surface); color: var(--surface); border-radius: 24px; border: none; display: flex; align-items: center; gap: 12px; font-weight: 800; }
     </style>
 </head>
 <body>
@@ -114,71 +83,48 @@
     </div>
 
     <nav>
-        <div class="widget interactive">
-            <div class="mag"><span class="material-symbols-rounded">schedule</span> <span id="clock">--:--</span></div>
+        <div class="widget">
+            <span class="material-symbols-rounded">schedule</span> <span id="clock">--:--</span>
         </div>
-        <a href="https://www.google.com/search?q=weather" target="_blank" class="widget interactive" id="weather-widget">
-            <div class="mag" style="display:flex; align-items:center; gap:12px;">
-                <div id="orbit-loader" class="m3-loading">
-                    <span></span><span></span><span></span>
-                </div>
-                <span id="temp">--°</span> 
-                <div id="weather-icon"></div>
+        <div class="widget interactive" id="weather-widget">
+            <div id="m3-loader" class="m3-poly-container">
+                <svg class="m3-poly-svg" viewBox="0 0 48 48">
+                    <path class="m3-poly-path" d="M24,4c-1.5,0-3,2.5-4,4.5S16,13,14,14s-4.5,1-4.5,2.5s2.5,3,4.5,4s4,2.5,5,4.5s1,4.5,2.5,4.5s3-2.5,4-4.5s4-2.5,6-3.5s4.5-1,4.5-2.5s-2.5-3-4.5-4S32,13,31,11s-1-4.5-2.5-4.5S25.5,4,24,4z" />
+                </svg>
             </div>
-        </a>
+            <span id="temp">--°</span> 
+            <div id="weather-icon"></div>
+        </div>
     </nav>
 
     <div class="main-layout">
-        <div class="hero-section">
-            <h1 class="hero-title">PIX<br><span style="color: var(--primary);">UPDATES</span></h1>
-        </div>
-
+        <div class="hero-section"><h1 class="hero-title">PIX<br><span style="color: var(--m3-purple);">UPDATES</span></h1></div>
         <div class="unified-panel">
             <div class="active-info">
                 <span id="skin-badge" class="badge">--</span>
-                <h2 id="skin-name" style="margin: 15px 0 10px 0; font-size: 1.8rem;">--</h2>
-                <p id="skin-desc" style="opacity: 0.6; font-size: 0.9rem; line-height: 1.4;">--</p>
+                <h2 id="skin-name" style="margin: 15px 0 10px 0;">--</h2>
+                <p id="skin-desc" style="opacity: 0.6;">--</p>
             </div>
-            <hr style="border: none; border-top: 1px solid var(--surface-variant); margin: 0;">
-            <div class="gallery-list" id="history-list"></div>
+            <div class="gallery-list" id="history-list" style="overflow-y:auto;"></div>
         </div>
     </div>
 
-    <div class="fab-container">
-        <button id="admin-trigger" class="fab admin interactive" onclick="toggleModal(true)">
-            <span class="material-symbols-rounded">settings</span> <span>ADMIN</span>
-        </button>
-        <button class="fab interactive">
-            <span class="material-symbols-rounded">download</span> <span>GET SKIN</span>
-        </button>
-    </div>
-
-    <div id="admin-modal-overlay">
-        <div id="admin-modal">
-            <h2 style="margin:0">Admin Control</h2>
-            <input type="text" id="new-name" placeholder="Skin Name">
-            <input type="text" id="new-ver" placeholder="Version (V4.0)">
-            <input type="text" id="new-video" placeholder="Video Link">
-            <textarea id="new-desc" placeholder="Update Description"></textarea>
-            <button style="background:var(--on-surface); color:var(--surface); padding:16px; border:none; border-radius:12px; font-weight:900;" onclick="addNewSkin()">SAVE VERSION</button>
-            <button onclick="toggleModal(false)" style="background:none; border:none; color:var(--primary); font-weight:700;">CLOSE</button>
-        </div>
-    </div>
+    <button class="fab interactive">
+        <span class="material-symbols-rounded">download</span> <span>GET SKIN</span>
+    </button>
 
     <script>
         const ICONS = { sun: `<span class="material-symbols-rounded" style="color:#F9BC05">sunny</span>`, moon: `<span class="material-symbols-rounded" style="color:#8AB4F8">dark_mode</span>` };
-        const DB_KEY = 'pix_db_orbit_v1';
-        const DEFAULT = { name: "The Ember Knight", version: "V3.0", desc: "Custom lava flows and visor highlights.", video: "https://assets.mixkit.co/videos/preview/mixkit-abstract-flowing-red-and-orange-background-34444-large.mp4" };
+        const DB_KEY = 'pix_db_poly_final';
+        const DEFAULT = { name: "Violet Pulse", version: "V4.2", desc: "A sleek amethyst-inspired look with neon highlights.", video: "https://assets.mixkit.co/videos/preview/mixkit-liquid-purple-and-blue-gradient-background-40010-large.mp4" };
 
         let skinData = JSON.parse(localStorage.getItem(DB_KEY)) || [DEFAULT];
         let currentIdx = 0;
 
-        // WEATHER
         async function fetchWeather() {
-            const loader = document.getElementById('orbit-loader');
+            const loader = document.getElementById('m3-loader');
             const icon = document.getElementById('weather-icon');
-            loader.style.display = 'grid'; // Shows the 3 spans
-            icon.style.display = 'none';
+            loader.style.display = 'block'; icon.style.display = 'none';
 
             try {
                 const geoReq = await fetch('https://ipapi.co/json/');
@@ -189,16 +135,11 @@
                 const isNight = weather.current_weather.is_day === 0;
                 document.body.classList.toggle('dark-theme', isNight);
                 icon.innerHTML = isNight ? ICONS.moon : ICONS.sun;
-            } catch (e) { document.getElementById('temp').textContent = "72°F"; }
+            } catch (e) { document.getElementById('temp').textContent = "74°F"; }
             
-            // Artificial delay to see the animation
-            setTimeout(() => { 
-                loader.style.display = 'none'; 
-                icon.style.display = 'block'; 
-            }, 2500);
+            setTimeout(() => { loader.style.display = 'none'; icon.style.display = 'block'; }, 3000);
         }
 
-        // CURSOR
         const dot = document.querySelector('#cursor-dot');
         const outline = document.querySelector('#cursor-outline');
         let mX = 0, mY = 0, oX = 0, oY = 0, target = null;
@@ -216,10 +157,8 @@
             dot.style.transform = `translate3d(${mX-3}px, ${mY-3}px, 0)`;
             if (target) {
                 const r = target.getBoundingClientRect();
-                oX += (r.left + r.width/2 - oX) * 0.15;
-                oY += (r.top + r.height/2 - oY) * 0.15;
-                outline.style.width = r.width + "px";
-                outline.style.height = r.height + "px";
+                oX += (r.left + r.width/2 - oX) * 0.15; oY += (r.top + r.height/2 - oY) * 0.15;
+                outline.style.width = r.width + "px"; outline.style.height = r.height + "px";
                 outline.style.borderRadius = getComputedStyle(target).borderRadius;
             } else {
                 oX += (mX - oX) * 0.15; oY += (mY - oY) * 0.15;
@@ -246,29 +185,7 @@
             });
         }
 
-        function addNewSkin() {
-            const n = document.getElementById('new-name').value;
-            const v = document.getElementById('new-ver').value;
-            const vid = document.getElementById('new-video').value;
-            const d = document.getElementById('new-desc').value;
-            if(!n || !v || !vid) return;
-            skinData.unshift({ name: n, version: v, video: vid, desc: d });
-            localStorage.setItem(DB_KEY, JSON.stringify(skinData));
-            currentIdx = 0; updateDisplay(); toggleModal(false);
-        }
-
-        function toggleModal(show) { document.getElementById('admin-modal-overlay').style.display = show ? 'flex' : 'none'; }
-
-        // Secret Admin Access (A+S+D)
-        const keys = {};
-        window.onkeydown = (e) => {
-            keys[e.key.toLowerCase()] = true;
-            if (keys['a'] && keys['s'] && keys['d']) document.getElementById('admin-trigger').style.display = 'flex';
-        };
-        window.onkeyup = (e) => keys[e.key.toLowerCase()] = false;
-
         fetchWeather();
-        setInterval(fetchWeather, 300000);
         setInterval(() => { document.getElementById('clock').textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); }, 1000);
         updateDisplay();
         animate();
