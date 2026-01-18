@@ -1,641 +1,299 @@
- <!DOCTYPE html>
-
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Pix Updates | Pro Edition</title>
-
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;700;900&display=swap" rel="stylesheet">
-
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
-
     <style>
-
         :root {
-
             --primary: #BC161F; --surface: #FFF8F7; --surface-variant: #F5DDDA;
-
             --on-surface: #201A19; --card-bg: rgba(255, 255, 255, 0.85);
-
             --radius-xl: 32px; --radius-pill: 100px;
-
         }
-
         body.dark-theme {
-
             --primary: #FFB4AB; --surface: #1A1110; --surface-variant: #332120;
-
             --on-surface: #F1DFDD; --card-bg: rgba(43, 33, 32, 0.85);
-
         }
-
         
-
         * { cursor: none; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-
-        #admin-modal-overlay *, a { cursor: auto !important; }
-
-
+        #admin-modal-overlay *, #settings-pane *, a, input, button { cursor: auto !important; }
 
         body { 
-
             margin: 0; background: var(--surface); color: var(--on-surface); 
-
             font-family: 'Google Sans Flex', sans-serif; overflow: hidden; height: 100vh; 
-
+            transition: background 0.5s ease;
         }
-
-
 
         .video-bg-container { 
-
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; 
-
             mask-image: radial-gradient(circle at 70% 50%, black 40%, transparent 95%);
-
             background: #000;
-
         }
-
         #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; pointer-events: none; }
 
-
-
-        /* CURSOR HARDWARE ACCELERATED */
-
+        /* CURSOR */
         #cursor-dot, #cursor-outline { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 10001; border-radius: 50%; will-change: transform; }
-
         #cursor-dot { width: 6px; height: 6px; background: var(--primary); }
-
         #cursor-outline { width: 30px; height: 30px; border: 1.5px solid var(--on-surface); mix-blend-mode: difference; transition: width 0.2s, height 0.2s, border-radius 0.2s; }
-
         .cursor-morph { background: white !important; border: none !important; }
 
-
-
         nav { padding: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
-
-        .widget { padding: 12px 20px; background: var(--surface-variant); border-radius: var(--radius-pill); display: flex; align-items: center; gap: 12px; font-weight: 700; text-decoration: none; color: inherit; transition: background 0.3s; }
-
         
-
-        /* MATERIAL 3 EXPRESSIVE LOADER */
-
-        .expressive-loader {
-
-            width: 24px; height: 24px;
-
-            display: none;
-
-            transform: rotate(-90deg);
-
-            animation: m3-rotate 2s linear infinite;
-
+        /* UPDATED CLOCK PILL WITH GEAR */
+        .widget { padding: 12px 20px; background: var(--surface-variant); border-radius: var(--radius-pill); display: flex; align-items: center; gap: 12px; font-weight: 700; text-decoration: none; color: inherit; transition: background 0.3s; }
+        .settings-gear { 
+            display: flex; align-items: center; justify-content: center; 
+            padding: 4px; border-radius: 50%; transition: background 0.2s; 
+            margin-left: 8px; border: none; background: transparent; color: inherit;
         }
+        .settings-gear:hover { background: rgba(0,0,0,0.1); }
 
-        .expressive-loader .indicator {
-
-            stroke-dasharray: 1, 200;
-
-            stroke-dashoffset: 0;
-
-            animation: m3-dash 1.5s ease-in-out infinite;
-
-        }
-
+        /* LOADER */
+        .expressive-loader { width: 24px; height: 24px; display: none; transform: rotate(-90deg); animation: m3-rotate 2s linear infinite; }
+        .expressive-loader .indicator { stroke-dasharray: 1, 200; stroke-dashoffset: 0; animation: m3-dash 1.5s ease-in-out infinite; }
         @keyframes m3-rotate { 100% { transform: rotate(270deg); } }
-
         @keyframes m3-dash {
-
             0% { stroke-dasharray: 1, 200; stroke-dashoffset: 0; }
-
             50% { stroke-dasharray: 89, 200; stroke-dashoffset: -35px; }
-
             100% { stroke-dasharray: 89, 200; stroke-dashoffset: -124px; }
-
         }
 
+        /* SETTINGS PANE */
+        #settings-pane {
+            position: fixed; right: -400px; top: 20px; bottom: 20px; width: 350px;
+            background: var(--card-bg); backdrop-filter: blur(40px);
+            border-radius: var(--radius-xl) 0 0 var(--radius-xl);
+            z-index: 10000; transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 40px; border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+        }
+        #settings-pane.open { right: 0; }
+        .setting-item { margin-bottom: 24px; }
+        .setting-item label { display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 8px; opacity: 0.7; }
 
-
+        /* REST OF UI */
         .main-layout { display: grid; grid-template-columns: 1fr 380px; gap: 40px; max-width: 1400px; margin: 0 auto; padding: 0 40px; }
-
         .hero-section { display: flex; flex-direction: column; justify-content: center; height: 60vh; }
-
         .hero-title { font-size: 6rem; font-weight: 900; letter-spacing: -5px; line-height: 0.9; margin: 0; pointer-events: none; }
 
-
-
         .unified-panel { 
-
             background: var(--card-bg); border-radius: var(--radius-xl); padding: 32px; 
-
             backdrop-filter: blur(30px); border: 1px solid rgba(255,255,255,0.1);
-
             display: flex; flex-direction: column; gap: 24px; max-height: 75vh; margin-top: 20px;
-
         }
 
-
-
-        .badge { background: var(--primary); color: white; padding: 6px 14px; border-radius: var(--radius-pill); font-size: 0.75rem; font-weight: 800; width: fit-content; }
-
+        .badge { background: var(--primary); color: white; padding: 6px 14px; border-radius: var(--radius-pill); font-size: 0.75rem; font-weight: 800; width: fit-content; transition: background 0.3s; }
         .gallery-list { overflow-y: auto; padding-right: 8px; flex-grow: 1; }
-
         .history-item { padding: 16px; border-radius: 20px; display: block; width: 100%; text-align: left; border: none; background: transparent; color: inherit; font-family: inherit; margin-bottom: 8px; transition: all 0.2s; }
-
         .history-item.active { background: var(--surface-variant); font-weight: 800; border-left: 6px solid var(--primary); }
 
-
-
         .fab-container { position: fixed; bottom: 40px; left: 40px; display: flex; gap: 16px; }
-
-        .fab { height: 70px; padding: 0 28px; background: var(--on-surface); color: var(--surface); border-radius: 24px; border: none; display: flex; align-items: center; gap: 12px; font-weight: 800; text-decoration: none; }
-
+        .fab { height: 70px; padding: 0 28px; background: var(--on-surface); color: var(--surface); border-radius: 24px; border: none; display: flex; align-items: center; gap: 12px; font-weight: 800; text-decoration: none; transition: background 0.3s; }
         .fab.admin { background: var(--primary); display: none; }
 
-
-
         #admin-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 20000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-
         #admin-modal { background: var(--surface); padding: 40px; border-radius: var(--radius-xl); width: 500px; display: flex; flex-direction: column; gap: 15px; max-height: 90vh; }
-
-        .admin-scroll-area { overflow-y: auto; padding-right: 10px; display: flex; flex-direction: column; gap: 15px; }
-
-        input, textarea { padding: 16px; border-radius: 12px; border: 1px solid var(--surface-variant); background: var(--surface); font-family: inherit; width: 100%; outline: none; }
-
-        .db-item { display: flex; justify-content: space-between; align-items: center; background: var(--surface-variant); padding: 12px; border-radius: 16px; }
-
+        input[type="color"] { width: 100%; height: 50px; border: none; border-radius: 12px; background: transparent; }
     </style>
-
 </head>
-
 <body>
 
-
-
     <div id="cursor-dot"></div>
-
     <div id="cursor-outline"></div>
 
-
+    <div id="settings-pane">
+        <h2 style="margin-top:0">Settings</h2>
+        <div class="setting-item">
+            <label>MATERIAL COLOR</label>
+            <input type="color" id="primary-color-picker" value="#BC161F" oninput="updatePrimaryColor(this.value)">
+        </div>
+        <div class="setting-item">
+            <label>UI BLUR INTENSITY</label>
+            <input type="range" min="0" max="100" value="30" oninput="document.documentElement.style.setProperty('--blur', this.value + 'px')">
+        </div>
+        <button onclick="toggleSettings(false)" style="background:var(--on-surface); color:var(--surface); border:none; padding:12px; border-radius:12px; width:100%; font-weight:800;">CLOSE</button>
+    </div>
 
     <div class="video-bg-container">
-
         <video id="bg-video" autoplay muted loop playsinline></video>
-
     </div>
-
-
 
     <nav>
-
         <div class="widget interactive">
-
-            <div class="mag"><span class="material-symbols-rounded">schedule</span> <span id="clock">--:--</span></div>
-
-        </div>
-
-        <a href="https://www.google.com/search?q=weather" target="_blank" class="widget interactive" id="weather-widget">
-
-            <div class="mag" style="display:flex; align-items:center; gap:10px;">
-
-                <svg id="m3-loader" class="expressive-loader" viewBox="0 0 48 48">
-
-                    <circle class="indicator" cx="24" cy="24" r="18" fill="none" stroke="var(--primary)" stroke-width="4" stroke-linecap="round" />
-
-                </svg>
-
-                <span id="temp">--°</span> 
-
-                <div id="weather-icon"></div>
-
+            <div class="mag" style="display:flex; align-items:center;">
+                <span class="material-symbols-rounded">schedule</span> 
+                <span id="clock" style="margin-left:8px">--:--</span>
+                <button class="settings-gear" onclick="toggleSettings(true)">
+                    <span class="material-symbols-rounded" style="font-size: 20px;">settings</span>
+                </button>
             </div>
-
+        </div>
+        <a href="https://www.google.com/search?q=weather" target="_blank" class="widget interactive" id="weather-widget">
+            <div class="mag" style="display:flex; align-items:center; gap:10px;">
+                <svg id="m3-loader" class="expressive-loader" viewBox="0 0 48 48">
+                    <circle class="indicator" cx="24" cy="24" r="18" fill="none" stroke="var(--primary)" stroke-width="4" stroke-linecap="round" />
+                </svg>
+                <span id="temp">--°</span> 
+                <div id="weather-icon"></div>
+            </div>
         </a>
-
     </nav>
 
-
-
     <div class="main-layout">
-
         <div class="hero-section">
-
-            <h1 class="hero-title">PIX<br><span style="color: var(--primary);">UPDATES</span></h1>
-
+            <h1 class="hero-title">PIX<br><span id="accent-text" style="color: var(--primary);">UPDATES</span></h1>
         </div>
 
-
-
-        <div class="unified-panel">
-
+        <div class="unified-panel" style="backdrop-filter: blur(var(--blur, 30px));">
             <div class="active-info">
-
                 <span id="skin-badge" class="badge">--</span>
-
                 <h2 id="skin-name" style="margin: 15px 0 10px 0; font-size: 1.8rem;">--</h2>
-
                 <p id="skin-desc" style="opacity: 0.6; font-size: 0.9rem; line-height: 1.4;">--</p>
-
             </div>
-
             <hr style="border: none; border-top: 1px solid var(--surface-variant); margin: 0;">
-
             <div class="gallery-list" id="history-list"></div>
-
         </div>
-
     </div>
-
-
 
     <div class="fab-container">
-
         <button id="admin-trigger" class="fab admin interactive" onclick="toggleModal(true)">
-
-            <span class="material-symbols-rounded">settings</span> <span>ADMIN</span>
-
+            <span class="material-symbols-rounded">construction</span> <span>ADMIN</span>
         </button>
-
         <button class="fab interactive" onclick="alert('Downloading Skin...')">
-
             <span class="material-symbols-rounded">download</span> <span>GET SKIN</span>
-
         </button>
-
     </div>
-
-
 
     <div id="admin-modal-overlay">
-
         <div id="admin-modal">
-
             <h2 style="margin:0">Admin Panel</h2>
-
-            <div class="admin-scroll-area">
-
-                <input type="text" id="new-name" placeholder="Skin Name">
-
-                <input type="text" id="new-ver" placeholder="Version (V4.0)">
-
-                <input type="text" id="new-video" placeholder="Video URL">
-
-                <textarea id="new-desc" placeholder="What's new?"></textarea>
-
+            <div class="admin-scroll-area" style="overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:12px;">
+                <input type="text" id="new-name" placeholder="Skin Name" style="padding:12px; border-radius:8px; border:1px solid #ddd;">
+                <input type="text" id="new-ver" placeholder="Version (V4.0)" style="padding:12px; border-radius:8px; border:1px solid #ddd;">
+                <input type="text" id="new-video" placeholder="Video URL" style="padding:12px; border-radius:8px; border:1px solid #ddd;">
+                <textarea id="new-desc" placeholder="What's new?" style="padding:12px; border-radius:8px; border:1px solid #ddd; height:80px;"></textarea>
                 <button style="background:var(--on-surface); color:var(--surface); padding:16px; border:none; border-radius:12px; font-weight:900;" onclick="addNewSkin()">SAVE VERSION</button>
-
                 <div id="db-list" style="margin-top:20px;"></div>
-
             </div>
-
             <button onclick="toggleModal(false)" style="background:none; border:none; color:var(--primary); font-weight:700; margin-top:10px;">CLOSE</button>
-
         </div>
-
     </div>
 
-
-
     <script>
-
-        const ICONS = {
-
-            sun: `<span class="material-symbols-rounded" style="color:#F9BC05">sunny</span>`,
-
-            moon: `<span class="material-symbols-rounded" style="color:#8AB4F8">dark_mode</span>`
-
-        };
-
-
-
+        const ICONS = { sun: `<span class="material-symbols-rounded" style="color:#F9BC05">sunny</span>`, moon: `<span class="material-symbols-rounded" style="color:#8AB4F8">dark_mode</span>` };
         const DB_KEY = 'pix_db_final';
-
         const DEFAULT = { name: "The Ember Knight", version: "V3.0", desc: "Custom lava flows and visor highlights.", video: "https://assets.mixkit.co/videos/preview/mixkit-abstract-flowing-red-and-orange-background-34444-large.mp4" };
 
-
-
         let skinData = JSON.parse(localStorage.getItem(DB_KEY)) || [DEFAULT];
-
         let currentIdx = 0;
 
+        function updatePrimaryColor(color) {
+            document.documentElement.style.setProperty('--primary', color);
+            localStorage.setItem('pix_primary_color', color);
+        }
 
-
-        // WEATHER
+        function toggleSettings(open) {
+            document.getElementById('settings-pane').classList.toggle('open', open);
+            document.body.style.cursor = open ? 'auto' : 'none';
+        }
 
         async function fetchWeather() {
-
             const loader = document.getElementById('m3-loader');
-
             const icon = document.getElementById('weather-icon');
-
             const tempEl = document.getElementById('temp');
-
-            
-
-            loader.style.display = 'block';
-
-            icon.style.display = 'none';
-
-
-
+            loader.style.display = 'block'; icon.style.display = 'none';
             try {
-
                 const geoReq = await fetch('https://ipapi.co/json/');
-
                 const geo = await geoReq.json();
-
                 const weatherReq = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${geo.latitude}&longitude=${geo.longitude}&current_weather=true&temperature_unit=fahrenheit`);
-
                 const weather = await weatherReq.json();
-
-                
-
                 tempEl.textContent = Math.round(weather.current_weather.temperature) + "°F";
-
                 const isNight = weather.current_weather.is_day === 0;
-
                 document.body.classList.toggle('dark-theme', isNight);
-
                 icon.innerHTML = isNight ? ICONS.moon : ICONS.sun;
-
-            } catch (e) {
-
-                tempEl.textContent = "72°F";
-
-            } finally {
-
-                setTimeout(() => {
-
-                    loader.style.display = 'none';
-
-                    icon.style.display = 'block';
-
-                }, 1500);
-
-            }
-
+            } catch (e) { tempEl.textContent = "72°F"; }
+            finally { setTimeout(() => { loader.style.display = 'none'; icon.style.display = 'block'; }, 1500); }
         }
-
-
-
-        // CURSOR
 
         const dot = document.querySelector('#cursor-dot');
-
         const outline = document.querySelector('#cursor-outline');
-
         let mX = 0, mY = 0, oX = 0, oY = 0, target = null;
 
-
-
         window.addEventListener('mousemove', (e) => {
-
             mX = e.clientX; mY = e.clientY;
-
             const hit = e.target.closest('.interactive');
-
             if (hit !== target) {
-
-                if (hit) {
-
-                    target = hit;
-
-                    outline.classList.add('cursor-morph');
-
-                    dot.style.opacity = 0;
-
-                } else {
-
-                    if (target) {
-
-                        const mc = target.querySelector('.mag');
-
-                        if (mc) mc.style.transform = `translate3d(0,0,0)`;
-
-                    }
-
-                    target = null;
-
-                    outline.classList.remove('cursor-morph');
-
-                    dot.style.opacity = 1;
-
+                if (hit) { target = hit; outline.classList.add('cursor-morph'); dot.style.opacity = 0; }
+                else { 
+                    if (target) { const mc = target.querySelector('.mag'); if (mc) mc.style.transform = `translate3d(0,0,0)`; }
+                    target = null; outline.classList.remove('cursor-morph'); dot.style.opacity = 1; 
                 }
-
             }
-
             if (target) {
-
                 const mc = target.querySelector('.mag');
-
                 if (mc) {
-
                     const r = target.getBoundingClientRect();
-
                     const px = (mX - (r.left + r.width/2)) * 0.2;
-
                     const py = (mY - (r.top + r.height/2)) * 0.2;
-
                     mc.style.transform = `translate3d(${px}px, ${py}px, 0)`;
-
                 }
-
             }
-
         });
 
-
-
         function animate() {
-
             dot.style.transform = `translate3d(${mX-3}px, ${mY-3}px, 0)`;
-
             if (target) {
-
                 const r = target.getBoundingClientRect();
-
-                oX += (r.left + r.width/2 - oX) * 0.15;
-
-                oY += (r.top + r.height/2 - oY) * 0.15;
-
-                outline.style.width = r.width + "px";
-
-                outline.style.height = r.height + "px";
-
+                oX += (r.left + r.width/2 - oX) * 0.15; oY += (r.top + r.height/2 - oY) * 0.15;
+                outline.style.width = r.width + "px"; outline.style.height = r.height + "px";
                 outline.style.borderRadius = getComputedStyle(target).borderRadius;
-
             } else {
-
                 oX += (mX - oX) * 0.15; oY += (mY - oY) * 0.15;
-
                 outline.style.width = "30px"; outline.style.height = "30px"; outline.style.borderRadius = "50%";
-
             }
-
             outline.style.transform = `translate3d(${oX - parseFloat(outline.style.width)/2}px, ${oY - parseFloat(outline.style.height)/2}px, 0)`;
-
             requestAnimationFrame(animate);
-
         }
-
-
-
-        // DATA
 
         function updateDisplay() {
-
             const skin = skinData[currentIdx] || skinData[0];
-
             document.getElementById('skin-name').textContent = skin.name;
-
             document.getElementById('skin-badge').textContent = skin.version;
-
             document.getElementById('skin-desc').textContent = skin.desc;
-
             document.getElementById('bg-video').src = skin.video;
-
-            
-
             const list = document.getElementById('history-list');
-
             list.innerHTML = '';
-
             skinData.forEach((s, i) => {
-
                 const b = document.createElement('button');
-
                 b.className = `history-item interactive ${i === currentIdx ? 'active' : ''}`;
-
                 b.innerHTML = `<span style="opacity:0.5; font-size:0.7rem; font-weight:900;">${s.version}</span><br>${s.name}`;
-
                 b.onclick = () => { currentIdx = i; updateDisplay(); };
-
                 list.appendChild(b);
-
             });
-
-            renderDbList();
-
         }
-
-
-
-        function renderDbList() {
-
-            const container = document.getElementById('db-list');
-
-            container.innerHTML = '';
-
-            skinData.forEach((s, i) => {
-
-                const item = document.createElement('div');
-
-                item.className = 'db-item';
-
-                item.innerHTML = `<div><strong>${s.version}</strong> ${s.name}</div>
-
-                    <button onclick="deleteSkin(${i})" style="background:#ff4444; color:white; border:none; padding:8px; border-radius:10px;"><span class="material-symbols-rounded">delete</span></button>`;
-
-                container.appendChild(item);
-
-            });
-
-        }
-
-
-
-        function deleteSkin(i) {
-
-            if (skinData.length <= 1) return;
-
-            skinData.splice(i, 1);
-
-            localStorage.setItem(DB_KEY, JSON.stringify(skinData));
-
-            currentIdx = 0;
-
-            updateDisplay();
-
-        }
-
-
-
-        function addNewSkin() {
-
-            const n = document.getElementById('new-name').value;
-
-            const v = document.getElementById('new-ver').value;
-
-            const vid = document.getElementById('new-video').value;
-
-            const d = document.getElementById('new-desc').value;
-
-            if(!n || !v || !vid) return;
-
-            skinData.unshift({ name: n, version: v, video: vid, desc: d });
-
-            localStorage.setItem(DB_KEY, JSON.stringify(skinData));
-
-            currentIdx = 0;
-
-            updateDisplay();
-
-            toggleModal(false);
-
-        }
-
-
 
         function toggleModal(show) {
-
             document.getElementById('admin-modal-overlay').style.display = show ? 'flex' : 'none';
-
             document.body.style.cursor = show ? 'auto' : 'none';
-
-            dot.style.display = show ? 'none' : 'block';
-
-            outline.style.display = show ? 'none' : 'block';
-
         }
 
-
-
         const keys = {};
-
         window.onkeydown = (e) => {
-
             keys[e.key.toLowerCase()] = true;
-
             if (keys['a'] && keys['s'] && keys['d']) document.getElementById('admin-trigger').style.display = 'flex';
-
         };
-
         window.onkeyup = (e) => keys[e.key.toLowerCase()] = false;
 
-
+        // Load Saved Color
+        const savedColor = localStorage.getItem('pix_primary_color');
+        if(savedColor) { updatePrimaryColor(savedColor); document.getElementById('primary-color-picker').value = savedColor; }
 
         fetchWeather();
-
-        setInterval(fetchWeather, 300000);
-
-        setInterval(() => {
-
-            document.getElementById('clock').textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-
-        }, 1000);
-
+        setInterval(() => { document.getElementById('clock').textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); }, 1000);
         updateDisplay();
-
         animate();
-
     </script>
-
 </body>
-
 </html>
