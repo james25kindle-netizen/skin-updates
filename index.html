@@ -24,57 +24,49 @@
             font-family: 'Google Sans Flex', sans-serif; overflow: hidden; height: 100vh; 
         }
 
-        /* --- EXPRESSIVE REFRESH LOADER (Inside Widget) --- */
-        .weather-refresh-container {
-            width: 28px;
-            height: 28px;
-            display: none; /* Hidden until refresh starts */
-            place-items: center;
-        }
-
-        .expressive-morph {
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 30% 30%, var(--primary), #6750a4);
-            border-radius: 50%;
-            animation: 
-                pulse 1.2s cubic-bezier(.4,0,.2,1) infinite, 
-                morph 1.8s cubic-bezier(.4,0,.2,1) infinite;
-        }
-
-        @keyframes pulse {
-            0%   { transform: scale(0.8); }
-            50%  { transform: scale(1.1); }
-            100% { transform: scale(0.8); }
-        }
-
-        @keyframes morph {
-            0%   { border-radius: 50%; }
-            33%  { border-radius: 38% 62% 55% 45%; }
-            66%  { border-radius: 62% 38% 45% 55%; }
-            100% { border-radius: 50%; }
-        }
-
         /* --- VIDEO BACKGROUND --- */
         .video-bg-container { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; 
+            mask-image: radial-gradient(circle at 70% 50%, black 40%, transparent 95%);
             background: #000;
         }
+        #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; pointer-events: none; }
 
-        #bg-video { 
-            width: 100%; height: 100%; object-fit: cover; 
-            opacity: 0.7;
-            pointer-events: none;
-            filter: saturate(1.1) contrast(1.05);
-            mask-image: radial-gradient(circle at 70% 50%, black 40%, transparent 95%);
+        /* --- MATERIAL 3 ORBIT LOADER --- */
+        .m3-loading {
+            width: 32px;
+            height: 32px;
+            position: relative;
+            display: none; 
+            place-items: center;
         }
 
-        /* --- UI ELEMENTS --- */
+        .m3-loading span {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--primary);
+            animation: orbit 1.8s cubic-bezier(.4,0,.2,1) infinite;
+        }
+
+        .m3-loading span:nth-child(1) { animation-delay: 0s; }
+        .m3-loading span:nth-child(2) { animation-delay: .15s; }
+        .m3-loading span:nth-child(3) { animation-delay: .3s; }
+
+        @keyframes orbit {
+            0% { transform: rotate(0deg) translateX(10px) scale(0.6); opacity: .4; }
+            40% { opacity: 1; transform: rotate(140deg) translateX(10px) scale(1); }
+            100% { transform: rotate(360deg) translateX(10px) scale(0.6); opacity: .4; }
+        }
+
+        /* --- CURSOR --- */
         #cursor-dot, #cursor-outline { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 10001; border-radius: 50%; will-change: transform; }
         #cursor-dot { width: 6px; height: 6px; background: var(--primary); }
         #cursor-outline { width: 30px; height: 30px; border: 1.5px solid var(--on-surface); mix-blend-mode: difference; transition: width 0.2s, height 0.2s, border-radius 0.2s; }
         .cursor-morph { background: white !important; border: none !important; }
 
+        /* --- UI COMPONENTS --- */
         nav { padding: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
         .widget { padding: 12px 20px; background: var(--surface-variant); border-radius: var(--radius-pill); display: flex; align-items: center; gap: 12px; font-weight: 700; text-decoration: none; color: inherit; transition: background 0.3s; }
         
@@ -89,6 +81,7 @@
         }
 
         .badge { background: var(--primary); color: white; padding: 6px 14px; border-radius: var(--radius-pill); font-size: 0.75rem; font-weight: 800; width: fit-content; }
+        .gallery-list { overflow-y: auto; padding-right: 8px; flex-grow: 1; }
         .history-item { padding: 16px; border-radius: 20px; display: block; width: 100%; text-align: left; border: none; background: transparent; color: inherit; font-family: inherit; margin-bottom: 8px; transition: all 0.2s; }
         .history-item.active { background: var(--surface-variant); font-weight: 800; border-left: 6px solid var(--primary); }
 
@@ -110,8 +103,8 @@
             <span class="material-symbols-rounded">schedule</span> <span id="clock">--:--</span>
         </div>
         <a href="https://www.google.com/search?q=weather" target="_blank" class="widget interactive" id="weather-widget">
-            <div id="refresh-loader" class="weather-refresh-container">
-                <div class="expressive-morph"></div>
+            <div id="orbit-loader" class="m3-loading">
+                <span></span><span></span><span></span>
             </div>
             <span id="temp">--°</span> 
             <div id="weather-icon"></div>
@@ -119,7 +112,10 @@
     </nav>
 
     <div class="main-layout">
-        <div class="hero-section"><h1 class="hero-title">PIX<br><span style="color: var(--primary);">UPDATES</span></h1></div>
+        <div class="hero-section">
+            <h1 class="hero-title">PIX<br><span style="color: var(--primary);">UPDATES</span></h1>
+        </div>
+
         <div class="unified-panel">
             <div class="active-info">
                 <span id="skin-badge" class="badge">--</span>
@@ -132,7 +128,9 @@
     </div>
 
     <div class="fab-container">
-        <button class="fab interactive"><span class="material-symbols-rounded">download</span> <span>GET SKIN</span></button>
+        <button class="fab interactive">
+            <span class="material-symbols-rounded">download</span> <span>GET SKIN</span>
+        </button>
     </div>
 
     <script>
@@ -144,14 +142,13 @@
         let currentIdx = 0;
 
         async function fetchWeather() {
-            const loader = document.getElementById('refresh-loader');
-            const temp = document.getElementById('temp');
+            const loader = document.getElementById('orbit-loader');
             const icon = document.getElementById('weather-icon');
+            const temp = document.getElementById('temp');
 
-            // Start Refreshing State
             loader.style.display = 'grid'; 
-            temp.style.opacity = '0.3';
             icon.style.display = 'none';
+            temp.style.opacity = '0.5';
 
             try {
                 const geoReq = await fetch('https://ipapi.co/json/');
@@ -159,27 +156,24 @@
                 const weatherReq = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${geo.latitude}&longitude=${geo.longitude}&current_weather=true&temperature_unit=fahrenheit`);
                 const weather = await weatherReq.json();
                 
-                // Artificial delay to show off the "Refreshing" morphing shape
                 setTimeout(() => {
                     temp.textContent = Math.round(weather.current_weather.temperature) + "°F";
                     const isNight = weather.current_weather.is_day === 0;
                     document.body.classList.toggle('dark-theme', isNight);
                     icon.innerHTML = isNight ? ICONS.moon : ICONS.sun;
-
-                    // Restore UI
+                    
                     loader.style.display = 'none';
-                    temp.style.opacity = '1';
                     icon.style.display = 'block';
+                    temp.style.opacity = '1';
                 }, 2000);
-
             } catch (e) { 
-                temp.textContent = "72°F";
+                temp.textContent = "72°F"; 
                 loader.style.display = 'none';
                 temp.style.opacity = '1';
             }
         }
 
-        // --- CURSOR & CLOCK (KEEPING YOUR LOGIC) ---
+        // --- CURSOR LOGIC ---
         const dot = document.querySelector('#cursor-dot');
         const outline = document.querySelector('#cursor-outline');
         let mX = 0, mY = 0, oX = 0, oY = 0, target = null;
@@ -193,7 +187,7 @@
             }
         });
 
-        function animateCursor() {
+        function animate() {
             dot.style.transform = `translate3d(${mX-3}px, ${mY-3}px, 0)`;
             if (target) {
                 const r = target.getBoundingClientRect();
@@ -205,7 +199,7 @@
                 outline.style.width = "30px"; outline.style.height = "30px"; outline.style.borderRadius = "50%";
             }
             outline.style.transform = `translate3d(${oX - parseFloat(outline.style.width)/2}px, ${oY - parseFloat(outline.style.height)/2}px, 0)`;
-            requestAnimationFrame(animateCursor);
+            requestAnimationFrame(animate);
         }
 
         function updateDisplay() {
@@ -228,9 +222,4 @@
 
         fetchWeather();
         setInterval(fetchWeather, 300000);
-        setInterval(() => { document.getElementById('clock').textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); }, 1000);
-        updateDisplay();
-        animateCursor();
-    </script>
-</body>
-</html>
+        setInterval(() => { document.getElementById('clock').textContent = new Date
