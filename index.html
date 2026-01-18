@@ -9,64 +9,57 @@
     <style>
         :root {
             --primary: #BC161F; --surface: #FFF8F7; --surface-variant: #F5DDDA;
-            --on-surface: #201A19; --card-bg: rgba(255, 255, 255, 0.85);
+            --on-surface: #201A19; --card-bg: rgba(255, 255, 255, 0.7);
             --radius-xl: 32px; --radius-pill: 100px;
-            --blur-val: 30px;
+            --blur-val: 40px;
         }
-        body.dark-theme {
-            --primary: #FFB4AB; --surface: #1A1110; --surface-variant: #332120;
-            --on-surface: #F1DFDD; --card-bg: rgba(43, 33, 32, 0.85);
-        }
-        
-        * { cursor: none; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-        body.sys-cursor *, #settings-pane *, #admin-modal-overlay *, a, button, input { cursor: auto !important; }
+
+        * { cursor: none !important; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        #settings-pane *, #admin-modal-overlay *, input, button, a { cursor: auto !important; }
 
         body { 
             margin: 0; background: var(--surface); color: var(--on-surface); 
-            font-family: 'Google Sans Flex', sans-serif; overflow: hidden; height: 100vh; 
+            font-family: 'Google Sans Flex', sans-serif; overflow: hidden; height: 100vh;
+            display: flex; flex-direction: column;
         }
 
+        /* FIXED VIDEO BACKGROUND */
         .video-bg-container { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; 
-            mask-image: radial-gradient(circle at 70% 50%, black 40%, transparent 95%);
-            background: #000;
+            position: fixed; inset: 0; z-index: -1; background: #000;
+            mask-image: radial-gradient(circle at 80% 50%, black 20%, transparent 100%);
         }
-        #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; pointer-events: none; transition: opacity 0.3s; }
+        #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; transition: opacity 0.5s; }
 
-        /* CURSOR */
-        #cursor-dot, #cursor-outline { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 10001; border-radius: 50%; will-change: transform; }
+        /* CURSOR HARDWARE ACCELERATED */
+        #cursor-dot, #cursor-outline { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 99999; border-radius: 50%; will-change: transform; }
         #cursor-dot { width: 6px; height: 6px; background: var(--primary); }
-        #cursor-outline { width: 30px; height: 30px; border: 1.5px solid var(--on-surface); mix-blend-mode: difference; transition: width 0.2s, height 0.2s, border-radius 0.2s; }
-        .cursor-morph { background: white !important; border: none !important; }
-        body.sys-cursor #cursor-dot, body.sys-cursor #cursor-outline { display: none !important; }
+        #cursor-outline { width: 34px; height: 34px; border: 2px solid var(--on-surface); mix-blend-mode: difference; transition: width 0.3s, height 0.3s; }
 
-        nav { padding: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
-        .widget { padding: 12px 20px; background: var(--surface-variant); border-radius: var(--radius-pill); display: flex; align-items: center; gap: 12px; font-weight: 700; text-decoration: none; color: inherit; }
+        /* LAYOUT REPAIR */
+        nav { padding: 30px 50px; display: flex; justify-content: space-between; align-items: center; z-index: 100; }
+        .widget { padding: 12px 24px; background: var(--surface-variant); border-radius: var(--radius-pill); display: flex; align-items: center; gap: 12px; font-weight: 700; border: none; color: inherit; }
 
-        /* SETTINGS PANE */
+        .main-layout { 
+            display: grid; grid-template-columns: 1.2fr 380px; gap: 60px; 
+            max-width: 1400px; width: 100%; margin: auto; padding: 0 50px; 
+            align-items: center; flex: 1;
+        }
+
+        .hero-title { font-size: clamp(4rem, 8vw, 7rem); font-weight: 900; letter-spacing: -4px; line-height: 0.85; margin: 0; text-transform: uppercase; }
+
+        .unified-panel { 
+            background: var(--card-bg); border-radius: var(--radius-xl); padding: 40px; 
+            backdrop-filter: blur(var(--blur-val)); border: 1px solid rgba(255,255,255,0.2);
+            display: flex; flex-direction: column; gap: 20px; height: 550px; box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+        }
+
+        /* SETTINGS SLIDE-OUT */
         #settings-pane {
-            position: fixed; right: -400px; top: 0; bottom: 0; width: 380px;
+            position: fixed; right: -420px; top: 0; bottom: 0; width: 400px;
             background: var(--surface); z-index: 10000; padding: 40px;
-            box-shadow: -20px 0 60px rgba(0,0,0,0.2); transition: right 0.5s cubic-bezier(0.19, 1, 0.22, 1);
-            overflow-y: auto;
+            box-shadow: -20px 0 60px rgba(0,0,0,0.2); transition: right 0.6s cubic-bezier(0.22, 1, 0.36, 1);
         }
         #settings-pane.open { right: 0; }
-        .setting-group { margin-bottom: 32px; border-bottom: 1px solid var(--surface-variant); padding-bottom: 20px; }
-        .setting-item { margin-bottom: 16px; display: flex; flex-direction: column; gap: 8px; }
-        label { font-size: 0.7rem; font-weight: 900; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px; }
-        
-        /* UI ELEMENTS */
-        .unified-panel { 
-            background: var(--card-bg); border-radius: var(--radius-xl); padding: 32px; 
-            backdrop-filter: blur(var(--blur-val)); border: 1px solid rgba(255,255,255,0.1);
-            display: flex; flex-direction: column; gap: 24px; max-height: 75vh;
-        }
-        .main-layout { display: grid; grid-template-columns: 1fr 380px; gap: 40px; max-width: 1400px; margin: 0 auto; padding: 0 40px; }
-        .hero-title { font-size: 5rem; font-weight: 900; letter-spacing: -4px; line-height: 0.9; margin: 0; }
-
-        input[type="text"], select { padding: 12px; border-radius: 12px; border: 1.5px solid var(--surface-variant); background: var(--surface); color: inherit; font-family: inherit; }
-        .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .mini-btn { padding: 10px; border-radius: 10px; border: none; background: var(--surface-variant); font-weight: 700; font-size: 0.8rem; }
     </style>
 </head>
 <body>
@@ -74,187 +67,66 @@
     <div id="cursor-dot"></div>
     <div id="cursor-outline"></div>
 
-    <div id="settings-pane">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
-            <h2 style="margin:0">Settings</h2>
-            <button onclick="toggleSettings(false)" style="background:none; border:none;"><span class="material-symbols-rounded">close</span></button>
-        </div>
-
-        <div class="setting-group">
-            <div class="setting-item">
-                <label>Greeting Name</label>
-                <input type="text" id="user-name" placeholder="Enter Name..." oninput="updateGreeting(this.value)">
-            </div>
-        </div>
-
-        <div class="setting-group">
-            <label style="display:block; margin-bottom:15px;">Visuals</label>
-            <div class="setting-item">
-                <label>Video Opacity</label>
-                <input type="range" min="0" max="100" value="70" oninput="document.getElementById('bg-video').style.opacity = this.value/100">
-            </div>
-            <div class="setting-item">
-                <label>Glassmorphism (Blur)</label>
-                <select onchange="document.documentElement.style.setProperty('--blur-val', this.value)">
-                    <option value="30px">High (Pro)</option>
-                    <option value="10px">Low</option>
-                    <option value="0px">Off (Performance)</option>
-                </select>
-            </div>
-            <div class="setting-item">
-                <label>Cursor Style</label>
-                <select onchange="document.body.classList.toggle('sys-cursor', this.value === 'sys')">
-                    <option value="custom">Custom Neon</option>
-                    <option value="sys">System Default</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="setting-group">
-            <label style="display:block; margin-bottom:15px;">Regional</label>
-            <div class="setting-item">
-                <label>Clock Format</label>
-                <select id="clock-fmt" onchange="localStorage.setItem('fmt24', this.value); updateClock();">
-                    <option value="12">12-Hour (AM/PM)</option>
-                    <option value="24">24-Hour (Military)</option>
-                </select>
-            </div>
-            <div class="setting-item">
-                <label>Weather Unit</label>
-                <select id="weather-unit" onchange="localStorage.setItem('unit', this.value); fetchWeather();">
-                    <option value="fahrenheit">Fahrenheit (°F)</option>
-                    <option value="celsius">Celsius (°C)</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="setting-group">
-            <label style="display:block; margin-bottom:15px;">Data Management</label>
-            <div class="btn-row">
-                <button class="mini-btn" onclick="exportData()"><span class="material-symbols-rounded" style="font-size:16px">download</span> Export JSON</button>
-                <button class="mini-btn" onclick="document.getElementById('import-file').click()"><span class="material-symbols-rounded" style="font-size:16px">upload</span> Import JSON</button>
-                <input type="file" id="import-file" hidden onchange="importData(event)">
-            </div>
-        </div>
+    <div class="video-bg-container">
+        <video id="bg-video" autoplay muted loop playsinline src="https://assets.mixkit.co/videos/preview/mixkit-abstract-flowing-red-and-orange-background-34444-large.mp4"></video>
     </div>
 
-    <div class="video-bg-container"><video id="bg-video" autoplay muted loop playsinline></video></div>
-
     <nav>
-        <div class="widget interactive">
-            <div class="mag" style="display:flex; align-items:center;">
-                <span class="material-symbols-rounded">schedule</span> 
-                <span id="clock" style="margin: 0 10px;">--:--</span>
-                <button onclick="toggleSettings(true)" style="background:none; border:none; display:flex; padding:0;"><span class="material-symbols-rounded" style="font-size:18px;">settings</span></button>
-            </div>
+        <div class="widget">
+            <span class="material-symbols-rounded">schedule</span>
+            <span id="clock">10:53 PM</span>
+            <button onclick="toggleSettings(true)" style="background:none; border:none; padding:0; display:flex; margin-left:10px;">
+                <span class="material-symbols-rounded" style="font-size:20px;">settings</span>
+            </button>
         </div>
-        <div class="widget interactive" id="weather-widget">
-            <div class="mag" style="display:flex; align-items:center; gap:8px;">
-                <span id="temp">--°</span> <div id="weather-icon"></div>
-            </div>
+        <div class="widget">
+            <span id="temp">50°F</span>
+            <span class="material-symbols-rounded">sunny</span>
         </div>
     </nav>
 
     <div class="main-layout">
-        <div class="hero-section" style="height:60vh; display:flex; align-items:center;">
-            <h1 class="hero-title" id="main-title">PIX<br><span style="color:var(--primary)">UPDATES</span></h1>
+        <div class="hero-section">
+            <h1 class="hero-title" id="greeting">PIX<br><span style="color:var(--primary)">UPDATES</span></h1>
         </div>
 
         <div class="unified-panel">
-            <div id="active-skin">
-                <span id="skin-badge" class="badge" style="background:var(--primary); color:white; padding:4px 12px; border-radius:100px; font-size:0.7rem; font-weight:900;">V--</span>
-                <h2 id="skin-name" style="margin:10px 0;">Select Skin</h2>
-                <p id="skin-desc" style="opacity:0.6; font-size:0.9rem;">--</p>
-            </div>
-            <div id="history-list" style="overflow-y:auto;"></div>
+            <div class="active-badge" style="background:var(--primary); color:white; width:fit-content; padding:4px 12px; border-radius:100px; font-weight:900; font-size:0.7rem;">BRIH 2.0</div>
+            <h2 id="skin-name" style="font-size: 2.5rem; margin:0;">the new</h2>
+            <p id="skin-desc" style="opacity:0.6; margin:0;">WW</p>
+            <hr style="border:none; border-top:1px solid var(--surface-variant); margin: 20px 0;">
+            <div id="history-list" style="overflow-y:auto; flex:1;">
+                </div>
         </div>
     </div>
 
+    <div id="settings-pane">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:40px;">
+            <h2 style="margin:0">Settings</h2>
+            <button onclick="toggleSettings(false)" style="background:none; border:none;"><span class="material-symbols-rounded">close</span></button>
+        </div>
+        </div>
+
     <script>
-        const DB_KEY = 'pix_db_final';
-        let skinData = JSON.parse(localStorage.getItem(DB_KEY)) || [{ name: "The Ember Knight", version: "V3.0", desc: "Custom lava flows.", video: "https://assets.mixkit.co/videos/preview/mixkit-abstract-flowing-red-and-orange-background-34444-large.mp4" }];
-        let currentIdx = 0;
+        // CURSOR ANIMATION
+        const dot = document.getElementById('cursor-dot');
+        const outline = document.getElementById('cursor-outline');
+        let mX = 0, mY = 0, curX = 0, curY = 0;
 
-        // UI HELPERS
-        function toggleSettings(show) { document.getElementById('settings-pane').classList.toggle('open', show); }
-        
-        function updateGreeting(val) {
-            const title = document.getElementById('main-title');
-            if(val) {
-                title.innerHTML = `HELLO,<br><span style="color:var(--primary)">${val.toUpperCase()}</span>`;
-                localStorage.setItem('pix_user', val);
-            } else {
-                title.innerHTML = `PIX<br><span style="color:var(--primary)">UPDATES</span>`;
-            }
-        }
-
-        // CLOCK & WEATHER
-        function updateClock() {
-            const is24 = localStorage.getItem('fmt24') === '24';
-            document.getElementById('clock').textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: !is24});
-        }
-
-        async function fetchWeather() {
-            const unit = localStorage.getItem('unit') || 'fahrenheit';
-            try {
-                const geoReq = await fetch('https://ipapi.co/json/');
-                const geo = await geoReq.json();
-                const wReq = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${geo.latitude}&longitude=${geo.longitude}&current_weather=true&temperature_unit=${unit}`);
-                const w = await wReq.json();
-                document.getElementById('temp').textContent = Math.round(w.current_weather.temperature) + (unit === 'fahrenheit' ? '°F' : '°C');
-            } catch (e) { document.getElementById('temp').textContent = "72°F"; }
-        }
-
-        // PRO DATA TOOLS
-        function exportData() {
-            const blob = new Blob([JSON.stringify(skinData, null, 2)], {type: 'application/json'});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url; a.download = 'pix_backup.json'; a.click();
-        }
-
-        function importData(e) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                skinData = JSON.parse(event.target.result);
-                localStorage.setItem(DB_KEY, JSON.stringify(skinData));
-                updateDisplay();
-            };
-            reader.readAsText(e.target.files[0]);
-        }
-
-        // CURSOR LOGIC (Simplified for performance)
-        const dot = document.querySelector('#cursor-dot');
-        const outline = document.querySelector('#cursor-outline');
-        let mX = 0, mY = 0;
         window.addEventListener('mousemove', e => { mX = e.clientX; mY = e.clientY; });
-        function anim() {
-            dot.style.transform = `translate3d(${mX-3}px, ${mY-3}px, 0)`;
-            outline.style.transform = `translate3d(${mX-15}px, ${mY-15}px, 0)`;
-            requestAnimationFrame(anim);
-        }
 
-        function updateDisplay() {
-            const s = skinData[currentIdx];
-            document.getElementById('skin-name').textContent = s.name;
-            document.getElementById('skin-badge').textContent = s.version;
-            document.getElementById('skin-desc').textContent = s.desc;
-            document.getElementById('bg-video').src = s.video;
+        function updateCursor() {
+            curX += (mX - curX) * 0.15;
+            curY += (mY - curY) * 0.15;
+            dot.style.transform = `translate3d(${mX}px, ${mY}px, 0)`;
+            outline.style.transform = `translate3d(${curX - 17}px, ${curY - 17}px, 0)`;
+            requestAnimationFrame(updateCursor);
         }
+        updateCursor();
 
-        // INIT
-        window.onload = () => {
-            const savedUser = localStorage.getItem('pix_user');
-            if(savedUser) { 
-                document.getElementById('user-name').value = savedUser;
-                updateGreeting(savedUser);
-            }
-            updateClock();
-            setInterval(updateClock, 1000);
-            fetchWeather();
-            updateDisplay();
-            anim();
-        };
+        function toggleSettings(open) {
+            document.getElementById('settings-pane').classList.toggle('open', open);
+        }
     </script>
 </body>
 </html>
