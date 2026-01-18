@@ -19,7 +19,7 @@
         }
         
         * { cursor: none; box-sizing: border-box; }
-        #admin-modal-overlay * { cursor: auto !important; }
+        #admin-modal-overlay *, a { cursor: auto !important; }
 
         body { 
             margin: 0; background: var(--surface); color: var(--on-surface); 
@@ -31,15 +31,26 @@
             mask-image: radial-gradient(circle at 70% 50%, black 40%, transparent 95%);
             background: #000;
         }
-        #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; transition: opacity 0.8s; }
+        #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; }
 
         #cursor-dot { width: 6px; height: 6px; background: var(--primary); position: fixed; pointer-events: none; z-index: 10001; border-radius: 50%; }
         #cursor-outline { width: 30px; height: 30px; border: 1.5px solid var(--on-surface); position: fixed; pointer-events: none; z-index: 10000; border-radius: 50%; mix-blend-mode: difference; transition: width 0.2s, height 0.2s; }
         .cursor-morph { background: white !important; border: none !important; }
 
         nav { padding: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
-        .widget { padding: 12px 20px; background: var(--surface-variant); border-radius: var(--radius-pill); display: flex; align-items: center; gap: 12px; font-weight: 700; }
+        .widget { padding: 12px 20px; background: var(--surface-variant); border-radius: var(--radius-pill); display: flex; align-items: center; gap: 12px; font-weight: 700; text-decoration: none; color: inherit; }
         
+        /* Material 3 Circular Loader Emulation */
+        .loader {
+            width: 20px; height: 20px;
+            border: 3px solid var(--primary);
+            border-bottom-color: transparent;
+            border-radius: 50%;
+            display: none;
+            animation: rotation 0.8s linear infinite;
+        }
+        @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
         .main-layout { display: grid; grid-template-columns: 1fr 380px; gap: 40px; max-width: 1400px; margin: 0 auto; padding: 0 40px; }
         .hero-section { display: flex; flex-direction: column; justify-content: center; height: 60vh; }
         .hero-title { font-size: 6rem; font-weight: 900; letter-spacing: -5px; line-height: 0.9; margin: 0; pointer-events: none; }
@@ -51,36 +62,20 @@
         }
 
         .badge { background: var(--primary); color: white; padding: 6px 14px; border-radius: var(--radius-pill); font-size: 0.75rem; font-weight: 800; width: fit-content; }
-        
         .gallery-list { overflow-y: auto; padding-right: 8px; flex-grow: 1; }
-        .history-item { 
-            padding: 16px; border-radius: 20px; display: block; width: 100%; 
-            text-align: left; border: none; background: transparent; color: inherit; 
-            font-family: inherit; margin-bottom: 8px; transition: all 0.2s; cursor: pointer !important;
-        }
-        .history-item:hover { background: rgba(0,0,0,0.05); }
+        .history-item { padding: 16px; border-radius: 20px; display: block; width: 100%; text-align: left; border: none; background: transparent; color: inherit; font-family: inherit; margin-bottom: 8px; transition: all 0.2s; }
         .history-item.active { background: var(--surface-variant); font-weight: 800; border-left: 6px solid var(--primary); }
 
         .fab-container { position: fixed; bottom: 40px; left: 40px; display: flex; gap: 16px; }
-        .fab { height: 70px; padding: 0 28px; background: var(--on-surface); color: var(--surface); border-radius: 24px; border: none; display: flex; align-items: center; gap: 12px; font-weight: 800; }
+        .fab { height: 70px; padding: 0 28px; background: var(--on-surface); color: var(--surface); border-radius: 24px; border: none; display: flex; align-items: center; gap: 12px; font-weight: 800; text-decoration: none; }
         .fab.admin { background: var(--primary); display: none; }
 
-        /* MODAL & DELETE STYLES */
         #admin-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 20000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
         #admin-modal { background: var(--surface); padding: 40px; border-radius: var(--radius-xl); width: 500px; display: flex; flex-direction: column; gap: 15px; max-height: 90vh; }
-        
         .admin-scroll-area { overflow-y: auto; padding-right: 10px; display: flex; flex-direction: column; gap: 15px; }
         input, textarea { padding: 16px; border-radius: 12px; border: 1px solid var(--surface-variant); background: var(--surface); font-family: inherit; width: 100%; outline: none; }
-        
-        .db-manager { margin-top: 20px; border-top: 1px solid var(--surface-variant); padding-top: 20px; }
-        .db-item { 
-            display: flex; justify-content: space-between; align-items: center; 
-            background: var(--surface-variant); padding: 12px 16px; border-radius: 16px; margin-bottom: 8px; 
-        }
-        .delete-btn { 
-            background: #ff4444; color: white; border: none; padding: 8px; 
-            border-radius: 10px; cursor: pointer; display: flex; align-items: center; 
-        }
+        .db-item { display: flex; justify-content: space-between; align-items: center; background: var(--surface-variant); padding: 12px 16px; border-radius: 16px; margin-bottom: 8px; }
+        .delete-btn { background: #ff4444; color: white; border: none; padding: 8px; border-radius: 10px; }
     </style>
 </head>
 <body>
@@ -96,11 +91,13 @@
         <div class="widget interactive">
             <div class="mag"><span class="material-symbols-rounded">schedule</span> <span id="clock">--:--</span></div>
         </div>
-        <div class="widget interactive">
+        <a href="https://www.google.com/search?q=weather" target="_blank" class="widget interactive" id="weather-widget">
             <div class="mag" style="display:flex; align-items:center; gap:10px;">
-                <span id="temp">72°</span> <div id="weather-icon"></div>
+                <div id="weather-loader" class="loader"></div>
+                <span id="temp">--°</span> 
+                <div id="weather-icon"></div>
             </div>
-        </div>
+        </a>
     </nav>
 
     <div class="main-layout">
@@ -133,24 +130,20 @@
             <h2 style="margin:0">Admin Control</h2>
             <div class="admin-scroll-area">
                 <input type="text" id="new-name" placeholder="Skin Name">
-                <input type="text" id="new-ver" placeholder="Version (V1.2)">
-                <input type="text" id="new-video" placeholder="Video Link/Filename">
+                <input type="text" id="new-ver" placeholder="Version">
+                <input type="text" id="new-video" placeholder="Video Link">
                 <textarea id="new-desc" placeholder="Update Description"></textarea>
-                <button style="background:var(--on-surface); color:var(--surface); padding:16px; border:none; border-radius:12px; font-weight:900; cursor:pointer;" onclick="addNewSkin()">ADD NEW VERSION</button>
-
-                <div class="db-manager">
-                    <h4 style="margin: 0 0 10px 0;">Manage Database</h4>
-                    <div id="db-list"></div>
-                </div>
+                <button style="background:var(--on-surface); color:var(--surface); padding:16px; border:none; border-radius:12px; font-weight:900;" onclick="addNewSkin()">ADD VERSION</button>
+                <div id="db-list" style="margin-top:20px;"></div>
             </div>
-            <button onclick="toggleModal(false)" style="background:none; border:none; color:var(--primary); font-weight:700; margin-top:10px; cursor:pointer;">CLOSE PANEL</button>
+            <button onclick="toggleModal(false)" style="background:none; border:none; color:var(--primary); font-weight:700; margin-top:10px;">CLOSE</button>
         </div>
     </div>
 
     <script>
         const ICONS = {
-            sun: `<svg viewBox="0 0 24 24" fill="#F9BC05" width="24"><circle cx="12" cy="12" r="5"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41" stroke="#F9BC05" stroke-width="2"/></svg>`,
-            moon: `<svg viewBox="0 0 24 24" fill="#8AB4F8" width="24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>`
+            sun: `<span class="material-symbols-rounded" style="color:#F9BC05">sunny</span>`,
+            moon: `<span class="material-symbols-rounded" style="color:#8AB4F8">dark_mode</span>`
         };
 
         const DB_KEY = 'pix_db_v3';
@@ -159,12 +152,40 @@
         let skinData = JSON.parse(localStorage.getItem(DB_KEY)) || [DEFAULT];
         let currentIdx = 0;
 
-        function updateSystem() {
-            const now = new Date();
-            const isNight = now.getHours() >= 18 || now.getHours() < 6;
-            document.getElementById('clock').textContent = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            document.getElementById('weather-icon').innerHTML = isNight ? ICONS.moon : ICONS.sun;
+        // WEATHER LOGIC
+        async function fetchWeather() {
+            const loader = document.getElementById('weather-loader');
+            const tempEl = document.getElementById('temp');
+            
+            loader.style.display = 'block';
+            tempEl.style.opacity = '0.3';
+
+            try {
+                // Get lat/lon from IP
+                const geoReq = await fetch('https://ipapi.co/json/');
+                const geo = await geoReq.json();
+                
+                // Get Weather
+                const weatherReq = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${geo.latitude}&longitude=${geo.longitude}&current_weather=true&temperature_unit=fahrenheit`);
+                const weather = await weatherReq.json();
+                
+                tempEl.textContent = Math.round(weather.current_weather.temperature) + "°F";
+                updateTheme(weather.current_weather.is_day === 0);
+            } catch (e) {
+                tempEl.textContent = "72°F"; // Fallback
+            } finally {
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                    tempEl.style.opacity = '1';
+                }, 800); // Small delay so you can see the Material spin
+            }
+        }
+
+        function updateTheme(isNight) {
             document.body.classList.toggle('dark-theme', isNight);
+            document.getElementById('weather-icon').innerHTML = isNight ? ICONS.moon : ICONS.sun;
+            const now = new Date();
+            document.getElementById('clock').textContent = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
         }
 
         // CURSOR
@@ -212,7 +233,7 @@
             requestAnimationFrame(animate);
         }
 
-        // CORE
+        // DATABASE/UI
         function updateDisplay() {
             const skin = skinData[currentIdx] || skinData[0];
             document.getElementById('skin-name').textContent = skin.name;
@@ -224,7 +245,7 @@
             list.innerHTML = '';
             skinData.forEach((s, i) => {
                 const b = document.createElement('button');
-                b.className = `history-item ${i === currentIdx ? 'active' : ''}`;
+                b.className = `history-item interactive ${i === currentIdx ? 'active' : ''}`;
                 b.innerHTML = `<span style="opacity:0.5; font-size:0.7rem; font-weight:900;">${s.version}</span><br>${s.name}`;
                 b.onclick = () => { currentIdx = i; updateDisplay(); };
                 list.appendChild(b);
@@ -238,22 +259,18 @@
             skinData.forEach((s, i) => {
                 const item = document.createElement('div');
                 item.className = 'db-item';
-                item.innerHTML = `
-                    <div style="font-size: 13px;"><strong>${s.version}</strong> ${s.name}</div>
-                    <button class="delete-btn" onclick="deleteSkin(${i})"><span class="material-symbols-rounded" style="font-size:18px;">delete</span></button>
-                `;
+                item.innerHTML = `<div><strong>${s.version}</strong> ${s.name}</div>
+                    <button class="delete-btn" onclick="deleteSkin(${i})"><span class="material-symbols-rounded">delete</span></button>`;
                 container.appendChild(item);
             });
         }
 
         function deleteSkin(i) {
-            if (skinData.length <= 1) return alert("Cannot delete the last remaining skin.");
-            if (confirm(`Delete ${skinData[i].name} from database?`)) {
-                skinData.splice(i, 1);
-                localStorage.setItem(DB_KEY, JSON.stringify(skinData));
-                currentIdx = 0;
-                updateDisplay();
-            }
+            if (skinData.length <= 1) return;
+            skinData.splice(i, 1);
+            localStorage.setItem(DB_KEY, JSON.stringify(skinData));
+            currentIdx = 0;
+            updateDisplay();
         }
 
         function addNewSkin() {
@@ -261,9 +278,7 @@
             const v = document.getElementById('new-ver').value;
             const vid = document.getElementById('new-video').value;
             const d = document.getElementById('new-desc').value;
-
-            if(!n || !v || !vid) return alert("Fill required fields");
-
+            if(!n || !v || !vid) return;
             skinData.unshift({ name: n, version: v, video: vid, desc: d });
             localStorage.setItem(DB_KEY, JSON.stringify(skinData));
             currentIdx = 0;
@@ -273,11 +288,12 @@
 
         function toggleModal(show) {
             document.getElementById('admin-modal-overlay').style.display = show ? 'flex' : 'none';
+            document.body.style.cursor = show ? 'auto' : 'none';
             dot.style.display = show ? 'none' : 'block';
             outline.style.display = show ? 'none' : 'block';
-            document.body.style.cursor = show ? 'auto' : 'none';
         }
 
+        // Hotkeys
         const keys = {};
         window.onkeydown = (e) => {
             keys[e.key.toLowerCase()] = true;
@@ -285,8 +301,13 @@
         };
         window.onkeyup = (e) => keys[e.key.toLowerCase()] = false;
 
-        updateSystem();
-        setInterval(updateSystem, 1000);
+        // Init
+        fetchWeather();
+        setInterval(fetchWeather, 300000); // 5 Minutes
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('clock').textContent = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        }, 1000);
         updateDisplay();
         animate();
     </script>
