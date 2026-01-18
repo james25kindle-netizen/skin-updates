@@ -3,84 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pix Updates | Pro Admin Fixed</title>
+    <title>Pix Updates | Pro Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
     <style>
         :root {
-            --primary: #BC161F; --surface: #1A1110; --surface-variant: #332120;
-            --on-surface: #F1DFDD; --card-bg: rgba(43, 33, 32, 0.85);
+            --primary: #BC161F; --surface: #FFF8F7; --surface-variant: #F5DDDA;
+            --on-surface: #201A19; --card-bg: rgba(255, 255, 255, 0.85);
             --radius-xl: 32px; --radius-pill: 100px;
             transition: all 0.5s ease;
         }
-
+        body.dark-theme {
+            --primary: #FFB4AB; --surface: #1A1110; --surface-variant: #332120;
+            --on-surface: #F1DFDD; --card-bg: rgba(43, 33, 32, 0.85);
+        }
+        
         * { cursor: none; box-sizing: border-box; }
+        #admin-modal-overlay * { cursor: auto !important; }
+
         body { 
             margin: 0; background: var(--surface); color: var(--on-surface); 
             font-family: 'Google Sans Flex', sans-serif; overflow: hidden; height: 100vh; 
         }
 
-        /* BACKGROUND VIDEO - Increased Visibility */
         .video-bg-container { 
-            position: fixed; inset: 0; z-index: -1; 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; 
             mask-image: radial-gradient(circle at 70% 50%, black 50%, transparent 95%);
             -webkit-mask-image: radial-gradient(circle at 70% 50%, black 50%, transparent 95%);
         }
-        #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; transition: opacity 0.8s ease; }
+        #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; transition: opacity 0.5s; }
 
-        /* CURSOR */
         #cursor-dot { width: 6px; height: 6px; background: var(--primary); position: fixed; pointer-events: none; z-index: 10001; border-radius: 50%; }
         #cursor-outline { width: 30px; height: 30px; border: 1.5px solid var(--on-surface); position: fixed; pointer-events: none; z-index: 10000; border-radius: 50%; mix-blend-mode: difference; transition: width 0.2s, height 0.2s; }
+        .cursor-morph { background: white !important; border: none !important; }
 
-        /* NAV */
         nav { padding: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
         .widget { padding: 12px 20px; background: var(--surface-variant); border-radius: var(--radius-pill); display: flex; align-items: center; gap: 12px; font-weight: 700; }
         
-        /* LAYOUT */
-        .main-layout { display: grid; grid-template-columns: 1fr 400px; gap: 40px; max-width: 1400px; margin: 0 auto; padding: 0 40px; align-items: center; height: calc(100vh - 180px); }
-        .hero-title { font-size: 7rem; font-weight: 900; letter-spacing: -6px; line-height: 0.85; margin: 0; text-transform: uppercase; }
+        .main-layout { 
+            display: grid; grid-template-columns: 1fr 380px; 
+            gap: 40px; max-width: 1400px; margin: 0 auto; padding: 0 40px; 
+        }
 
-        /* UNIFIED PANEL (Right Side) */
+        .hero-section { display: flex; flex-direction: column; justify-content: center; height: 60vh; }
+        .hero-title { font-size: 6rem; font-weight: 900; letter-spacing: -5px; line-height: 0.9; margin: 0; }
+
         .unified-panel { 
             background: var(--card-bg); border-radius: var(--radius-xl); padding: 32px; 
-            backdrop-filter: blur(40px); border: 1px solid rgba(255,255,255,0.05);
-            display: flex; flex-direction: column; gap: 24px; max-height: 80vh;
+            backdrop-filter: blur(30px); border: 1px solid rgba(255,255,255,0.1);
+            display: flex; flex-direction: column; gap: 24px; max-height: 70vh; margin-top: 20px;
         }
-        .badge { background: var(--primary); color: white; padding: 6px 14px; border-radius: var(--radius-pill); font-size: 0.75rem; font-weight: 900; width: fit-content; }
+
+        .badge { background: var(--primary); color: white; padding: 6px 14px; border-radius: var(--radius-pill); font-size: 0.75rem; font-weight: 800; width: fit-content; }
         
-        .gallery-list { overflow-y: auto; padding-right: 8px; flex-grow: 1; }
+        .gallery-list { overflow-y: auto; padding-right: 8px; }
         .history-item { 
-            padding: 20px; border-radius: 20px; display: block; width: 100%; 
-            text-align: left; border: none; background: rgba(255,255,255,0.03); color: inherit; 
-            font-family: inherit; margin-bottom: 12px; transition: all 0.3s;
+            padding: 16px; border-radius: 20px; display: block; width: 100%; 
+            text-align: left; border: none; background: transparent; color: inherit; 
+            font-family: inherit; margin-bottom: 8px; transition: all 0.2s;
         }
-        .history-item.active { background: var(--surface-variant); border-left: 6px solid var(--primary); font-weight: 700; }
+        .history-item:hover { background: rgba(0,0,0,0.05); }
+        .history-item.active { background: var(--surface-variant); font-weight: 800; border-left: 6px solid var(--primary); }
 
-        /* ADMIN MODAL & CURSOR RESET */
-        #admin-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 20000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
-        #admin-modal-overlay * { cursor: auto !important; } /* Restore mouse for admin */
-        #admin-modal { background: #251a19; padding: 40px; border-radius: var(--radius-xl); width: 500px; display: flex; flex-direction: column; gap: 15px; border: 1px solid var(--surface-variant); }
+        .fab-container { position: fixed; bottom: 40px; left: 40px; display: flex; gap: 16px; }
+        .fab { height: 70px; padding: 0 28px; background: var(--on-surface); color: var(--surface); border-radius: 24px; border: none; display: flex; align-items: center; gap: 12px; font-weight: 800; }
+        .fab.admin { background: var(--primary); display: none; }
+
+        #admin-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 20000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        #admin-modal { background: var(--surface); padding: 40px; border-radius: var(--radius-xl); width: 450px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
         
-        input, textarea { padding: 16px; border-radius: 12px; border: none; background: #332120; color: white; font-family: inherit; width: 100%; }
-        .save-btn { background: white; color: black; padding: 16px; border: none; border-radius: 12px; font-weight: 900; margin-top: 10px; }
-
-        .fab-container { position: fixed; bottom: 40px; left: 40px; display: flex; gap: 16px; z-index: 100; }
-        .fab { height: 72px; padding: 0 32px; background: white; color: black; border-radius: 24px; border: none; display: flex; align-items: center; gap: 12px; font-weight: 800; }
-        .fab.admin { background: var(--primary); color: white; display: none; }
+        input, textarea { padding: 16px; border-radius: 12px; border: 1px solid var(--surface-variant); background: var(--surface); font-family: inherit; color: inherit; width: 100%; }
+        .file-input-wrapper { display: flex; flex-direction: column; gap: 8px; }
+        .file-label { font-size: 0.8rem; font-weight: 700; opacity: 0.6; padding-left: 4px; }
+        
+        .save-btn { background: var(--primary); color: white; padding: 16px; border: none; border-radius: 12px; font-weight: 900; transition: opacity 0.2s; }
+        .save-btn:active { opacity: 0.8; }
     </style>
 </head>
-<body>
+<body id="body">
 
     <div id="cursor-dot"></div>
     <div id="cursor-outline"></div>
 
     <div class="video-bg-container">
-        <video id="bg-video" autoplay muted loop playsinline src="https://assets.mixkit.co/videos/preview/mixkit-abstract-flowing-red-and-orange-smoke-2415-large.mp4"></video>
+        <video id="bg-video" autoplay muted loop playsinline></video>
     </div>
 
     <nav>
-        <div class="widget interactive"><div class="mag"><span id="clock">--:--</span></div></div>
-        <div class="widget interactive"><div class="mag" style="display:flex; gap:10px;"><span id="temp">72°</span><div id="weather-icon"></div></div></div>
+        <div class="widget interactive">
+            <div class="mag">
+                <span class="material-symbols-rounded">schedule</span> <span id="clock">00:00</span>
+            </div>
+        </div>
+        <div class="widget interactive">
+            <div class="mag" style="display:flex; align-items:center; gap:10px;">
+                <span id="temp">72°</span> <div id="weather-icon"></div>
+            </div>
+        </div>
     </nav>
 
     <div class="main-layout">
@@ -89,11 +108,13 @@
         </div>
 
         <div class="unified-panel">
-            <div id="active-skin-section">
+            <div class="active-info">
                 <span id="skin-badge" class="badge">V3.0</span>
-                <h2 id="skin-name" style="margin: 15px 0 8px 0; font-size: 2rem;">The Ember Knight</h2>
-                <p id="skin-desc" style="opacity: 0.6; font-size: 0.95rem; line-height: 1.5;">Custom lava flows and visor highlights.</p>
+                <h2 id="skin-name" style="margin: 15px 0 10px 0; font-size: 1.8rem;">Ember Knight</h2>
+                <p id="skin-desc" style="opacity: 0.6; font-size: 0.9rem; line-height: 1.4;">Custom lava flows and visor highlights.</p>
             </div>
+            
+            <hr style="border: none; border-top: 1px solid var(--surface-variant); margin: 0;">
             
             <div class="gallery-list" id="history-list"></div>
         </div>
@@ -101,22 +122,25 @@
 
     <div class="fab-container">
         <button id="admin-trigger" class="fab admin interactive" onclick="toggleModal(true)">
-            <span class="material-symbols-rounded">settings</span> <span>ADMIN PANEL</span>
+            <span class="material-symbols-rounded">settings</span> <span>ADMIN</span>
         </button>
-        <button class="fab interactive">
+        <button id="download-btn" class="fab interactive">
             <span class="material-symbols-rounded">download</span> <span>GET SKIN</span>
         </button>
     </div>
 
     <div id="admin-modal-overlay">
         <div id="admin-modal">
-            <h2 style="margin:0; color:white;">Admin Panel</h2>
+            <h2 style="margin:0">Add New Version</h2>
             <input type="text" id="new-name" placeholder="Skin Name">
-            <input type="text" id="new-ver" placeholder="Version (e.g. V3.1)">
-            <input type="text" id="new-video" placeholder="Video URL (Direct link to .mp4)">
-            <textarea id="new-desc" placeholder="Skin Description"></textarea>
-            <button class="save-btn" onclick="addNewSkin()">SAVE ENTRY</button>
-            <button onclick="toggleModal(false)" style="background:none; border:none; color:var(--primary); font-weight:700; margin-top:10px;">CLOSE</button>
+            <input type="text" id="new-ver" placeholder="Version Number (e.g. V3.1)">
+            <div class="file-input-wrapper">
+                <label class="file-label">Background Video</label>
+                <input type="file" id="new-video-file" accept="video/mp4,video/webm">
+            </div>
+            <textarea id="new-desc" placeholder="Describe the changes..."></textarea>
+            <button class="save-btn" onclick="addNewSkin()">PUBLISH UPDATE</button>
+            <button onclick="toggleModal(false)" style="background:none; border:none; color:var(--primary); font-weight:700; cursor:pointer;">CANCEL</button>
         </div>
     </div>
 
@@ -126,9 +150,9 @@
             moon: `<svg viewBox="0 0 24 24" fill="#8AB4F8" width="24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>`
         };
 
-        // Fallback Database
-        let skinData = JSON.parse(localStorage.getItem('pix_v4_db')) || [
-            { name: "The Ember Knight", version: "V3.0", desc: "Custom lava flows and visor highlights.", video: "https://assets.mixkit.co/videos/preview/mixkit-abstract-flowing-red-and-orange-smoke-2415-large.mp4" }
+        // Initialize Data
+        let skinData = JSON.parse(localStorage.getItem('pix_v5_db')) || [
+            { name: "The Ember Knight", version: "V3.0", desc: "Custom lava flows and visor highlights.", video: "" }
         ];
         let currentIdx = 0;
 
@@ -138,11 +162,12 @@
             const isNight = hours >= 18 || hours < 6;
             document.getElementById('clock').textContent = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             document.getElementById('weather-icon').innerHTML = isNight ? ICONS.moon : ICONS.sun;
+            document.body.classList.toggle('dark-theme', isNight);
         }
 
-        // Optimized Cursor & Magnetic logic
-        const dot = document.getElementById('cursor-dot');
-        const outline = document.getElementById('cursor-outline');
+        // Cursor & Interaction Logic
+        const dot = document.querySelector('#cursor-dot');
+        const outline = document.querySelector('#cursor-outline');
         let mX = 0, mY = 0, oX = 0, oY = 0, target = null;
 
         window.onmousemove = (e) => {
@@ -152,7 +177,6 @@
                 target = hit;
                 outline.classList.add('cursor-morph');
                 dot.style.opacity = 0;
-                
                 const mag = hit.querySelector('.mag');
                 if (mag) {
                     const r = hit.getBoundingClientRect();
@@ -184,24 +208,12 @@
             requestAnimationFrame(animate);
         }
 
+        // Admin & Video Logic
         function toggleModal(show) {
             document.getElementById('admin-modal-overlay').style.display = show ? 'flex' : 'none';
             document.body.style.cursor = show ? 'auto' : 'none';
             dot.style.display = show ? 'none' : 'block';
             outline.style.display = show ? 'none' : 'block';
-        }
-
-        function switchSkin(i) {
-            currentIdx = i;
-            const skin = skinData[i];
-            document.getElementById('skin-name').textContent = skin.name;
-            document.getElementById('skin-badge').textContent = skin.version;
-            document.getElementById('skin-desc').textContent = skin.desc;
-            
-            const video = document.getElementById('bg-video');
-            video.src = skin.video;
-            video.load(); // Vital for updating source
-            renderGallery();
         }
 
         function renderGallery() {
@@ -210,36 +222,68 @@
             skinData.forEach((skin, i) => {
                 const btn = document.createElement('button');
                 btn.className = `history-item ${i === currentIdx ? 'active' : ''}`;
-                btn.innerHTML = `<span style="font-size:0.7rem; font-weight:900; opacity:0.5;">${skin.version}</span><br>${skin.name}`;
-                btn.onclick = () => switchSkin(i);
+                btn.innerHTML = `<span style="opacity:0.5; font-size:0.7rem; font-weight:900;">${skin.version}</span><br>${skin.name}`;
+                btn.onclick = () => { currentIdx = i; updateSkinDisplay(); };
                 list.appendChild(btn);
             });
         }
 
-        function addNewSkin() {
-            const ns = {
-                name: document.getElementById('new-name').value || "Unnamed",
-                version: document.getElementById('new-ver').value || "V1.0",
-                desc: document.getElementById('new-desc').value || "",
-                video: document.getElementById('new-video').value || ""
-            };
-            skinData.unshift(ns);
-            localStorage.setItem('pix_v4_db', JSON.stringify(skinData));
-            switchSkin(0);
-            toggleModal(false);
+        function updateSkinDisplay() {
+            const skin = skinData[currentIdx];
+            document.getElementById('skin-name').textContent = skin.name;
+            document.getElementById('skin-badge').textContent = skin.version;
+            document.getElementById('skin-desc').textContent = skin.desc;
+            
+            const videoEl = document.getElementById('bg-video');
+            if (skin.video) {
+                videoEl.src = skin.video;
+                videoEl.style.display = 'block';
+                videoEl.load();
+            }
+            renderGallery();
         }
 
-        // Hotkey logic
+        function addNewSkin() {
+            const fileInput = document.getElementById('new-video-file');
+            let videoUrl = "";
+            
+            if (fileInput.files && fileInput.files[0]) {
+                videoUrl = URL.createObjectURL(fileInput.files[0]);
+            }
+
+            const newSkin = {
+                name: document.getElementById('new-name').value || "New Update",
+                version: document.getElementById('new-ver').value || "V1.0",
+                desc: document.getElementById('new-desc').value || "No details provided.",
+                video: videoUrl
+            };
+
+            skinData.unshift(newSkin);
+            // Note: Blob URLs can't be saved permanently in LocalStorage, 
+            // but this works for the current session.
+            currentIdx = 0;
+            updateSkinDisplay();
+            toggleModal(false);
+            
+            // Clear inputs
+            document.getElementById('new-name').value = '';
+            document.getElementById('new-ver').value = '';
+            document.getElementById('new-desc').value = '';
+            fileInput.value = '';
+        }
+
+        // Secret Admin Toggle (A+S+D)
         const keys = {};
         window.onkeydown = (e) => {
             keys[e.key.toLowerCase()] = true;
             if (keys['a'] && keys['s'] && keys['d']) document.getElementById('admin-trigger').style.display = 'flex';
         };
-        window.onkeyup = (e) => keys[e.key.toLowerCase()] = false;
+        window.onkeyup = (e) => { keys[e.key.toLowerCase()] = false; };
 
+        // Start
         updateSystem();
         setInterval(updateSystem, 1000);
-        switchSkin(0);
+        updateSkinDisplay();
         animate();
     </script>
 </body>
