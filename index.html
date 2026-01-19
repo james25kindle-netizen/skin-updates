@@ -29,6 +29,37 @@
             transition: opacity 0.8s ease-out, visibility 0.8s;
         }
         .pulse-logo { width: 80px; height: 80px; background: var(--primary); border-radius: 24px; animation: m3-expressive-pulse 2s infinite cubic-bezier(0.34, 1.56, 0.64, 1); }
+        
+        /* MATERIAL 3 EXPRESSIVE LOADING TEXT */
+        .loader-label {
+            position: absolute;
+            bottom: 48px;
+            right: 48px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            color: var(--primary);
+            pointer-events: none;
+        }
+        .m3-text {
+            font-weight: 800;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            animation: m3-text-stretch 2.5s infinite ease-in-out;
+        }
+        .m3-icon {
+            font-size: 1.4rem;
+            animation: m3-spin 1.5s infinite linear;
+        }
+
+        @keyframes m3-text-stretch {
+            0%, 100% { transform: scaleX(1); opacity: 0.6; }
+            50% { transform: scaleX(1.15); opacity: 1; }
+        }
+        @keyframes m3-spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
         @keyframes m3-expressive-pulse { 0% { transform: scale(0.8); border-radius: 40px; } 50% { transform: scale(1.1); border-radius: 20px; } 100% { transform: scale(0.8); border-radius: 40px; } }
 
         /* BACKGROUND */
@@ -82,7 +113,14 @@
 </head>
 <body>
 
-    <div id="loader"><div class="pulse-logo"></div></div>
+    <div id="loader">
+        <div class="pulse-logo"></div>
+        <div class="loader-label">
+            <span class="m3-text">LOADING</span>
+            <span class="material-symbols-rounded m3-icon">progress_activity</span>
+        </div>
+    </div>
+
     <div id="cursor-dot"></div>
     <div id="cursor-outline"></div>
 
@@ -149,13 +187,10 @@
                 <span>Video Dim</span>
                 <input type="range" min="1" max="10" value="7" oninput="updateSetting('--video-opacity', this.value/10)">
             </div>
-            
             <hr style="border:none; border-top:1px solid #222;">
-            
             <button onclick="openModal('whats-new-modal')" class="interactive" style="background:rgba(255,255,255,0.05); color:#fff; border:1px solid #333; padding:12px; border-radius:12px; font-weight:700; cursor:pointer;">
                 <div class="mag"><span class="material-symbols-rounded" style="font-size:1.2rem;">history_edu</span> WHAT'S NEW?</div>
             </button>
-
             <button onclick="closeModals()" class="interactive" style="background:#fff; color:#000; padding:15px; border:none; border-radius:15px; font-weight:900; cursor:pointer;">SAVE CHANGES</button>
         </div>
     </div>
@@ -165,31 +200,20 @@
             <div class="badge">PATCH v3.1.0</div>
             <h2 style="font-weight: 900; letter-spacing: -1px; margin-top:-10px;">VELVET VOID ARRIVED</h2>
             <p style="opacity:0.6; font-size:0.95rem;">We polished the void until it looked expensive. Here is what we broke (and fixed) in this update:</p>
-            
             <div class="feature-item">
                 <span class="material-symbols-rounded feature-icon">auto_fix_high</span>
                 <div>
                     <h4 style="font-weight:800;">Magnetic Intelligence</h4>
-                    <p style="font-size:0.8rem; opacity:0.5;">The cursor now actually likes the buttons. We added a magnetic pull so you don't miss—even if you've had too much coffee.</p>
+                    <p style="font-size:0.8rem; opacity:0.5;">The cursor now actually likes the buttons. We added a magnetic pull so you don't miss.</p>
                 </div>
             </div>
-
             <div class="feature-item">
                 <span class="material-symbols-rounded feature-icon">glass_cup</span>
                 <div>
                     <h4 style="font-weight:800;">Frosted Velvet Glass</h4>
-                    <p style="font-size:0.8rem; opacity:0.5;">Upgraded the blur engine to 40px of pure aesthetic satisfaction. It's like looking through a very clean ice cube.</p>
+                    <p style="font-size:0.8rem; opacity:0.5;">Upgraded the blur engine to 40px of pure aesthetic satisfaction.</p>
                 </div>
             </div>
-
-            <div class="feature-item">
-                <span class="material-symbols-rounded feature-icon">update</span>
-                <div>
-                    <h4 style="font-weight:800;">Self-Aware Site</h4>
-                    <p style="font-size:0.8rem; opacity:0.5;">The site now knows when we update it. It will tell you what's new once, then stay quiet until the next big thing.</p>
-                </div>
-            </div>
-
             <button onclick="closeModals()" class="interactive" style="background:var(--primary); color:#000; padding:15px; border:none; border-radius:15px; font-weight:900; cursor:pointer; margin-top:10px;">COOL, TAKE ME BACK</button>
         </div>
     </div>
@@ -237,7 +261,6 @@
             try {
                 const res = await fetch('https://wttr.in/?format=j1');
                 const data = await res.json();
-                await new Promise(r => setTimeout(r, 1500)); 
                 document.getElementById('temp').textContent = data.current_condition[0].temp_F + "°F";
             } catch (e) { document.getElementById('temp').textContent = "43°F"; }
             finally { widget.classList.remove('weather-updating'); icon.textContent = 'cloud'; }
@@ -267,7 +290,6 @@
             document.body.classList.remove('modal-open'); 
         }
 
-        // --- MAGNETIC CURSOR ---
         const dot = document.getElementById('cursor-dot'), outline = document.getElementById('cursor-outline');
         let mX = 0, mY = 0, oX = 0, oY = 0, target = null;
         document.body.classList.add('custom-cursor-active');
@@ -304,7 +326,6 @@
             requestAnimationFrame(animateCursor);
         }
 
-        // --- BOOT ---
         window.addEventListener('load', () => {
             loadSettings(); updateUI(); fetchWeather(); animateCursor();
             setInterval(() => { document.getElementById('clock').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }, 1000);
@@ -313,15 +334,13 @@
                 document.getElementById('loader').style.opacity = '0'; 
                 setTimeout(() => {
                     document.getElementById('loader').style.visibility = 'hidden';
-                    
-                    // Check version for Pop-up
                     const lastSeen = localStorage.getItem('pix_version');
                     if(lastSeen !== CURRENT_VERSION) {
                         openModal('whats-new-modal');
                         localStorage.setItem('pix_version', CURRENT_VERSION);
                     }
                 }, 800); 
-            }, 1200);
+            }, 1800); // Wait a bit longer so the expressive label can be seen
         });
         setInterval(fetchWeather, 300000);
     </script>
