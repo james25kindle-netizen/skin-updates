@@ -47,14 +47,16 @@
         
         body.modal-open #cursor-dot, body.modal-open #cursor-outline { opacity: 0; }
 
-        /* NAV & WIDGETS */
+        /* NAV */
         nav { padding: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
         .widget { 
             padding: 12px 24px; background: rgba(255,255,255,0.1); 
             backdrop-filter: blur(var(--blur)); border-radius: var(--radius-pill); 
             display: flex; align-items: center; gap: 12px; font-weight: 700; 
             border: 1px solid rgba(255,255,255,0.1); color: #FFFFFF !important;
+            transition: background 0.2s;
         }
+        .widget:hover { background: rgba(255,255,255,0.2); }
         
         /* MAGNETIC CONTAINER */
         .mag { 
@@ -63,6 +65,7 @@
             will-change: transform;
         }
 
+        #clock, .widget .material-symbols-rounded { color: #FFFFFF !important; }
         .settings-icon { transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
         .widget:hover .settings-icon { transform: rotate(90deg); }
 
@@ -83,8 +86,14 @@
         .history-item.active { background: rgba(255,255,255,0.15); border-left: 4px solid var(--primary); font-weight: 800; }
 
         .badge { background: var(--primary); color: #000; padding: 4px 12px; border-radius: 10px; font-size: 0.7rem; font-weight: 900; }
-        .fab-container { position: fixed; bottom: 40px; left: 40px; }
-        .fab { height: 60px; padding: 0 32px; background: #fff; color: #000; border-radius: 20px; border: none; display: flex; align-items: center; gap: 12px; font-weight: 900; }
+
+        /* FIXED "GET SKIN" BUTTON */
+        .fab-container { position: fixed; bottom: 40px; left: 40px; z-index: 100; }
+        .fab { 
+            height: 60px; padding: 0 32px; background: #fff; color: #000; 
+            border-radius: 20px; border: none; display: flex; align-items: center; 
+            gap: 12px; font-weight: 900; font-family: inherit;
+        }
 
         /* MODALS */
         .modal-overlay { 
@@ -136,119 +145,14 @@
         </div>
     </div>
 
+    <div class="fab-container">
+        <button class="fab interactive" onclick="alert('Downloading...')">
+            <div class="mag">
+                <span class="material-symbols-rounded">download</span>
+                <span>GET SKIN</span>
+            </div>
+        </button>
+    </div>
+
     <div id="settings-modal" class="modal-overlay">
         <div class="modal-card">
-            <h2 style="color:white; margin-bottom:10px;">UI Settings</h2>
-            <div class="setting-row"><span>Radial Background Mask</span><input type="checkbox" checked onchange="document.getElementById('mask-layer').classList.toggle('radial-mask')"></div>
-            <div class="setting-row"><span>Glass Blur Intensity</span><input type="range" min="0" max="100" value="40" oninput="document.documentElement.style.setProperty('--blur', this.value + 'px')"></div>
-            <button onclick="closeModals()" style="background:#fff; color:#000; padding:15px; border:none; border-radius:12px; font-weight:900; margin-top:10px;">DONE</button>
-        </div>
-    </div>
-
-    <div id="admin-modal" class="modal-overlay">
-        <div class="modal-card">
-            <h2 style="color:white;">Admin Access</h2>
-            <input type="text" id="new-name" placeholder="Skin Name">
-            <input type="text" id="new-ver" placeholder="Version">
-            <input type="text" id="new-video" placeholder="Video Link/File">
-            <textarea id="new-desc" placeholder="Description..."></textarea>
-            <button onclick="addNewSkin()" style="background:var(--primary); color:#000; padding:15px; border:none; border-radius:12px; font-weight:900;">ADD TO HISTORY</button>
-            <button onclick="closeModals()" style="background:none; border:none; color:white; opacity:0.5; margin-top:10px;">CANCEL</button>
-        </div>
-    </div>
-
-    <script>
-        const DB_KEY = 'pix_final_db_v5';
-        const DEFAULT_SKINS = [{ name: "The Ember Knight", version: "V3.0", desc: "Custom lava flows.", video: "skin-preview.mp4" }];
-        let skins = JSON.parse(localStorage.getItem(DB_KEY)) || DEFAULT_SKINS;
-        let currentIdx = 0;
-
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; document.body.classList.add('modal-open'); }
-        function closeModals() { 
-            document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); 
-            document.body.classList.remove('modal-open');
-        }
-        window.onkeydown = (e) => { if (e.shiftKey && e.key.toUpperCase() === 'A') openModal('admin-modal'); };
-
-        function updateUI() {
-            const skin = skins[currentIdx];
-            document.getElementById('skin-title').textContent = skin.name;
-            document.getElementById('skin-badge').textContent = skin.version;
-            document.getElementById('skin-desc').textContent = skin.desc;
-            document.getElementById('bg-video').src = skin.video;
-            const list = document.getElementById('history-list');
-            list.innerHTML = '';
-            skins.forEach((s, i) => {
-                const btn = document.createElement('button');
-                btn.className = `history-item interactive ${i === currentIdx ? 'active' : ''}`;
-                btn.innerHTML = `<div><span style="opacity:0.5; font-size:0.7rem; font-weight:900;">${s.version}</span><br>${s.name}</div>`;
-                btn.onclick = () => { currentIdx = i; updateUI(); };
-                list.appendChild(btn);
-            });
-        }
-
-        function addNewSkin() {
-            const n = document.getElementById('new-name').value, v = document.getElementById('new-ver').value,
-                  vid = document.getElementById('new-video').value, d = document.getElementById('new-desc').value;
-            if(n && v && vid) {
-                skins.unshift({ name: n, version: v, video: vid, desc: d });
-                localStorage.setItem(DB_KEY, JSON.stringify(skins));
-                currentIdx = 0; updateUI(); closeModals();
-            }
-        }
-
-        // CURSOR & MAGNETIC LOGIC
-        const dot = document.querySelector('#cursor-dot'), outline = document.querySelector('#cursor-outline');
-        let mX = 0, mY = 0, oX = 0, oY = 0, target = null;
-
-        window.addEventListener('mousemove', (e) => {
-            mX = e.clientX; mY = e.clientY;
-            
-            if (!document.body.classList.contains('modal-open')) {
-                const hit = e.target.closest('.interactive, button, .widget');
-                
-                if (hit !== target) {
-                    if (target) {
-                        const m = target.querySelector('.mag');
-                        if (m) m.style.transform = 'translate3d(0,0,0)';
-                    }
-                    target = hit;
-                    if (hit) { outline.classList.add('cursor-morph'); dot.style.opacity = 0; }
-                    else { outline.classList.remove('cursor-morph'); dot.style.opacity = 1; }
-                }
-
-                if (target) {
-                    const m = target.querySelector('.mag');
-                    if (m) {
-                        const r = target.getBoundingClientRect();
-                        const x = (mX - (r.left + r.width / 2)) * 0.35;
-                        const y = (mY - (r.top + r.height / 2)) * 0.35;
-                        m.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-                    }
-                }
-            }
-        });
-
-        function animate() {
-            dot.style.transform = `translate3d(${mX-3}px, ${mY-3}px, 0)`;
-            oX += (mX - oX) * 0.15; oY += (mY - oY) * 0.15;
-            
-            if (target && !document.body.classList.contains('modal-open')) {
-                const r = target.getBoundingClientRect();
-                outline.style.width = r.width + "px"; outline.style.height = r.height + "px";
-                outline.style.transform = `translate3d(${r.left}px, ${r.top}px, 0)`;
-                outline.style.borderRadius = getComputedStyle(target).borderRadius;
-            } else {
-                outline.style.width = "30px"; outline.style.height = "30px";
-                outline.style.transform = `translate3d(${oX - 15}px, ${oY - 15}px, 0)`;
-                outline.style.borderRadius = "50%";
-            }
-            requestAnimationFrame(animate);
-        }
-
-        setInterval(() => { document.getElementById('clock').textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); }, 1000);
-        updateUI();
-        animate();
-    </script>
-</body>
-</html>
