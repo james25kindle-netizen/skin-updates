@@ -18,7 +18,6 @@
         
         * { box-sizing: border-box; -webkit-font-smoothing: antialiased; margin: 0; padding: 0; }
         
-        /* Default cursor is hidden unless the 'modal-open' class is on the body */
         body { 
             background: var(--surface); color: #fff; 
             font-family: 'Google Sans Flex', sans-serif; overflow: hidden; height: 100vh; 
@@ -28,7 +27,7 @@
         body.modal-open { cursor: auto !important; }
         body.modal-open * { cursor: auto !important; }
 
-        /* BACKGROUND SYSTEM */
+        /* BACKGROUND */
         .video-bg-container { position: fixed; inset: 0; z-index: -1; background: #000; }
         .radial-mask {
             position: absolute; inset: 0;
@@ -37,22 +36,18 @@
         }
         #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; transition: opacity 0.5s; }
 
-        /* CURSOR SYSTEM */
+        /* CURSOR */
         #cursor-dot, #cursor-outline { 
             position: fixed; top: 0; left: 0; pointer-events: none; z-index: 10001; 
-            border-radius: 50%; will-change: transform; transition: opacity 0.3s;
+            border-radius: 50%; will-change: transform; transition: opacity 0.3s, width 0.2s, height 0.2s;
         }
         #cursor-dot { width: 6px; height: 6px; background: #fff; }
-        #cursor-outline { 
-            width: 30px; height: 30px; border: 1.5px solid white; mix-blend-mode: difference; 
-        }
+        #cursor-outline { width: 30px; height: 30px; border: 1.5px solid white; mix-blend-mode: difference; }
         .cursor-morph { background: transparent !important; border: 1.5px solid white !important; }
         
-        /* Hide custom cursor when modal is open */
-        body.modal-open #cursor-dot, 
-        body.modal-open #cursor-outline { opacity: 0; }
+        body.modal-open #cursor-dot, body.modal-open #cursor-outline { opacity: 0; }
 
-        /* NAV */
+        /* NAV & WIDGETS */
         nav { padding: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
         .widget { 
             padding: 12px 24px; background: rgba(255,255,255,0.1); 
@@ -60,10 +55,16 @@
             display: flex; align-items: center; gap: 12px; font-weight: 700; 
             border: 1px solid rgba(255,255,255,0.1); color: #FFFFFF !important;
         }
-        #clock, .widget .material-symbols-rounded { color: #FFFFFF !important; }
+        
+        /* MAGNETIC CONTAINER */
+        .mag { 
+            display: flex; align-items: center; gap: inherit; pointer-events: none; 
+            transition: transform 0.2s cubic-bezier(0.23, 1, 0.32, 1); 
+            will-change: transform;
+        }
+
         .settings-icon { transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
         .widget:hover .settings-icon { transform: rotate(90deg); }
-        .mag { display: flex; align-items: center; gap: inherit; pointer-events: none; }
 
         /* MAIN UI */
         .main-layout { display: grid; grid-template-columns: 1fr 400px; gap: 40px; max-width: 1400px; margin: 0 auto; padding: 0 40px; }
@@ -85,7 +86,7 @@
         .fab-container { position: fixed; bottom: 40px; left: 40px; }
         .fab { height: 60px; padding: 0 32px; background: #fff; color: #000; border-radius: 20px; border: none; display: flex; align-items: center; gap: 12px; font-weight: 900; }
 
-        /* MODAL SYSTEM */
+        /* MODALS */
         .modal-overlay { 
             position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 20000; 
             display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); 
@@ -98,7 +99,7 @@
         .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #222; }
     </style>
 </head>
-<body id="main-body">
+<body>
 
     <div id="cursor-dot"></div>
     <div id="cursor-outline"></div>
@@ -138,14 +139,8 @@
     <div id="settings-modal" class="modal-overlay">
         <div class="modal-card">
             <h2 style="color:white; margin-bottom:10px;">UI Settings</h2>
-            <div class="setting-row">
-                <span>Radial Background Mask</span>
-                <input type="checkbox" checked onchange="document.getElementById('mask-layer').classList.toggle('radial-mask')">
-            </div>
-            <div class="setting-row">
-                <span>Glass Blur Intensity</span>
-                <input type="range" min="0" max="100" value="40" oninput="document.documentElement.style.setProperty('--blur', this.value + 'px')">
-            </div>
+            <div class="setting-row"><span>Radial Background Mask</span><input type="checkbox" checked onchange="document.getElementById('mask-layer').classList.toggle('radial-mask')"></div>
+            <div class="setting-row"><span>Glass Blur Intensity</span><input type="range" min="0" max="100" value="40" oninput="document.documentElement.style.setProperty('--blur', this.value + 'px')"></div>
             <button onclick="closeModals()" style="background:#fff; color:#000; padding:15px; border:none; border-radius:12px; font-weight:900; margin-top:10px;">DONE</button>
         </div>
     </div>
@@ -163,16 +158,12 @@
     </div>
 
     <script>
-        const DB_KEY = 'pix_final_db_v4';
+        const DB_KEY = 'pix_final_db_v5';
         const DEFAULT_SKINS = [{ name: "The Ember Knight", version: "V3.0", desc: "Custom lava flows.", video: "skin-preview.mp4" }];
         let skins = JSON.parse(localStorage.getItem(DB_KEY)) || DEFAULT_SKINS;
         let currentIdx = 0;
 
-        // MODAL CURSOR LOGIC
-        function openModal(id) { 
-            document.getElementById(id).style.display = 'flex'; 
-            document.body.classList.add('modal-open');
-        }
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; document.body.classList.add('modal-open'); }
         function closeModals() { 
             document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); 
             document.body.classList.remove('modal-open');
@@ -185,7 +176,6 @@
             document.getElementById('skin-badge').textContent = skin.version;
             document.getElementById('skin-desc').textContent = skin.desc;
             document.getElementById('bg-video').src = skin.video;
-
             const list = document.getElementById('history-list');
             list.innerHTML = '';
             skins.forEach((s, i) => {
@@ -207,24 +197,42 @@
             }
         }
 
+        // CURSOR & MAGNETIC LOGIC
         const dot = document.querySelector('#cursor-dot'), outline = document.querySelector('#cursor-outline');
         let mX = 0, mY = 0, oX = 0, oY = 0, target = null;
 
         window.addEventListener('mousemove', (e) => {
             mX = e.clientX; mY = e.clientY;
+            
             if (!document.body.classList.contains('modal-open')) {
                 const hit = e.target.closest('.interactive, button, .widget');
+                
                 if (hit !== target) {
+                    if (target) {
+                        const m = target.querySelector('.mag');
+                        if (m) m.style.transform = 'translate3d(0,0,0)';
+                    }
                     target = hit;
                     if (hit) { outline.classList.add('cursor-morph'); dot.style.opacity = 0; }
                     else { outline.classList.remove('cursor-morph'); dot.style.opacity = 1; }
+                }
+
+                if (target) {
+                    const m = target.querySelector('.mag');
+                    if (m) {
+                        const r = target.getBoundingClientRect();
+                        const x = (mX - (r.left + r.width / 2)) * 0.35;
+                        const y = (mY - (r.top + r.height / 2)) * 0.35;
+                        m.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+                    }
                 }
             }
         });
 
         function animate() {
             dot.style.transform = `translate3d(${mX-3}px, ${mY-3}px, 0)`;
-            oX += (mX - oX) * 0.2; oY += (mY - oY) * 0.2;
+            oX += (mX - oX) * 0.15; oY += (mY - oY) * 0.15;
+            
             if (target && !document.body.classList.contains('modal-open')) {
                 const r = target.getBoundingClientRect();
                 outline.style.width = r.width + "px"; outline.style.height = r.height + "px";
