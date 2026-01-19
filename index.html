@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pix Updates | v3.0.5 Full Features</title>
+    <title>Pix Updates | v3.0.6</title>
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
     <style>
         :root {
+            /* Default values - JS will overwrite these with your saved settings */
             --primary: #FFB4AB; 
             --surface: #050505; 
             --card-bg: rgba(25, 25, 25, 0.7);
@@ -22,10 +23,23 @@
         body.custom-cursor-active { cursor: none; }
         body.modal-open { cursor: auto !important; }
 
+        /* LOADING SCREEN */
+        #loader {
+            position: fixed; inset: 0; background: #000; z-index: 99999;
+            display: flex; align-items: center; justify-content: center;
+            transition: opacity 0.8s ease-out, visibility 0.8s;
+        }
+        .pulse-logo { width: 80px; height: 80px; background: var(--primary); border-radius: 20px; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { transform: scale(0.9); opacity: 0.5; } 50% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(0.9); opacity: 0.5; } }
+
         /* BACKGROUND */
         .video-bg-container { position: fixed; inset: 0; z-index: -1; background: #000; }
         .radial-mask { position: absolute; inset: 0; mask-image: radial-gradient(circle at 70% 50%, black 40%, transparent 95%); -webkit-mask-image: radial-gradient(circle at 70% 50%, black 40%, transparent 95%); }
         #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: var(--video-opacity); transition: opacity 0.5s; }
+
+        /* GEAR SPIN */
+        .gear-icon { transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+        .widget:hover .gear-icon { transform: rotate(180deg); }
 
         /* CURSOR */
         #cursor-dot, #cursor-outline { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 10001; border-radius: 50%; will-change: transform; transition: opacity 0.3s; opacity: 0; }
@@ -44,25 +58,25 @@
         .unified-panel { background: var(--card-bg); border-radius: var(--radius-xl); padding: 32px; backdrop-filter: blur(var(--blur)); border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 20px; height: 580px; margin-top: 20px; }
         .history-item { padding: 16px; border-radius: 20px; display: block; width: 100%; text-align: left; border: none; background: transparent; color: #fff; margin-bottom: 8px; transition: 0.2s; cursor: pointer; }
         .history-item.active { background: rgba(255,255,255,0.15); border-left: 4px solid var(--primary); font-weight: 800; }
-        .badge { background: var(--primary); color: #000; padding: 4px 12px; border-radius: 10px; font-size: 0.7rem; font-weight: 900; transition: background 0.3s; }
+        .badge { background: var(--primary); color: #000; padding: 4px 12px; border-radius: 10px; font-size: 0.7rem; font-weight: 900; }
 
         .fab-container { position: fixed; bottom: 40px; left: 40px; z-index: 100; }
         .fab { height: 60px; padding: 0 32px; background: #fff; color: #000; border-radius: 20px; border: none; display: flex; align-items: center; gap: 12px; font-weight: 900; cursor: pointer; }
 
-        /* SETTINGS MODAL STYLING */
+        /* MODALS */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 20000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
         .modal-card { background: #111; padding: 40px; border-radius: var(--radius-xl); width: 500px; display: flex; flex-direction: column; gap: 25px; border: 1px solid #333; }
         .setting-row { display: flex; justify-content: space-between; align-items: center; }
-        .setting-row span { font-weight: 600; opacity: 0.8; }
-        input[type="range"] { accent-color: var(--primary); width: 150px; }
-        .color-presets { display: flex; gap: 10px; }
-        .color-dot { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
-        .color-dot:hover { border-color: white; }
+        .color-dot { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: transform 0.2s; }
+        .color-dot:hover { transform: scale(1.2); }
 
-        .admin-list { margin-top: 10px; overflow-y: auto; max-height: 200px; background: #000; border-radius: 12px; padding: 10px; }
+        /* VERSION TAG */
+        .version-tag { position: fixed; bottom: 20px; right: 30px; font-size: 0.7rem; font-weight: 700; opacity: 0.3; pointer-events: none; letter-spacing: 1px; }
     </style>
 </head>
 <body>
+
+    <div id="loader"><div class="pulse-logo"></div></div>
 
     <div id="cursor-dot"></div>
     <div id="cursor-outline"></div>
@@ -78,12 +92,12 @@
             <div class="mag">
                 <span class="material-symbols-rounded">schedule</span>
                 <span id="clock">00:00</span>
-                <span class="material-symbols-rounded" style="opacity: 0.5;">settings</span>
+                <span class="material-symbols-rounded gear-icon" style="opacity: 0.5;">settings</span>
             </div>
         </button>
         <div class="widget interactive">
             <div class="mag">
-                <span id="temp">43°F</span>
+                <span id="temp">--°F</span>
                 <span class="material-symbols-rounded">cloud</span>
             </div>
         </div>
@@ -95,7 +109,7 @@
             <div id="active-skin-content">
                 <span id="skin-badge" class="badge">V0.0</span>
                 <h2 id="skin-title" style="margin:15px 0 5px 0; font-size:2rem; font-weight:900;">Loading...</h2>
-                <p id="skin-desc" style="opacity:0.6; font-size:0.9rem;">Description...</p>
+                <p id="skin-desc" style="opacity:0.6; font-size:0.9rem;">Connecting to database...</p>
             </div>
             <hr style="border:none; border-top:1px solid rgba(255,255,255,0.1);">
             <div id="history-list" style="overflow-y: auto; flex-grow: 1;"></div>
@@ -108,85 +122,73 @@
         </button>
     </div>
 
+    <div class="version-tag">PIX UPDATES UI V3.0.6</div>
+
     <div id="settings-modal" class="modal-overlay">
         <div class="modal-card">
-            <h2 style="font-weight: 900; letter-spacing: -1px;">PREFERENCES</h2>
-            
+            <h2 style="font-weight: 900;">UI PREFERENCES</h2>
             <div class="setting-row">
                 <span>Accent Color</span>
-                <div class="color-presets">
-                    <div class="color-dot" style="background: #FFB4AB;" onclick="setAccent('#FFB4AB')"></div>
-                    <div class="color-dot" style="background: #D0BCFF;" onclick="setAccent('#D0BCFF')"></div>
-                    <div class="color-dot" style="background: #B4E4FF;" onclick="setAccent('#B4E4FF')"></div>
-                    <div class="color-dot" style="background: #C3FBAB;" onclick="setAccent('#C3FBAB')"></div>
+                <div style="display:flex; gap:10px;">
+                    <div class="color-dot" style="background: #FFB4AB;" onclick="updateSetting('--primary', '#FFB4AB')"></div>
+                    <div class="color-dot" style="background: #D0BCFF;" onclick="updateSetting('--primary', '#D0BCFF')"></div>
+                    <div class="color-dot" style="background: #B4E4FF;" onclick="updateSetting('--primary', '#B4E4FF')"></div>
+                    <div class="color-dot" style="background: #C3FBAB;" onclick="updateSetting('--primary', '#C3FBAB')"></div>
                 </div>
             </div>
-
             <div class="setting-row">
                 <span>Glass Blur</span>
-                <input type="range" min="0" max="80" value="40" oninput="document.documentElement.style.setProperty('--blur', this.value + 'px')">
+                <input type="range" min="0" max="80" value="40" oninput="updateSetting('--blur', this.value + 'px')">
             </div>
-
             <div class="setting-row">
                 <span>Video Dim</span>
-                <input type="range" min="1" max="10" value="7" oninput="document.documentElement.style.setProperty('--video-opacity', this.value/10)">
+                <input type="range" min="1" max="10" value="7" oninput="updateSetting('--video-opacity', this.value/10)">
             </div>
-
-            <button onclick="closeModals()" class="interactive" style="background:#fff; color:#000; padding:15px; border:none; border-radius:15px; font-weight:900; cursor:pointer; margin-top:10px;">SAVE CHANGES</button>
-        </div>
-    </div>
-
-    <div id="admin-modal" class="modal-overlay">
-        <div class="modal-card">
-            <h2>Admin Access</h2>
-            <input type="text" id="new-name" placeholder="Skin Name" style="background:#1a1a1a; border:1px solid #333; color:white; padding:10px; border-radius:8px;">
-            <input type="text" id="new-ver" placeholder="Version" style="background:#1a1a1a; border:1px solid #333; color:white; padding:10px; border-radius:8px;">
-            <input type="text" id="new-video" placeholder="Video Link" style="background:#1a1a1a; border:1px solid #333; color:white; padding:10px; border-radius:8px;">
-            <input type="text" id="new-dl" placeholder="Download Link" style="background:#1a1a1a; border:1px solid #333; color:white; padding:10px; border-radius:8px;">
-            <button onclick="addNewSkin()" class="interactive" style="background:var(--primary); padding:12px; border:none; border-radius:12px; font-weight:900; cursor:pointer;">ADD SKIN</button>
-            <div class="admin-list" id="admin-delete-list"></div>
-            <button onclick="closeModals()" class="interactive" style="background:none; color:white; opacity:0.5; border:none; cursor:pointer;">CLOSE</button>
+            <button onclick="closeModals()" class="interactive" style="background:#fff; color:#000; padding:15px; border:none; border-radius:15px; font-weight:900; cursor:pointer;">SAVE & CLOSE</button>
         </div>
     </div>
 
     <script>
-        // --- GITHUB MASTER LIST ---
+        // --- PERSISTENCE LOGIC ---
+        function updateSetting(variable, value) {
+            document.documentElement.style.setProperty(variable, value);
+            const settings = JSON.parse(localStorage.getItem('pix_user_prefs')) || {};
+            settings[variable] = value;
+            localStorage.setItem('pix_user_prefs', JSON.stringify(settings));
+        }
+
+        function loadSettings() {
+            const settings = JSON.parse(localStorage.getItem('pix_user_prefs')) || {};
+            for (const [key, val] of Object.entries(settings)) {
+                document.documentElement.style.setProperty(key, val);
+            }
+        }
+
+        // --- WEATHER (RELOAD EVERY 5 MINS) ---
+        async function fetchWeather() {
+            try {
+                const res = await fetch('https://wttr.in/?format=j1');
+                const data = await res.json();
+                document.getElementById('temp').textContent = data.current_condition[0].temp_F + "°F";
+                console.log("Weather updated.");
+            } catch (e) { document.getElementById('temp').textContent = "43°F"; }
+        }
+
+        // --- UI & DATA ---
         const GITHUB_MASTER_LIST = [
             { name: "The Ember Knight", version: "V3.0", desc: "Custom lava flows.", video: "skin-preview.mp4", dl: "ember.zip" },
             { name: "Neon Samurai", version: "V1.2", desc: "Blue neon trails.", video: "neon-preview.mp4", dl: "neon.zip" }
         ];
 
-        let customSkins = JSON.parse(localStorage.getItem('pix_skins_gh_v3_fixed')) || [];
-        let skins = [...customSkins, ...GITHUB_MASTER_LIST];
+        let skins = [...GITHUB_MASTER_LIST];
         let currentIdx = 0;
 
-        function openModal(id) { 
-            closeModals(); 
-            document.getElementById(id).style.display = 'flex'; 
-            document.body.classList.add('modal-open');
-            if(id === 'admin-modal') renderAdminList();
-        }
-
-        function closeModals() { 
-            document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); 
-            document.body.classList.remove('modal-open'); 
-        }
-
-        function setAccent(color) {
-            document.documentElement.style.setProperty('--primary', color);
-        }
-
-        function updateClock() {
-            document.getElementById('clock').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        }
-
         function updateUI() {
-            const s = skins[currentIdx] || skins[0];
+            const s = skins[currentIdx];
             document.getElementById('skin-title').textContent = s.name;
             document.getElementById('skin-badge').textContent = s.version;
-            document.getElementById('skin-desc').textContent = s.desc || "A custom Pix update skin.";
-            const video = document.getElementById('bg-video');
-            if(video.src !== s.video) { video.src = s.video; video.load(); }
+            document.getElementById('skin-desc').textContent = s.desc;
+            document.getElementById('bg-video').src = s.video;
             
             const list = document.getElementById('history-list');
             list.innerHTML = skins.map((skin, i) => `
@@ -196,7 +198,10 @@
             `).join('');
         }
 
-        // --- MAGNETIC CURSOR ---
+        // --- MODAL & CURSOR ---
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; document.body.classList.add('modal-open'); }
+        function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); document.body.classList.remove('modal-open'); }
+
         const dot = document.getElementById('cursor-dot'), outline = document.getElementById('cursor-outline');
         let mX = 0, mY = 0, oX = 0, oY = 0, target = null;
         document.body.classList.add('custom-cursor-active');
@@ -235,9 +240,25 @@
             requestAnimationFrame(animate);
         }
 
-        window.addEventListener('keydown', (e) => { if (e.shiftKey && e.key.toLowerCase() === 'a') openModal('admin-modal'); });
-        updateClock(); updateUI(); animate();
-        setInterval(updateClock, 1000);
+        // --- STARTUP ---
+        window.addEventListener('load', () => {
+            loadSettings();
+            updateUI();
+            fetchWeather();
+            animate();
+            document.getElementById('clock').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            // Hide Loader
+            setTimeout(() => { 
+                document.getElementById('loader').style.opacity = '0';
+                document.getElementById('loader').style.visibility = 'hidden';
+            }, 1000);
+        });
+
+        setInterval(fetchWeather, 300000); // 5 Mins
+        setInterval(() => {
+            document.getElementById('clock').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }, 1000);
     </script>
 </body>
 </html>
