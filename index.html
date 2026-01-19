@@ -11,10 +11,11 @@
             --primary: #BC161F; --surface: #FFF8F7; --surface-variant: #F5DDDA;
             --on-surface: #201A19; --card-bg: rgba(255, 255, 255, 0.85);
             --radius-xl: 32px; --radius-pill: 100px;
+            --blur: 30px;
         }
         body.dark-theme {
             --primary: #FFB4AB; --surface: #1A1110; --surface-variant: #332120;
-            --on-surface: #F1DFDD; --card-bg: rgba(43, 33, 32, 0.85);
+            --on-surface: #F1DFDD; --card-bg: rgba(43, 33, 32, 0.6);
         }
         
         * { cursor: none !important; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
@@ -40,11 +41,20 @@
 
         nav { padding: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
         
-        /* Added .mag class containers for the magnetic icon effect */
-        .widget { padding: 12px 20px; background: var(--surface-variant); border-radius: var(--radius-pill); display: flex; align-items: center; gap: 12px; font-weight: 700; text-decoration: none; color: inherit; transition: background 0.3s; border: none; }
-        .mag { display: flex; align-items: center; gap: inherit; pointer-events: none; transition: transform 0.1s ease-out; }
+        /* FIX: Changed background from surface-variant to card-bg for glass look */
+        .widget { 
+            padding: 12px 24px; 
+            background: var(--card-bg); 
+            backdrop-filter: blur(var(--blur));
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: var(--radius-pill); 
+            display: flex; align-items: center; gap: 12px; 
+            font-weight: 700; text-decoration: none; color: inherit; 
+            transition: all 0.3s ease; border: none; 
+        }
         
-        .settings-gear { display: flex; align-items: center; justify-content: center; padding: 4px; border-radius: 50%; margin-left: 8px; border: none; background: transparent; color: inherit; }
+        .mag { display: flex; align-items: center; gap: inherit; pointer-events: none; transition: transform 0.1s ease-out; }
+        .settings-gear { display: flex; align-items: center; justify-content: center; padding: 4px; border-radius: 50%; margin-left: 8px; border: none; background: transparent; color: inherit; opacity: 0.8; }
 
         #settings-pane {
             position: fixed; right: -400px; top: 20px; bottom: 20px; width: 350px;
@@ -64,14 +74,14 @@
 
         .unified-panel { 
             background: var(--card-bg); border-radius: var(--radius-xl); padding: 32px; 
-            backdrop-filter: blur(var(--blur, 30px)); border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(var(--blur)); border: 1px solid rgba(255,255,255,0.1);
             display: flex; flex-direction: column; gap: 24px; height: 550px; margin-top: 20px;
         }
 
         .badge { background: var(--primary); color: white; padding: 6px 14px; border-radius: var(--radius-pill); font-size: 0.75rem; font-weight: 800; width: fit-content; }
         .gallery-list { overflow-y: auto; padding-right: 8px; flex-grow: 1; }
         .history-item { padding: 16px; border-radius: 20px; display: block; width: 100%; text-align: left; border: none; background: transparent; color: inherit; font-family: inherit; margin-bottom: 8px; transition: all 0.2s; }
-        .history-item.active { background: var(--surface-variant); font-weight: 800; border-left: 6px solid var(--primary); }
+        .history-item.active { background: rgba(255,255,255,0.1); font-weight: 800; border-left: 6px solid var(--primary); }
 
         .fab-container { position: fixed; bottom: 40px; left: 40px; display: flex; gap: 16px; }
         .fab { height: 70px; padding: 0 28px; background: var(--on-surface); color: var(--surface); border-radius: 24px; border: none; display: flex; align-items: center; gap: 12px; font-weight: 800; text-decoration: none; }
@@ -207,7 +217,6 @@
             const hit = e.target.closest('.interactive, button, a, input, .history-item');
             
             if (hit !== target) {
-                // Reset old target's internal magnetic content
                 if (target) {
                     const oldMag = target.querySelector('.mag');
                     if (oldMag) oldMag.style.transform = `translate3d(0, 0, 0)`;
@@ -223,12 +232,10 @@
                 }
             }
 
-            // MAGNETIC ICON LOGIC: If hovering an interactive item, move the .mag content
             if (target) {
                 const magContent = target.querySelector('.mag');
                 if (magContent) {
                     const rect = target.getBoundingClientRect();
-                    // Calculate distance from center of button
                     const px = (mX - (rect.left + rect.width / 2)) * 0.2;
                     const py = (mY - (rect.top + rect.height / 2)) * 0.2;
                     magContent.style.transform = `translate3d(${px}px, ${py}px, 0)`;
