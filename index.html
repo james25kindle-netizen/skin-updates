@@ -44,8 +44,6 @@
         #cursor-dot { width: 6px; height: 6px; background: #fff; transform: translate(-50%, -50%); }
         #cursor-outline { width: 30px; height: 30px; border: 1.5px solid white; mix-blend-mode: difference; }
         .cursor-morph { background: transparent !important; border: 1.5px solid white !important; }
-        
-        body.modal-open #cursor-dot, body.modal-open #cursor-outline { opacity: 0; }
 
         /* NAV */
         nav { padding: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
@@ -56,8 +54,6 @@
             border: 1px solid rgba(255,255,255,0.1); color: #FFFFFF !important;
         }
         .mag { display: flex; align-items: center; gap: inherit; pointer-events: none; transition: transform 0.2s cubic-bezier(0.23, 1, 0.32, 1); }
-        .settings-icon { transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); margin-left: 8px; }
-        .widget:hover .settings-icon { transform: rotate(90deg); }
 
         /* MAIN UI */
         .main-layout { display: grid; grid-template-columns: 1fr 400px; gap: 40px; max-width: 1400px; margin: 0 auto; padding: 0 40px; }
@@ -72,19 +68,21 @@
             border: none; background: transparent; color: #fff; margin-bottom: 8px; transition: 0.2s; 
         }
         .history-item.active { background: rgba(255,255,255,0.15); border-left: 4px solid var(--primary); font-weight: 800; }
-        .badge { background: var(--primary); color: #000; padding: 4px 12px; border-radius: 10px; font-size: 0.7rem; font-weight: 900; transition: background 0.3s; }
+        .badge { background: var(--primary); color: #000; padding: 4px 12px; border-radius: 10px; font-size: 0.7rem; font-weight: 900; }
 
         .fab-container { position: fixed; bottom: 40px; left: 40px; z-index: 100; }
         .fab { height: 60px; padding: 0 32px; background: #fff; color: #000; border-radius: 20px; border: none; display: flex; align-items: center; gap: 12px; font-weight: 900; }
 
         /* MODALS */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 20000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
-        .modal-card { background: #111; padding: 40px; border-radius: var(--radius-xl); width: 450px; display: flex; flex-direction: column; gap: 15px; border: 1px solid #333; }
+        .modal-card { background: #111; padding: 40px; border-radius: var(--radius-xl); width: 480px; display: flex; flex-direction: column; gap: 15px; border: 1px solid #333; max-height: 90vh; }
         .setting-control { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #222; }
         .modal-card input, .modal-card textarea { background: #1a1a1a; border: 1px solid #333; color: white; padding: 12px; border-radius: 12px; font-family: inherit; width: 100%; }
         
-        .swatch-grid { display: flex; gap: 10px; margin-top: 5px; }
-        .swatch { width: 30px; height: 30px; border-radius: 8px; cursor: pointer; border: 2px solid transparent; }
+        /* ADMIN DELETE LIST */
+        .admin-list { margin-top: 10px; overflow-y: auto; max-height: 200px; background: #000; border-radius: 12px; padding: 10px; }
+        .admin-item { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #222; font-size: 0.8rem; }
+        .delete-btn { color: #ff5555; cursor: pointer; background: none; border: none; }
     </style>
 </head>
 <body>
@@ -103,7 +101,7 @@
             <div class="mag">
                 <span class="material-symbols-rounded" style="font-size: 20px;">schedule</span>
                 <span id="clock">00:00</span>
-                <span class="material-symbols-rounded settings-icon" style="font-size: 18px; opacity: 0.7;">settings</span>
+                <span class="material-symbols-rounded" style="font-size: 18px; opacity: 0.7;">settings</span>
             </div>
         </button>
         <div class="widget">
@@ -112,7 +110,7 @@
     </nav>
 
     <div class="main-layout">
-        <div><h1 class="hero-title">PIX<br><span id="primary-title" style="color: var(--primary); transition: color 0.3s;">UPDATES</span></h1></div>
+        <div><h1 class="hero-title">PIX<br><span id="primary-title" style="color: var(--primary);">UPDATES</span></h1></div>
         <div class="unified-panel">
             <div id="active-skin-content">
                 <span id="skin-badge" class="badge">V3.0</span>
@@ -136,23 +134,7 @@
     <div id="settings-modal" class="modal-overlay">
         <div class="modal-card">
             <h2 style="color:white;">UI Settings</h2>
-            <div class="setting-control">
-                <span>Theme Color</span>
-                <div class="swatch-grid">
-                    <div class="swatch" style="background: #FFB4AB;" onclick="setTheme('#FFB4AB')"></div>
-                    <div class="swatch" style="background: #A0E1FF;" onclick="setTheme('#A0E1FF')"></div>
-                    <div class="swatch" style="background: #B4FFAD;" onclick="setTheme('#B4FFAD')"></div>
-                    <div class="swatch" style="background: #FFD9AD;" onclick="setTheme('#FFD9AD')"></div>
-                </div>
-            </div>
-            <div class="setting-control">
-                <span>Vignette Mask</span>
-                <input type="checkbox" id="vignette-toggle" onchange="toggleVignette(this.checked)">
-            </div>
-            <div class="setting-control">
-                <span>Glass Blur</span>
-                <input type="range" id="blur-range" min="0" max="80" value="40" oninput="updateBlur(this.value)">
-            </div>
+            <div class="setting-control"><span>Glass Blur</span><input type="range" id="blur-range" min="0" max="80" value="40" oninput="updateBlur(this.value)"></div>
             <button onclick="closeModals()" style="background:#fff; color:#000; padding:15px; border:none; border-radius:12px; font-weight:900;">DONE</button>
         </div>
     </div>
@@ -161,69 +143,74 @@
         <div class="modal-card">
             <h2 style="color:white;">Admin Access</h2>
             <input type="text" id="new-name" placeholder="Skin Name">
-            <input type="text" id="new-ver" placeholder="Version (e.g. V1.0)">
+            <input type="text" id="new-ver" placeholder="Version">
             <input type="text" id="new-video" placeholder="Video Preview URL">
-            <input type="text" id="new-dl" placeholder="Download Link (Direct URL or filename)">
-            <textarea id="new-desc" placeholder="Brief description..." rows="3"></textarea>
-            <button onclick="addNewSkin()" style="background:var(--primary); color:#000; padding:15px; border:none; border-radius:12px; font-weight:900;">ADD TO HISTORY</button>
-            <button onclick="closeModals()" style="background:transparent; color:white; opacity:0.5; border:none;">CANCEL</button>
+            <input type="text" id="new-dl" placeholder="Download Link">
+            <textarea id="new-desc" placeholder="Description..." rows="2"></textarea>
+            <button onclick="addNewSkin()" style="background:var(--primary); color:#000; padding:12px; border:none; border-radius:12px; font-weight:900;">ADD SKIN</button>
+            
+            <p style="font-size: 0.7rem; opacity: 0.5; margin-top: 10px;">MANAGE SKINS</p>
+            <div class="admin-list" id="admin-delete-list"></div>
+            
+            <button onclick="closeModals()" style="background:transparent; color:white; opacity:0.5; border:none; margin-top: 5px;">CLOSE</button>
         </div>
     </div>
 
     <script>
-        const DB_SKINS = 'pix_skins_final';
-        const DB_SETTINGS = 'pix_settings_final';
-
+        const DB_SKINS = 'pix_skins_final_v11';
         let skins = JSON.parse(localStorage.getItem(DB_SKINS)) || [
             { name: "The Ember Knight", version: "V3.0", desc: "Custom lava flows.", video: "skin-preview.mp4", dl: "ember.zip" }
         ];
-        let settings = JSON.parse(localStorage.getItem(DB_SETTINGS)) || { theme: '#FFB4AB', blur: 40, vignette: true };
         let currentIdx = 0;
 
-        function applySettings() {
-            setTheme(settings.theme, false);
-            updateBlur(settings.blur, false);
-            toggleVignette(settings.vignette, false);
-            document.getElementById('blur-range').value = settings.blur;
-            document.getElementById('vignette-toggle').checked = settings.vignette;
+        // WEATHER LOGIC (Unfrozen)
+        let currentTemp = 72;
+        function updateWeather() {
+            currentTemp += (Math.random() - 0.5); // Drifts temp slightly every 30 seconds
+            document.getElementById('temp').textContent = Math.round(currentTemp) + "°F";
+        }
+        setInterval(updateWeather, 30000);
+        updateWeather();
+
+        // DELETE LOGIC
+        function deleteSkin(index) {
+            if (skins.length <= 1) return alert("You must have at least one skin.");
+            skins.splice(index, 1);
+            localStorage.setItem(DB_SKINS, JSON.stringify(skins));
+            currentIdx = 0;
+            updateUI();
+            renderAdminList();
         }
 
-        function setTheme(color, save = true) {
-            document.documentElement.style.setProperty('--primary', color);
-            if(save) { settings.theme = color; saveSettings(); }
+        function renderAdminList() {
+            const list = document.getElementById('admin-delete-list');
+            list.innerHTML = skins.map((s, i) => `
+                <div class="admin-item">
+                    <span>${s.name} (${s.version})</span>
+                    <button class="delete-btn" onclick="deleteSkin(${i})">
+                        <span class="material-symbols-rounded">delete</span>
+                    </button>
+                </div>
+            `).join('');
         }
-
-        function updateBlur(val, save = true) {
-            document.documentElement.style.setProperty('--blur', val + 'px');
-            if(save) { settings.blur = val; saveSettings(); }
-        }
-
-        function toggleVignette(checked, save = true) {
-            const mask = document.getElementById('mask-layer');
-            checked ? mask.classList.add('radial-mask') : mask.classList.remove('radial-mask');
-            if(save) { settings.vignette = checked; saveSettings(); }
-        }
-
-        function saveSettings() { localStorage.setItem(DB_SETTINGS, JSON.stringify(settings)); }
 
         function downloadSkin() {
             const s = skins[currentIdx];
-            if (!s.dl) return alert("No download file attached.");
-            const a = document.createElement('a');
-            a.href = s.dl;
-            a.download = s.dl.split('/').pop();
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+            if (!s.dl) return alert("No download attached.");
+            const a = document.createElement('a'); a.href = s.dl; a.download = s.dl.split('/').pop();
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
         }
 
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; document.body.classList.add('modal-open'); }
+        function openModal(id) { 
+            if(id === 'admin-modal') renderAdminList();
+            document.getElementById(id).style.display = 'flex'; 
+            document.body.classList.add('modal-open'); 
+        }
         function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); document.body.classList.remove('modal-open'); }
-        
         window.addEventListener('keydown', (e) => { if (e.shiftKey && e.key.toLowerCase() === 'a') openModal('admin-modal'); });
 
         function updateUI() {
-            const s = skins[currentIdx];
+            const s = skins[currentIdx] || skins[0];
             document.getElementById('skin-title').textContent = s.name;
             document.getElementById('skin-badge').textContent = s.version;
             document.getElementById('skin-desc').textContent = s.desc;
@@ -247,13 +234,12 @@
             if(n && v) {
                 skins.unshift({ name: n, version: v, video: vid, dl: dl, desc: d });
                 localStorage.setItem(DB_SKINS, JSON.stringify(skins));
-                currentIdx = 0; updateUI(); closeModals();
+                currentIdx = 0; updateUI(); renderAdminList();
             }
         }
 
         const dot = document.getElementById('cursor-dot'), outline = document.getElementById('cursor-outline');
         let mX = 0, mY = 0, oX = 0, oY = 0, target = null;
-
         window.addEventListener('mousemove', (e) => {
             mX = e.clientX; mY = e.clientY;
             if (!document.body.classList.contains('modal-open')) {
@@ -294,7 +280,6 @@
 
         setInterval(() => { document.getElementById('clock').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }, 1000);
 
-        applySettings();
         updateUI();
         animate();
     </script>
