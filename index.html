@@ -32,7 +32,7 @@
         }
         #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; pointer-events: none; transition: opacity 0.3s ease; }
 
-        /* CURSOR ENGINE STYLES */
+        /* CURSOR ENGINE */
         #cursor-dot, #cursor-outline { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 10001; border-radius: 50%; will-change: transform; }
         #cursor-dot { width: 6px; height: 6px; background: var(--primary); transition: opacity 0.2s; }
         #cursor-outline { width: 30px; height: 30px; border: 1.5px solid var(--on-surface); mix-blend-mode: difference; transition: width 0.2s, height 0.2s, border-radius 0.2s, background 0.2s; }
@@ -40,7 +40,10 @@
 
         nav { padding: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
         
+        /* Added .mag class containers for the magnetic icon effect */
         .widget { padding: 12px 20px; background: var(--surface-variant); border-radius: var(--radius-pill); display: flex; align-items: center; gap: 12px; font-weight: 700; text-decoration: none; color: inherit; transition: background 0.3s; border: none; }
+        .mag { display: flex; align-items: center; gap: inherit; pointer-events: none; transition: transform 0.1s ease-out; }
+        
         .settings-gear { display: flex; align-items: center; justify-content: center; padding: 4px; border-radius: 50%; margin-left: 8px; border: none; background: transparent; color: inherit; }
 
         #settings-pane {
@@ -76,7 +79,6 @@
         #admin-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 20000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
         #admin-modal { background: var(--surface); padding: 40px; border-radius: var(--radius-xl); width: 500px; display: flex; flex-direction: column; gap: 15px; }
         
-        /* Interactive Class for Cursor Morphing */
         .interactive, input, button, a, .history-item { pointer-events: auto; }
     </style>
 </head>
@@ -99,7 +101,9 @@
             <label>VIDEO BACKGROUND OPACITY</label>
             <input type="range" id="opacity-slider" class="interactive" min="0.1" max="1" step="0.1" value="0.7" oninput="updateOpacity(this.value)" style="width:100%;">
         </div>
-        <button class="interactive" onclick="toggleSettings(false)" style="background:var(--on-surface); color:var(--surface); border:none; padding:12px; border-radius:12px; width:100%; font-weight:800;">CLOSE</button>
+        <button class="interactive" onclick="toggleSettings(false)" style="background:var(--on-surface); color:var(--surface); border:none; padding:12px; border-radius:12px; width:100%; font-weight:800;">
+            <span class="mag">CLOSE</span>
+        </button>
     </div>
 
     <div class="video-bg-container">
@@ -108,15 +112,19 @@
 
     <nav>
         <button class="widget interactive" onclick="toggleSettings(true)">
-            <span class="material-symbols-rounded">schedule</span> 
-            <span id="clock" style="margin-left:8px">--:--</span>
-            <div class="settings-gear">
-                <span class="material-symbols-rounded" style="font-size: 20px;">settings</span>
+            <div class="mag">
+                <span class="material-symbols-rounded">schedule</span> 
+                <span id="clock" style="margin-left:8px">--:--</span>
+                <div class="settings-gear">
+                    <span class="material-symbols-rounded" style="font-size: 20px;">settings</span>
+                </div>
             </div>
         </button>
         <div class="widget">
-            <span id="temp">--°</span> 
-            <div id="weather-icon"><span class="material-symbols-rounded">sunny</span></div>
+            <div class="mag">
+                <span id="temp">--°</span> 
+                <div id="weather-icon"><span class="material-symbols-rounded">sunny</span></div>
+            </div>
         </div>
     </nav>
 
@@ -138,7 +146,9 @@
 
     <div class="fab-container">
         <button class="fab interactive" onclick="alert('Downloading Skin...')">
-            <span class="material-symbols-rounded">download</span> <span>GET SKIN</span>
+            <div class="mag">
+                <span class="material-symbols-rounded">download</span> <span>GET SKIN</span>
+            </div>
         </button>
     </div>
 
@@ -149,8 +159,12 @@
             <input type="text" id="new-ver" placeholder="Version" style="padding:12px; border-radius:8px; border:1px solid #ddd;">
             <input type="text" id="new-video" placeholder="Video URL" style="padding:12px; border-radius:8px; border:1px solid #ddd;">
             <textarea id="new-desc" placeholder="Description" style="padding:12px; border-radius:8px; border:1px solid #ddd; height:80px;"></textarea>
-            <button class="interactive" style="background:var(--on-surface); color:var(--surface); padding:16px; border:none; border-radius:12px; font-weight:900;" onclick="addNewSkin()">SAVE VERSION</button>
-            <button class="interactive" onclick="toggleModal(false)" style="background:none; border:none; color:var(--primary); font-weight:700; margin-top:10px;">CLOSE</button>
+            <button class="interactive" style="background:var(--on-surface); color:var(--surface); padding:16px; border:none; border-radius:12px; font-weight:900;" onclick="addNewSkin()">
+                <span class="mag">SAVE VERSION</span>
+            </button>
+            <button class="interactive" onclick="toggleModal(false)" style="background:none; border:none; color:var(--primary); font-weight:700; margin-top:10px;">
+                <span class="mag">CLOSE</span>
+            </button>
         </div>
     </div>
 
@@ -184,16 +198,21 @@
             } catch (e) { document.getElementById('temp').textContent = "72°F"; }
         }
 
-        /* FIXED CURSOR ENGINE */
         const dot = document.querySelector('#cursor-dot');
         const outline = document.querySelector('#cursor-outline');
         let mX = 0, mY = 0, oX = 0, oY = 0, target = null;
 
         window.addEventListener('mousemove', (e) => {
             mX = e.clientX; mY = e.clientY;
-            // This checks for the "interactive" class or standard clickable tags
             const hit = e.target.closest('.interactive, button, a, input, .history-item');
+            
             if (hit !== target) {
+                // Reset old target's internal magnetic content
+                if (target) {
+                    const oldMag = target.querySelector('.mag');
+                    if (oldMag) oldMag.style.transform = `translate3d(0, 0, 0)`;
+                }
+                
                 target = hit;
                 if (hit) { 
                     outline.classList.add('cursor-morph'); 
@@ -201,6 +220,18 @@
                 } else { 
                     outline.classList.remove('cursor-morph'); 
                     dot.style.opacity = 1; 
+                }
+            }
+
+            // MAGNETIC ICON LOGIC: If hovering an interactive item, move the .mag content
+            if (target) {
+                const magContent = target.querySelector('.mag');
+                if (magContent) {
+                    const rect = target.getBoundingClientRect();
+                    // Calculate distance from center of button
+                    const px = (mX - (rect.left + rect.width / 2)) * 0.2;
+                    const py = (mY - (rect.top + rect.height / 2)) * 0.2;
+                    magContent.style.transform = `translate3d(${px}px, ${py}px, 0)`;
                 }
             }
         });
