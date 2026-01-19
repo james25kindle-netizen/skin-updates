@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pix Updates | v3.0.7 Expressive</title>
+    <title>Pix Updates | v3.0.8</title>
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <style>
@@ -36,20 +36,20 @@
         .radial-mask { position: absolute; inset: 0; mask-image: radial-gradient(circle at 70% 50%, black 40%, transparent 95%); -webkit-mask-image: radial-gradient(circle at 70% 50%, black 40%, transparent 95%); }
         #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: var(--video-opacity); transition: opacity 0.5s; }
 
-        /* GEAR SPIN */
+        /* GEAR SPIN (COUNTERCLOCKWISE) */
         .gear-icon { transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        .widget:hover .gear-icon { transform: rotate(180deg); }
+        .widget:hover .gear-icon { transform: rotate(-180deg); }
 
-        /* WEATHER EXPRESSIVE ANIMATION */
+        /* WEATHER EXPRESSIVE ANIMATION (COUNTERCLOCKWISE) */
         .weather-icon { transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); display: inline-block; }
         .weather-updating .weather-icon { 
-            animation: m3-sync 1.2s infinite cubic-bezier(0.45, 0, 0.55, 1); 
+            animation: m3-sync-ccw 1.2s infinite cubic-bezier(0.45, 0, 0.55, 1); 
             color: var(--primary);
         }
-        @keyframes m3-sync {
+        @keyframes m3-sync-ccw {
             0% { transform: rotate(0deg) scale(1); }
-            50% { transform: rotate(180deg) scale(1.2); }
-            100% { transform: rotate(360deg) scale(1); }
+            50% { transform: rotate(-180deg) scale(1.2); }
+            100% { transform: rotate(-360deg) scale(1); }
         }
 
         /* CURSOR */
@@ -132,7 +132,7 @@
         </button>
     </div>
 
-    <div class="version-tag">PIX UPDATES UI V3.0.7</div>
+    <div class="version-tag">PIX UPDATES UI V3.0.8</div>
 
     <div id="settings-modal" class="modal-overlay">
         <div class="modal-card">
@@ -174,28 +174,25 @@
             }
         }
 
-        // --- WEATHER (EXPRESSIVE RELOAD) ---
+        // --- WEATHER (EXPRESSIVE RELOAD CCW) ---
         async function fetchWeather() {
             const widget = document.getElementById('weather-widget');
             const icon = document.getElementById('weather-icon');
             const originalIcon = icon.textContent;
 
-            // 1. Start Expressive Animation
             widget.classList.add('weather-updating');
-            icon.textContent = 'sync'; // Swap to refresh icon
+            icon.textContent = 'sync'; 
             
             try {
                 const res = await fetch('https://wttr.in/?format=j1');
                 const data = await res.json();
-                // Artificial delay to appreciate the animation
                 await new Promise(r => setTimeout(r, 1500)); 
                 document.getElementById('temp').textContent = data.current_condition[0].temp_F + "°F";
             } catch (e) { 
                 document.getElementById('temp').textContent = "43°F"; 
             } finally {
-                // 2. End Animation
                 widget.classList.remove('weather-updating');
-                icon.textContent = originalIcon; // Swap back to cloud
+                icon.textContent = originalIcon;
             }
         }
 
@@ -263,7 +260,6 @@
             requestAnimationFrame(animate);
         }
 
-        // --- STARTUP ---
         window.addEventListener('load', () => {
             loadSettings();
             updateUI();
