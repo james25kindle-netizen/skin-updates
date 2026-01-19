@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pix Updates | Pro Edition</title>
+    <title>Pix Updates | GitHub Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
     <style>
@@ -17,56 +17,28 @@
         }
         
         * { box-sizing: border-box; -webkit-font-smoothing: antialiased; margin: 0; padding: 0; }
-        
-        body { 
-            background: var(--surface); color: #fff; 
-            font-family: 'Google Sans Flex', sans-serif; overflow: hidden; height: 100vh; 
-            cursor: none; 
-        }
-        
+        body { background: var(--surface); color: #fff; font-family: 'Google Sans Flex', sans-serif; overflow: hidden; height: 100vh; cursor: none; }
         body.modal-open { cursor: auto !important; }
-        body.modal-open * { cursor: auto !important; }
 
         /* BACKGROUND */
         .video-bg-container { position: fixed; inset: 0; z-index: -1; background: #000; }
-        .radial-mask {
-            position: absolute; inset: 0;
-            mask-image: radial-gradient(circle at 70% 50%, black 40%, transparent 95%);
-            -webkit-mask-image: radial-gradient(circle at 70% 50%, black 40%, transparent 95%);
-        }
+        .radial-mask { position: absolute; inset: 0; mask-image: radial-gradient(circle at 70% 50%, black 40%, transparent 95%); -webkit-mask-image: radial-gradient(circle at 70% 50%, black 40%, transparent 95%); }
         #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; transition: opacity 0.5s; }
 
         /* CURSOR */
-        #cursor-dot, #cursor-outline { 
-            position: fixed; top: 0; left: 0; pointer-events: none; z-index: 10001; 
-            border-radius: 50%; will-change: transform; transition: opacity 0.3s;
-        }
+        #cursor-dot, #cursor-outline { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 10001; border-radius: 50%; will-change: transform; transition: opacity 0.3s; }
         #cursor-dot { width: 6px; height: 6px; background: #fff; transform: translate(-50%, -50%); }
         #cursor-outline { width: 30px; height: 30px; border: 1.5px solid white; mix-blend-mode: difference; }
         .cursor-morph { background: transparent !important; border: 1.5px solid white !important; }
 
-        /* NAV */
+        /* UI ELEMENTS */
         nav { padding: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
-        .widget { 
-            padding: 12px 24px; background: rgba(255,255,255,0.1); 
-            backdrop-filter: blur(var(--blur)); border-radius: var(--radius-pill); 
-            display: flex; align-items: center; gap: 12px; font-weight: 700; 
-            border: 1px solid rgba(255,255,255,0.1); color: #FFFFFF !important;
-        }
+        .widget { padding: 12px 24px; background: rgba(255,255,255,0.1); backdrop-filter: blur(var(--blur)); border-radius: var(--radius-pill); display: flex; align-items: center; gap: 12px; font-weight: 700; border: 1px solid rgba(255,255,255,0.1); color: #fff; }
         .mag { display: flex; align-items: center; gap: inherit; pointer-events: none; transition: transform 0.2s cubic-bezier(0.23, 1, 0.32, 1); }
-
-        /* MAIN UI */
         .main-layout { display: grid; grid-template-columns: 1fr 400px; gap: 40px; max-width: 1400px; margin: 0 auto; padding: 0 40px; }
         .hero-title { font-size: 6.5rem; font-weight: 900; letter-spacing: -5px; line-height: 0.85; margin-top: 60px; pointer-events: none; }
-        .unified-panel { 
-            background: var(--card-bg); border-radius: var(--radius-xl); padding: 32px; 
-            backdrop-filter: blur(var(--blur)); border: 1px solid rgba(255,255,255,0.05); 
-            display: flex; flex-direction: column; gap: 20px; height: 580px; margin-top: 20px; 
-        }
-        .history-item { 
-            padding: 16px; border-radius: 20px; display: block; width: 100%; text-align: left; 
-            border: none; background: transparent; color: #fff; margin-bottom: 8px; transition: 0.2s; 
-        }
+        .unified-panel { background: var(--card-bg); border-radius: var(--radius-xl); padding: 32px; backdrop-filter: blur(var(--blur)); border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 20px; height: 580px; margin-top: 20px; }
+        .history-item { padding: 16px; border-radius: 20px; display: block; width: 100%; text-align: left; border: none; background: transparent; color: #fff; margin-bottom: 8px; transition: 0.2s; }
         .history-item.active { background: rgba(255,255,255,0.15); border-left: 4px solid var(--primary); font-weight: 800; }
         .badge { background: var(--primary); color: #000; padding: 4px 12px; border-radius: 10px; font-size: 0.7rem; font-weight: 900; }
 
@@ -76,13 +48,8 @@
         /* MODALS */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 20000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
         .modal-card { background: #111; padding: 40px; border-radius: var(--radius-xl); width: 480px; display: flex; flex-direction: column; gap: 15px; border: 1px solid #333; max-height: 90vh; }
-        .setting-control { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #222; }
-        .modal-card input, .modal-card textarea { background: #1a1a1a; border: 1px solid #333; color: white; padding: 12px; border-radius: 12px; font-family: inherit; width: 100%; }
-        
-        /* ADMIN DELETE LIST */
         .admin-list { margin-top: 10px; overflow-y: auto; max-height: 200px; background: #000; border-radius: 12px; padding: 10px; }
         .admin-item { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #222; font-size: 0.8rem; }
-        .delete-btn { color: #ff5555; cursor: pointer; background: none; border: none; }
     </style>
 </head>
 <body>
@@ -92,20 +59,20 @@
 
     <div class="video-bg-container">
         <div id="mask-layer" class="radial-mask">
-            <video id="bg-video" autoplay muted loop playsinline src="skin-preview.mp4"></video>
+            <video id="bg-video" autoplay muted loop playsinline src=""></video>
         </div>
     </div>
 
     <nav>
         <button class="widget interactive" onclick="openModal('settings-modal')">
             <div class="mag">
-                <span class="material-symbols-rounded" style="font-size: 20px;">schedule</span>
+                <span class="material-symbols-rounded">schedule</span>
                 <span id="clock">00:00</span>
-                <span class="material-symbols-rounded" style="font-size: 18px; opacity: 0.7;">settings</span>
+                <span class="material-symbols-rounded" style="opacity: 0.5;">settings</span>
             </div>
         </button>
         <div class="widget">
-            <div class="mag"><span id="temp">72°F</span><span class="material-symbols-rounded">dark_mode</span></div>
+            <div class="mag"><span id="temp">72°F</span><span class="material-symbols-rounded">cloud</span></div>
         </div>
     </nav>
 
@@ -113,9 +80,9 @@
         <div><h1 class="hero-title">PIX<br><span id="primary-title" style="color: var(--primary);">UPDATES</span></h1></div>
         <div class="unified-panel">
             <div id="active-skin-content">
-                <span id="skin-badge" class="badge">V3.0</span>
+                <span id="skin-badge" class="badge">V0.0</span>
                 <h2 id="skin-title" style="margin:15px 0 5px 0; font-size:2rem; font-weight:900;">Loading...</h2>
-                <p id="skin-desc" style="opacity:0.6; font-size:0.9rem;">Description here.</p>
+                <p id="skin-desc" style="opacity:0.6; font-size:0.9rem;">Description...</p>
             </div>
             <hr style="border:none; border-top:1px solid rgba(255,255,255,0.1);">
             <div id="history-list" style="overflow-y: auto; flex-grow: 1;"></div>
@@ -124,96 +91,62 @@
 
     <div class="fab-container">
         <button class="fab interactive" onclick="downloadSkin()">
-            <div class="mag">
-                <span class="material-symbols-rounded">download</span>
-                <span>GET SKIN</span>
-            </div>
+            <div class="mag"><span class="material-symbols-rounded">download</span><span>GET SKIN</span></div>
         </button>
-    </div>
-
-    <div id="settings-modal" class="modal-overlay">
-        <div class="modal-card">
-            <h2 style="color:white;">UI Settings</h2>
-            <div class="setting-control"><span>Glass Blur</span><input type="range" id="blur-range" min="0" max="80" value="40" oninput="updateBlur(this.value)"></div>
-            <button onclick="closeModals()" style="background:#fff; color:#000; padding:15px; border:none; border-radius:12px; font-weight:900;">DONE</button>
-        </div>
     </div>
 
     <div id="admin-modal" class="modal-overlay">
         <div class="modal-card">
             <h2 style="color:white;">Admin Access</h2>
-            <input type="text" id="new-name" placeholder="Skin Name">
-            <input type="text" id="new-ver" placeholder="Version">
-            <input type="text" id="new-video" placeholder="Video Preview URL">
-            <input type="text" id="new-dl" placeholder="Download Link">
-            <textarea id="new-desc" placeholder="Description..." rows="2"></textarea>
-            <button onclick="addNewSkin()" style="background:var(--primary); color:#000; padding:12px; border:none; border-radius:12px; font-weight:900;">ADD SKIN</button>
-            
-            <p style="font-size: 0.7rem; opacity: 0.5; margin-top: 10px;">MANAGE SKINS</p>
+            <input type="text" id="new-name" placeholder="Skin Name" style="background:#1a1a1a; border:1px solid #333; color:white; padding:10px; border-radius:8px;">
+            <input type="text" id="new-ver" placeholder="Version" style="background:#1a1a1a; border:1px solid #333; color:white; padding:10px; border-radius:8px;">
+            <input type="text" id="new-video" placeholder="Video Link" style="background:#1a1a1a; border:1px solid #333; color:white; padding:10px; border-radius:8px;">
+            <input type="text" id="new-dl" placeholder="Download Link" style="background:#1a1a1a; border:1px solid #333; color:white; padding:10px; border-radius:8px;">
+            <button onclick="addNewSkin()" style="background:var(--primary); padding:12px; border:none; border-radius:12px; font-weight:900;">ADD SKIN</button>
             <div class="admin-list" id="admin-delete-list"></div>
-            
-            <button onclick="closeModals()" style="background:transparent; color:white; opacity:0.5; border:none; margin-top: 5px;">CLOSE</button>
+            <button onclick="closeModals()" style="background:none; color:white; opacity:0.5; border:none;">CLOSE</button>
         </div>
     </div>
 
     <script>
-        const DB_SKINS = 'pix_skins_final_v11';
-        let skins = JSON.parse(localStorage.getItem(DB_SKINS)) || [
-            { name: "The Ember Knight", version: "V3.0", desc: "Custom lava flows.", video: "skin-preview.mp4", dl: "ember.zip" }
+        // --- GITHUB MASTER LIST ---
+        // Add skins here manually so they appear for your friend on GitHub!
+        const GITHUB_MASTER_LIST = [
+            { 
+                name: "The Ember Knight", 
+                version: "V3.0", 
+                desc: "Custom lava flows and visor highlights.", 
+                video: "skin-preview.mp4", 
+                dl: "ember.zip" 
+            }
         ];
+
+        const DB_SKINS = 'pix_skins_gh_v1';
+        let customSkins = JSON.parse(localStorage.getItem(DB_SKINS)) || [];
+        // Combine GitHub skins with any the user added locally
+        let skins = [...customSkins, ...GITHUB_MASTER_LIST];
         let currentIdx = 0;
 
-        // WEATHER LOGIC (Unfrozen)
-        let currentTemp = 72;
+        // WEATHER & CLOCK
         function updateWeather() {
-            currentTemp += (Math.random() - 0.5); // Drifts temp slightly every 30 seconds
-            document.getElementById('temp').textContent = Math.round(currentTemp) + "°F";
+            const temp = 70 + Math.floor(Math.random() * 5);
+            document.getElementById('temp').textContent = temp + "°F";
         }
-        setInterval(updateWeather, 30000);
+        setInterval(updateWeather, 60000);
         updateWeather();
 
-        // DELETE LOGIC
-        function deleteSkin(index) {
-            if (skins.length <= 1) return alert("You must have at least one skin.");
-            skins.splice(index, 1);
-            localStorage.setItem(DB_SKINS, JSON.stringify(skins));
-            currentIdx = 0;
-            updateUI();
-            renderAdminList();
+        function updateClock() {
+            document.getElementById('clock').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
+        setInterval(updateClock, 1000);
+        updateClock();
 
-        function renderAdminList() {
-            const list = document.getElementById('admin-delete-list');
-            list.innerHTML = skins.map((s, i) => `
-                <div class="admin-item">
-                    <span>${s.name} (${s.version})</span>
-                    <button class="delete-btn" onclick="deleteSkin(${i})">
-                        <span class="material-symbols-rounded">delete</span>
-                    </button>
-                </div>
-            `).join('');
-        }
-
-        function downloadSkin() {
-            const s = skins[currentIdx];
-            if (!s.dl) return alert("No download attached.");
-            const a = document.createElement('a'); a.href = s.dl; a.download = s.dl.split('/').pop();
-            document.body.appendChild(a); a.click(); document.body.removeChild(a);
-        }
-
-        function openModal(id) { 
-            if(id === 'admin-modal') renderAdminList();
-            document.getElementById(id).style.display = 'flex'; 
-            document.body.classList.add('modal-open'); 
-        }
-        function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); document.body.classList.remove('modal-open'); }
-        window.addEventListener('keydown', (e) => { if (e.shiftKey && e.key.toLowerCase() === 'a') openModal('admin-modal'); });
-
+        // UI & DOWNLOAD
         function updateUI() {
-            const s = skins[currentIdx] || skins[0];
+            const s = skins[currentIdx];
             document.getElementById('skin-title').textContent = s.name;
             document.getElementById('skin-badge').textContent = s.version;
-            document.getElementById('skin-desc').textContent = s.desc;
+            document.getElementById('skin-desc').textContent = s.desc || "A custom Pix update skin.";
             document.getElementById('bg-video').src = s.video;
             
             const list = document.getElementById('history-list');
@@ -227,49 +160,73 @@
             });
         }
 
+        function downloadSkin() {
+            const s = skins[currentIdx];
+            if (!s.dl) return alert("No download file.");
+            window.open(s.dl, '_blank');
+        }
+
+        // ADMIN
+        function openModal(id) { 
+            if(id === 'admin-modal') renderAdminList();
+            document.getElementById(id).style.display = 'flex'; 
+            document.body.classList.add('modal-open'); 
+        }
+        function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); document.body.classList.remove('modal-open'); }
+        window.addEventListener('keydown', (e) => { if (e.shiftKey && e.key.toLowerCase() === 'a') openModal('admin-modal'); });
+
         function addNewSkin() {
-            const n = document.getElementById('new-name').value, v = document.getElementById('new-ver').value,
-                  vid = document.getElementById('new-video').value, dl = document.getElementById('new-dl').value,
-                  d = document.getElementById('new-desc').value;
+            const n = document.getElementById('new-name').value, v = document.getElementById('new-ver').value;
             if(n && v) {
-                skins.unshift({ name: n, version: v, video: vid, dl: dl, desc: d });
-                localStorage.setItem(DB_SKINS, JSON.stringify(skins));
-                currentIdx = 0; updateUI(); renderAdminList();
+                customSkins.unshift({ name: n, version: v, video: document.getElementById('new-video').value, dl: document.getElementById('new-dl').value });
+                localStorage.setItem(DB_SKINS, JSON.stringify(customSkins));
+                skins = [...customSkins, ...GITHUB_MASTER_LIST];
+                updateUI(); renderAdminList();
             }
         }
 
+        function renderAdminList() {
+            const list = document.getElementById('admin-delete-list');
+            list.innerHTML = skins.map((s, i) => `
+                <div class="admin-item"><span>${s.name}</span><button onclick="deleteSkin(${i})" style="color:red; background:none; border:none;">Delete</button></div>
+            `).join('');
+        }
+
+        function deleteSkin(i) {
+            // This only deletes from local custom skins for now
+            customSkins.splice(i, 1);
+            localStorage.setItem(DB_SKINS, JSON.stringify(customSkins));
+            skins = [...customSkins, ...GITHUB_MASTER_LIST];
+            updateUI(); renderAdminList();
+        }
+
+        // CURSOR ANIMATION
         const dot = document.getElementById('cursor-dot'), outline = document.getElementById('cursor-outline');
         let mX = 0, mY = 0, oX = 0, oY = 0, target = null;
         window.addEventListener('mousemove', (e) => {
             mX = e.clientX; mY = e.clientY;
-            if (!document.body.classList.contains('modal-open')) {
-                const hit = e.target.closest('.interactive, button, .widget, .fab');
-                if (hit !== target) {
-                    if (target) { const m = target.querySelector('.mag'); if (m) m.style.transform = 'translate3d(0,0,0)'; }
-                    target = hit;
-                    if (hit) { outline.classList.add('cursor-morph'); dot.style.opacity = 0; }
-                    else { outline.classList.remove('cursor-morph'); dot.style.opacity = 1; }
-                }
-                if (target) {
-                    const m = target.querySelector('.mag');
-                    if (m) {
-                        const r = target.getBoundingClientRect();
-                        const x = (mX - (r.left + r.width/2)) * 0.3;
-                        const y = (mY - (r.top + r.height/2)) * 0.3;
-                        m.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-                    }
-                }
+            const hit = e.target.closest('.interactive');
+            if (hit !== target) {
+                if (target) { const m = target.querySelector('.mag'); if(m) m.style.transform = ''; }
+                target = hit;
+                if (hit) { outline.classList.add('cursor-morph'); dot.style.opacity = 0; }
+                else { outline.classList.remove('cursor-morph'); dot.style.opacity = 1; }
+            }
+            if (target) {
+                const r = target.getBoundingClientRect();
+                const m = target.querySelector('.mag');
+                if(m) m.style.transform = `translate(${(mX-(r.left+r.width/2))*0.3}px, ${(mY-(r.top+r.height/2))*0.3}px)`;
             }
         });
 
         function animate() {
             dot.style.transform = `translate3d(${mX}px, ${mY}px, 0)`;
             oX += (mX - oX) * 0.15; oY += (mY - oY) * 0.15;
-            if (target && !document.body.classList.contains('modal-open')) {
+            if (target) {
                 const r = target.getBoundingClientRect();
                 outline.style.width = r.width + "px"; outline.style.height = r.height + "px";
                 outline.style.transform = `translate3d(${r.left}px, ${r.top}px, 0)`;
-                outline.style.borderRadius = getComputedStyle(target).borderRadius;
+                outline.style.borderRadius = "20px";
             } else {
                 outline.style.width = "30px"; outline.style.height = "30px";
                 outline.style.transform = `translate3d(${oX - 15}px, ${oY - 15}px, 0)`;
@@ -277,8 +234,6 @@
             }
             requestAnimationFrame(animate);
         }
-
-        setInterval(() => { document.getElementById('clock').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }, 1000);
 
         updateUI();
         animate();
