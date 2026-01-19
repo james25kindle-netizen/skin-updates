@@ -41,16 +41,24 @@
         }
         .cursor-morph { background: transparent !important; border: 1.5px solid white !important; }
 
-        /* NAV & WHITE CLOCK */
+        /* NAV & WHITE CLOCK + SETTINGS */
         nav { padding: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
         .widget { 
             padding: 12px 24px; background: rgba(255,255,255,0.1); 
             backdrop-filter: blur(var(--blur)); border-radius: var(--radius-pill); 
             display: flex; align-items: center; gap: 12px; font-weight: 700; 
             border: 1px solid rgba(255,255,255,0.1);
-            color: #FFFFFF !important; /* Force White Text */
+            color: #FFFFFF !important;
         }
-        #clock { color: #FFFFFF !important; text-shadow: 0 2px 8px rgba(0,0,0,0.5); }
+        
+        /* The clock text and icon color */
+        #clock, .widget .material-symbols-rounded { 
+            color: #FFFFFF !important; 
+            text-shadow: 0 2px 8px rgba(0,0,0,0.5); 
+            display: flex;
+            align-items: center;
+        }
+
         .mag { display: flex; align-items: center; gap: inherit; pointer-events: none; transition: transform 0.1s ease-out; }
 
         /* MAIN UI */
@@ -90,9 +98,14 @@
     </div>
 
     <nav>
-        <button class="widget interactive">
-            <div class="mag"><span class="material-symbols-rounded">schedule</span><span id="clock">--:--</span></div>
+        <button class="widget interactive" onclick="toggleAdmin(true)">
+            <div class="mag">
+                <span class="material-symbols-rounded" style="font-size: 20px;">schedule</span>
+                <span id="clock">--:--</span>
+                <span class="material-symbols-rounded" style="font-size: 18px; margin-left: 4px; opacity: 0.7;">settings</span>
+            </div>
         </button>
+        
         <div class="widget">
             <div class="mag"><span id="temp">72°F</span><span class="material-symbols-rounded">dark_mode</span></div>
         </div>
