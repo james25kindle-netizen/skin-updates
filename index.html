@@ -3,102 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pix Beta | v0.1.1 Final Fix</title>
+    <title>Pix Updates | v3.1.0 Velvet Void</title>
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    
     <style>
         :root {
             --primary: #FFB4AB; 
-            --surface: #050505; 
-            --card-bg: rgba(22, 22, 22, 0.9);
+            --surface: #020202; 
+            --card-bg: rgba(20, 20, 20, 0.7);
             --radius-xl: 32px; 
+            --radius-pill: 100px;
+            --blur: 40px;
+            --video-opacity: 0.7;
         }
         
-        html, body { background: #000; margin: 0; padding: 0; color: #fff; font-family: 'Google Sans Flex', sans-serif; height: 100vh; overflow: hidden; }
+        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; margin: 0; padding: 0; }
+        body { background: var(--surface); color: #fff; font-family: 'Google Sans Flex', sans-serif; overflow: hidden; height: 100vh; cursor: auto; }
+        body.custom-cursor-active { cursor: none; }
+        body.modal-open { cursor: auto !important; }
 
-        /* THE CLICK BLOCKER FIX */
+        /* VELVET LOADER */
         #loader {
             position: fixed; inset: 0; background: #000; z-index: 99999;
             display: flex; align-items: center; justify-content: center;
-            transition: opacity 0.5s ease;
+            transition: opacity 0.8s ease-out, visibility 0.8s;
         }
-        /* When this class is added via JS, the loader physically vanishes */
-        .loader-hidden { opacity: 0; pointer-events: none; visibility: hidden; }
+        .pulse-logo { width: 80px; height: 80px; background: var(--primary); border-radius: 24px; animation: m3-expressive-pulse 2s infinite cubic-bezier(0.34, 1.56, 0.64, 1); }
+        @keyframes m3-expressive-pulse { 0% { transform: scale(0.8); border-radius: 40px; } 50% { transform: scale(1.1); border-radius: 20px; } 100% { transform: scale(0.8); border-radius: 40px; } }
 
-        .pulse-logo { width: 80px; height: 80px; background: var(--primary); border-radius: 28px; animation: m3-pulse 2s infinite cubic-bezier(0.34, 1.56, 0.64, 1); }
-        @keyframes m3-pulse { 0%, 100% { transform: scale(0.8); border-radius: 45px; } 50% { transform: scale(1.1); border-radius: 20px; } }
+        /* BACKGROUND */
+        .video-bg-container { position: fixed; inset: 0; z-index: -1; background: #000; }
+        .radial-mask { position: absolute; inset: 0; mask-image: radial-gradient(circle at 70% 50%, black 40%, transparent 95%); -webkit-mask-image: radial-gradient(circle at 70% 50%, black 40%, transparent 95%); }
+        #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: var(--video-opacity); transition: opacity 0.5s; }
 
-        /* UI LAYOUT */
+        /* CURSOR SYSTEM */
+        #cursor-dot, #cursor-outline { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 10001; border-radius: 50%; will-change: transform; transition: opacity 0.3s; opacity: 0; }
+        #cursor-dot { width: 6px; height: 6px; background: #fff; transform: translate(-50%, -50%); }
+        #cursor-outline { width: 30px; height: 30px; border: 1.5px solid white; mix-blend-mode: difference; }
+        .cursor-morph { background: transparent !important; border: 1.5px solid white !important; }
+
+        /* INTERFACE */
         nav { padding: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
-        .widget { padding: 12px 24px; background: rgba(255,255,255,0.08); backdrop-filter: blur(30px); border-radius: 100px; display: flex; align-items: center; gap: 12px; font-weight: 700; border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; }
-
-        .main-layout { display: grid; grid-template-columns: 1fr 420px; gap: 40px; max-width: 1400px; margin: 0 auto; padding: 0 40px; }
+        .widget { padding: 12px 24px; background: rgba(255,255,255,0.08); backdrop-filter: blur(var(--blur)); border-radius: var(--radius-pill); display: flex; align-items: center; gap: 12px; font-weight: 700; border: 1px solid rgba(255,255,255,0.1); color: #fff; text-decoration: none; cursor: pointer; transition: background 0.3s; }
+        .mag { display: flex; align-items: center; gap: inherit; pointer-events: none; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        
+        .main-layout { display: grid; grid-template-columns: 1fr 400px; gap: 40px; max-width: 1400px; margin: 0 auto; padding: 0 40px; }
         .hero-title { font-size: 6.5rem; font-weight: 900; letter-spacing: -5px; line-height: 0.85; margin-top: 60px; pointer-events: none; }
         
-        .unified-panel { background: var(--card-bg); border-radius: var(--radius-xl); padding: 32px; backdrop-filter: blur(30px); border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 20px; height: 600px; margin-top: 20px; }
-        
-        /* MODALS */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 20000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
-        .modal-card { background: #0c0c0c; padding: 40px; border-radius: var(--radius-xl); width: 620px; border: 1px solid #222; position: relative; z-index: 20001; }
-        
-        #skin-viewport { width: 100%; height: 380px; background: #000; border-radius: 24px; margin: 20px 0; border: 1px solid #333; cursor: grab; }
-        
-        .btn-m3 { background: #fff; color: #000; padding: 18px; border-radius: 20px; font-weight: 900; border: none; cursor: pointer; width: 100%; transition: 0.2s; position: relative; }
-        .btn-m3:hover { background: var(--primary); transform: translateY(-2px); }
-        .btn-m3:active { transform: translateY(0); }
+        .unified-panel { background: var(--card-bg); border-radius: var(--radius-xl); padding: 32px; backdrop-filter: blur(var(--blur)); border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 20px; height: 580px; margin-top: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .history-item { padding: 16px; border-radius: 20px; display: block; width: 100%; text-align: left; border: none; background: transparent; color: #fff; margin-bottom: 8px; transition: 0.2s; cursor: pointer; }
+        .history-item.active { background: rgba(255,255,255,0.15); border-left: 4px solid var(--primary); font-weight: 800; }
+        .badge { background: var(--primary); color: #000; padding: 4px 12px; border-radius: 10px; font-size: 0.7rem; font-weight: 900; }
 
-        #cursor-dot, #cursor-outline { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 100001; border-radius: 50%; transition: opacity 0.3s; }
-        #cursor-dot { width: 6px; height: 6px; background: #fff; transform: translate(-50%, -50%); }
-        #cursor-outline { width: 35px; height: 35px; border: 1.5px solid white; mix-blend-mode: difference; transition: transform 0.1s ease-out; }
+        .btn-action { background: #fff; color: #000; padding: 16px; border-radius: 18px; border: none; font-weight: 900; cursor: pointer; width: 100%; margin-top: 10px; }
+
+        /* 3D VIEWPORT */
+        #skin-viewport { width: 100%; height: 320px; background: #000; border-radius: 24px; margin: 15px 0; border: 1px solid #333; cursor: grab; }
+
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 20000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
+        .modal-card { background: #0a0a0a; padding: 40px; border-radius: var(--radius-xl); width: 600px; display: flex; flex-direction: column; border: 1px solid #222; }
+
+        .version-tag { position: fixed; bottom: 20px; right: 30px; font-size: 0.7rem; font-weight: 700; opacity: 0.2; pointer-events: none; letter-spacing: 2px; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
     <div id="loader"><div class="pulse-logo"></div></div>
-    <div id="cursor-dot"></div><div id="cursor-outline"></div>
+    <div id="cursor-dot"></div>
+    <div id="cursor-outline"></div>
+
+    <div class="video-bg-container">
+        <div id="mask-layer" class="radial-mask">
+            <video id="bg-video" autoplay muted loop playsinline src=""></video>
+        </div>
+    </div>
 
     <nav>
-        <button class="widget" onclick="openModal('settings-modal')">
-            <span class="material-symbols-rounded">schedule</span> <span id="clock">00:00</span>
-            <span class="material-symbols-rounded">settings</span>
+        <button class="widget interactive" onclick="openModal('settings-modal')">
+            <div class="mag">
+                <span class="material-symbols-rounded">schedule</span>
+                <span id="clock">--:--</span>
+                <span class="material-symbols-rounded" style="opacity: 0.5;">settings</span>
+            </div>
         </button>
-        <button class="widget"><span id="temp">45°F</span> <span class="material-symbols-rounded">cloud</span></button>
+        <button class="widget interactive" id="weather-widget">
+            <div class="mag">
+                <span id="temp">43°F</span>
+                <span id="weather-icon" class="material-symbols-rounded">cloud</span>
+            </div>
+        </button>
     </nav>
 
     <div class="main-layout">
         <div><h1 class="hero-title">PIX<br><span style="color: var(--primary);">BETA</span></h1></div>
         <div class="unified-panel">
-            <span style="background:var(--primary); color:#000; padding:4px 12px; border-radius:10px; font-size:0.75rem; font-weight:900; width:fit-content;">V0.1.1</span>
-            <h2 style="margin:15px 0; font-size:2.2rem; font-weight:900;">The Ember Knight</h2>
-            <button class="btn-m3" id="preview-trigger" onclick="openModal('preview-modal')">OPEN 3D PREVIEW</button>
+            <div id="active-skin-content">
+                <span id="skin-badge" class="badge">BETA v0.1.1</span>
+                <h2 id="skin-title" style="margin:15px 0 5px 0; font-size:2rem; font-weight:900;">The Ember Knight</h2>
+                <button class="btn-action interactive" onclick="openModal('preview-modal')">PREVIEW 3D MODEL</button>
+            </div>
+            <hr style="border:none; border-top:1px solid rgba(255,255,255,0.1);">
+            <div id="history-list" style="overflow-y: auto; flex-grow: 1; padding-right: 5px;"></div>
         </div>
     </div>
 
+    <div class="version-tag">PIX UPDATES // VELVET VOID v3.1.0</div>
+
     <div id="preview-modal" class="modal-overlay">
         <div class="modal-card">
-            <h2 style="font-weight:900; text-align:center;">CHARACTER VIEW</h2>
+            <h2 style="font-weight: 900; margin-bottom: 10px;">3D CHARACTER</h2>
             <div id="skin-viewport"></div>
-            <button class="btn-m3" onclick="closeModals()">CLOSE PREVIEW</button>
+            <button onclick="closeModals()" class="btn-action interactive">CLOSE PREVIEW</button>
         </div>
     </div>
 
     <div id="settings-modal" class="modal-overlay">
         <div class="modal-card">
-            <h2 style="font-weight:900;">SETTINGS</h2>
-            <p style="margin: 20px 0; opacity: 0.6;">Version 0.1.1 Dimensional Update</p>
-            <button class="btn-m3" onclick="closeModals()">BACK</button>
+            <h2 style="font-weight: 900;">UI SETTINGS</h2>
+            <p style="margin: 20px 0; opacity: 0.5;">Velvet Void Preference Manager</p>
+            <button onclick="closeModals()" class="btn-action interactive">SAVE CHANGES</button>
         </div>
     </div>
 
     <script>
+        let currentIdx = 0;
         let scene, camera, renderer, character;
 
+        // --- 3D ENGINE ---
         function init3D() {
             const container = document.getElementById('skin-viewport');
-            if (!container) return;
-            
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -107,68 +141,90 @@
             container.appendChild(renderer.domElement);
 
             const loader = new THREE.TextureLoader();
-            // This is the file you mentioned
             const skinTex = loader.load("temp's Skin with no cap Version 1.0.0.png");
             skinTex.magFilter = THREE.NearestFilter; 
             const mat = new THREE.MeshPhongMaterial({ map: skinTex, side: THREE.DoubleSide });
 
             character = new THREE.Group();
-            
-            // Re-creating the Minecraft proportions accurately
             const head = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), mat);
             head.position.y = 1.5;
             const body = new THREE.Mesh(new THREE.BoxGeometry(1, 1.5, 0.5), mat);
-            const armL = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.5, 0.5), mat);
-            armL.position.set(-0.75, 0, 0);
-            const armR = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.5, 0.5), mat);
-            armR.position.set(0.75, 0, 0);
-            const legL = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.5, 0.5), mat);
-            legL.position.set(-0.25, -1.5, 0);
-            const legR = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.5, 0.5), mat);
-            legR.position.set(0.25, -1.5, 0);
+            const armL = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.5, 0.5), mat); armL.position.set(-0.75, 0, 0);
+            const armR = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.5, 0.5), mat); armR.position.set(0.75, 0, 0);
+            const legL = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.5, 0.5), mat); legL.position.set(-0.25, -1.5, 0);
+            const legR = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.5, 0.5), mat); legR.position.set(0.25, -1.5, 0);
 
             character.add(head, body, armL, armR, legL, legR);
             scene.add(character);
-            scene.add(new THREE.AmbientLight(0xffffff, 1.2));
+            scene.add(new THREE.AmbientLight(0xffffff, 1));
             camera.position.z = 8;
-            animate();
+            animate3D();
         }
 
-        function animate() {
-            if (!character) return;
-            requestAnimationFrame(animate);
-            character.rotation.y += 0.01;
+        function animate3D() {
+            requestAnimationFrame(animate3D);
+            if(character) character.rotation.y += 0.01;
             renderer.render(scene, camera);
         }
 
-        function openModal(id) {
-            const modal = document.getElementById(id);
-            modal.style.display = 'flex';
+        function openModal(id) { 
+            document.getElementById(id).style.display = 'flex'; 
+            document.body.classList.add('modal-open');
             if(id === 'preview-modal') setTimeout(init3D, 50);
         }
-
-        function closeModals() {
-            document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
+        function closeModals() { 
+            document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); 
+            document.body.classList.remove('modal-open'); 
         }
 
-        // Cursor Fix
-        const dot = document.getElementById('cursor-dot'), out = document.getElementById('cursor-outline');
-        window.onmousemove = (e) => {
-            dot.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
-            out.style.transform = `translate3d(${e.clientX - 17}px, ${e.clientY - 17}px, 0)`;
-            dot.style.opacity = 1; out.style.opacity = 1;
-        };
+        // --- MAGNETIC CURSOR ---
+        const dot = document.getElementById('cursor-dot'), outline = document.getElementById('cursor-outline');
+        let mX = 0, mY = 0, oX = 0, oY = 0, target = null;
+        document.body.classList.add('custom-cursor-active');
 
-        window.onload = () => {
-            // Clock logic
-            document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-            
-            // Loader logic - Ensure it is removed from the DOM path
-            setTimeout(() => {
+        window.addEventListener('mousemove', (e) => {
+            mX = e.clientX; mY = e.clientY;
+            const hit = e.target.closest('.interactive');
+            if (hit !== target) {
+                if (target) { const m = target.querySelector('.mag'); if(m) m.style.transform = ''; }
+                target = hit;
+                if (hit) { outline.classList.add('cursor-morph'); dot.style.opacity = 0; }
+                else { outline.classList.remove('cursor-morph'); dot.style.opacity = 1; }
+            }
+            if (target) {
+                const r = target.getBoundingClientRect();
+                const m = target.querySelector('.mag');
+                if(m) m.style.transform = `translate(${(mX - (r.left + r.width/2)) * 0.3}px, ${(mY - (r.top + r.height/2)) * 0.3}px)`;
+            }
+        });
+
+        function animateCursor() {
+            dot.style.transform = `translate3d(${mX}px, ${mY}px, 0)`;
+            oX += (mX - oX) * 0.15; oY += (mY - oY) * 0.15;
+            if (target) {
+                const r = target.getBoundingClientRect();
+                outline.style.width = r.width + "px"; outline.style.height = r.height + "px";
+                outline.style.transform = `translate3d(${r.left}px, ${r.top}px, 0)`;
+                outline.style.borderRadius = "20px";
+            } else {
+                outline.style.width = "30px"; outline.style.height = "30px";
+                outline.style.transform = `translate3d(${oX - 15}px, ${oY - 15}px, 0)`;
+                outline.style.borderRadius = "50%";
+            }
+            requestAnimationFrame(animateCursor);
+        }
+
+        // --- BOOT ---
+        window.addEventListener('load', () => {
+            animateCursor();
+            setInterval(() => { document.getElementById('clock').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }, 1000);
+            setTimeout(() => { 
                 const loader = document.getElementById('loader');
-                loader.classList.add('loader-hidden');
-            }, 1000);
-        };
+                loader.style.opacity = '0'; 
+                loader.style.pointerEvents = 'none'; // Critical for clicking!
+                setTimeout(() => loader.style.visibility = 'hidden', 800); 
+            }, 1200);
+        });
     </script>
 </body>
 </html>
