@@ -23,12 +23,15 @@
             font-family: 'Google Sans Flex', sans-serif; overflow: hidden; height: 100vh; 
         }
 
-        /* BACKGROUND WITH RADIAL MASK */
+        /* BACKGROUND SYSTEM */
         .video-bg-container { 
             position: fixed; inset: 0; z-index: -1; 
+            background: #000;
+        }
+        .radial-mask {
+            position: absolute; inset: 0;
             mask-image: radial-gradient(circle at 70% 50%, black 40%, transparent 95%);
             -webkit-mask-image: radial-gradient(circle at 70% 50%, black 40%, transparent 95%);
-            background: #000;
         }
         #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; transition: opacity 0.5s; }
 
@@ -41,7 +44,7 @@
         }
         .cursor-morph { background: transparent !important; border: 1.5px solid white !important; }
 
-        /* NAV & WHITE CLOCK + SETTINGS */
+        /* NAV */
         nav { padding: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
         .widget { 
             padding: 12px 24px; background: rgba(255,255,255,0.1); 
@@ -51,13 +54,9 @@
             color: #FFFFFF !important;
         }
         
-        /* The clock text and icon color */
-        #clock, .widget .material-symbols-rounded { 
-            color: #FFFFFF !important; 
-            text-shadow: 0 2px 8px rgba(0,0,0,0.5); 
-            display: flex;
-            align-items: center;
-        }
+        #clock, .widget .material-symbols-rounded { color: #FFFFFF !important; }
+        .settings-icon { transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .widget:hover .settings-icon { transform: rotate(90deg); }
 
         .mag { display: flex; align-items: center; gap: inherit; pointer-events: none; transition: transform 0.1s ease-out; }
 
@@ -73,19 +72,26 @@
         .gallery-list { overflow-y: auto; flex-grow: 1; padding-right: 5px; }
         .history-item { 
             padding: 16px; border-radius: 20px; display: block; width: 100%; text-align: left; 
-            border: none; background: transparent; color: #fff; font-family: inherit; 
-            margin-bottom: 8px; transition: all 0.2s; 
+            border: none; background: transparent; color: #fff; margin-bottom: 8px; transition: 0.2s; 
         }
         .history-item.active { background: rgba(255,255,255,0.15); border-left: 4px solid var(--primary); font-weight: 800; }
 
-        .badge { background: var(--primary); color: #000; padding: 4px 12px; border-radius: 10px; font-size: 0.7rem; font-weight: 900; width: fit-content; }
+        .badge { background: var(--primary); color: #000; padding: 4px 12px; border-radius: 10px; font-size: 0.7rem; font-weight: 900; }
         .fab-container { position: fixed; bottom: 40px; left: 40px; }
         .fab { height: 60px; padding: 0 32px; background: #fff; color: #000; border-radius: 20px; border: none; display: flex; align-items: center; gap: 12px; font-weight: 900; }
 
-        /* ADMIN */
-        #admin-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 20000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
-        #admin-modal { background: #111; padding: 40px; border-radius: var(--radius-xl); width: 450px; display: flex; flex-direction: column; gap: 12px; border: 1px solid #333; }
-        #admin-modal input, #admin-modal textarea { background: #1a1a1a; border: 1px solid #333; color: white; padding: 12px; border-radius: 12px; font-family: inherit; }
+        /* MODAL SYSTEM */
+        .modal-overlay { 
+            position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 20000; 
+            display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); 
+        }
+        .modal-card { 
+            background: #111; padding: 40px; border-radius: var(--radius-xl); 
+            width: 450px; display: flex; flex-direction: column; gap: 15px; border: 1px solid #333; 
+        }
+        .modal-card input, .modal-card textarea { background: #1a1a1a; border: 1px solid #333; color: white; padding: 12px; border-radius: 12px; font-family: inherit; }
+        
+        .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #222; }
     </style>
 </head>
 <body>
@@ -94,109 +100,102 @@
     <div id="cursor-outline"></div>
 
     <div class="video-bg-container">
-        <video id="bg-video" autoplay muted loop playsinline src="skin-preview.mp4"></video>
+        <div id="mask-layer" class="radial-mask">
+            <video id="bg-video" autoplay muted loop playsinline src="skin-preview.mp4"></video>
+        </div>
     </div>
 
     <nav>
-        <button class="widget interactive" onclick="toggleAdmin(true)">
+        <button class="widget interactive" onclick="openModal('settings-modal')">
             <div class="mag">
                 <span class="material-symbols-rounded" style="font-size: 20px;">schedule</span>
                 <span id="clock">--:--</span>
-                <span class="material-symbols-rounded" style="font-size: 18px; margin-left: 4px; opacity: 0.7;">settings</span>
+                <span class="material-symbols-rounded settings-icon" style="font-size: 18px; margin-left: 4px; opacity: 0.7;">settings</span>
             </div>
         </button>
-        
         <div class="widget">
-            <div class="mag"><span id="temp">72°F</span><span class="material-symbols-rounded">dark_mode</span></div>
+            <div class="mag"><span>72°F</span><span class="material-symbols-rounded">dark_mode</span></div>
         </div>
     </nav>
 
     <div class="main-layout">
         <div><h1 class="hero-title">PIX<br><span style="color: var(--primary);">UPDATES</span></h1></div>
-        
         <div class="unified-panel">
             <div id="active-skin-content">
                 <span id="skin-badge" class="badge">V3.0</span>
-                <h2 id="skin-title" style="margin:15px 0 5px 0; font-size:2rem; font-weight:900;">The Ember Knight</h2>
-                <p id="skin-desc" style="opacity:0.6; font-size:0.9rem; line-height:1.4;">Custom lava flows and visor highlights.</p>
+                <h2 id="skin-title" style="margin:15px 0 5px 0; font-size:2rem; font-weight:900;">Loading...</h2>
+                <p id="skin-desc" style="opacity:0.6; font-size:0.9rem;">Select a version below.</p>
             </div>
             <hr style="border:none; border-top:1px solid rgba(255,255,255,0.1);">
             <div class="gallery-list" id="history-list"></div>
         </div>
     </div>
 
-    <div class="fab-container">
-        <button class="fab interactive" onclick="alert('Downloading Skin...')">
-            <div class="mag"><span class="material-symbols-rounded">download</span><span>GET SKIN</span></div>
-        </button>
+    <div id="settings-modal" class="modal-overlay">
+        <div class="modal-card">
+            <h2 style="color:white; margin-bottom:10px;">UI Settings</h2>
+            <div class="setting-row">
+                <span>Radial Background Mask</span>
+                <input type="checkbox" checked onchange="document.getElementById('mask-layer').classList.toggle('radial-mask')">
+            </div>
+            <div class="setting-row">
+                <span>Glass Blur Intensity</span>
+                <input type="range" min="0" max="100" value="40" oninput="document.documentElement.style.setProperty('--blur', this.value + 'px')">
+            </div>
+            <button class="interactive" onclick="closeModals()" style="background:#fff; color:#000; padding:15px; border:none; border-radius:12px; font-weight:900; margin-top:10px;">DONE</button>
+        </div>
     </div>
 
-    <div id="admin-modal-overlay">
-        <div id="admin-modal">
+    <div id="admin-modal" class="modal-overlay">
+        <div class="modal-card">
             <h2 style="color:white;">Admin Access</h2>
             <input type="text" id="new-name" placeholder="Skin Name">
-            <input type="text" id="new-ver" placeholder="Version (e.g. V4.0)">
-            <input type="text" id="new-video" placeholder="Video Filename (e.g. skin.mp4)">
-            <textarea id="new-desc" placeholder="What's new?"></textarea>
-            <button class="interactive" onclick="addNewSkin()" style="background:#fff; color:#000; padding:15px; border:none; border-radius:12px; font-weight:900;">SAVE VERSION</button>
-            <button class="interactive" onclick="toggleAdmin(false)" style="background:none; border:none; color:white; opacity:0.5;">CLOSE</button>
+            <input type="text" id="new-ver" placeholder="Version">
+            <input type="text" id="new-video" placeholder="Video Link/File">
+            <textarea id="new-desc" placeholder="Description..."></textarea>
+            <button class="interactive" onclick="addNewSkin()" style="background:var(--primary); color:#000; padding:15px; border:none; border-radius:12px; font-weight:900;">ADD TO HISTORY</button>
+            <button class="interactive" onclick="closeModals()" style="background:none; border:none; color:white; opacity:0.5;">CANCEL</button>
         </div>
     </div>
 
     <script>
-        const DB_KEY = 'pix_final_db';
-        const DEFAULT_SKINS = [
-            { name: "The Ember Knight", version: "V3.0", desc: "Custom lava flows and visor highlights.", video: "skin-preview.mp4" },
-            { name: "Void Walker", version: "V2.5", desc: "End dimension particle effects.", video: "void.mp4" }
-        ];
-
+        const DB_KEY = 'pix_final_db_v3';
+        const DEFAULT_SKINS = [{ name: "The Ember Knight", version: "V3.0", desc: "Custom lava flows.", video: "skin-preview.mp4" }];
         let skins = JSON.parse(localStorage.getItem(DB_KEY)) || DEFAULT_SKINS;
         let currentIdx = 0;
+
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); }
+        window.onkeydown = (e) => { if (e.shiftKey && e.key.toUpperCase() === 'A') openModal('admin-modal'); };
 
         function updateUI() {
             const skin = skins[currentIdx];
             document.getElementById('skin-title').textContent = skin.name;
             document.getElementById('skin-badge').textContent = skin.version;
             document.getElementById('skin-desc').textContent = skin.desc;
-            
-            const video = document.getElementById('bg-video');
-            if(video.src.split('/').pop() !== skin.video) {
-                video.style.opacity = 0;
-                setTimeout(() => {
-                    video.src = skin.video;
-                    video.style.opacity = 0.7;
-                }, 400);
-            }
+            document.getElementById('bg-video').src = skin.video;
 
             const list = document.getElementById('history-list');
             list.innerHTML = '';
             skins.forEach((s, i) => {
                 const btn = document.createElement('button');
                 btn.className = `history-item interactive ${i === currentIdx ? 'active' : ''}`;
-                btn.innerHTML = `<span style="opacity:0.5; font-size:0.7rem; font-weight:900;">${s.version}</span><br>${s.name}`;
+                btn.innerHTML = `<div><span style="opacity:0.5; font-size:0.7rem; font-weight:900;">${s.version}</span><br>${s.name}</div>`;
                 btn.onclick = () => { currentIdx = i; updateUI(); };
                 list.appendChild(btn);
             });
         }
 
         function addNewSkin() {
-            const n = document.getElementById('new-name').value;
-            const v = document.getElementById('new-ver').value;
-            const vid = document.getElementById('new-video').value;
-            const d = document.getElementById('new-desc').value;
+            const n = document.getElementById('new-name').value, v = document.getElementById('new-ver').value,
+                  vid = document.getElementById('new-video').value, d = document.getElementById('new-desc').value;
             if(n && v && vid) {
                 skins.unshift({ name: n, version: v, video: vid, desc: d });
                 localStorage.setItem(DB_KEY, JSON.stringify(skins));
-                currentIdx = 0;
-                updateUI();
-                toggleAdmin(false);
+                currentIdx = 0; updateUI(); closeModals();
             }
         }
 
-        function toggleAdmin(show) { document.getElementById('admin-modal-overlay').style.display = show ? 'flex' : 'none'; }
-        window.onkeydown = (e) => { if (e.shiftKey && e.key.toUpperCase() === 'A') toggleAdmin(true); };
-
-        // CURSOR ENGINE
         const dot = document.querySelector('#cursor-dot'), outline = document.querySelector('#cursor-outline');
         let mX = 0, mY = 0, oX = 0, oY = 0, target = null;
 
@@ -204,32 +203,25 @@
             mX = e.clientX; mY = e.clientY;
             const hit = e.target.closest('.interactive, button, .widget');
             if (hit !== target) {
-                if (target) { const m = target.querySelector('.mag'); if (m) m.style.transform = 'translate3d(0,0,0)'; }
                 target = hit;
                 if (hit) { outline.classList.add('cursor-morph'); dot.style.opacity = 0; }
                 else { outline.classList.remove('cursor-morph'); dot.style.opacity = 1; }
-            }
-            if (target) {
-                const m = target.querySelector('.mag');
-                if (m) {
-                    const r = target.getBoundingClientRect();
-                    m.style.transform = `translate3d(${(mX-(r.left+r.width/2))*0.3}px, ${(mY-(r.top+r.height/2))*0.3}px, 0)`;
-                }
             }
         });
 
         function animate() {
             dot.style.transform = `translate3d(${mX-3}px, ${mY-3}px, 0)`;
+            oX += (mX - oX) * 0.2; oY += (mY - oY) * 0.2;
             if (target) {
                 const r = target.getBoundingClientRect();
-                oX += (r.left + r.width/2 - oX) * 0.2; oY += (r.top + r.height/2 - oY) * 0.2;
                 outline.style.width = r.width + "px"; outline.style.height = r.height + "px";
+                outline.style.transform = `translate3d(${r.left}px, ${r.top}px, 0)`;
                 outline.style.borderRadius = getComputedStyle(target).borderRadius;
             } else {
-                oX += (mX - oX) * 0.2; oY += (mY - oY) * 0.2;
-                outline.style.width = "30px"; outline.style.height = "30px"; outline.style.borderRadius = "50%";
+                outline.style.width = "30px"; outline.style.height = "30px";
+                outline.style.transform = `translate3d(${oX - 15}px, ${oY - 15}px, 0)`;
+                outline.style.borderRadius = "50%";
             }
-            outline.style.transform = `translate3d(${oX - parseFloat(outline.style.width)/2}px, ${oY - parseFloat(outline.style.height)/2}px, 0)`;
             requestAnimationFrame(animate);
         }
 
