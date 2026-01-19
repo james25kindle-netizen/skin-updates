@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pix Beta | v0.1.1 Interactive</title>
+    <title>Pix Beta | v0.1.1 Final Fix</title>
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -12,52 +12,51 @@
         :root {
             --primary: #FFB4AB; 
             --surface: #050505; 
-            --card-bg: rgba(20, 20, 20, 0.85);
+            --card-bg: rgba(22, 22, 22, 0.9);
             --radius-xl: 32px; 
         }
         
         html, body { background: #000; margin: 0; padding: 0; color: #fff; font-family: 'Google Sans Flex', sans-serif; height: 100vh; overflow: hidden; }
 
-        /* FIX: Loader now disables interaction when fading */
+        /* THE CLICK BLOCKER FIX */
         #loader {
             position: fixed; inset: 0; background: #000; z-index: 99999;
             display: flex; align-items: center; justify-content: center;
-            transition: opacity 0.8s ease-out; pointer-events: none;
+            transition: opacity 0.5s ease;
         }
-        #loader.active { pointer-events: all; opacity: 1; }
+        /* When this class is added via JS, the loader physically vanishes */
+        .loader-hidden { opacity: 0; pointer-events: none; visibility: hidden; }
 
         .pulse-logo { width: 80px; height: 80px; background: var(--primary); border-radius: 28px; animation: m3-pulse 2s infinite cubic-bezier(0.34, 1.56, 0.64, 1); }
-        .m3-loading-text { position: fixed; bottom: 40px; right: 40px; font-weight: 900; font-size: 2rem; color: var(--primary); }
         @keyframes m3-pulse { 0%, 100% { transform: scale(0.8); border-radius: 45px; } 50% { transform: scale(1.1); border-radius: 20px; } }
 
         /* UI LAYOUT */
         nav { padding: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
-        .widget { padding: 12px 24px; background: rgba(255,255,255,0.08); backdrop-filter: blur(40px); border-radius: 100px; display: flex; align-items: center; gap: 12px; font-weight: 700; border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; transition: 0.2s; }
-        .widget:hover { background: rgba(255,255,255,0.2); }
+        .widget { padding: 12px 24px; background: rgba(255,255,255,0.08); backdrop-filter: blur(30px); border-radius: 100px; display: flex; align-items: center; gap: 12px; font-weight: 700; border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; }
 
         .main-layout { display: grid; grid-template-columns: 1fr 420px; gap: 40px; max-width: 1400px; margin: 0 auto; padding: 0 40px; }
         .hero-title { font-size: 6.5rem; font-weight: 900; letter-spacing: -5px; line-height: 0.85; margin-top: 60px; pointer-events: none; }
         
-        .unified-panel { background: var(--card-bg); border-radius: var(--radius-xl); padding: 32px; backdrop-filter: blur(40px); border: 1px solid rgba(255,255,255,0.08); display: flex; flex-direction: column; gap: 20px; height: 600px; margin-top: 20px; position: relative; z-index: 5; }
+        .unified-panel { background: var(--card-bg); border-radius: var(--radius-xl); padding: 32px; backdrop-filter: blur(30px); border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 20px; height: 600px; margin-top: 20px; }
         
-        /* MODALS - Fixed pointer events */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 20000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(25px); pointer-events: none; }
-        .modal-overlay.open { display: flex; pointer-events: all; }
-        .modal-card { background: #0c0c0c; padding: 40px; border-radius: var(--radius-xl); width: 620px; border: 1px solid #222; position: relative; }
+        /* MODALS */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 20000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
+        .modal-card { background: #0c0c0c; padding: 40px; border-radius: var(--radius-xl); width: 620px; border: 1px solid #222; position: relative; z-index: 20001; }
         
-        #skin-viewport { width: 100%; height: 380px; background: #000; border-radius: 24px; margin: 20px 0; cursor: grab; }
+        #skin-viewport { width: 100%; height: 380px; background: #000; border-radius: 24px; margin: 20px 0; border: 1px solid #333; cursor: grab; }
         
-        .btn-m3 { background: #fff; color: #000; padding: 18px; border-radius: 20px; font-weight: 900; border: none; cursor: pointer; width: 100%; transition: 0.3s; position: relative; z-index: 10; }
-        .btn-m3:hover { background: var(--primary); }
+        .btn-m3 { background: #fff; color: #000; padding: 18px; border-radius: 20px; font-weight: 900; border: none; cursor: pointer; width: 100%; transition: 0.2s; position: relative; }
+        .btn-m3:hover { background: var(--primary); transform: translateY(-2px); }
+        .btn-m3:active { transform: translateY(0); }
 
-        #cursor-dot, #cursor-outline { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 100001; border-radius: 50%; }
+        #cursor-dot, #cursor-outline { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 100001; border-radius: 50%; transition: opacity 0.3s; }
         #cursor-dot { width: 6px; height: 6px; background: #fff; transform: translate(-50%, -50%); }
-        #cursor-outline { width: 35px; height: 35px; border: 1.5px solid white; mix-blend-mode: difference; }
+        #cursor-outline { width: 35px; height: 35px; border: 1.5px solid white; mix-blend-mode: difference; transition: transform 0.1s ease-out; }
     </style>
 </head>
 <body>
 
-    <div id="loader" class="active"><div class="pulse-logo"></div><div class="m3-loading-text">Loading</div></div>
+    <div id="loader"><div class="pulse-logo"></div></div>
     <div id="cursor-dot"></div><div id="cursor-outline"></div>
 
     <nav>
@@ -73,13 +72,13 @@
         <div class="unified-panel">
             <span style="background:var(--primary); color:#000; padding:4px 12px; border-radius:10px; font-size:0.75rem; font-weight:900; width:fit-content;">V0.1.1</span>
             <h2 style="margin:15px 0; font-size:2.2rem; font-weight:900;">The Ember Knight</h2>
-            <button class="btn-m3" onclick="openPreview()">OPEN 3D PREVIEW</button>
+            <button class="btn-m3" id="preview-trigger" onclick="openModal('preview-modal')">OPEN 3D PREVIEW</button>
         </div>
     </div>
 
     <div id="preview-modal" class="modal-overlay">
         <div class="modal-card">
-            <h2 style="font-weight:900;">3D CHARACTER PREVIEW</h2>
+            <h2 style="font-weight:900; text-align:center;">CHARACTER VIEW</h2>
             <div id="skin-viewport"></div>
             <button class="btn-m3" onclick="closeModals()">CLOSE PREVIEW</button>
         </div>
@@ -88,6 +87,7 @@
     <div id="settings-modal" class="modal-overlay">
         <div class="modal-card">
             <h2 style="font-weight:900;">SETTINGS</h2>
+            <p style="margin: 20px 0; opacity: 0.6;">Version 0.1.1 Dimensional Update</p>
             <button class="btn-m3" onclick="closeModals()">BACK</button>
         </div>
     </div>
@@ -97,6 +97,8 @@
 
         function init3D() {
             const container = document.getElementById('skin-viewport');
+            if (!container) return;
+            
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -105,52 +107,67 @@
             container.appendChild(renderer.domElement);
 
             const loader = new THREE.TextureLoader();
+            // This is the file you mentioned
             const skinTex = loader.load("temp's Skin with no cap Version 1.0.0.png");
             skinTex.magFilter = THREE.NearestFilter; 
             const mat = new THREE.MeshPhongMaterial({ map: skinTex, side: THREE.DoubleSide });
 
             character = new THREE.Group();
+            
+            // Re-creating the Minecraft proportions accurately
             const head = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), mat);
             head.position.y = 1.5;
             const body = new THREE.Mesh(new THREE.BoxGeometry(1, 1.5, 0.5), mat);
             const armL = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.5, 0.5), mat);
-            armL.position.set(-0.8, 0, 0);
+            armL.position.set(-0.75, 0, 0);
             const armR = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.5, 0.5), mat);
-            armR.position.set(0.8, 0, 0);
+            armR.position.set(0.75, 0, 0);
             const legL = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.5, 0.5), mat);
-            legL.position.set(-0.3, -1.5, 0);
+            legL.position.set(-0.25, -1.5, 0);
             const legR = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.5, 0.5), mat);
-            legR.position.set(0.3, -1.5, 0);
+            legR.position.set(0.25, -1.5, 0);
 
             character.add(head, body, armL, armR, legL, legR);
             scene.add(character);
-            scene.add(new THREE.AmbientLight(0xffffff, 1));
+            scene.add(new THREE.AmbientLight(0xffffff, 1.2));
             camera.position.z = 8;
             animate();
         }
 
         function animate() {
+            if (!character) return;
             requestAnimationFrame(animate);
             character.rotation.y += 0.01;
             renderer.render(scene, camera);
         }
 
-        function openModal(id) { document.getElementById(id).classList.add('open'); if(id==='preview-modal') setTimeout(init3D, 100); }
-        function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('open')); }
+        function openModal(id) {
+            const modal = document.getElementById(id);
+            modal.style.display = 'flex';
+            if(id === 'preview-modal') setTimeout(init3D, 50);
+        }
 
-        // Cursor
+        function closeModals() {
+            document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
+        }
+
+        // Cursor Fix
         const dot = document.getElementById('cursor-dot'), out = document.getElementById('cursor-outline');
         window.onmousemove = (e) => {
             dot.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
-            out.style.left = `${e.clientX - 17}px`; out.style.top = `${e.clientY - 17}px`;
+            out.style.transform = `translate3d(${e.clientX - 17}px, ${e.clientY - 17}px, 0)`;
+            dot.style.opacity = 1; out.style.opacity = 1;
         };
 
         window.onload = () => {
-            setTimeout(() => {
-                document.getElementById('loader').classList.remove('active');
-                document.getElementById('loader').style.opacity = '0';
-            }, 1500);
+            // Clock logic
             document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+            
+            // Loader logic - Ensure it is removed from the DOM path
+            setTimeout(() => {
+                const loader = document.getElementById('loader');
+                loader.classList.add('loader-hidden');
+            }, 1000);
         };
     </script>
 </body>
