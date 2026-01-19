@@ -116,7 +116,7 @@
     </nav>
 
     <div class="main-layout">
-        <div><h1 class="hero-title">PIX<br><span style="color: var(--primary); transition: color 0.3s;">UPDATES</span></h1></div>
+        <div><h1 class="hero-title">PIX<br><span id="primary-title" style="color: var(--primary); transition: color 0.3s;">UPDATES</span></h1></div>
         <div class="unified-panel">
             <div id="active-skin-content">
                 <span id="skin-badge" class="badge">V3.0</span>
@@ -150,8 +150,12 @@
                 </div>
             </div>
             <div class="setting-control">
+                <span>Vignette Mask</span>
+                <input type="checkbox" id="vignette-toggle" onchange="toggleVignette(this.checked)">
+            </div>
+            <div class="setting-control">
                 <span>Glass Blur</span>
-                <input type="range" min="0" max="80" value="40" oninput="document.documentElement.style.setProperty('--blur', this.value + 'px')">
+                <input type="range" id="blur-range" min="0" max="80" value="40" oninput="updateBlur(this.value)">
             </div>
             <button onclick="closeModals()" style="background:#fff; color:#000; padding:15px; border:none; border-radius:12px; font-weight:900;">DONE</button>
         </div>
@@ -161,20 +165,52 @@
         <div class="modal-card">
             <h2 style="color:white;">Admin Access</h2>
             <input type="text" id="new-name" placeholder="Skin Name">
-            <input type="text" id="new-ver" placeholder="Version (e.g. V4.2)">
-            <input type="text" id="new-video" placeholder="Video Source (URL or file)">
-            <textarea id="new-desc" placeholder="Brief description..." rows="3"></textarea>
+            <input type="text" id="new-ver" placeholder="Version">
+            <input type="text" id="new-video" placeholder="Video Link">
+            <textarea id="new-desc" placeholder="Description..." rows="3"></textarea>
             <button onclick="addNewSkin()" style="background:var(--primary); color:#000; padding:15px; border:none; border-radius:12px; font-weight:900;">ADD TO HISTORY</button>
             <button onclick="closeModals()" style="background:transparent; color:white; opacity:0.5; border:none;">CANCEL</button>
         </div>
     </div>
 
     <script>
-        const DB_KEY = 'pix_final_db_v8';
-        const DEFAULT_SKINS = [{ name: "The Ember Knight", version: "V3.0", desc: "Custom lava flows.", video: "skin-preview.mp4" }];
-        let skins = JSON.parse(localStorage.getItem(DB_KEY)) || DEFAULT_SKINS;
+        const DB_SKINS = 'pix_skins_v9';
+        const DB_SETTINGS = 'pix_settings_v9';
+
+        let skins = JSON.parse(localStorage.getItem(DB_SKINS)) || [{ name: "The Ember Knight", version: "V3.0", desc: "Custom lava flows.", video: "skin-preview.mp4" }];
+        let settings = JSON.parse(localStorage.getItem(DB_SETTINGS)) || { theme: '#FFB4AB', blur: 40, vignette: true };
         let currentIdx = 0;
 
+        // Apply saved settings on load
+        function applySettings() {
+            setTheme(settings.theme, false);
+            updateBlur(settings.blur, false);
+            toggleVignette(settings.vignette, false);
+            document.getElementById('blur-range').value = settings.blur;
+            document.getElementById('vignette-toggle').checked = settings.vignette;
+        }
+
+        function setTheme(color, save = true) {
+            document.documentElement.style.setProperty('--primary', color);
+            if(save) { settings.theme = color; saveSettings(); }
+        }
+
+        function updateBlur(val, save = true) {
+            document.documentElement.style.setProperty('--blur', val + 'px');
+            if(save) { settings.blur = val; saveSettings(); }
+        }
+
+        function toggleVignette(checked, save = true) {
+            const mask = document.getElementById('mask-layer');
+            checked ? mask.classList.add('radial-mask') : mask.classList.remove('radial-mask');
+            if(save) { settings.vignette = checked; saveSettings(); }
+        }
+
+        function saveSettings() {
+            localStorage.setItem(DB_SETTINGS, JSON.stringify(settings));
+        }
+
+        // Modal Logic
         function openModal(id) { 
             document.getElementById(id).style.display = 'flex'; 
             document.body.classList.add('modal-open'); 
@@ -183,16 +219,11 @@
             document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); 
             document.body.classList.remove('modal-open'); 
         }
-        
-        // Listen for Shift + A to open Admin
         window.addEventListener('keydown', (e) => {
             if (e.shiftKey && e.key.toLowerCase() === 'a') openModal('admin-modal');
         });
 
-        function setTheme(color) {
-            document.documentElement.style.setProperty('--primary', color);
-        }
-
+        // UI Logic
         function updateUI() {
             const skin = skins[currentIdx];
             document.getElementById('skin-title').textContent = skin.name;
@@ -216,23 +247,12 @@
                   vid = document.getElementById('new-video').value, d = document.getElementById('new-desc').value;
             if(n && v && vid) {
                 skins.unshift({ name: n, version: v, video: vid, desc: d });
-                localStorage.setItem(DB_KEY, JSON.stringify(skins));
+                localStorage.setItem(DB_SKINS, JSON.stringify(skins));
                 currentIdx = 0; updateUI(); closeModals();
-                // Reset inputs
-                document.getElementById('new-name').value = '';
-                document.getElementById('new-ver').value = '';
-                document.getElementById('new-video').value = '';
-                document.getElementById('new-desc').value = '';
             }
         }
 
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('clock').textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
-
+        // Animation / Cursor
         const dot = document.getElementById('cursor-dot'), outline = document.getElementById('cursor-outline');
         let mX = 0, mY = 0, oX = 0, oY = 0, target = null;
 
@@ -279,6 +299,11 @@
             requestAnimationFrame(animate);
         }
 
+        setInterval(() => {
+            document.getElementById('clock').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }, 1000);
+
+        applySettings();
         updateUI();
         animate();
     </script>
