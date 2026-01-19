@@ -52,11 +52,10 @@
         .hero-title { font-size: 6.5rem; font-weight: 900; letter-spacing: -5px; line-height: 0.85; margin-top: 60px; pointer-events: none; }
         
         .unified-panel { background: var(--card-bg); border-radius: var(--radius-xl); padding: 32px; backdrop-filter: blur(var(--blur)); border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 20px; height: 580px; margin-top: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        .history-item { padding: 16px; border-radius: 20px; display: block; width: 100%; text-align: left; border: none; background: transparent; color: #fff; margin-bottom: 8px; transition: 0.2s; cursor: pointer; }
-        .history-item.active { background: rgba(255,255,255,0.15); border-left: 4px solid var(--primary); font-weight: 800; }
-        .badge { background: var(--primary); color: #000; padding: 4px 12px; border-radius: 10px; font-size: 0.7rem; font-weight: 900; }
+        .badge { background: var(--primary); color: #000; padding: 4px 12px; border-radius: 10px; font-size: 0.7rem; font-weight: 900; width: fit-content; }
 
-        .btn-action { background: #fff; color: #000; padding: 16px; border-radius: 18px; border: none; font-weight: 900; cursor: pointer; width: 100%; margin-top: 10px; }
+        .btn-action { background: #fff; color: #000; padding: 16px; border-radius: 18px; border: none; font-weight: 900; cursor: pointer; width: 100%; margin-top: 10px; transition: transform 0.2s; }
+        .btn-action:active { transform: scale(0.98); }
 
         /* 3D VIEWPORT */
         #skin-viewport { width: 100%; height: 320px; background: #000; border-radius: 24px; margin: 15px 0; border: 1px solid #333; cursor: grab; }
@@ -104,7 +103,8 @@
                 <button class="btn-action interactive" onclick="openModal('preview-modal')">PREVIEW 3D MODEL</button>
             </div>
             <hr style="border:none; border-top:1px solid rgba(255,255,255,0.1);">
-            <div id="history-list" style="overflow-y: auto; flex-grow: 1; padding-right: 5px;"></div>
+            <div id="history-list" style="overflow-y: auto; flex-grow: 1; padding-right: 5px;">
+                </div>
         </div>
     </div>
 
@@ -127,12 +127,12 @@
     </div>
 
     <script>
-        let currentIdx = 0;
         let scene, camera, renderer, character;
 
-        // --- 3D ENGINE ---
         function init3D() {
             const container = document.getElementById('skin-viewport');
+            if (!container) return;
+            
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -156,7 +156,7 @@
 
             character.add(head, body, armL, armR, legL, legR);
             scene.add(character);
-            scene.add(new THREE.AmbientLight(0xffffff, 1));
+            scene.add(new THREE.AmbientLight(0xffffff, 1.2));
             camera.position.z = 8;
             animate3D();
         }
@@ -214,17 +214,19 @@
             requestAnimationFrame(animateCursor);
         }
 
-        // --- BOOT ---
-        window.addEventListener('load', () => {
+        window.onload = () => {
             animateCursor();
-            setInterval(() => { document.getElementById('clock').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }, 1000);
+            setInterval(() => { 
+                document.getElementById('clock').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); 
+            }, 1000);
+            
             setTimeout(() => { 
                 const loader = document.getElementById('loader');
                 loader.style.opacity = '0'; 
-                loader.style.pointerEvents = 'none'; // Critical for clicking!
+                loader.style.pointerEvents = 'none'; 
                 setTimeout(() => loader.style.visibility = 'hidden', 800); 
             }, 1200);
-        });
+        };
     </script>
 </body>
 </html>
