@@ -37,14 +37,6 @@
                 dl: "ember.zip" 
             },
             { 
-                name: "Neon Samurai", 
-                version: "V1.2", 
-                desc: "Blue neon trails and tech armor.", 
-                video: "neon-preview.mp4", 
-                dl: "neon.zip" 
-            }
-        ];
-
         const DB_SKINS = 'pix_skins_gh_v1';
         let customSkins = JSON.parse(localStorage.getItem(DB_SKINS)) || [];
         let skins = [...customSkins, ...GITHUB_MASTER_LIST];
