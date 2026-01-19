@@ -57,104 +57,147 @@
         </div>
     </div>
 
-    <script>
-        // --- YOUR GITHUB MASTER LIST ---
-        const GITHUB_MASTER_LIST = [
-            { 
-                name: "The Ember Knight", 
-                version: "V3.0", 
-                desc: "Custom lava flows and visor highlights.", 
-                video: "skin-preview.mp4", 
-                dl: "ember.zip" 
-            },
-            { 
-                name: "Neon Samurai", 
-                version: "V1.2", 
-                desc: "Blue neon trails and tech armor.", 
-                video: "neon-preview.mp4", 
-                dl: "neon.zip" 
-            }
-        ];
-
-        const DB_SKINS = 'pix_skins_gh_v1';
-        let customSkins = JSON.parse(localStorage.getItem(DB_SKINS)) || [];
-        let skins = [...customSkins, ...GITHUB_MASTER_LIST];
-        let currentIdx = 0;
-
-        // --- FIXED MODAL LOGIC ---
-        function openModal(id) { 
-            closeModals(); // Close any open ones first
-            const modal = document.getElementById(id);
-            if (modal) {
-                modal.style.display = 'flex'; 
-                document.body.classList.add('modal-open');
-                if(id === 'admin-modal') renderAdminList();
-            }
+  <script>
+    // --- 1. GITHUB MASTER LIST ---
+    // Make sure there is a comma after the } of the first skin!
+    const GITHUB_MASTER_LIST = [
+        { 
+            name: "The Ember Knight", 
+            version: "V3.0", 
+            desc: "Custom lava flows and visor highlights.", 
+            video: "skin-preview.mp4", 
+            dl: "ember.zip" 
+        }, 
+        { 
+            name: "Neon Samurai", 
+            version: "V1.2", 
+            desc: "Blue neon trails and tech armor.", 
+            video: "neon-preview.mp4", 
+            dl: "neon.zip" 
         }
+    ];
 
-        function closeModals() { 
-            document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); 
-            document.body.classList.remove('modal-open'); 
+    const DB_SKINS = 'pix_skins_gh_v1';
+    let customSkins = JSON.parse(localStorage.getItem(DB_SKINS)) || [];
+    let skins = [...customSkins, ...GITHUB_MASTER_LIST];
+    let currentIdx = 0;
+
+    // --- 2. MODAL LOGIC (No more overlapping windows) ---
+    function openModal(id) { 
+        closeModals(); // This hides the other window first
+        const modal = document.getElementById(id);
+        if (modal) {
+            modal.style.display = 'flex'; 
+            document.body.classList.add('modal-open');
+            if(id === 'admin-modal') renderAdminList();
         }
+    }
 
-        // --- ADMIN DELETE LOGIC (Only deletes custom skins) ---
-        function deleteSkin(indexInCustom) {
-            customSkins.splice(indexInCustom, 1);
+    function closeModals() { 
+        document.querySelectorAll('.modal-overlay').forEach(m => {
+            m.style.display = 'none';
+        });
+        document.body.classList.remove('modal-open'); 
+    }
+
+    // --- 3. WEATHER & CLOCK (Matching your PC) ---
+    async function updateWeather() {
+        try {
+            const response = await fetch('https://wttr.in/?format=j1');
+            const data = await response.json();
+            const tempF = data.current_condition[0].temp_F;
+            document.getElementById('temp').textContent = tempF + "°F";
+        } catch (error) {
+            document.getElementById('temp').textContent = "43°F"; 
+        }
+    }
+
+    function updateClock() {
+        document.getElementById('clock').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    // --- 4. ADMIN LOGIC ---
+    function renderAdminList() {
+        const list = document.getElementById('admin-delete-list');
+        if (customSkins.length === 0) {
+            list.innerHTML = '<p style="opacity:0.5; font-size:0.7rem; text-align:center; padding: 20px;">No custom skins to manage.</p>';
+            return;
+        }
+        list.innerHTML = customSkins.map((s, i) => `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid #222;">
+                <span style="font-size:0.8rem;">${s.name}</span>
+                <button onclick="deleteSkin(${i})" style="color:#ff5555; background:none; border:none; cursor:pointer;">Delete</button>
+            </div>
+        `).join('');
+    }
+
+    function deleteSkin(index) {
+        customSkins.splice(index, 1);
+        localStorage.setItem(DB_SKINS, JSON.stringify(customSkins));
+        skins = [...customSkins, ...GITHUB_MASTER_LIST];
+        currentIdx = 0;
+        updateUI();
+        renderAdminList();
+    }
+
+    function addNewSkin() {
+        const n = document.getElementById('new-name').value;
+        const v = document.getElementById('new-ver').value;
+        if(n && v) {
+            customSkins.unshift({ 
+                name: n, version: v, 
+                video: document.getElementById('new-video').value, 
+                dl: document.getElementById('new-dl').value 
+            });
             localStorage.setItem(DB_SKINS, JSON.stringify(customSkins));
             skins = [...customSkins, ...GITHUB_MASTER_LIST];
-            currentIdx = 0;
-            updateUI();
+            updateUI(); 
             renderAdminList();
         }
+    }
 
-        function renderAdminList() {
-            const list = document.getElementById('admin-delete-list');
-            // Only show custom skins in the delete list to keep GitHub skins safe
-            list.innerHTML = customSkins.length > 0 
-                ? customSkins.map((s, i) => `
-                    <div style="display:flex; justify-content:space-between; align-items:center; padding:5px; border-bottom:1px solid #222; font-size:0.8rem;">
-                        <span>${s.name}</span>
-                        <button onclick="deleteSkin(${i})" style="color:red; background:none; border:none; cursor:pointer;">Delete</button>
-                    </div>`).join('')
-                : '<p style="font-size:0.7rem; opacity:0.5; text-align:center;">No custom skins added yet.</p>';
+    // --- 5. UI UPDATE ---
+    function updateUI() {
+        const s = skins[currentIdx] || skins[0];
+        document.getElementById('skin-title').textContent = s.name;
+        document.getElementById('skin-badge').textContent = s.version;
+        
+        const video = document.getElementById('bg-video');
+        if(video.src !== s.video) {
+            video.src = s.video;
+            video.load();
         }
-
-        // --- SHORTCUT LOGIC ---
-        window.addEventListener('keydown', (e) => { 
-            if (e.shiftKey && e.key.toLowerCase() === 'a') openModal('admin-modal');
+        
+        const list = document.getElementById('history-list');
+        list.innerHTML = '';
+        skins.forEach((skin, i) => {
+            const btn = document.createElement('button');
+            btn.className = `history-item interactive ${i === currentIdx ? 'active' : ''}`;
+            btn.innerHTML = `<div><span style="opacity:0.5; font-size:0.7rem;">${skin.version}</span><br>${skin.name}</div>`;
+            btn.onclick = () => { currentIdx = i; updateUI(); };
+            list.appendChild(btn);
         });
+    }
 
-        // --- REST OF UI LOGIC ---
-        function updateUI() {
-            const s = skins[currentIdx] || skins[0];
-            document.getElementById('skin-title').textContent = s.name;
-            document.getElementById('skin-badge').textContent = s.version;
-            document.getElementById('bg-video').src = s.video;
-            
-            const list = document.getElementById('history-list');
-            list.innerHTML = '';
-            skins.forEach((skin, i) => {
-                const btn = document.createElement('button');
-                btn.className = `history-item interactive ${i === currentIdx ? 'active' : ''}`;
-                btn.innerHTML = `<div><span style="opacity:0.5; font-size:0.7rem;">${skin.version}</span><br>${skin.name}</div>`;
-                btn.onclick = () => { currentIdx = i; updateUI(); };
-                list.appendChild(btn);
-            });
-        }
+    function downloadSkin() {
+        const s = skins[currentIdx];
+        if (s && s.dl) window.open(s.dl, '_blank');
+    }
 
-        function addNewSkin() {
-            const n = document.getElementById('new-name').value, v = document.getElementById('new-ver').value;
-            if(n && v) {
-                customSkins.unshift({ name: n, version: v, video: document.getElementById('new-video').value, dl: document.getElementById('new-dl').value });
-                localStorage.setItem(DB_SKINS, JSON.stringify(customSkins));
-                skins = [...customSkins, ...GITHUB_MASTER_LIST];
-                updateUI(); renderAdminList();
-            }
-        }
+    // --- 6. STARTUP & VERSION TRACKER ---
+    window.addEventListener('keydown', (e) => { 
+        if (e.shiftKey && e.key.toLowerCase() === 'a') openModal('admin-modal');
+    });
 
-        // Initial Start
-        updateUI();
-        // ... (Keep your cursor and clock logic at the bottom) ...
-    </script>
-</body>
-</html>
+    // This puts the version at the bottom of the page automatically
+    const verInfo = document.createElement('div');
+    verInfo.style = "position:fixed; bottom:10px; right:20px; font-size:10px; opacity:0.3; pointer-events:none;";
+    verInfo.textContent = "Pix Updates v3.0.1 (GitHub Build)";
+    document.body.appendChild(verInfo);
+
+    updateWeather();
+    updateClock();
+    updateUI();
+    setInterval(updateWeather, 900000);
+    setInterval(updateClock, 1000);
+</script>
