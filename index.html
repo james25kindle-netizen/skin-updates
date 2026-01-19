@@ -54,14 +54,22 @@
         .unified-panel { background: var(--card-bg); border-radius: var(--radius-xl); padding: 32px; backdrop-filter: blur(var(--blur)); border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 20px; height: 580px; margin-top: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
         .badge { background: var(--primary); color: #000; padding: 4px 12px; border-radius: 10px; font-size: 0.7rem; font-weight: 900; width: fit-content; }
 
-        .btn-action { background: #fff; color: #000; padding: 16px; border-radius: 18px; border: none; font-weight: 900; cursor: pointer; width: 100%; margin-top: 10px; transition: transform 0.2s; }
+        .btn-action { background: #fff; color: #000; padding: 16px; border-radius: 18px; border: none; font-weight: 900; cursor: pointer; width: 100%; margin-top: 10px; transition: 0.2s; }
+        .btn-action:hover { background: var(--primary); }
         .btn-action:active { transform: scale(0.98); }
+
+        .btn-outline { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 14px; border-radius: 18px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 10px; transition: 0.2s; }
+        .btn-outline:hover { background: rgba(255,255,255,0.05); border-color: #fff; }
 
         /* 3D VIEWPORT */
         #skin-viewport { width: 100%; height: 320px; background: #000; border-radius: 24px; margin: 15px 0; border: 1px solid #333; cursor: grab; }
 
+        /* MODALS */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 20000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
-        .modal-card { background: #0a0a0a; padding: 40px; border-radius: var(--radius-xl); width: 600px; display: flex; flex-direction: column; border: 1px solid #222; }
+        .modal-card { background: #0a0a0a; padding: 40px; border-radius: var(--radius-xl); width: 600px; display: flex; flex-direction: column; border: 1px solid #222; max-height: 90vh; overflow-y: auto; }
+
+        .changelog-item { display: flex; gap: 15px; margin-bottom: 20px; }
+        .changelog-icon { background: rgba(255,255,255,0.1); width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 
         .version-tag { position: fixed; bottom: 20px; right: 30px; font-size: 0.7rem; font-weight: 700; opacity: 0.2; pointer-events: none; letter-spacing: 2px; text-transform: uppercase; }
     </style>
@@ -103,8 +111,7 @@
                 <button class="btn-action interactive" onclick="openModal('preview-modal')">PREVIEW 3D MODEL</button>
             </div>
             <hr style="border:none; border-top:1px solid rgba(255,255,255,0.1);">
-            <div id="history-list" style="overflow-y: auto; flex-grow: 1; padding-right: 5px;">
-                </div>
+            <div id="history-list" style="overflow-y: auto; flex-grow: 1; padding-right: 5px;"></div>
         </div>
     </div>
 
@@ -121,39 +128,74 @@
     <div id="settings-modal" class="modal-overlay">
         <div class="modal-card">
             <h2 style="font-weight: 900;">UI SETTINGS</h2>
-            <p style="margin: 20px 0; opacity: 0.5;">Velvet Void Preference Manager</p>
-            <button onclick="closeModals()" class="btn-action interactive">SAVE CHANGES</button>
+            <p style="margin: 10px 0 20px 0; opacity: 0.5;">Manage your velvet experience.</p>
+            <div style="flex-grow: 1;"></div>
+            <button onclick="closeModals(); openModal('whats-new-modal')" class="btn-outline interactive">
+                <div class="mag"><span class="material-symbols-rounded">history_edu</span><span>VIEW WHAT'S NEW</span></div>
+            </button>
+            <button onclick="closeModals()" class="btn-action interactive" style="margin-top: 10px;">SAVE CHANGES</button>
+        </div>
+    </div>
+
+    <div id="whats-new-modal" class="modal-overlay">
+        <div class="modal-card">
+            <span class="badge" style="margin-bottom: 10px;">LATEST UPDATE</span>
+            <h2 style="font-weight: 900; font-size: 2.2rem; line-height: 1;">The Dimension<br>Shift is Here.</h2>
+            <p style="margin: 15px 0 30px 0; opacity: 0.7; font-size: 0.95rem;">Welcome to Beta v0.1.1. We've added a few things that probably won't explode. Probably.</p>
+            
+            <div class="changelog-item">
+                <div class="changelog-icon"><span class="material-symbols-rounded">3d_rotation</span></div>
+                <div>
+                    <h4 style="font-weight: 900;">3D Skin Preview</h4>
+                    <p style="font-size: 0.85rem; opacity: 0.6;">You can now see your skin in 3D. It spins. It’s majestic. Don't stare too long or you'll get dizzy.</p>
+                </div>
+            </div>
+
+            <div class="changelog-item">
+                <div class="changelog-icon"><span class="material-symbols-rounded">ads_click</span></div>
+                <div>
+                    <h4 style="font-weight: 900;">The "Actually Clickable" Fix</h4>
+                    <p style="font-size: 0.85rem; opacity: 0.6;">We fixed the bug where the site ignored your clicks like a bad waiter. Everything is now super responsive.</p>
+                </div>
+            </div>
+
+            <div class="changelog-item">
+                <div class="changelog-icon"><span class="material-symbols-rounded">mouse</span></div>
+                <div>
+                    <h4 style="font-weight: 900;">Magnetic Cursor v2</h4>
+                    <p style="font-size: 0.85rem; opacity: 0.6;">Our cursor system now hugs buttons even tighter. It's a bit clingy, but in a good way.</p>
+                </div>
+            </div>
+
+            <button onclick="closeModals()" class="btn-action interactive">GOT IT, LET'S GO</button>
         </div>
     </div>
 
     <script>
+        const CURRENT_VERSION = "0.1.1";
         let scene, camera, renderer, character;
 
+        // --- 3D ENGINE ---
         function init3D() {
             const container = document.getElementById('skin-viewport');
             if (!container) return;
-            
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(container.clientWidth, container.clientHeight);
             container.innerHTML = '';
             container.appendChild(renderer.domElement);
-
             const loader = new THREE.TextureLoader();
             const skinTex = loader.load("temp's Skin with no cap Version 1.0.0.png");
             skinTex.magFilter = THREE.NearestFilter; 
             const mat = new THREE.MeshPhongMaterial({ map: skinTex, side: THREE.DoubleSide });
-
             character = new THREE.Group();
-            const head = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), mat);
-            head.position.y = 1.5;
+            const head = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), mat); head.position.y = 1.5;
             const body = new THREE.Mesh(new THREE.BoxGeometry(1, 1.5, 0.5), mat);
             const armL = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.5, 0.5), mat); armL.position.set(-0.75, 0, 0);
             const armR = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.5, 0.5), mat); armR.position.set(0.75, 0, 0);
             const legL = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.5, 0.5), mat); legL.position.set(-0.25, -1.5, 0);
             const legR = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.5, 0.5), mat); legR.position.set(0.25, -1.5, 0);
-
             character.add(head, body, armL, armR, legL, legR);
             scene.add(character);
             scene.add(new THREE.AmbientLight(0xffffff, 1.2));
@@ -224,7 +266,15 @@
                 const loader = document.getElementById('loader');
                 loader.style.opacity = '0'; 
                 loader.style.pointerEvents = 'none'; 
-                setTimeout(() => loader.style.visibility = 'hidden', 800); 
+                setTimeout(() => {
+                    loader.style.visibility = 'hidden';
+                    // VERSION CHECK LOGIC
+                    const lastSeenVersion = localStorage.getItem('pix_last_version');
+                    if (lastSeenVersion !== CURRENT_VERSION) {
+                        openModal('whats-new-modal');
+                        localStorage.setItem('pix_last_version', CURRENT_VERSION);
+                    }
+                }, 800); 
             }, 1200);
         };
     </script>
