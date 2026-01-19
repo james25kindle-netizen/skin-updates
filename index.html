@@ -39,9 +39,9 @@
         /* CURSOR */
         #cursor-dot, #cursor-outline { 
             position: fixed; top: 0; left: 0; pointer-events: none; z-index: 10001; 
-            border-radius: 50%; will-change: transform; transition: opacity 0.3s, width 0.2s, height 0.2s;
+            border-radius: 50%; will-change: transform; transition: opacity 0.3s;
         }
-        #cursor-dot { width: 6px; height: 6px; background: #fff; }
+        #cursor-dot { width: 6px; height: 6px; background: #fff; transform: translate(-50%, -50%); }
         #cursor-outline { width: 30px; height: 30px; border: 1.5px solid white; mix-blend-mode: difference; }
         .cursor-morph { background: transparent !important; border: 1.5px solid white !important; }
         
@@ -54,18 +54,14 @@
             backdrop-filter: blur(var(--blur)); border-radius: var(--radius-pill); 
             display: flex; align-items: center; gap: 12px; font-weight: 700; 
             border: 1px solid rgba(255,255,255,0.1); color: #FFFFFF !important;
-            transition: background 0.2s;
         }
-        .widget:hover { background: rgba(255,255,255,0.2); }
         
-        /* MAGNETIC CONTAINER */
         .mag { 
             display: flex; align-items: center; gap: inherit; pointer-events: none; 
             transition: transform 0.2s cubic-bezier(0.23, 1, 0.32, 1); 
-            will-change: transform;
         }
 
-        #clock, .widget .material-symbols-rounded { color: #FFFFFF !important; }
+        #clock, .widget span { color: #FFFFFF !important; }
         .settings-icon { transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
         .widget:hover .settings-icon { transform: rotate(90deg); }
 
@@ -78,7 +74,7 @@
             backdrop-filter: blur(var(--blur)); border: 1px solid rgba(255,255,255,0.05); 
             display: flex; flex-direction: column; gap: 20px; height: 580px; margin-top: 20px; 
         }
-        .gallery-list { overflow-y: auto; flex-grow: 1; padding-right: 5px; }
+        .gallery-list { overflow-y: auto; flex-grow: 1; }
         .history-item { 
             padding: 16px; border-radius: 20px; display: block; width: 100%; text-align: left; 
             border: none; background: transparent; color: #fff; margin-bottom: 8px; transition: 0.2s; 
@@ -87,7 +83,6 @@
 
         .badge { background: var(--primary); color: #000; padding: 4px 12px; border-radius: 10px; font-size: 0.7rem; font-weight: 900; }
 
-        /* FIXED "GET SKIN" BUTTON */
         .fab-container { position: fixed; bottom: 40px; left: 40px; z-index: 100; }
         .fab { 
             height: 60px; padding: 0 32px; background: #fff; color: #000; 
@@ -105,7 +100,6 @@
             width: 450px; display: flex; flex-direction: column; gap: 15px; border: 1px solid #333; 
         }
         .modal-card input, .modal-card textarea { background: #1a1a1a; border: 1px solid #333; color: white; padding: 12px; border-radius: 12px; font-family: inherit; }
-        .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #222; }
     </style>
 </head>
 <body>
@@ -123,12 +117,12 @@
         <button class="widget interactive" onclick="openModal('settings-modal')">
             <div class="mag">
                 <span class="material-symbols-rounded" style="font-size: 20px;">schedule</span>
-                <span id="clock">--:--</span>
-                <span class="material-symbols-rounded settings-icon" style="font-size: 18px; margin-left: 4px; opacity: 0.7;">settings</span>
+                <span id="clock">00:00</span>
+                <span class="material-symbols-rounded settings-icon" style="font-size: 18px; opacity: 0.7;">settings</span>
             </div>
         </button>
         <div class="widget">
-            <div class="mag"><span>72°F</span><span class="material-symbols-rounded">dark_mode</span></div>
+            <div class="mag"><span id="temp">72°F</span><span class="material-symbols-rounded">dark_mode</span></div>
         </div>
     </nav>
 
@@ -137,8 +131,8 @@
         <div class="unified-panel">
             <div id="active-skin-content">
                 <span id="skin-badge" class="badge">V3.0</span>
-                <h2 id="skin-title" style="margin:15px 0 5px 0; font-size:2rem; font-weight:900;">Loading...</h2>
-                <p id="skin-desc" style="opacity:0.6; font-size:0.9rem;">Select a version below.</p>
+                <h2 id="skin-title" style="margin:15px 0 5px 0; font-size:2rem; font-weight:900;">The Ember Knight</h2>
+                <p id="skin-desc" style="opacity:0.6; font-size:0.9rem;">Custom lava flows and visor highlights.</p>
             </div>
             <hr style="border:none; border-top:1px solid rgba(255,255,255,0.1);">
             <div class="gallery-list" id="history-list"></div>
@@ -156,3 +150,98 @@
 
     <div id="settings-modal" class="modal-overlay">
         <div class="modal-card">
+            <h2 style="color:white;">UI Settings</h2>
+            <button onclick="closeModals()" style="background:#fff; color:#000; padding:15px; border:none; border-radius:12px; font-weight:900;">DONE</button>
+        </div>
+    </div>
+
+    <script>
+        // DATA LOGIC
+        const DB_KEY = 'pix_final_db_v6';
+        const DEFAULT_SKINS = [{ name: "The Ember Knight", version: "V3.0", desc: "Custom lava flows.", video: "skin-preview.mp4" }];
+        let skins = JSON.parse(localStorage.getItem(DB_KEY)) || DEFAULT_SKINS;
+        let currentIdx = 0;
+
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; document.body.classList.add('modal-open'); }
+        function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); document.body.classList.remove('modal-open'); }
+
+        function updateUI() {
+            const skin = skins[currentIdx];
+            document.getElementById('skin-title').textContent = skin.name;
+            document.getElementById('skin-badge').textContent = skin.version;
+            document.getElementById('skin-desc').textContent = skin.desc;
+            document.getElementById('bg-video').src = skin.video;
+            
+            const list = document.getElementById('history-list');
+            list.innerHTML = '';
+            skins.forEach((s, i) => {
+                const btn = document.createElement('button');
+                btn.className = `history-item interactive ${i === currentIdx ? 'active' : ''}`;
+                btn.innerHTML = `<div><span style="opacity:0.5; font-size:0.7rem;">${s.version}</span><br>${s.name}</div>`;
+                btn.onclick = () => { currentIdx = i; updateUI(); };
+                list.appendChild(btn);
+            });
+        }
+
+        // TIME & WEATHER
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // CURSOR & MAGNETIC
+        const dot = document.getElementById('cursor-dot');
+        const outline = document.getElementById('cursor-outline');
+        let mX = 0, mY = 0, oX = 0, oY = 0, target = null;
+
+        window.addEventListener('mousemove', (e) => {
+            mX = e.clientX; mY = e.clientY;
+            if (!document.body.classList.contains('modal-open')) {
+                const hit = e.target.closest('.interactive, button, .widget, .fab');
+                if (hit !== target) {
+                    if (target) {
+                        const m = target.querySelector('.mag');
+                        if (m) m.style.transform = 'translate3d(0,0,0)';
+                    }
+                    target = hit;
+                    if (hit) { outline.classList.add('cursor-morph'); dot.style.opacity = 0; }
+                    else { outline.classList.remove('cursor-morph'); dot.style.opacity = 1; }
+                }
+                if (target) {
+                    const m = target.querySelector('.mag');
+                    if (m) {
+                        const r = target.getBoundingClientRect();
+                        const x = (mX - (r.left + r.width/2)) * 0.3;
+                        const y = (mY - (r.top + r.height/2)) * 0.3;
+                        m.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+                    }
+                }
+            }
+        });
+
+        function animate() {
+            dot.style.transform = `translate3d(${mX}px, ${mY}px, 0)`;
+            oX += (mX - oX) * 0.15; oY += (mY - oY) * 0.15;
+            
+            if (target && !document.body.classList.contains('modal-open')) {
+                const r = target.getBoundingClientRect();
+                outline.style.width = r.width + "px";
+                outline.style.height = r.height + "px";
+                outline.style.transform = `translate3d(${r.left}px, ${r.top}px, 0)`;
+                outline.style.borderRadius = getComputedStyle(target).borderRadius;
+            } else {
+                outline.style.width = "30px";
+                outline.style.height = "30px";
+                outline.style.transform = `translate3d(${oX - 15}px, ${oY - 15}px, 0)`;
+                outline.style.borderRadius = "50%";
+            }
+            requestAnimationFrame(animate);
+        }
+
+        updateUI();
+        animate();
+    </script>
+</body>
+</html>
