@@ -3,63 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pix Updates | Pro Edition</title>
+    <title>Pix Updates | History & Bound</title>
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
     <style>
         :root {
             --primary: #FFB4AB; 
             --surface: #050505; 
-            --on-surface: #F1DFDD; 
-            --card-bg: rgba(20, 20, 20, 0.8);
+            --card-bg: rgba(20, 20, 20, 0.7);
             --radius-xl: 32px; 
             --radius-pill: 100px;
             --blur: 40px;
         }
         
-        * { cursor: none !important; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        * { cursor: none !important; box-sizing: border-box; -webkit-font-smoothing: antialiased; margin: 0; padding: 0; }
         
         body { 
-            margin: 0; background: var(--surface); color: var(--on-surface); 
+            background: var(--surface); color: #fff; 
             font-family: 'Google Sans Flex', sans-serif; overflow: hidden; height: 100vh; 
         }
 
-        /* YOUR REQUESTED BACKGROUND STYLE */
+        /* BACKGROUND BINDING */
         .video-bg-container { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; 
-            /* This creates the binding look you liked in the provided code */
+            position: fixed; inset: 0; z-index: -1; 
             mask-image: radial-gradient(circle at 70% 50%, black 40%, transparent 95%);
             -webkit-mask-image: radial-gradient(circle at 70% 50%, black 40%, transparent 95%);
             background: #000;
         }
-        #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; pointer-events: none; }
+        #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; transition: opacity 0.5s; }
 
-        /* CURSOR - Crystal Clear Hover */
+        /* CURSOR */
         #cursor-dot, #cursor-outline { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 10001; border-radius: 50%; will-change: transform; }
         #cursor-dot { width: 6px; height: 6px; background: #fff; }
         #cursor-outline { 
             width: 30px; height: 30px; border: 1.5px solid white; mix-blend-mode: difference; 
-            transition: width 0.25s cubic-bezier(0.23, 1, 0.32, 1), height 0.25s cubic-bezier(0.23, 1, 0.32, 1); 
+            transition: width 0.2s, height 0.2s, border-radius 0.2s; 
         }
         .cursor-morph { background: transparent !important; border: 1.5px solid white !important; }
 
         nav { padding: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
-        .widget { padding: 12px 24px; background: var(--card-bg); backdrop-filter: blur(var(--blur)); border-radius: var(--radius-pill); display: flex; align-items: center; gap: 12px; font-weight: 700; border: 1px solid rgba(255,255,255,0.1); color: #fff; }
+        .widget { padding: 12px 24px; background: var(--card-bg); backdrop-filter: blur(var(--blur)); border-radius: var(--radius-pill); display: flex; align-items: center; gap: 12px; font-weight: 700; border: 1px solid rgba(255,255,255,0.1); }
         .mag { display: flex; align-items: center; gap: inherit; pointer-events: none; transition: transform 0.1s ease-out; }
 
         .main-layout { display: grid; grid-template-columns: 1fr 400px; gap: 40px; max-width: 1400px; margin: 0 auto; padding: 0 40px; }
-        .hero-title { font-size: 6.5rem; font-weight: 900; letter-spacing: -5px; line-height: 0.9; margin-top: 60px; pointer-events: none; }
+        .hero-title { font-size: 6.5rem; font-weight: 900; letter-spacing: -5px; line-height: 0.85; margin-top: 60px; pointer-events: none; }
 
-        .unified-panel { background: var(--card-bg); border-radius: var(--radius-xl); padding: 40px; backdrop-filter: blur(var(--blur)); border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 20px; height: 550px; margin-top: 20px; }
-        .badge { background: #FFB4AB; color: #000; padding: 4px 12px; border-radius: 10px; font-size: 0.7rem; font-weight: 900; width: fit-content; }
-        
+        /* PANEL & HISTORY */
+        .unified-panel { 
+            background: var(--card-bg); border-radius: var(--radius-xl); padding: 32px; 
+            backdrop-filter: blur(var(--blur)); border: 1px solid rgba(255,255,255,0.05); 
+            display: flex; flex-direction: column; gap: 20px; height: 580px; margin-top: 20px; 
+        }
+        .gallery-list { overflow-y: auto; flex-grow: 1; padding-right: 5px; }
+        .gallery-list::-webkit-scrollbar { width: 4px; }
+        .gallery-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+
+        .history-item { 
+            padding: 16px; border-radius: 20px; display: block; width: 100%; text-align: left; 
+            border: none; background: transparent; color: #fff; font-family: inherit; 
+            margin-bottom: 8px; transition: all 0.2s; 
+        }
+        .history-item.active { background: rgba(255,255,255,0.1); border-left: 4px solid var(--primary); font-weight: 800; }
+
+        .badge { background: var(--primary); color: #000; padding: 4px 12px; border-radius: 10px; font-size: 0.7rem; font-weight: 900; width: fit-content; }
         .fab-container { position: fixed; bottom: 40px; left: 40px; }
         .fab { height: 60px; padding: 0 32px; background: #fff; color: #000; border-radius: 20px; border: none; display: flex; align-items: center; gap: 12px; font-weight: 900; }
 
-        /* ADMIN PANEL */
+        /* ADMIN */
         #admin-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 20000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
-        #admin-modal { background: #111; padding: 40px; border-radius: var(--radius-xl); width: 450px; display: flex; flex-direction: column; gap: 15px; border: 1px solid #333; }
-        #admin-modal input { background: #1a1a1a; border: 1px solid #333; color: white; padding: 15px; border-radius: 12px; }
+        #admin-modal { background: #111; padding: 40px; border-radius: var(--radius-xl); width: 450px; display: flex; flex-direction: column; gap: 12px; border: 1px solid #333; }
+        #admin-modal input, #admin-modal textarea { background: #1a1a1a; border: 1px solid #333; color: white; padding: 12px; border-radius: 12px; font-family: inherit; }
     </style>
 </head>
 <body>
@@ -68,12 +81,12 @@
     <div id="cursor-outline"></div>
 
     <div class="video-bg-container">
-        <video id="bg-video" autoplay muted loop playsinline src="skin-preview.mp4"></video>
+        <video id="bg-video" autoplay muted loop playsinline></video>
     </div>
 
     <nav>
         <button class="widget interactive">
-            <div class="mag"><span class="material-symbols-rounded">schedule</span><span id="clock">10:45 PM</span></div>
+            <div class="mag"><span class="material-symbols-rounded">schedule</span><span id="clock">--:--</span></div>
         </button>
         <div class="widget">
             <div class="mag"><span>72°F</span><span class="material-symbols-rounded">dark_mode</span></div>
@@ -81,11 +94,16 @@
     </nav>
 
     <div class="main-layout">
-        <h1 class="hero-title">PIX<br><span style="color: #FFB4AB;">UPDATES</span></h1>
+        <div><h1 class="hero-title">PIX<br><span style="color: var(--primary);">UPDATES</span></h1></div>
+        
         <div class="unified-panel">
-            <span class="badge">V3.0</span>
-            <h2 style="margin:0; font-size:2.5rem; font-weight: 900;">The Ember Knight</h2>
-            <p style="opacity:0.6; margin:0;">Custom lava flows and visor highlights.</p>
+            <div id="active-skin-content">
+                <span id="skin-badge" class="badge">V3.0</span>
+                <h2 id="skin-title" style="margin:15px 0 5px 0; font-size:2rem; font-weight:900;">Loading...</h2>
+                <p id="skin-desc" style="opacity:0.6; font-size:0.9rem; line-height:1.4;">Please wait.</p>
+            </div>
+            <hr style="border:none; border-top:1px solid rgba(255,255,255,0.1);">
+            <div class="gallery-list" id="history-list"></div>
         </div>
     </div>
 
@@ -97,40 +115,87 @@
 
     <div id="admin-modal-overlay">
         <div id="admin-modal">
-            <h2 style="color:white; margin-bottom:10px;">Admin Access</h2>
-            <input type="text" placeholder="Skin Title">
-            <input type="text" placeholder="Version Number">
-            <button class="interactive" style="background:#fff; color:#000; padding:15px; border:none; border-radius:12px; font-weight:900;">SAVE CHANGES</button>
+            <h2 style="color:white;">Admin Access</h2>
+            <input type="text" id="new-name" placeholder="Skin Name">
+            <input type="text" id="new-ver" placeholder="Version (e.g. V4.0)">
+            <input type="text" id="new-video" placeholder="Video URL (.mp4)">
+            <textarea id="new-desc" placeholder="Description..."></textarea>
+            <button class="interactive" onclick="addNewSkin()" style="background:#fff; color:#000; padding:15px; border:none; border-radius:12px; font-weight:900;">SAVE VERSION</button>
             <button class="interactive" onclick="toggleAdmin(false)" style="background:none; border:none; color:white; opacity:0.5;">CLOSE</button>
         </div>
     </div>
 
     <script>
-        const dot = document.querySelector('#cursor-dot');
-        const outline = document.querySelector('#cursor-outline');
-        let mX = 0, mY = 0, oX = 0, oY = 0, target = null;
+        const DB_KEY = 'pix_history_v1';
+        const DEFAULT_SKINS = [
+            { name: "The Ember Knight", version: "V3.0", desc: "Custom lava flows and visor highlights.", video: "https://assets.mixkit.co/videos/preview/mixkit-abstract-flowing-red-and-orange-background-34444-large.mp4" },
+            { name: "Void Walker", version: "V2.5", desc: "Particle effects for the End dimension.", video: "https://assets.mixkit.co/videos/preview/mixkit-stars-in-space-background-1610-large.mp4" }
+        ];
 
-        // ADMIN TOGGLE (SHIFT + A)
+        let skins = JSON.parse(localStorage.getItem(DB_KEY)) || DEFAULT_SKINS;
+        let currentIdx = 0;
+
+        function updateUI() {
+            const skin = skins[currentIdx];
+            document.getElementById('skin-title').textContent = skin.name;
+            document.getElementById('skin-badge').textContent = skin.version;
+            document.getElementById('skin-desc').textContent = skin.desc;
+            
+            const video = document.getElementById('bg-video');
+            if(video.src !== skin.video) {
+                video.style.opacity = 0;
+                setTimeout(() => {
+                    video.src = skin.video;
+                    video.style.opacity = 0.7;
+                }, 400);
+            }
+
+            const list = document.getElementById('history-list');
+            list.innerHTML = '';
+            skins.forEach((s, i) => {
+                const btn = document.createElement('button');
+                btn.className = `history-item interactive ${i === currentIdx ? 'active' : ''}`;
+                btn.innerHTML = `<span style="opacity:0.5; font-size:0.7rem; font-weight:900;">${s.version}</span><br>${s.name}`;
+                btn.onclick = () => { currentIdx = i; updateUI(); };
+                list.appendChild(btn);
+            });
+        }
+
+        function addNewSkin() {
+            const n = document.getElementById('new-name').value;
+            const v = document.getElementById('new-ver').value;
+            const vid = document.getElementById('new-video').value;
+            const d = document.getElementById('new-desc').value;
+            if(n && v && vid) {
+                skins.unshift({ name: n, version: v, video: vid, desc: d });
+                localStorage.setItem(DB_KEY, JSON.stringify(skins));
+                currentIdx = 0;
+                updateUI();
+                toggleAdmin(false);
+            }
+        }
+
         function toggleAdmin(show) { document.getElementById('admin-modal-overlay').style.display = show ? 'flex' : 'none'; }
         window.onkeydown = (e) => { if (e.shiftKey && e.key.toUpperCase() === 'A') toggleAdmin(true); };
 
-        // CURSOR ENGINE
+        // CURSOR & ANIMATION
+        const dot = document.querySelector('#cursor-dot'), outline = document.querySelector('#cursor-outline');
+        let mX = 0, mY = 0, oX = 0, oY = 0, target = null;
+
         window.addEventListener('mousemove', (e) => {
             mX = e.clientX; mY = e.clientY;
             const hit = e.target.closest('.interactive, button, .widget');
             if (hit !== target) {
-                if (target) { const oldMag = target.querySelector('.mag'); if (oldMag) oldMag.style.transform = `translate3d(0, 0, 0)`; }
+                if (target) { const m = target.querySelector('.mag'); if (m) m.style.transform = 'translate3d(0,0,0)'; }
                 target = hit;
                 if (hit) { outline.classList.add('cursor-morph'); dot.style.opacity = 0; }
                 else { outline.classList.remove('cursor-morph'); dot.style.opacity = 1; }
             }
             if (target) {
-                const magContent = target.querySelector('.mag');
-                if (magContent) {
-                    const rect = target.getBoundingClientRect();
-                    const px = (mX - (rect.left + rect.width / 2)) * 0.4;
-                    const py = (mY - (rect.top + rect.height / 2)) * 0.4;
-                    magContent.style.transform = `translate3d(${px}px, ${py}px, 0)`;
+                const m = target.querySelector('.mag');
+                if (m) {
+                    const r = target.getBoundingClientRect();
+                    m.style.transform = `translate3d(${(mX-(r.left+r.width/2))*0.3}px, ${(mY-(r.top+r.height/2))*0.3}px, 0)`;
                 }
             }
         });
@@ -140,7 +205,7 @@
             if (target) {
                 const r = target.getBoundingClientRect();
                 oX += (r.left + r.width/2 - oX) * 0.2; oY += (r.top + r.height/2 - oY) * 0.2;
-                outline.style.width = (r.width + 8) + "px"; outline.style.height = (r.height + 8) + "px";
+                outline.style.width = r.width + "px"; outline.style.height = r.height + "px";
                 outline.style.borderRadius = getComputedStyle(target).borderRadius;
             } else {
                 oX += (mX - oX) * 0.2; oY += (mY - oY) * 0.2;
@@ -149,8 +214,9 @@
             outline.style.transform = `translate3d(${oX - parseFloat(outline.style.width)/2}px, ${oY - parseFloat(outline.style.height)/2}px, 0)`;
             requestAnimationFrame(animate);
         }
-        
+
         setInterval(() => { document.getElementById('clock').textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); }, 1000);
+        updateUI();
         animate();
     </script>
 </body>
