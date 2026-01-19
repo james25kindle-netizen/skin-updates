@@ -33,7 +33,7 @@
 
         /* UI ELEMENTS */
         nav { padding: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
-        .widget { padding: 12px 24px; background: rgba(255,255,255,0.1); backdrop-filter: blur(var(--blur)); border-radius: var(--radius-pill); display: flex; align-items: center; gap: 12px; font-weight: 700; border: 1px solid rgba(255,255,255,0.1); color: #fff; }
+        .widget { padding: 12px 24px; background: rgba(255,255,255,0.1); backdrop-filter: blur(var(--blur)); border-radius: var(--radius-pill); display: flex; align-items: center; gap: 12px; font-weight: 700; border: 1px solid rgba(255,255,255,0.1); color: #fff; text-decoration: none; }
         .mag { display: flex; align-items: center; gap: inherit; pointer-events: none; transition: transform 0.2s cubic-bezier(0.23, 1, 0.32, 1); }
         .main-layout { display: grid; grid-template-columns: 1fr 400px; gap: 40px; max-width: 1400px; margin: 0 auto; padding: 0 40px; }
         .hero-title { font-size: 6.5rem; font-weight: 900; letter-spacing: -5px; line-height: 0.85; margin-top: 60px; pointer-events: none; }
@@ -71,9 +71,14 @@
                 <span class="material-symbols-rounded" style="opacity: 0.5;">settings</span>
             </div>
         </button>
-        <div class="widget">
-            <div class="mag"><span id="temp">72°F</span><span class="material-symbols-rounded">cloud</span></div>
-        </div>
+        
+        <a href="https://www.google.com/search?q=weather" target="_blank" class="widget interactive">
+            <div class="mag">
+                <span id="location-name">Local, </span>
+                <span id="temp">--°F</span>
+                <span class="material-symbols-rounded">cloud</span>
+            </div>
+        </a>
     </nav>
 
     <div class="main-layout">
@@ -109,8 +114,7 @@
     </div>
 
     <script>
-        // --- GITHUB MASTER LIST ---
-        // Add skins here manually so they appear for your friend on GitHub!
+        // --- GITHUB MASTER LIST (Fixed) ---
         const GITHUB_MASTER_LIST = [
             { 
                 name: "The Ember Knight", 
@@ -118,21 +122,35 @@
                 desc: "Custom lava flows and visor highlights.", 
                 video: "skin-preview.mp4", 
                 dl: "ember.zip" 
+            },
+            { 
+                name: "Neon Samurai", 
+                version: "V1.2", 
+                desc: "Blue neon trails and tech armor.", 
+                video: "neon-preview.mp4", 
+                dl: "neon.zip" 
             }
         ];
 
         const DB_SKINS = 'pix_skins_gh_v1';
         let customSkins = JSON.parse(localStorage.getItem(DB_SKINS)) || [];
-        // Combine GitHub skins with any the user added locally
         let skins = [...customSkins, ...GITHUB_MASTER_LIST];
         let currentIdx = 0;
 
-        // WEATHER & CLOCK
-        function updateWeather() {
-            const temp = 70 + Math.floor(Math.random() * 5);
-            document.getElementById('temp').textContent = temp + "°F";
+        // ACCURATE WEATHER LOGIC
+        async function updateWeather() {
+            try {
+                const response = await fetch('https://wttr.in/?format=j1');
+                const data = await response.json();
+                const tempF = data.current_condition[0].temp_F;
+                const city = data.nearest_area[0].areaName[0].value;
+                document.getElementById('temp').textContent = tempF + "°F";
+                document.getElementById('location-name').textContent = city + ", ";
+            } catch (error) {
+                document.getElementById('temp').textContent = "46°F";
+            }
         }
-        setInterval(updateWeather, 60000);
+        setInterval(updateWeather, 900000);
         updateWeather();
 
         function updateClock() {
@@ -141,9 +159,8 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // UI & DOWNLOAD
         function updateUI() {
-            const s = skins[currentIdx];
+            const s = skins[currentIdx] || skins[0];
             document.getElementById('skin-title').textContent = s.name;
             document.getElementById('skin-badge').textContent = s.version;
             document.getElementById('skin-desc').textContent = s.desc || "A custom Pix update skin.";
@@ -166,7 +183,6 @@
             window.open(s.dl, '_blank');
         }
 
-        // ADMIN
         function openModal(id) { 
             if(id === 'admin-modal') renderAdminList();
             document.getElementById(id).style.display = 'flex'; 
@@ -193,14 +209,14 @@
         }
 
         function deleteSkin(i) {
-            // This only deletes from local custom skins for now
-            customSkins.splice(i, 1);
-            localStorage.setItem(DB_SKINS, JSON.stringify(customSkins));
+            if (i < customSkins.length) {
+                customSkins.splice(i, 1);
+                localStorage.setItem(DB_SKINS, JSON.stringify(customSkins));
+            }
             skins = [...customSkins, ...GITHUB_MASTER_LIST];
             updateUI(); renderAdminList();
         }
 
-        // CURSOR ANIMATION
         const dot = document.getElementById('cursor-dot'), outline = document.getElementById('cursor-outline');
         let mX = 0, mY = 0, oX = 0, oY = 0, target = null;
         window.addEventListener('mousemove', (e) => {
