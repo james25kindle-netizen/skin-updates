@@ -80,6 +80,21 @@
         
         .primary-btn:active { transform: scale(0.98); }
 
+        /* SETTINGS BUTTON STYLE */
+        .interactive {
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 12px;
+            border-radius: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            width: 100%;
+        }
+        .interactive:hover { background: rgba(255,255,255,0.1); }
+        .mag { display: flex; align-items: center; gap: 10px; justify-content: center; }
+
         /* MAIN UI STYLES */
         .video-bg-container { position: fixed; inset: 0; z-index: -1; background: #000; }
         .radial-mask { position: absolute; inset: 0; mask-image: radial-gradient(circle at 70% 50%, black 40%, transparent 95%); -webkit-mask-image: radial-gradient(circle at 70% 50%, black 40%, transparent 95%); }
@@ -109,9 +124,10 @@
     </div>
 
     <nav>
-        <div class="widget">
+        <button class="widget" onclick="openModal('settings-modal')">
             <span class="material-symbols-rounded">schedule</span><span id="clock">00:00</span>
-        </div>
+            <span class="material-symbols-rounded" style="opacity:0.5; font-size:1.2rem;">settings</span>
+        </button>
     </nav>
 
     <div class="main-layout">
@@ -119,9 +135,24 @@
         <div class="unified-panel">
             <span class="badge" style="background:var(--primary); color:#000; padding:4px 12px; border-radius:10px; font-size:0.7rem; font-weight:900; width:fit-content;">V1.0.0</span>
             <h2 style="margin-top:10px; font-size:2rem; font-weight:900;">EMBER KNIGHT</h2>
-            <p style="opacity:0.6;">Ready to deploy.</p>
+            <p style="opacity:0.6;">Final release build.</p>
             <hr style="border:none; border-top:1px solid rgba(255,255,255,0.1);">
             <div id="history-list" style="overflow-y: auto; flex-grow: 1;"></div>
+        </div>
+    </div>
+
+    <div id="settings-modal" class="modal-overlay">
+        <div class="modal-card">
+            <h2 style="font-weight: 900; letter-spacing: -1px;">PREFERENCES</h2>
+            
+            <button onclick="openWhatsNew()" class="interactive">
+                <div class="mag">
+                    <span class="material-symbols-rounded">history_edu</span>
+                    WHAT’S NEW
+                </div>
+            </button>
+
+            <button onclick="closeModals()" class="primary-btn">CLOSE</button>
         </div>
     </div>
 
@@ -155,7 +186,18 @@
     <script>
         const SITE_VERSION = "0.11";
 
+        function openModal(id) {
+            document.getElementById(id).style.display = 'flex';
+            document.body.classList.add('modal-open');
+        }
+
+        function closeModals() {
+            document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
+            document.body.classList.remove('modal-open');
+        }
+
         function openWhatsNew() {
+          closeModals(); // Close settings before opening What's New
           document.getElementById("whats-new-modal").style.display = "flex";
           document.body.classList.add("modal-open");
         }
@@ -167,18 +209,14 @@
         }
 
         window.addEventListener("load", () => {
-            // Clock functionality
             setInterval(() => { 
                 document.getElementById('clock').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }); 
             }, 1000);
 
-            // Loader fade out
             setTimeout(() => { 
                 document.getElementById('loader').style.opacity = '0'; 
                 setTimeout(() => {
                     document.getElementById('loader').style.visibility = 'hidden';
-                    
-                    // Version Check Logic
                     const seen = localStorage.getItem("pix_seen_version");
                     if (seen !== SITE_VERSION) {
                         setTimeout(openWhatsNew, 1200); 
