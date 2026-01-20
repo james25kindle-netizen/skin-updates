@@ -17,7 +17,7 @@
         * { box-sizing: border-box; -webkit-font-smoothing: antialiased; margin: 0; padding: 0; }
         body { background: var(--surface); color: #fff; font-family: 'Google Sans Flex', sans-serif; overflow: hidden; height: 100vh; }
 
-        /* BACKGROUND */
+        /* VIDEO BACKGROUND */
         .video-bg-container { position: fixed; inset: 0; z-index: -2; pointer-events: none; }
         #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; }
 
@@ -25,12 +25,55 @@
         nav { padding: 40px 60px; display: flex; justify-content: space-between; align-items: center; position: fixed; width: 100%; z-index: 100; }
         .widget { padding: 12px 24px; background: rgba(255,255,255,0.1); backdrop-filter: blur(var(--blur)); border-radius: var(--radius-pill); border: 1px solid rgba(255,255,255,0.15); color: #fff; cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 1rem; transition: 0.3s; text-decoration: none; }
 
-        /* MAIN CONTAINER */
-        .main-container { display: grid; grid-template-columns: 600px 1fr; height: 100vh; padding-top: 140px; position: relative; }
+        /* MAIN CONTAINER - Flipped Columns */
+        .main-container { display: grid; grid-template-columns: 1fr 600px; height: 100vh; padding-top: 140px; position: relative; }
 
-        /* LEFT FEED */
-        .feed-container { padding: 0 60px 60px 60px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; scrollbar-width: none; z-index: 10; }
-        .feed-container::-webkit-scrollbar { display: none; }
+        /* LEFT: STICKY SKIN PREVIEW */
+        .skin-side { 
+            display: flex; flex-direction: column; justify-content: flex-end; 
+            padding-left: 80px; position: relative; height: 100%;
+        }
+        .hero-title { 
+            font-size: 11rem; font-weight: 900; letter-spacing: -12px; line-height: 0.75; 
+            position: relative; z-index: 5; pointer-events: none;
+            text-shadow: 0 20px 80px rgba(0,0,0,0.8);
+            margin-bottom: 60px;
+        }
+        
+        .skin-display-container {
+            position: absolute; left: 0; bottom: 0; width: 100%; height: 95%;
+            z-index: 1; pointer-events: none; overflow: hidden;
+            display: flex; align-items: flex-end; justify-content: flex-start;
+        }
+        #active-skin-img {
+            height: 115%; width: auto; object-fit: contain;
+            filter: drop-shadow(20px 20px 60px rgba(0,0,0,0.9));
+            transition: transform 0.7s cubic-bezier(0.2, 1, 0.3, 1), opacity 0.4s ease;
+            transform: translateY(100px);
+            mask-image: linear-gradient(to top, black 85%, transparent);
+        }
+
+        /* RIGHT: FEED (Database Logs) */
+        .feed-side { 
+            padding: 0 60px 60px 60px; 
+            overflow-y: auto; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 20px; 
+            scrollbar-width: none; 
+            z-index: 10;
+            background: linear-gradient(to left, rgba(0,0,0,0.4), transparent);
+        }
+        .feed-side::-webkit-scrollbar { display: none; }
+
+        .log-header {
+            display: flex; align-items: center; gap: 10px;
+            font-family: monospace; color: var(--primary); font-weight: 900; 
+            font-size: 1rem; letter-spacing: 4px; text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+        .pulse-dot { width: 8px; height: 8px; background: var(--primary); border-radius: 50%; animation: blink 1s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
         .compact-card { 
             background: var(--card-bg); border-radius: var(--radius-lg); padding: 24px; 
@@ -38,46 +81,18 @@
             cursor: pointer; transition: 0.4s cubic-bezier(0.2, 0, 0, 1);
             display: flex; align-items: center; gap: 24px;
         }
-        .compact-card:hover { transform: scale(1.03) translateX(15px); border-color: var(--primary); background: rgba(255,255,255,0.15); }
-        .card-thumb { width: 120px; height: 120px; border-radius: 24px; object-fit: cover; background: #000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .compact-card:hover { transform: scale(1.03) translateX(-15px); border-color: var(--primary); background: rgba(255,255,255,0.15); }
+        .card-thumb { width: 120px; height: 120px; border-radius: 24px; object-fit: cover; background: #000; }
 
-        /* RIGHT SIDE PREVIEW */
-        .hero-side { 
-            display: flex; flex-direction: column; justify-content: center; 
-            padding: 0 80px; position: relative; height: 100%;
-        }
-        .hero-title { 
-            font-size: 11rem; font-weight: 900; letter-spacing: -12px; line-height: 0.75; 
-            position: relative; z-index: 5; pointer-events: none;
-            text-shadow: 0 20px 80px rgba(0,0,0,0.8);
-        }
-        .tag { font-family: monospace; color: var(--primary); font-weight: 900; font-size: 1rem; letter-spacing: 5px; text-transform: uppercase; z-index: 5; }
-
-        /* STICKY SKIN PREVIEW (RIGHT) */
-        .skin-display-container {
-            position: absolute; right: 0; bottom: 0; width: 80%; height: 90%;
-            z-index: 1; pointer-events: none; overflow: hidden;
-            display: flex; align-items: flex-end; justify-content: flex-end;
-        }
-        #active-skin-img {
-            height: 110%; width: auto; object-fit: contain;
-            filter: drop-shadow(-20px 20px 60px rgba(0,0,0,0.9));
-            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.4s ease;
-            transform: translateY(50px);
-            mask-image: linear-gradient(to top, black 90%, transparent);
-        }
-
-        /* MODAL */
+        /* MODAL & LOADER (Same as before) */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 20000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(30px); }
         .inspect-card { background: #0a0a0a; width: 1100px; height: 750px; border-radius: 56px; border: 1px solid #333; overflow: hidden; display: grid; grid-template-columns: 1.2fr 0.8fr; }
         .inspect-visuals { background: #000; position: relative; }
         .inspect-details { padding: 60px; display: flex; flex-direction: column; justify-content: space-between; }
         model-viewer { width: 100%; height: 100%; }
-
-        /* LOADER */
         #loader { position: fixed; inset: 0; background: #000; z-index: 100000; display: flex; align-items: center; justify-content: center; transition: 0.8s; }
-        .pulse-logo { width: 120px; height: 120px; background: var(--primary); border-radius: 40px; animation: p 2s infinite cubic-bezier(0.34, 1.56, 0.64, 1); }
-        @keyframes p { 0%, 100% { transform: scale(0.8); border-radius: 60px; } 50% { transform: scale(1.1); border-radius: 30px; } }
+        .pulse-logo { width: 100px; height: 100px; background: var(--primary); border-radius: 35px; animation: p 2s infinite ease-in-out; }
+        @keyframes p { 0%, 100% { transform: scale(0.8); } 50% { transform: scale(1.1); } }
     </style>
 </head>
 <body>
@@ -90,35 +105,36 @@
 
     <nav>
         <div class="widget"><span id="clock">00:00</span></div>
-        <a href="https://www.google.com/search?q=weather" target="_blank" class="widget" id="weather-widget" onclick="fetchWeather()">
-            <span id="temp">--°F</span><span class="material-symbols-rounded" id="w-icon">cloud</span>
+        <a href="https://www.google.com/search?q=weather" target="_blank" class="widget" id="weather-widget">
+            <span id="temp">--°F</span><span class="material-symbols-rounded">cloud</span>
         </a>
     </nav>
 
     <div class="main-container">
-        <div class="feed-container" id="skin-feed">
-            <span class="tag" style="margin-bottom: 20px; opacity: 0.4;">Database Logs</span>
-            </div>
-
-        <div class="hero-side">
-            <span class="tag">System Patch 3.1.0</span>
-            <h1 class="hero-title">VELVET<br><span style="color: var(--primary);">VOID</span></h1>
-            
+        <div class="skin-side">
             <div class="skin-display-container">
                 <img id="active-skin-img" src="skin-render.png" alt="Featured Skin">
             </div>
+            <h1 class="hero-title">VELVET<br><span style="color: var(--primary);">VOID</span></h1>
         </div>
+
+        <div class="feed-side" id="skin-feed">
+            <div class="log-header">
+                <div class="pulse-dot"></div>
+                <span>Database Logs / v3.1.0</span>
+            </div>
+            </div>
     </div>
 
     <div id="inspect-modal" class="modal-overlay">
         <div class="inspect-card">
             <div class="inspect-visuals">
-                <model-viewer id="modal-viewer" auto-rotate camera-controls shadow-intensity="1" exposure="1.2"></model-viewer>
+                <model-viewer id="modal-viewer" auto-rotate camera-controls shadow-intensity="1"></model-viewer>
                 <button onclick="closeModals()" style="position:absolute; top:30px; left:30px; background:rgba(255,255,255,0.1); border:none; color:#fff; width:60px; height:60px; border-radius:50%; cursor:pointer; backdrop-filter: blur(10px);"><span class="material-symbols-rounded" style="font-size: 2rem;">close</span></button>
             </div>
             <div class="inspect-details">
                 <div>
-                    <span class="tag" id="modal-tag">VERSION INFO</span>
+                    <span style="font-family: monospace; color: var(--primary); letter-spacing: 2px;" id="modal-tag">VERSION INFO</span>
                     <h1 id="modal-title" style="font-size: 4rem; font-weight: 900; margin-top: 10px; line-height: 0.9;">SKIN NAME</h1>
                     <p id="modal-desc" style="opacity: 0.6; font-size: 1.2rem; margin-top: 40px; line-height: 1.6;">Description text content...</p>
                 </div>
@@ -132,9 +148,9 @@
 
     <script>
         const skinDatabase = [
-            { name: "NEON SPECTRE", tag: "NEW", render: "skin-render.png", model: "model.gltf", png: "skin.png", desc: "Our most advanced build yet. Optimized for high-fidelity rendering." },
-            { name: "VOID WALKER", tag: "LEGACY", render: "skin-render2.png", model: "model2.gltf", png: "skin2.png", desc: "A classic design rebuilt from the ground up for the Velvet engine." },
-            { name: "CYBER CORE", tag: "STABLE", render: "skin-render3.png", model: "model3.gltf", png: "skin3.png", desc: "Industrial-grade plating with reactive lighting systems." }
+            { name: "NEON SPECTRE", tag: "STABLE", render: "skin-render.png", model: "model.gltf", png: "skin.png", desc: "The new standard for Velvet engine v3.1.0. High-intensity PBR maps." },
+            { name: "VOID WALKER", tag: "LEGACY", render: "skin-render2.png", model: "model2.gltf", png: "skin2.png", desc: "A fan favorite from v2.0, completely remastered for the modern pipeline." },
+            { name: "CYBER CORE", tag: "PATCH", render: "skin-render3.png", model: "model3.gltf", png: "skin3.png", desc: "Industrial-grade plating with reactive lighting systems." }
         ];
 
         let currentPng = "";
@@ -147,24 +163,23 @@
                 const card = document.createElement('div');
                 card.className = 'compact-card';
                 
-                // Switch right-side preview on hover
                 card.onmouseenter = () => {
                     previewImg.style.opacity = '0';
-                    previewImg.style.transform = 'translateY(80px)';
+                    previewImg.style.transform = 'translateY(120px)';
                     setTimeout(() => {
                         previewImg.src = skin.render;
                         previewImg.style.opacity = '1';
                         previewImg.style.transform = 'translateY(0)';
-                    }, 200);
+                    }, 250);
                 };
 
                 card.onclick = () => openInspect(index);
                 card.innerHTML = `
                     <img src="${skin.render}" class="card-thumb">
                     <div class="card-info">
-                        <span class="tag" style="font-size: 0.7rem;">${skin.tag}</span>
+                        <span style="font-family: monospace; color: var(--primary); font-size: 0.7rem; letter-spacing: 2px;">${skin.tag}</span>
                         <h2 style="font-size: 1.8rem; font-weight: 900;">${skin.name}</h2>
-                        <p>Open Inspection</p>
+                        <p style="opacity:0.5; font-size: 0.9rem;">View Log Details</p>
                     </div>
                 `;
                 container.appendChild(card);
@@ -190,16 +205,8 @@
 
         function closeModals() { document.getElementById('inspect-modal').style.display = 'none'; }
 
-        async function fetchWeather() {
-            try {
-                const res = await fetch('https://wttr.in/?format=j1');
-                const data = await res.json();
-                document.getElementById('temp').textContent = data.current_condition[0].temp_F + "°F";
-            } catch (e) { document.getElementById('temp').textContent = "72°F"; }
-        }
-
         window.addEventListener('load', () => {
-            renderFeed(); fetchWeather();
+            renderFeed();
             setInterval(() => { 
                 document.getElementById('clock').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); 
             }, 1000);
