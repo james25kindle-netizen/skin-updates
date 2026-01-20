@@ -1,288 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pix Updates</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pix Updates | v3.1.0 Velvet Void</title>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <style>
+        :root {
+            --primary: #FFB4AB; 
+            --surface: #020202; 
+            --card-bg: rgba(20, 20, 20, 0.7);
+            --radius-xl: 32px; 
+            --radius-pill: 100px;
+            --blur: 40px;
+            --video-opacity: 0.7;
+        }
+        
+        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; margin: 0; padding: 0; }
+        body { background: var(--surface); color: #fff; font-family: 'Google Sans Flex', sans-serif; overflow: hidden; height: 100vh; cursor: auto; }
+        body.custom-cursor-active { cursor: none; }
+        body.modal-open { cursor: auto !important; }
 
-<!-- GOOGLE SANS FLEX -->
-<link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" />
+        /* LOADER */
+        #loader { position: fixed; inset: 0; background: #000; z-index: 99999; display: flex; align-items: center; justify-content: center; transition: opacity 0.8s ease-out, visibility 0.8s; }
+        .pulse-logo { width: 80px; height: 80px; background: var(--primary); border-radius: 24px; animation: m3-expressive-pulse 2s infinite cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .pulse-logo.small { width: 40px; height: 40px; border-radius: 12px; margin-right: 15px; }
+        
+        @keyframes m3-expressive-pulse { 0% { transform: scale(0.8); border-radius: 40px; } 50% { transform: scale(1.1); border-radius: 20px; } 100% { transform: scale(0.8); border-radius: 40px; } }
 
-<!-- MODEL VIEWER -->
-<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
+        /* BACKGROUND */
+        .video-bg-container { position: fixed; inset: 0; z-index: -1; background: #000; }
+        .radial-mask { position: absolute; inset: 0; mask-image: radial-gradient(circle at 70% 50%, black 40%, transparent 95%); -webkit-mask-image: radial-gradient(circle at 70% 50%, black 40%, transparent 95%); }
+        #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: var(--video-opacity); transition: opacity 0.5s; }
 
-<style>
-:root {
-  --primary:#FFB4AB;
-  --surface:#020202;
-  --card:rgba(20,20,20,.75);
-  --radius:28px;
-}
+        /* UI ELEMENTS */
+        nav { padding: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
+        .widget { padding: 12px 24px; background: rgba(255,255,255,0.08); backdrop-filter: blur(var(--blur)); border-radius: var(--radius-pill); display: flex; align-items: center; gap: 12px; font-weight: 700; border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; }
+        .main-layout { display: grid; grid-template-columns: 1fr 400px; gap: 40px; max-width: 1400px; margin: 0 auto; padding: 0 40px; }
+        .hero-title { font-size: 6.5rem; font-weight: 900; letter-spacing: -5px; line-height: 0.85; margin-top: 60px; pointer-events: none; }
+        .unified-panel { background: var(--card-bg); border-radius: var(--radius-xl); padding: 32px; backdrop-filter: blur(var(--blur)); border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 20px; height: 580px; margin-top: 20px; }
+        
+        /* MODAL STYLES */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 20000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
+        .modal-card { background: #0a0a0a; padding: 40px; border-radius: var(--radius-xl); width: 500px; display: flex; flex-direction: column; gap: 20px; border: 1px solid #222; }
+        
+        .loading-row { display: flex; align-items: center; margin-bottom: 10px; opacity: 0.8; }
+        .loading-text { font-weight: 700; letter-spacing: 1px; text-transform: uppercase; font-size: 0.8rem; }
+        
+        .whats-new-list { list-style: none; padding: 0; }
+        .whats-new-list li { padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.95rem; opacity: 0.8; }
+        
+        .primary-btn { background: #fff; color: #000; padding: 18px; border: none; border-radius: 20px; font-weight: 900; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        .primary-btn:hover { transform: scale(1.02); background: var(--primary); }
 
-*{box-sizing:border-box;margin:0;padding:0}
-body{
-  font-family:'Google Sans Flex',system-ui,sans-serif;
-  background:var(--surface);
-  color:#fff;
-  height:100vh;
-  overflow:hidden;
-}
-
-/* LOADER */
-#loader{
-  position:fixed;inset:0;
-  background:#000;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:9999;
-}
-#loader div{
-  width:80px;height:80px;
-  background:var(--primary);
-  border-radius:24px;
-  animation:pulse 2s infinite cubic-bezier(.34,1.56,.64,1);
-}
-@keyframes pulse{
-  0%,100%{transform:scale(.8) rotate(0)}
-  50%{transform:scale(1.1) rotate(90deg)}
-}
-
-/* VIDEO BG */
-.video-bg{
-  position:fixed;inset:0;z-index:-1;
-}
-.video-bg video{
-  width:100%;height:100%;
-  object-fit:cover;
-  opacity:.7;
-}
-
-/* NAV */
-nav{
-  padding:32px;
-  display:flex;
-  justify-content:space-between;
-}
-.pill{
-  padding:12px 24px;
-  background:rgba(255,255,255,.1);
-  border-radius:999px;
-  font-weight:700;
-}
-
-/* LAYOUT */
-.main{
-  max-width:1200px;
-  margin:0 auto;
-  padding:0 32px;
-  display:grid;
-  grid-template-columns:1fr 420px;
-  gap:32px;
-}
-.hero{
-  font-size:6rem;
-  font-weight:900;
-  line-height:.85;
-  letter-spacing:-4px;
-}
-
-/* PANEL */
-.panel{
-  background:var(--card);
-  border-radius:var(--radius);
-  padding:28px;
-  backdrop-filter:blur(30px);
-  display:flex;
-  flex-direction:column;
-  gap:16px;
-}
-.badge{
-  background:var(--primary);
-  color:#000;
-  font-weight:900;
-  font-size:.7rem;
-  padding:6px 12px;
-  border-radius:10px;
-  width:max-content;
-}
-
-/* DISPLAY */
-.display{
-  position:relative;
-  height:220px;
-  border-radius:20px;
-  overflow:hidden;
-}
-
-/* MODEL */
-model-viewer{
-  width:100%;
-  height:100%;
-  background:#000;
-}
-
-/* COMPARISON */
-.compare img{
-  position:absolute;inset:0;
-  width:100%;height:100%;
-  object-fit:cover;
-}
-.compare .after{
-  clip-path:inset(0 50% 0 0);
-}
-.compare::after{
-  content:'';
-  position:absolute;
-  left:50%;top:0;bottom:0;
-  width:3px;background:var(--primary);
-}
-
-/* HISTORY */
-.history button{
-  background:none;border:none;
-  color:#fff;
-  text-align:left;
-  padding:12px;
-  border-radius:16px;
-  cursor:pointer;
-}
-.history button.active{
-  background:rgba(255,255,255,.15);
-  border-left:4px solid var(--primary);
-}
-
-/* FAB */
-.fab{
-  position:fixed;
-  bottom:32px;left:32px;
-  background:#fff;color:#000;
-  padding:18px 28px;
-  border-radius:20px;
-  font-weight:900;
-  border:none;
-  cursor:pointer;
-}
-
-/* MOBILE */
-@media(max-width:800px){
-  .main{grid-template-columns:1fr}
-  .hero{font-size:4rem}
-}
-</style>
+        .fab-container { position: fixed; bottom: 40px; left: 40px; z-index: 100; }
+        .fab { height: 60px; padding: 0 32px; background: #fff; color: #000; border-radius: 20px; border: none; display: flex; align-items: center; gap: 12px; font-weight: 900; cursor: pointer; }
+    </style>
 </head>
-
 <body>
 
-<div id="loader"><div></div></div>
+    <div id="loader"><div class="pulse-logo"></div></div>
 
-<div class="video-bg">
-  <video autoplay muted loop playsinline src="skin-preview.mp4"></video>
-</div>
-
-<nav>
-  <div class="pill" id="clock">--:--</div>
-  <div class="pill">PIX UPDATES</div>
-</nav>
-
-<div class="main">
-  <div>
-    <div class="hero">PIX<br><span style="color:var(--primary)">UPDATES</span></div>
-  </div>
-
-  <div class="panel">
-    <span class="badge" id="badge">NEW</span>
-    <h2 id="title">EMBER KNIGHT</h2>
-    <p id="desc"></p>
-
-    <div class="display">
-      <model-viewer
-        id="model"
-        src="model.gltf"
-        camera-controls
-        auto-rotate
-        auto-rotate-delay="0"
-        rotation-per-second="20deg"
-        exposure="1.1">
-      </model-viewer>
+    <div class="video-bg-container">
+        <div class="radial-mask"><video id="bg-video" autoplay muted loop playsinline src=""></video></div>
     </div>
 
-    <div class="display compare">
-      <img src="old-skin.png">
-      <img src="new-skin.png" class="after">
+    <nav>
+        <button class="widget" onclick="openModal('settings-modal')">
+            <span class="material-symbols-rounded">schedule</span><span id="clock">--:--</span>
+        </button>
+    </nav>
+
+    <div class="main-layout">
+        <div><h1 class="hero-title">PIX<br><span style="color: var(--primary);">UPDATES</span></h1></div>
+        <div class="unified-panel">
+            <div id="active-skin-content">
+                <span id="skin-badge" class="badge" style="background:var(--primary); color:#000; padding:4px 12px; border-radius:10px; font-size:0.7rem; font-weight:900;">V1.0.0</span>
+                <h2 id="skin-title" style="margin:15px 0 5px 0; font-size:2rem; font-weight:900;">EMBER KNIGHT</h2>
+                <p id="skin-desc" style="opacity:0.6; font-size:0.9rem;">Final release build.</p>
+            </div>
+            <hr style="border:none; border-top:1px solid rgba(255,255,255,0.1);">
+            <div id="history-list" style="overflow-y: auto; flex-grow: 1;"></div>
+        </div>
     </div>
 
-    <div class="history">
-      <button class="active">V1.0.0 — Ember Knight</button>
-    </div>
-  </div>
-</div>
-
-<button class="fab" onclick="download()">DOWNLOAD SKIN</button>
-
-<script>
-/* CLOCK */
-setInterval(()=>{
-  clock.textContent=new Date().toLocaleTimeString([],{
-    hour:'2-digit',minute:'2-digit'
-  })
-},1000)
-
-/* UPDATED TEXT */
-const release=new Date("2026-01-01")
-const days=Math.floor((Date.now()-release)/86400000)
-desc.textContent=`Updated ${days} day${days!==1?'s':''} ago`
-
-/* NEW BADGE AUTO REMOVE */
-if(days>7) badge.textContent="V1.0.0"
-
-/* COMPARISON SLIDER */
-document.querySelector('.compare').addEventListener('mousemove',e=>{
-  const r=e.currentTarget.getBoundingClientRect()
-  const pct=(e.clientX-r.left)/r.width*100
-  document.querySelector('.after').style.clipPath=
-    `inset(0 ${100-pct}% 0 0)`
-})
-
-/* DOWNLOAD */
-function download(){
-  const a=document.createElement('a')
-  a.href="temp's Skin with no cap Version 1.0.0.png"
-  a.download=a.href
-  a.click()
-}
-
-/* LOADER */
-window.onload=()=>{
-  setTimeout(()=>{
-    loader.style.opacity=0
-    setTimeout(()=>loader.remove(),600)
-  },1500)
-}
-</script>
-<div id="whats-new-modal" class="modal-overlay">
-  <div class="modal-card">
-
-    <div class="loading-row">
-      <div class="pulse-logo small"></div>
-      <span class="loading-text">Loading updates…</span>
+    <div id="whats-new-modal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="loading-row">
+                <div class="pulse-logo small"></div>
+                <span class="loading-text">Loading updates…</span>
+            </div>
+            <h2 style="font-weight: 900; letter-spacing: -1px;">What’s New in v0.11 🚀</h2>
+            <ul class="whats-new-list">
+                <li>🎨 Material 3 Expressive polish everywhere</li>
+                <li>🧍 Interactive 3D skin preview (rotate it!)</li>
+                <li>🖼️ Side-by-side skin comparison</li>
+                <li>🎞️ Random cinematic backgrounds</li>
+                <li>⚡ Faster loading & smoother motion</li>
+            </ul>
+            <button class="primary-btn" onclick="closeModals()">Nice. Let’s go</button>
+        </div>
     </div>
 
-    <h2>What’s New in v0.11 🚀</h2>
+    <div class="fab-container">
+        <button class="fab" onclick="downloadSkin()">
+            <span class="material-symbols-rounded">download</span><span>GET SKIN</span>
+        </button>
+    </div>
 
-    <ul class="whats-new-list">
-      <li>🎨 Material 3 Expressive polish everywhere</li>
-      <li>🧍 Interactive 3D skin preview (rotate it!)</li>
-      <li>🖼️ Side-by-side skin comparison</li>
-      <li>🎞️ Random cinematic backgrounds</li>
-      <li>⚡ Faster loading & smoother motion</li>
-    </ul>
+    <script>
+        const skins = [{ name: "EMBER KNIGHT", version: "V1.0.0", desc: "Final release build.", video: "skin-preview.mp4", dl: "skin.png" }];
+        let currentIdx = 0;
 
-    <button class="primary-btn" onclick="closeWhatsNew()">Nice. Let’s go</button>
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; document.body.classList.add('modal-open'); }
+        function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); document.body.classList.remove('modal-open'); }
 
-  </div>
-</div>
-
+        window.addEventListener('load', () => {
+            setInterval(() => { document.getElementById('clock').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }, 1000);
+            setTimeout(() => { 
+                document.getElementById('loader').style.opacity = '0'; 
+                setTimeout(() => {
+                    document.getElementById('loader').style.visibility = 'hidden';
+                    openModal('whats-new-modal'); 
+                }, 800);
+            }, 1800);
+        });
+    </script>
 </body>
 </html>
