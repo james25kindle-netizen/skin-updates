@@ -74,10 +74,11 @@
             border: none;
             border-radius: 16px;
             cursor: pointer;
+            width: 100%;
             transition: transform 0.2s;
         }
         
-        .primary-btn:active { transform: scale(0.95); }
+        .primary-btn:active { transform: scale(0.98); }
 
         /* MAIN UI STYLES */
         .video-bg-container { position: fixed; inset: 0; z-index: -1; background: #000; }
@@ -108,9 +109,9 @@
     </div>
 
     <nav>
-        <button class="widget" onclick="openModal('settings-modal')">
+        <div class="widget">
             <span class="material-symbols-rounded">schedule</span><span id="clock">00:00</span>
-        </button>
+        </div>
     </nav>
 
     <div class="main-layout">
@@ -141,29 +142,49 @@
                 <li>⚡ Faster loading & smoother motion</li>
             </ul>
 
-            <button class="primary-btn" onclick="closeModals()">Nice. Let’s go</button>
+            <button class="primary-btn" onclick="closeWhatsNew()">Nice. Let’s go</button>
         </div>
     </div>
 
     <div class="fab-container">
-        <button class="fab" onclick="downloadSkin()">
+        <button class="fab">
             <span class="material-symbols-rounded">download</span><span>GET SKIN</span>
         </button>
     </div>
 
     <script>
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; document.body.classList.add('modal-open'); }
-        function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); document.body.classList.remove('modal-open'); }
+        const SITE_VERSION = "0.11";
 
-        window.addEventListener('load', () => {
-            setInterval(() => { document.getElementById('clock').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }); }, 1000);
+        function openWhatsNew() {
+          document.getElementById("whats-new-modal").style.display = "flex";
+          document.body.classList.add("modal-open");
+        }
+
+        function closeWhatsNew() {
+          document.getElementById("whats-new-modal").style.display = "none";
+          document.body.classList.remove("modal-open");
+          localStorage.setItem("pix_seen_version", SITE_VERSION);
+        }
+
+        window.addEventListener("load", () => {
+            // Clock functionality
+            setInterval(() => { 
+                document.getElementById('clock').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }); 
+            }, 1000);
+
+            // Loader fade out
             setTimeout(() => { 
                 document.getElementById('loader').style.opacity = '0'; 
                 setTimeout(() => {
                     document.getElementById('loader').style.visibility = 'hidden';
-                    openModal('whats-new-modal'); 
+                    
+                    // Version Check Logic
+                    const seen = localStorage.getItem("pix_seen_version");
+                    if (seen !== SITE_VERSION) {
+                        setTimeout(openWhatsNew, 1200); 
+                    }
                 }, 800);
-            }, 1800);
+            }, 1000);
         });
     </script>
 </body>
