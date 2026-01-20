@@ -15,64 +15,48 @@
         }
         
         * { box-sizing: border-box; -webkit-font-smoothing: antialiased; margin: 0; padding: 0; }
-        
-        /* Standard Mouse Restored */
-        body { 
-            background: var(--surface); 
-            color: #fff; 
-            font-family: 'Google Sans Flex', sans-serif; 
-            overflow: hidden; 
-            height: 100vh; 
-            cursor: default; 
-        }
+        body { background: var(--surface); color: #fff; font-family: 'Google Sans Flex', sans-serif; overflow: hidden; height: 100vh; cursor: default; }
 
-        /* LOADER */
         #loader { position: fixed; inset: 0; background: #000; z-index: 99999; display: flex; align-items: center; justify-content: center; transition: 0.8s; }
         .pulse-logo { width: 80px; height: 80px; background: var(--primary); border-radius: 24px; animation: p 2s infinite; }
         @keyframes p { 0%,100%{transform:scale(0.8);border-radius:40px;} 50%{transform:scale(1.1);border-radius:20px;} }
 
-        /* VIDEO BACKGROUND */
-        .video-bg-container { position: fixed; inset: 0; z-index: -1; background: #050505; }
-        #bg-video { width: 100vw; height: 100vh; object-fit: cover; opacity: 0.5; display: block; }
-        .radial-mask { position: absolute; inset: 0; background: radial-gradient(circle at center, transparent 30%, var(--surface) 100%); }
+        /* VIDEO BACKGROUND - STABILIZED */
+        .video-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: #000; overflow: hidden; pointer-events: none; }
+        #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; transition: opacity 0.5s; }
+        .overlay-dim { position: absolute; inset: 0; background: radial-gradient(circle at center, transparent 20%, rgba(0,0,0,0.8) 100%); }
 
-        /* GEAR HOVER */
-        .gear-icon { transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); display: inline-block; opacity: 0.5; }
-        .widget:hover .gear-icon { transform: rotate(-90deg); opacity: 1; }
-
-        /* NAV */
         nav { padding: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
         .widget { padding: 12px 24px; background: rgba(255,255,255,0.08); backdrop-filter: blur(var(--blur)); border-radius: var(--radius-pill); border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 700; transition: 0.3s; }
-        .widget:hover { background: rgba(255,255,255,0.15); }
+        .widget:hover { background: rgba(255,255,255,0.2); transform: scale(1.02); }
 
-        /* PANEL */
         .main-layout { display: grid; grid-template-columns: 1fr 400px; gap: 40px; max-width: 1400px; margin: 0 auto; padding: 0 40px; }
         .hero-title { font-size: 6.5rem; font-weight: 900; letter-spacing: -5px; line-height: 0.85; margin-top: 60px; pointer-events: none; }
         .unified-panel { background: var(--card-bg); border-radius: var(--radius-xl); padding: 32px; backdrop-filter: blur(var(--blur)); border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 15px; height: 600px; position: relative; }
 
-        /* 3D POPUP */
         #active-skin-content { display: none; margin-bottom: 10px; }
         .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; height: 280px; }
         .compare-card { background: rgba(0,0,0,0.3); border-radius: 15px; overflow: hidden; position: relative; border: 1px solid rgba(255,255,255,0.05); }
         .compare-card img, model-viewer { width: 100%; height: 100%; object-fit: cover; }
         .compare-card span { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); font-size: 8px; font-weight: 900; background: var(--primary); color: #000; padding: 2px 8px; border-radius: 4px; }
 
-        /* FAB */
         .fab-container { position: fixed; bottom: 40px; left: 40px; z-index: 100; }
         .fab { height: 60px; padding: 0 32px; background: #fff; color: #000; border-radius: 20px; border: none; display: flex; align-items: center; gap: 12px; font-weight: 900; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: 0.3s; }
-        .fab:hover { transform: translateY(-5px); background: #eee; }
+        .fab:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(255,255,255,0.2); }
 
-        /* SETTINGS MODAL */
+        /* MODAL */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 20000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
-        .modal-card { background: #0a0a0a; padding: 32px; border-radius: 32px; width: 480px; border: 1px solid #222; max-height: 85vh; overflow-y: auto; }
+        .modal-card { background: #0a0a0a; padding: 32px; border-radius: 32px; width: 480px; border: 1px solid #222; }
         
         .settings-section { margin-bottom: 24px; }
         .settings-section h3 { font-size: 0.7rem; font-weight: 900; opacity: 0.4; letter-spacing: 1px; margin-bottom: 12px; text-transform: uppercase; }
         
         .setting-row { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 16px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.02); }
         
-        .char-pill { background: rgba(255,255,255,0.05); padding: 10px 20px; border-radius: 12px; border: none; color: #fff; font-weight: 700; cursor: pointer; width: 100%; text-align: left; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; transition: 0.2s; }
-        .char-pill:hover { background: rgba(255,255,255,0.1); }
+        .toggle-btn { background: rgba(255,255,255,0.1); border: none; color: white; padding: 8px 16px; border-radius: 10px; font-size: 0.8rem; font-weight: 900; cursor: pointer; transition: 0.2s; min-width: 60px; }
+        .toggle-btn.active { background: var(--primary); color: #000; }
+
+        .char-pill { background: rgba(255,255,255,0.05); padding: 10px 20px; border-radius: 12px; border: none; color: #fff; font-weight: 700; cursor: pointer; width: 100%; text-align: left; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
         .char-pill.active { background: var(--primary); color: #000; }
     </style>
 </head>
@@ -80,20 +64,22 @@
 
     <div id="loader"><div class="pulse-logo"></div></div>
 
-    <div class="video-bg-container">
-        <video id="bg-video" autoplay muted loop playsinline><source src="background.mp4" type="video/mp4"></video>
-        <div class="radial-mask"></div>
+    <div class="video-container">
+        <video id="bg-video" autoplay muted loop playsinline preload="auto">
+            <source src="background.mp4" type="video/mp4">
+        </video>
+        <div class="overlay-dim"></div>
     </div>
 
     <nav>
         <div class="widget" onclick="openModal('settings-modal')">
             <span class="material-symbols-rounded">schedule</span>
             <span id="clock">00:00</span>
-            <span class="material-symbols-rounded gear-icon">settings</span>
+            <span class="material-symbols-rounded">settings</span>
         </div>
-        <div class="widget">
+        <div class="widget" onclick="location.reload()">
             <span id="temp">72°F</span>
-            <span class="material-symbols-rounded">cloud</span>
+            <span class="material-symbols-rounded">refresh</span>
         </div>
     </nav>
 
@@ -113,15 +99,15 @@
                         <span>BEFORE</span>
                     </div>
                     <div class="compare-card">
-                        <model-viewer src="model.gltf" autoplay camera-controls auto-rotate exposure="1.1"></model-viewer>
+                        <model-viewer id="skin-viewer" src="model.gltf" autoplay camera-controls auto-rotate exposure="1.1"></model-viewer>
                         <span>AFTER (3D)</span>
                     </div>
                 </div>
             </div>
 
             <div id="info-text">
-                <h2 style="font-size:1.8rem; font-weight:900;">VELVET VOID</h2>
-                <p style="opacity:0.5; font-size:0.8rem;">Tap COMPARE to toggle the 3D update view.</p>
+                <h2 id="display-title" style="font-size:1.8rem; font-weight:900;">VELVET VOID</h2>
+                <p style="opacity:0.5; font-size:0.8rem;">Click COMPARE to see the 3D model update.</p>
             </div>
             
             <hr style="border:none; border-top:1px solid rgba(255,255,255,0.1);">
@@ -134,10 +120,12 @@
     </div>
 
     <div class="fab-container">
-        <button class="fab" onclick="window.location.href='model.gltf'">
-            <span class="material-symbols-rounded">download</span>
-            <span>GET SKIN</span>
-        </button>
+        <a href="model.gltf" download style="text-decoration: none;">
+            <button class="fab">
+                <span class="material-symbols-rounded">download</span>
+                <span>GET SKIN</span>
+            </button>
+        </a>
     </div>
 
     <div id="settings-modal" class="modal-overlay">
@@ -145,16 +133,15 @@
             <h2 style="font-weight:900; margin-bottom:24px; font-size:1.8rem;">Settings</h2>
             
             <div class="settings-section">
-                <h3>Select Character</h3>
-                <button class="char-pill active"><span class="material-symbols-rounded">check_circle</span> Velvet Void (Active)</button>
-                <button class="char-pill"><span class="material-symbols-rounded">lock</span> Crimson Core</button>
-            </div>
-
-            <div class="settings-section">
-                <h3>Interface</h3>
-                <div class="setting-row"><span>Motion Blur</span><span style="color:var(--primary)">Strong</span></div>
-                <div class="setting-row"><span>Video Background</span><span style="color:var(--primary)">Enabled</span></div>
-                <div class="setting-row"><span>3D Auto-Rotate</span><span style="color:var(--primary)">On</span></div>
+                <h3>Interface Controls</h3>
+                <div class="setting-row">
+                    <span>Background Video</span>
+                    <button class="toggle-btn active" id="vid-toggle" onclick="handleToggle('video')">ON</button>
+                </div>
+                <div class="setting-row">
+                    <span>3D Auto-Rotate</span>
+                    <button class="toggle-btn active" id="rotate-toggle" onclick="handleToggle('rotate')">ON</button>
+                </div>
             </div>
 
             <button onclick="closeModals()" style="width:100%; background:#fff; color:#000; padding:18px; border:none; border-radius:20px; font-weight:900; cursor:pointer; font-size:1rem; margin-top:10px;">SAVE & EXIT</button>
@@ -162,6 +149,39 @@
     </div>
 
     <script>
+        // FORCED VIDEO START (Browsers often block autoplay)
+        function startVideo() {
+            const video = document.getElementById('bg-video');
+            video.play().catch(() => {
+                console.log("Autoplay blocked, waiting for interaction");
+                // Fallback: play on first click anywhere
+                document.addEventListener('click', () => video.play(), {once: true});
+            });
+        }
+
+        function handleToggle(type) {
+            if(type === 'video') {
+                const vid = document.getElementById('bg-video');
+                const btn = document.getElementById('vid-toggle');
+                if (vid.paused) {
+                    vid.play();
+                    btn.innerText = "ON";
+                    btn.classList.add('active');
+                } else {
+                    vid.pause();
+                    btn.innerText = "OFF";
+                    btn.classList.remove('active');
+                }
+            }
+            if(type === 'rotate') {
+                const viewer = document.getElementById('skin-viewer');
+                const btn = document.getElementById('rotate-toggle');
+                viewer.autoRotate = !viewer.autoRotate;
+                btn.innerText = viewer.autoRotate ? "ON" : "OFF";
+                btn.classList.toggle('active', viewer.autoRotate);
+            }
+        }
+
         function toggle3D() {
             const content = document.getElementById('active-skin-content');
             const info = document.getElementById('info-text');
@@ -178,6 +198,7 @@
         }, 1000);
 
         window.addEventListener('load', () => {
+            startVideo();
             setTimeout(() => { 
                 document.getElementById('loader').style.opacity = '0';
                 setTimeout(() => document.getElementById('loader').style.visibility = 'hidden', 800);
