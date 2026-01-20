@@ -1,135 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pix Updates — Skin Preview</title>
-
-    <!-- MODEL VIEWER -->
-    <script type="module"
-        src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js">
-    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pix Updates | v3.1.0 Velvet Void</title>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
 
     <style>
-        body {
-            margin: 0;
-            background: #020202;
-            color: white;
-            font-family: system-ui, sans-serif;
+        :root {
+            --primary: #FFB4AB; 
+            --surface: #020202; 
+            --card-bg: rgba(20, 20, 20, 0.7);
+            --radius-xl: 32px; 
+            --radius-pill: 100px;
+            --blur: 40px;
+            --video-opacity: 0.7;
+        }
+        
+        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; margin: 0; padding: 0; }
+        body { background: var(--surface); color: #fff; font-family: 'Google Sans Flex', sans-serif; overflow: hidden; height: 100vh; }
+
+        /* VELVET LOADER */
+        #loader {
+            position: fixed; inset: 0; background: #000; z-index: 99999;
+            display: flex; align-items: center; justify-content: center;
+            transition: opacity 0.8s ease-out, visibility 0.8s;
+        }
+        .pulse-logo { width: 80px; height: 80px; background: var(--primary); border-radius: 24px; animation: m3-expressive-pulse 2s infinite cubic-bezier(0.34, 1.56, 0.64, 1); }
+        @keyframes m3-expressive-pulse { 0% { transform: scale(0.8); border-radius: 40px; } 50% { transform: scale(1.1); border-radius: 20px; } 100% { transform: scale(0.8); border-radius: 40px; } }
+
+        /* LAYOUT */
+        .video-bg-container { position: fixed; inset: 0; z-index: -1; background: #000; }
+        .main-layout { display: grid; grid-template-columns: 1fr 400px; gap: 40px; max-width: 1400px; margin: 0 auto; padding: 80px 40px 0; }
+        .hero-title { font-size: 6.5rem; font-weight: 900; letter-spacing: -5px; line-height: 0.85; }
+        
+        .unified-panel { 
+            background: var(--card-bg); border-radius: var(--radius-xl); padding: 32px; 
+            backdrop-filter: blur(var(--blur)); border: 1px solid rgba(255,255,255,0.05); 
+            display: flex; flex-direction: column; gap: 20px; height: 620px;
         }
 
-        .preview-wrapper {
-            max-width: 1200px;
-            margin: 80px auto;
-            padding: 0 40px;
-            display: grid;
-            gap: 40px;
-        }
+        /* 3D & COMPARISON STYLES */
+        .skin-preview { width: 100%; height: 300px; background: rgba(0,0,0,0.3); border-radius: 20px; overflow: hidden; }
+        model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
 
-        /* === 3D PREVIEW === */
-        .skin-preview {
-            height: 420px;
-            border-radius: 32px;
-            overflow: hidden;
-            background: rgba(255,255,255,0.06);
-            backdrop-filter: blur(40px);
-            border: 1px solid rgba(255,255,255,0.1);
+        .comparison { display: none; grid-template-columns: 1fr 1fr; gap: 12px; height: 300px; }
+        .compare-card { 
+            background: rgba(0,0,0,0.5); border-radius: 16px; overflow: hidden; 
+            display: flex; flex-direction: column; align-items: center; border: 1px solid rgba(255,255,255,0.1);
         }
+        .compare-card img { width: 100%; height: 85%; object-fit: cover; }
+        .compare-card span { font-size: 10px; font-weight: 900; padding: 5px; color: var(--primary); }
+        .compare-card model-viewer { height: 85%; }
 
-        model-viewer {
-            width: 100%;
-            height: 100%;
-        }
-
-        /* === COMPARISON === */
-        .comparison {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-        }
-
-        .compare-card {
-            border-radius: 28px;
-            overflow: hidden;
-            background: rgba(255,255,255,0.06);
-            backdrop-filter: blur(40px);
-            border: 1px solid rgba(255,255,255,0.1);
-            position: relative;
-            height: 360px;
-        }
-
-        .compare-card img,
-        .compare-card model-viewer {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-
-        .compare-label {
-            position: absolute;
-            bottom: 16px;
-            left: 16px;
-            background: white;
-            color: black;
-            padding: 6px 14px;
-            border-radius: 12px;
-            font-weight: 900;
-            font-size: 0.75rem;
-            letter-spacing: 1px;
-        }
-
-        @media (max-width: 900px) {
-            .comparison {
-                grid-template-columns: 1fr;
-            }
-        }
+        /* HISTORY LIST */
+        .history-item { padding: 16px; border-radius: 20px; display: block; width: 100%; text-align: left; border: none; background: transparent; color: #fff; margin-bottom: 8px; cursor: pointer; }
+        .history-item.active { background: rgba(255,255,255,0.15); border-left: 4px solid var(--primary); }
+        .badge { background: var(--primary); color: #000; padding: 4px 12px; border-radius: 10px; font-size: 0.7rem; font-weight: 900; width: fit-content; }
     </style>
 </head>
-
 <body>
 
-<div class="preview-wrapper">
-
-    <!-- 3D SKIN PREVIEW -->
-    <div class="skin-preview">
-        <model-viewer
-            src="model.gltf"
-            camera-controls
-            auto-rotate
-            rotation-per-second="18deg"
-            autoplay
-            exposure="1.1"
-            shadow-intensity="1"
-            environment-image="neutral"
-            interaction-prompt="none">
-        </model-viewer>
+    <div id="loader">
+        <div class="pulse-logo"></div>
     </div>
 
-    <!-- SIDE BY SIDE COMPARISON -->
-    <div class="comparison">
-
-        <!-- BEFORE -->
-        <div class="compare-card">
-            <img src="temp's Skin with no cap Version 1.0.0.png" alt="Before skin">
-            <div class="compare-label">BEFORE</div>
-        </div>
-
-        <!-- AFTER -->
-        <div class="compare-card">
-            <model-viewer
-                src="model.gltf"
-                camera-controls
-                auto-rotate
-                rotation-per-second="18deg"
-                exposure="1.1"
-                environment-image="neutral"
-                interaction-prompt="none">
-            </model-viewer>
-            <div class="compare-label">AFTER · 3D</div>
-        </div>
-
+    <div class="video-bg-container">
+        <video id="bg-video" autoplay muted loop playsinline style="width:100%; height:100%; object-fit:cover; opacity:0.5;"></video>
     </div>
-</div>
 
+    <div class="main-layout">
+        <div><h1 class="hero-title">PIX<br><span style="color: var(--primary);">UPDATES</span></h1></div>
+        
+        <div class="unified-panel">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="badge">V3.1.0</span>
+                <button onclick="toggleView()" style="background:none; border:none; color:var(--primary); font-weight:900; cursor:pointer; font-size:0.7rem;">COMPARE</button>
+            </div>
+
+            <div id="active-skin-content">
+                <div class="skin-preview" id="main-3d-view">
+                    <model-viewer
+                        src="model.gltf"
+                        autoplay
+                        camera-controls
+                        auto-rotate
+                        rotation-per-second="25deg"
+                        exposure="1.1"
+                        shadow-intensity="1"
+                        environment-image="neutral">
+                    </model-viewer>
+                </div>
+
+                <div class="comparison" id="comparison-view">
+                    <div class="compare-card">
+                        <img src="temp's Skin with no cap Version 1.0.0.png">
+                        <span>BEFORE</span>
+                    </div>
+
+                    <div class="compare-card">
+                        <model-viewer
+                            src="model.gltf"
+                            camera-controls
+                            auto-rotate
+                            exposure="1.1">
+                        </model-viewer>
+                        <span>AFTER (3D)</span>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="skin-title" style="font-size:1.8rem; font-weight:900; margin-top:10px;">VELVET VOID</h2>
+            
+            <hr style="border:none; border-top:1px solid rgba(255,255,255,0.1);">
+            
+            <div id="history-list" style="overflow-y: auto; flex-grow: 1;">
+                <button class="history-item active">
+                    <div><span style="opacity:0.5; font-size:0.7rem;">V3.1.0</span><br>Velvet Void</div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleView() {
+            const mainView = document.getElementById('main-3d-view');
+            const compView = document.getElementById('comparison-view');
+            
+            if (mainView.style.display === 'none') {
+                mainView.style.display = 'block';
+                compView.style.display = 'none';
+            } else {
+                mainView.style.display = 'none';
+                compView.style.display = 'grid';
+            }
+        }
+
+        // LOADER TIMEOUT
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const loader = document.getElementById('loader');
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.visibility = 'hidden', 800);
+            }, 2000);
+        });
+    </script>
 </body>
 </html>
