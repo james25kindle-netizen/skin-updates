@@ -21,19 +21,22 @@
         .video-bg-container { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
         #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; }
 
-        /* COMPACT NAV */
+        /* NAV */
         nav { padding: 24px 40px; display: flex; justify-content: space-between; align-items: center; position: fixed; width: 100%; z-index: 100; }
         .widget { padding: 8px 16px; background: rgba(255,255,255,0.08); backdrop-filter: blur(var(--blur)); border-radius: var(--radius-pill); border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.85rem; transition: 0.3s; text-decoration: none; }
+        .widget:hover { background: rgba(255,255,255,0.15); }
+        .gear-icon { font-size: 1.1rem; opacity: 0.7; transition: transform 0.5s ease; }
+        .widget:hover .gear-icon { transform: rotate(90deg); opacity: 1; }
 
-        /* SPLIT LAYOUT - Flipped */
+        /* SPLIT LAYOUT */
         .main-container { display: grid; grid-template-columns: 1fr 450px; height: 100vh; padding-top: 100px; }
 
-        /* LEFT: HERO SECTION */
+        /* LEFT: HERO */
         .hero-side { display: flex; flex-direction: column; justify-content: center; padding-left: 80px; pointer-events: none; }
         .hero-title { font-size: 8rem; font-weight: 900; letter-spacing: -6px; line-height: 0.8; }
         .tag { font-family: monospace; color: var(--primary); font-weight: 900; font-size: 0.75rem; letter-spacing: 2px; }
 
-        /* RIGHT: SCROLLABLE FEED */
+        /* RIGHT: FEED */
         .feed-container { padding: 0 40px 40px 0; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; scrollbar-width: none; align-items: flex-end; }
         .feed-container::-webkit-scrollbar { display: none; }
 
@@ -46,19 +49,24 @@
         .compact-card:hover { transform: scale(1.02) translateX(-10px); border-color: var(--primary); background: rgba(255,255,255,0.12); }
         .card-thumb { width: 80px; height: 80px; border-radius: 16px; object-fit: cover; background: #000; }
         .card-info h2 { font-size: 1.1rem; font-weight: 900; }
-        .card-info p { font-size: 0.75rem; opacity: 0.5; margin-top: 2px; }
 
-        /* MODAL */
+        /* MODALS */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 20000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
         .inspect-card { background: #0a0a0a; width: 850px; height: 550px; border-radius: 40px; border: 1px solid #222; overflow: hidden; display: grid; grid-template-columns: 1fr 1fr; }
         .inspect-visuals { background: #000; position: relative; }
         .inspect-details { padding: 40px; display: flex; flex-direction: column; justify-content: space-between; }
         
+        /* SETTINGS MODAL SPECIFIC */
+        .settings-card { background: #0a0a0a; padding: 32px; border-radius: 32px; width: 400px; border: 1px solid #222; display: flex; flex-direction: column; gap: 20px; }
+        .setting-row { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 16px; }
+        .color-dot { width: 28px; height: 28px; border-radius: 50%; cursor: pointer; transition: 0.2s; border: 2px solid transparent; }
+        .color-dot:hover { transform: scale(1.2); }
+
         model-viewer { width: 100%; height: 100%; }
         .download-btn { height: 60px; background: #fff; color: #000; border-radius: 20px; border: none; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s; }
         .download-btn:hover { background: var(--primary); transform: translateY(-2px); }
 
-        /* M3 LOADER */
+        /* LOADER */
         #loader { position: fixed; inset: 0; background: #000; z-index: 100000; display: flex; align-items: center; justify-content: center; transition: 0.6s; }
         .pulse-logo { width: 60px; height: 60px; background: var(--primary); border-radius: 20px; animation: p 1.5s infinite ease-in-out; }
         @keyframes p { 0%, 100% { transform: scale(0.9); border-radius: 30px; } 50% { transform: scale(1.1); border-radius: 15px; } }
@@ -73,7 +81,10 @@
     </div>
 
     <nav>
-        <div class="widget"><span id="clock">00:00</span></div>
+        <div class="widget" onclick="openModal('settings-modal')">
+            <span id="clock">00:00</span>
+            <span class="material-symbols-rounded gear-icon">settings</span>
+        </div>
         <a href="https://www.google.com/search?q=weather" target="_blank" class="widget" id="weather-widget" onclick="fetchWeather()">
             <span id="temp">--°F</span><span class="material-symbols-rounded weather-icon" style="font-size: 1.2rem;" id="w-icon">cloud</span>
         </a>
@@ -84,19 +95,32 @@
             <span class="tag">VELVET VOID v3.1.0</span>
             <h1 class="hero-title">PIX<br><span style="color: var(--primary);">UPDATES</span></h1>
         </div>
-
         <div class="feed-container" id="skin-feed">
             <span class="tag" style="margin-bottom: 10px; padding-right: 16px;">LATEST SKINS</span>
+        </div>
+    </div>
+
+    <div id="settings-modal" class="modal-overlay">
+        <div class="settings-card">
+            <h2 style="font-weight:900;">APPEARANCE</h2>
+            <div class="setting-row">
+                <span>Theme Color</span>
+                <div style="display:flex; gap:12px;">
+                    <div class="color-dot" style="background: #FFB4AB;" onclick="updateSetting('--primary', '#FFB4AB')"></div>
+                    <div class="color-dot" style="background: #D0BCFF;" onclick="updateSetting('--primary', '#D0BCFF')"></div>
+                    <div class="color-dot" style="background: #B4E4FF;" onclick="updateSetting('--primary', '#B4E4FF')"></div>
+                    <div class="color-dot" style="background: #C2FFB4;" onclick="updateSetting('--primary', '#C2FFB4')"></div>
+                </div>
             </div>
+            <button onclick="closeModals()" style="background:#fff; color:#000; padding:16px; border:none; border-radius:16px; font-weight:900; cursor:pointer; margin-top:10px;">DONE</button>
+        </div>
     </div>
 
     <div id="inspect-modal" class="modal-overlay">
         <div class="inspect-card">
             <div class="inspect-visuals">
                 <model-viewer id="modal-viewer" auto-rotate camera-controls shadow-intensity="1"></model-viewer>
-                <button onclick="closeModals()" style="position:absolute; top:20px; left:20px; background:rgba(255,255,255,0.1); border:none; color:#fff; width:40px; height:40px; border-radius:50%; cursor:pointer;">
-                    <span class="material-symbols-rounded">close</span>
-                </button>
+                <button onclick="closeModals()" style="position:absolute; top:20px; left:20px; background:rgba(255,255,255,0.1); border:none; color:#fff; width:40px; height:40px; border-radius:50%; cursor:pointer;"><span class="material-symbols-rounded">close</span></button>
             </div>
             <div class="inspect-details">
                 <div>
@@ -115,9 +139,7 @@
     <script>
         const skinDatabase = [
             { name: "NEON SPECTRE", tag: "PREMIUM", render: "skin-render.png", model: "model.gltf", png: "skin.png", desc: "Flagship update. Optimized emissive mapping." },
-            { name: "VOID WALKER", tag: "LEGACY", render: "skin-render2.png", model: "model2.gltf", png: "skin2.png", desc: "Classic build restored for the modern engine." },
-            { name: "CARBON CORE", tag: "UPDATE", render: "skin-render3.png", model: "model3.gltf", png: "skin3.png", desc: "Matte finish with reactive vertex shading." },
-            { name: "STELLAR EDGE", tag: "NEW", render: "skin-render4.png", model: "model4.gltf", png: "skin4.png", desc: "Deep space aesthetic with chrome accents." }
+            { name: "VOID WALKER", tag: "LEGACY", render: "skin-render2.png", model: "model2.gltf", png: "skin2.png", desc: "Classic build restored for the modern engine." }
         ];
 
         function renderFeed() {
@@ -126,14 +148,7 @@
                 const card = document.createElement('div');
                 card.className = 'compact-card';
                 card.onclick = () => openInspect(index);
-                card.innerHTML = `
-                    <img src="${skin.render}" class="card-thumb">
-                    <div class="card-info">
-                        <span class="tag" style="font-size: 0.6rem;">${skin.tag}</span>
-                        <h2>${skin.name}</h2>
-                        <p>View 3D Model & Details</p>
-                    </div>
-                `;
+                card.innerHTML = `<img src="${skin.render}" class="card-thumb"><div class="card-info"><span class="tag" style="font-size: 0.6rem;">${skin.tag}</span><h2>${skin.name}</h2><p>View 3D Model & Details</p></div>`;
                 container.appendChild(card);
             });
         }
@@ -147,10 +162,15 @@
             document.getElementById('modal-download').onclick = () => {
                 const link = document.createElement('a'); link.href = skin.png; link.download = `${skin.name}.png`; link.click();
             };
-            document.getElementById('inspect-modal').style.display = 'flex';
+            openModal('inspect-modal');
         }
 
-        function closeModals() { document.getElementById('inspect-modal').style.display = 'none'; }
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); }
+
+        function updateSetting(variable, value) {
+            document.documentElement.style.setProperty(variable, value);
+        }
 
         async function fetchWeather() {
             const icon = document.getElementById('w-icon');
