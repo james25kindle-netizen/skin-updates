@@ -17,7 +17,7 @@
         * { box-sizing: border-box; -webkit-font-smoothing: antialiased; margin: 0; padding: 0; }
         body { background: var(--surface); color: #fff; font-family: 'Google Sans Flex', sans-serif; overflow: hidden; height: 100vh; }
 
-        /* LOADER */
+        /* M3 LOADER */
         #loader { 
             position: fixed; inset: 0; background: #000; z-index: 100000; 
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
@@ -41,34 +41,45 @@
             color: #fff; cursor: pointer; display: flex; align-items: center; gap: 12px; 
             font-weight: 700; transition: 0.3s; text-decoration: none; 
         }
+        .widget:hover { background: rgba(255,255,255,0.15); transform: translateY(-2px); }
 
-        /* EXPRESSIVE ARROW ANIMATION */
+        /* GEAR & WEATHER ANIMATIONS */
+        .gear-icon { transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); display: inline-block; }
+        .widget:hover .gear-icon { transform: rotate(-180deg); }
+        
         .weather-icon { display: inline-block; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
         .weather-updating .weather-icon { 
             animation: m3-arrow-spin 1.2s infinite cubic-bezier(0.45, 0, 0.55, 1); 
             color: var(--primary);
         }
-        @keyframes m3-arrow-spin { 
-            0% { transform: rotate(0deg) scale(1); } 
-            50% { transform: rotate(-180deg) scale(1.3); } 
-            100% { transform: rotate(-360deg) scale(1); } 
-        }
+        @keyframes m3-arrow-spin { 0% { transform: rotate(0deg) scale(1); } 50% { transform: rotate(-180deg) scale(1.3); } 100% { transform: rotate(-360deg) scale(1); } }
 
         /* LAYOUT */
-        .main-layout { display: grid; grid-template-columns: 1fr 400px; gap: 40px; max-width: 1400px; margin: 0 auto; padding: 0 40px; }
-        .hero-title { font-size: 6.5rem; font-weight: 900; letter-spacing: -5px; line-height: 0.85; margin-top: 60px; pointer-events: none; }
-        .unified-panel { background: var(--card-bg); border-radius: var(--radius-xl); padding: 32px; backdrop-filter: blur(var(--blur)); border: 1px solid rgba(255,255,255,0.05); height: 580px; }
+        .main-layout { display: grid; grid-template-columns: 1fr 400px; gap: 40px; max-width: 1400px; margin: 60px auto 0; padding: 0 40px; }
+        .hero-title { font-size: 6.5rem; font-weight: 900; letter-spacing: -5px; line-height: 0.85; pointer-events: none; }
+        .unified-panel { background: var(--card-bg); border-radius: var(--radius-xl); padding: 32px; backdrop-filter: blur(var(--blur)); border: 1px solid rgba(255,255,255,0.05); height: 580px; display: flex; flex-direction: column; gap: 20px; }
         
-        model-viewer { width: 100%; height: 250px; }
+        model-viewer { width: 100%; height: 280px; background: rgba(0,0,0,0.2); border-radius: 20px; }
+        .badge { background: var(--primary); color: #000; padding: 4px 12px; border-radius: 10px; font-size: 0.7rem; font-weight: 900; width: fit-content; }
+
+        /* FAB */
         .fab-container { position: fixed; bottom: 40px; left: 40px; z-index: 100; }
-        .fab { height: 60px; padding: 0 32px; background: #fff; color: #000; border-radius: 20px; border: none; font-weight: 900; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .fab { height: 60px; padding: 0 32px; background: #fff; color: #000; border-radius: 20px; border: none; font-weight: 900; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 12px; transition: 0.3s; }
+        .fab:hover { transform: translateY(-5px); background: var(--primary); }
+
+        /* MODAL */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 20000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
+        .modal-card { background: #0a0a0a; padding: 32px; border-radius: 32px; width: 400px; border: 1px solid #222; display: flex; flex-direction: column; gap: 20px; }
+        .setting-row { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 16px; }
+        .color-dot { width: 28px; height: 28px; border-radius: 50%; cursor: pointer; transition: 0.2s; border: 2px solid transparent; }
+        .color-dot:hover { transform: scale(1.15); border-color: #fff; }
     </style>
 </head>
 <body>
 
     <div id="loader">
         <div class="pulse-logo"></div>
-        <div style="font-weight: 900; color: var(--primary); opacity: 0.6; letter-spacing: 2px;">LOADING VOID</div>
+        <div style="font-weight: 900; color: var(--primary); opacity: 0.6; letter-spacing: 2px;">INITIALIZING VOID</div>
     </div>
 
     <div class="video-bg-container">
@@ -76,11 +87,12 @@
     </div>
 
     <nav>
-        <div class="widget" onclick="location.reload()">
+        <div class="widget" onclick="document.getElementById('settings-modal').style.display='flex'">
             <span class="material-symbols-rounded">schedule</span>
             <span id="clock">00:00</span>
-            <span class="material-symbols-rounded" style="opacity: 0.5;">settings</span>
+            <span class="material-symbols-rounded gear-icon">settings</span>
         </div>
+        
         <a href="https://www.google.com/search?q=weather" target="_blank" class="widget" id="weather-widget" onclick="fetchWeather()">
             <span id="temp">--°F</span>
             <span class="material-symbols-rounded weather-icon" id="w-icon">cloud</span>
@@ -90,9 +102,10 @@
     <div class="main-layout">
         <div><h1 class="hero-title">PIX<br><span style="color: var(--primary);">UPDATES</span></h1></div>
         <div class="unified-panel">
+            <span class="badge">ACTIVE ENGINE</span>
             <h2 style="font-size:1.8rem; font-weight:900;">VELVET VOID</h2>
             <model-viewer src="model.gltf" auto-rotate camera-controls shadow-intensity="1"></model-viewer>
-            <p style="opacity:0.6; font-size:0.9rem;">Expressive arrows active during weather sync. M3 Boot animation restored.</p>
+            <p style="opacity:0.6; font-size:0.9rem;">Settings fixed. M3 Expressive arrow sync operational. Weather linked to Google.</p>
         </div>
     </div>
 
@@ -103,13 +116,27 @@
         </button>
     </div>
 
+    <div id="settings-modal" class="modal-overlay">
+        <div class="modal-card">
+            <h2 style="font-weight:900;">APPEARANCE</h2>
+            <div class="setting-row">
+                <span>Theme Color</span>
+                <div style="display:flex; gap:12px;">
+                    <div class="color-dot" style="background: #FFB4AB;" onclick="updateSetting('--primary', '#FFB4AB')"></div>
+                    <div class="color-dot" style="background: #D0BCFF;" onclick="updateSetting('--primary', '#D0BCFF')"></div>
+                    <div class="color-dot" style="background: #B4E4FF;" onclick="updateSetting('--primary', '#B4E4FF')"></div>
+                </div>
+            </div>
+            <button onclick="document.getElementById('settings-modal').style.display='none'" style="background:#fff; color:#000; padding:16px; border:none; border-radius:16px; font-weight:900; cursor:pointer; margin-top:10px;">DONE</button>
+        </div>
+    </div>
+
     <script>
         async function fetchWeather() {
             const widget = document.getElementById('weather-widget');
             const icon = document.getElementById('w-icon');
-            
             widget.classList.add('weather-updating');
-            icon.textContent = 'sync'; // Arrow icon during load
+            icon.textContent = 'sync'; 
             
             try {
                 const res = await fetch('https://wttr.in/?format=j1');
@@ -118,12 +145,15 @@
             } catch (e) {
                 document.getElementById('temp').textContent = "72°F";
             } finally {
-                // Keep the arrow spinning for at least 1.2s for the effect
                 setTimeout(() => {
                     widget.classList.remove('weather-updating');
-                    icon.textContent = 'cloud'; // Revert back to cloud
+                    icon.textContent = 'cloud';
                 }, 1200);
             }
+        }
+
+        function updateSetting(variable, value) {
+            document.documentElement.style.setProperty(variable, value);
         }
 
         function downloadSkin() {
@@ -143,9 +173,10 @@
                 document.getElementById('loader').style.opacity = '0';
                 setTimeout(() => document.getElementById('loader').style.visibility = 'hidden', 800);
             }, 2000);
+            
+            const vid = document.getElementById('bg-video');
+            vid.play().catch(() => document.addEventListener('click', () => vid.play(), {once: true}));
         });
-
-        setInterval(fetchWeather, 300000); // Auto-refresh every 5m
     </script>
 </body>
 </html>
