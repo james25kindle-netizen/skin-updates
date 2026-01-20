@@ -23,76 +23,81 @@
 
         /* NAV */
         nav { padding: 40px 60px; display: flex; justify-content: space-between; align-items: center; position: fixed; width: 100%; z-index: 100; }
-        .widget { padding: 12px 24px; background: rgba(255,255,255,0.1); backdrop-filter: blur(var(--blur)); border-radius: var(--radius-pill); border: 1px solid rgba(255,255,255,0.15); color: #fff; cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 1rem; transition: 0.3s; text-decoration: none; }
+        .widget { padding: 12px 24px; background: rgba(255,255,255,0.1); backdrop-filter: blur(var(--blur)); border-radius: var(--radius-pill); border: 1px solid rgba(255,255,255,0.15); color: #fff; cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 1rem; transition: 0.3s; }
 
-        /* MAIN CONTAINER - Flipped Columns */
-        .main-container { display: grid; grid-template-columns: 1fr 600px; height: 100vh; padding-top: 140px; position: relative; }
+        /* MAIN CONTAINER */
+        .main-container { display: grid; grid-template-columns: 1fr 550px; height: 100vh; padding-top: 140px; position: relative; }
 
-        /* LEFT: STICKY SKIN PREVIEW */
+        /* LEFT: SKIN PREVIEW */
         .skin-side { 
             display: flex; flex-direction: column; justify-content: flex-end; 
-            padding-left: 80px; position: relative; height: 100%;
+            padding: 0 0 60px 80px; position: relative; height: 100%;
         }
+        
+        /* SHRUNK BRANDING */
         .hero-title { 
-            font-size: 11rem; font-weight: 900; letter-spacing: -12px; line-height: 0.75; 
+            font-size: 5rem; font-weight: 900; letter-spacing: -3px; line-height: 0.85; 
             position: relative; z-index: 5; pointer-events: none;
-            text-shadow: 0 20px 80px rgba(0,0,0,0.8);
-            margin-bottom: 60px;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            opacity: 0.9;
         }
         
         .skin-display-container {
-            position: absolute; left: 0; bottom: 0; width: 100%; height: 95%;
+            position: absolute; left: 0; bottom: 0; width: 100%; height: 90%;
             z-index: 1; pointer-events: none; overflow: hidden;
-            display: flex; align-items: flex-end; justify-content: flex-start;
+            display: flex; align-items: flex-end; justify-content: center;
         }
         #active-skin-img {
-            height: 115%; width: auto; object-fit: contain;
-            filter: drop-shadow(20px 20px 60px rgba(0,0,0,0.9));
-            transition: transform 0.7s cubic-bezier(0.2, 1, 0.3, 1), opacity 0.4s ease;
+            height: 110%; width: auto; object-fit: contain;
+            filter: drop-shadow(0 20px 60px rgba(0,0,0,0.8));
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
             transform: translateY(100px);
-            mask-image: linear-gradient(to top, black 85%, transparent);
+            mask-image: linear-gradient(to top, black 80%, transparent);
         }
 
-        /* RIGHT: FEED (Database Logs) */
+        /* RIGHT: DATABASE LOGS */
         .feed-side { 
-            padding: 0 60px 60px 60px; 
+            padding: 0 60px 60px 20px; 
             overflow-y: auto; 
             display: flex; 
             flex-direction: column; 
-            gap: 20px; 
+            gap: 16px; 
             scrollbar-width: none; 
             z-index: 10;
-            background: linear-gradient(to left, rgba(0,0,0,0.4), transparent);
         }
         .feed-side::-webkit-scrollbar { display: none; }
 
         .log-header {
-            display: flex; align-items: center; gap: 10px;
+            display: flex; align-items: center; gap: 12px;
             font-family: monospace; color: var(--primary); font-weight: 900; 
-            font-size: 1rem; letter-spacing: 4px; text-transform: uppercase;
-            margin-bottom: 20px;
+            font-size: 0.85rem; letter-spacing: 3px; text-transform: uppercase;
+            margin-bottom: 20px; padding-left: 10px;
         }
-        .pulse-dot { width: 8px; height: 8px; background: var(--primary); border-radius: 50%; animation: blink 1s infinite; }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        .pulse-dot { width: 6px; height: 6px; background: var(--primary); border-radius: 50%; animation: blink 1.5s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
 
         .compact-card { 
-            background: var(--card-bg); border-radius: var(--radius-lg); padding: 24px; 
+            background: var(--card-bg); border-radius: 28px; padding: 20px; 
             backdrop-filter: blur(var(--blur)); border: 1px solid rgba(255,255,255,0.08); 
-            cursor: pointer; transition: 0.4s cubic-bezier(0.2, 0, 0, 1);
-            display: flex; align-items: center; gap: 24px;
+            cursor: pointer; transition: 0.4s cubic-bezier(0.2, 1, 0.3, 1);
+            display: flex; align-items: center; gap: 20px;
         }
-        .compact-card:hover { transform: scale(1.03) translateX(-15px); border-color: var(--primary); background: rgba(255,255,255,0.15); }
-        .card-thumb { width: 120px; height: 120px; border-radius: 24px; object-fit: cover; background: #000; }
+        .compact-card:hover { transform: scale(1.02) translateX(-10px); border-color: var(--primary); background: rgba(255,255,255,0.12); }
+        .card-thumb { width: 90px; height: 90px; border-radius: 20px; object-fit: cover; background: #000; }
+        .card-info h2 { font-size: 1.4rem; font-weight: 900; }
 
-        /* MODAL & LOADER (Same as before) */
+        /* MODAL */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 20000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(30px); }
-        .inspect-card { background: #0a0a0a; width: 1100px; height: 750px; border-radius: 56px; border: 1px solid #333; overflow: hidden; display: grid; grid-template-columns: 1.2fr 0.8fr; }
+        .inspect-card { background: #0a0a0a; width: 1000px; height: 650px; border-radius: 48px; border: 1px solid #333; overflow: hidden; display: grid; grid-template-columns: 1.1fr 0.9fr; }
         .inspect-visuals { background: #000; position: relative; }
-        .inspect-details { padding: 60px; display: flex; flex-direction: column; justify-content: space-between; }
+        .inspect-details { padding: 50px; display: flex; flex-direction: column; justify-content: space-between; }
+        
         model-viewer { width: 100%; height: 100%; }
+
+        /* LOADER */
         #loader { position: fixed; inset: 0; background: #000; z-index: 100000; display: flex; align-items: center; justify-content: center; transition: 0.8s; }
-        .pulse-logo { width: 100px; height: 100px; background: var(--primary); border-radius: 35px; animation: p 2s infinite ease-in-out; }
-        @keyframes p { 0%, 100% { transform: scale(0.8); } 50% { transform: scale(1.1); } }
+        .pulse-logo { width: 80px; height: 80px; background: var(--primary); border-radius: 30px; animation: p 2s infinite ease-in-out; }
+        @keyframes p { 0%, 100% { transform: scale(0.9); } 50% { transform: scale(1.1); } }
     </style>
 </head>
 <body>
@@ -105,9 +110,10 @@
 
     <nav>
         <div class="widget"><span id="clock">00:00</span></div>
-        <a href="https://www.google.com/search?q=weather" target="_blank" class="widget" id="weather-widget">
-            <span id="temp">--°F</span><span class="material-symbols-rounded">cloud</span>
-        </a>
+        <div class="widget">
+            <span id="temp">72°F</span>
+            <span class="material-symbols-rounded">cloud</span>
+        </div>
     </nav>
 
     <div class="main-container">
@@ -121,25 +127,25 @@
         <div class="feed-side" id="skin-feed">
             <div class="log-header">
                 <div class="pulse-dot"></div>
-                <span>Database Logs / v3.1.0</span>
+                <span>DATABASE LOGS / v3.1.0</span>
             </div>
-            </div>
+        </div>
     </div>
 
     <div id="inspect-modal" class="modal-overlay">
         <div class="inspect-card">
             <div class="inspect-visuals">
-                <model-viewer id="modal-viewer" auto-rotate camera-controls shadow-intensity="1"></model-viewer>
-                <button onclick="closeModals()" style="position:absolute; top:30px; left:30px; background:rgba(255,255,255,0.1); border:none; color:#fff; width:60px; height:60px; border-radius:50%; cursor:pointer; backdrop-filter: blur(10px);"><span class="material-symbols-rounded" style="font-size: 2rem;">close</span></button>
+                <model-viewer id="modal-viewer" auto-rotate camera-controls shadow-intensity="1" exposure="1.2"></model-viewer>
+                <button onclick="closeModals()" style="position:absolute; top:25px; left:25px; background:rgba(255,255,255,0.1); border:none; color:#fff; width:50px; height:50px; border-radius:50%; cursor:pointer; backdrop-filter: blur(10px);"><span class="material-symbols-rounded">close</span></button>
             </div>
             <div class="inspect-details">
                 <div>
-                    <span style="font-family: monospace; color: var(--primary); letter-spacing: 2px;" id="modal-tag">VERSION INFO</span>
-                    <h1 id="modal-title" style="font-size: 4rem; font-weight: 900; margin-top: 10px; line-height: 0.9;">SKIN NAME</h1>
-                    <p id="modal-desc" style="opacity: 0.6; font-size: 1.2rem; margin-top: 40px; line-height: 1.6;">Description text content...</p>
+                    <span style="font-family: monospace; color: var(--primary); letter-spacing: 2px; font-size: 0.8rem;" id="modal-tag">VERSION INFO</span>
+                    <h1 id="modal-title" style="font-size: 3rem; font-weight: 900; margin-top: 10px; line-height: 1;">SKIN NAME</h1>
+                    <p id="modal-desc" style="opacity: 0.6; font-size: 1.1rem; margin-top: 30px; line-height: 1.6;">Build details...</p>
                 </div>
-                <button onclick="downloadSkin()" style="height: 90px; background: #fff; color: #000; border-radius: 32px; border: none; font-weight: 900; font-size: 1.3rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 20px;">
-                    <span class="material-symbols-rounded" style="font-size: 2rem;">download</span>
+                <button onclick="downloadSkin()" style="height: 80px; background: #fff; color: #000; border-radius: 28px; border: none; font-weight: 900; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 15px;">
+                    <span class="material-symbols-rounded">download</span>
                     <span>DOWNLOAD PNG</span>
                 </button>
             </div>
@@ -148,8 +154,8 @@
 
     <script>
         const skinDatabase = [
-            { name: "NEON SPECTRE", tag: "STABLE", render: "skin-render.png", model: "model.gltf", png: "skin.png", desc: "The new standard for Velvet engine v3.1.0. High-intensity PBR maps." },
-            { name: "VOID WALKER", tag: "LEGACY", render: "skin-render2.png", model: "model2.gltf", png: "skin2.png", desc: "A fan favorite from v2.0, completely remastered for the modern pipeline." },
+            { name: "NEON SPECTRE", tag: "STABLE", render: "skin-render.png", model: "model.gltf", png: "skin.png", desc: "Flagship v3.1.0 build with PBR materials and emissive highlights." },
+            { name: "VOID WALKER", tag: "LEGACY", render: "skin-render2.png", model: "model2.gltf", png: "skin2.png", desc: "Remastered legacy build updated for the Velvet pipeline." },
             { name: "CYBER CORE", tag: "PATCH", render: "skin-render3.png", model: "model3.gltf", png: "skin3.png", desc: "Industrial-grade plating with reactive lighting systems." }
         ];
 
@@ -162,24 +168,21 @@
             skinDatabase.forEach((skin, index) => {
                 const card = document.createElement('div');
                 card.className = 'compact-card';
-                
                 card.onmouseenter = () => {
                     previewImg.style.opacity = '0';
-                    previewImg.style.transform = 'translateY(120px)';
+                    previewImg.style.transform = 'translateY(50px)';
                     setTimeout(() => {
                         previewImg.src = skin.render;
                         previewImg.style.opacity = '1';
                         previewImg.style.transform = 'translateY(0)';
-                    }, 250);
+                    }, 200);
                 };
-
                 card.onclick = () => openInspect(index);
                 card.innerHTML = `
                     <img src="${skin.render}" class="card-thumb">
                     <div class="card-info">
-                        <span style="font-family: monospace; color: var(--primary); font-size: 0.7rem; letter-spacing: 2px;">${skin.tag}</span>
-                        <h2 style="font-size: 1.8rem; font-weight: 900;">${skin.name}</h2>
-                        <p style="opacity:0.5; font-size: 0.9rem;">View Log Details</p>
+                        <span style="font-family: monospace; color: var(--primary); font-size: 0.65rem; letter-spacing: 2px;">${skin.tag}</span>
+                        <h2>${skin.name}</h2>
                     </div>
                 `;
                 container.appendChild(card);
@@ -197,10 +200,7 @@
         }
 
         function downloadSkin() {
-            const link = document.createElement('a');
-            link.href = currentPng;
-            link.download = "skin_texture.png";
-            link.click();
+            const link = document.createElement('a'); link.href = currentPng; link.download = "skin_texture.png"; link.click();
         }
 
         function closeModals() { document.getElementById('inspect-modal').style.display = 'none'; }
@@ -213,7 +213,7 @@
             setTimeout(() => { 
                 document.getElementById('loader').style.opacity = '0'; 
                 setTimeout(() => document.getElementById('loader').style.display = 'none', 800); 
-            }, 2000);
+            }, 1500);
         });
     </script>
 </body>
