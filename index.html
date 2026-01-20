@@ -11,19 +11,16 @@
 
     <style>
         :root {
-            --primary: #FFB4AB; 
-            --surface: #020202; 
-            --card-bg: rgba(20, 20, 20, 0.7);
-            --radius-xl: 32px; 
-            --radius-pill: 100px;
-            --blur: 40px;
-            --video-opacity: 0.7;
+            --primary: #FFB4AB; --surface: #020202; --card-bg: rgba(20, 20, 20, 0.7);
+            --radius-xl: 32px; --radius-pill: 100px; --blur: 40px; --video-opacity: 0.7;
         }
         
         * { box-sizing: border-box; -webkit-font-smoothing: antialiased; margin: 0; padding: 0; }
-        body { background: var(--surface); color: #fff; font-family: 'Google Sans Flex', sans-serif; overflow: hidden; height: 100vh; }
+        body { background: var(--surface); color: #fff; font-family: 'Google Sans Flex', sans-serif; overflow: hidden; height: 100vh; cursor: auto; }
+        body.custom-cursor-active { cursor: none; }
+        body.modal-open { cursor: auto !important; }
 
-        /* VELVET LOADER */
+        /* LOADER */
         #loader {
             position: fixed; inset: 0; background: #000; z-index: 99999;
             display: flex; align-items: center; justify-content: center;
@@ -32,45 +29,70 @@
         .pulse-logo { width: 80px; height: 80px; background: var(--primary); border-radius: 24px; animation: m3-expressive-pulse 2s infinite cubic-bezier(0.34, 1.56, 0.64, 1); }
         @keyframes m3-expressive-pulse { 0% { transform: scale(0.8); border-radius: 40px; } 50% { transform: scale(1.1); border-radius: 20px; } 100% { transform: scale(0.8); border-radius: 40px; } }
 
-        /* LAYOUT */
+        /* CURSOR */
+        #cursor-dot, #cursor-outline { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 10001; border-radius: 50%; will-change: transform; transition: opacity 0.3s; opacity: 0; }
+        #cursor-dot { width: 6px; height: 6px; background: #fff; transform: translate(-50%, -50%); }
+        #cursor-outline { width: 30px; height: 30px; border: 1.5px solid white; mix-blend-mode: difference; }
+        .cursor-morph { background: transparent !important; border: 1.5px solid white !important; }
+
+        /* BACKGROUND */
         .video-bg-container { position: fixed; inset: 0; z-index: -1; background: #000; }
-        .main-layout { display: grid; grid-template-columns: 1fr 400px; gap: 40px; max-width: 1400px; margin: 0 auto; padding: 80px 40px 0; }
-        .hero-title { font-size: 6.5rem; font-weight: 900; letter-spacing: -5px; line-height: 0.85; }
-        
-        .unified-panel { 
-            background: var(--card-bg); border-radius: var(--radius-xl); padding: 32px; 
-            backdrop-filter: blur(var(--blur)); border: 1px solid rgba(255,255,255,0.05); 
-            display: flex; flex-direction: column; gap: 20px; height: 620px;
-        }
+        .radial-mask { position: absolute; inset: 0; mask-image: radial-gradient(circle at 70% 50%, black 40%, transparent 95%); -webkit-mask-image: radial-gradient(circle at 70% 50%, black 40%, transparent 95%); }
 
-        /* 3D & COMPARISON STYLES */
-        .skin-preview { width: 100%; height: 300px; background: rgba(0,0,0,0.3); border-radius: 20px; overflow: hidden; }
-        model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
+        /* NAV & WIDGETS */
+        nav { padding: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
+        .widget { padding: 12px 24px; background: rgba(255,255,255,0.08); backdrop-filter: blur(var(--blur)); border-radius: var(--radius-pill); display: flex; align-items: center; gap: 12px; font-weight: 700; border: 1px solid rgba(255,255,255,0.1); color: #fff; text-decoration: none; cursor: pointer; }
+        .mag { display: flex; align-items: center; gap: inherit; pointer-events: none; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 
-        .comparison { display: none; grid-template-columns: 1fr 1fr; gap: 12px; height: 300px; }
-        .compare-card { 
-            background: rgba(0,0,0,0.5); border-radius: 16px; overflow: hidden; 
-            display: flex; flex-direction: column; align-items: center; border: 1px solid rgba(255,255,255,0.1);
-        }
-        .compare-card img { width: 100%; height: 85%; object-fit: cover; }
-        .compare-card span { font-size: 10px; font-weight: 900; padding: 5px; color: var(--primary); }
-        .compare-card model-viewer { height: 85%; }
+        /* MAIN PANEL */
+        .main-layout { display: grid; grid-template-columns: 1fr 400px; gap: 40px; max-width: 1400px; margin: 0 auto; padding: 0 40px; }
+        .hero-title { font-size: 6.5rem; font-weight: 900; letter-spacing: -5px; line-height: 0.85; margin-top: 60px; pointer-events: none; }
+        .unified-panel { background: var(--card-bg); border-radius: var(--radius-xl); padding: 32px; backdrop-filter: blur(var(--blur)); border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 15px; height: 620px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
 
-        /* HISTORY LIST */
-        .history-item { padding: 16px; border-radius: 20px; display: block; width: 100%; text-align: left; border: none; background: transparent; color: #fff; margin-bottom: 8px; cursor: pointer; }
-        .history-item.active { background: rgba(255,255,255,0.15); border-left: 4px solid var(--primary); }
+        /* 3D & COMPARISON CONTAINERS */
+        .skin-preview { width: 100%; height: 280px; background: rgba(0,0,0,0.2); border-radius: 20px; overflow: hidden; }
+        .comparison { display: none; grid-template-columns: 1fr 1fr; gap: 10px; height: 280px; }
+        .compare-card { background: rgba(0,0,0,0.3); border-radius: 15px; overflow: hidden; position: relative; border: 1px solid rgba(255,255,255,0.05); }
+        .compare-card img, .compare-card model-viewer { width: 100%; height: 100%; object-fit: cover; }
+        .compare-card span { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); font-size: 8px; font-weight: 900; background: var(--primary); color: #000; padding: 2px 8px; border-radius: 4px; }
+
+        /* ELEMENTS */
+        .history-item { padding: 12px; border-radius: 16px; display: block; width: 100%; text-align: left; border: none; background: transparent; color: #fff; margin-bottom: 5px; transition: 0.2s; cursor: pointer; }
+        .history-item.active { background: rgba(255,255,255,0.1); border-left: 4px solid var(--primary); }
         .badge { background: var(--primary); color: #000; padding: 4px 12px; border-radius: 10px; font-size: 0.7rem; font-weight: 900; width: fit-content; }
+        
+        .fab-container { position: fixed; bottom: 40px; left: 40px; z-index: 100; }
+        .fab { height: 60px; padding: 0 32px; background: #fff; color: #000; border-radius: 20px; border: none; display: flex; align-items: center; gap: 12px; font-weight: 900; cursor: pointer; }
+
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 20000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
+        .modal-card { background: #0a0a0a; padding: 40px; border-radius: var(--radius-xl); width: 450px; border: 1px solid #222; }
     </style>
 </head>
 <body>
 
-    <div id="loader">
-        <div class="pulse-logo"></div>
-    </div>
+    <div id="loader"><div class="pulse-logo"></div></div>
+    <div id="cursor-dot"></div>
+    <div id="cursor-outline"></div>
 
     <div class="video-bg-container">
-        <video id="bg-video" autoplay muted loop playsinline style="width:100%; height:100%; object-fit:cover; opacity:0.5;"></video>
+        <div class="radial-mask"><video id="bg-video" autoplay muted loop playsinline></video></div>
     </div>
+
+    <nav>
+        <button class="widget interactive" onclick="openModal('settings-modal')">
+            <div class="mag">
+                <span class="material-symbols-rounded">schedule</span>
+                <span id="clock">--:--</span>
+                <span class="material-symbols-rounded" style="opacity:0.5; font-size:1.2rem;">settings</span>
+            </div>
+        </button>
+        <button class="widget interactive" id="weather-widget">
+            <div class="mag">
+                <span id="temp">--°F</span>
+                <span class="material-symbols-rounded">cloud</span>
+            </div>
+        </button>
+    </nav>
 
     <div class="main-layout">
         <div><h1 class="hero-title">PIX<br><span style="color: var(--primary);">UPDATES</span></h1></div>
@@ -78,21 +100,12 @@
         <div class="unified-panel">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <span class="badge">V3.1.0</span>
-                <button onclick="toggleView()" style="background:none; border:none; color:var(--primary); font-weight:900; cursor:pointer; font-size:0.7rem;">COMPARE</button>
+                <button class="interactive" onclick="toggleView()" style="background:none; border:none; color:var(--primary); font-weight:900; cursor:pointer; font-size:0.7rem;">COMPARE</button>
             </div>
 
             <div id="active-skin-content">
                 <div class="skin-preview" id="main-3d-view">
-                    <model-viewer
-                        src="model.gltf"
-                        autoplay
-                        camera-controls
-                        auto-rotate
-                        rotation-per-second="25deg"
-                        exposure="1.1"
-                        shadow-intensity="1"
-                        environment-image="neutral">
-                    </model-viewer>
+                    <model-viewer src="model.gltf" autoplay camera-controls auto-rotate rotation-per-second="25deg" exposure="1.1" shadow-intensity="1" environment-image="neutral"></model-viewer>
                 </div>
 
                 <div class="comparison" id="comparison-view">
@@ -100,52 +113,95 @@
                         <img src="temp's Skin with no cap Version 1.0.0.png">
                         <span>BEFORE</span>
                     </div>
-
                     <div class="compare-card">
-                        <model-viewer
-                            src="model.gltf"
-                            camera-controls
-                            auto-rotate
-                            exposure="1.1">
-                        </model-viewer>
+                        <model-viewer src="model.gltf" camera-controls auto-rotate exposure="1.1"></model-viewer>
                         <span>AFTER (3D)</span>
                     </div>
                 </div>
             </div>
 
-            <h2 id="skin-title" style="font-size:1.8rem; font-weight:900; margin-top:10px;">VELVET VOID</h2>
+            <h2 id="skin-title" style="font-size:1.8rem; font-weight:900;">VELVET VOID</h2>
+            <p style="opacity:0.5; font-size:0.8rem;">Character active in 3D viewport.</p>
             
             <hr style="border:none; border-top:1px solid rgba(255,255,255,0.1);">
-            
             <div id="history-list" style="overflow-y: auto; flex-grow: 1;">
                 <button class="history-item active">
-                    <div><span style="opacity:0.5; font-size:0.7rem;">V3.1.0</span><br>Velvet Void</div>
+                    <div><span style="opacity:0.5; font-size:0.7rem;">V3.1.0</span><br>Velvet Void Base</div>
                 </button>
             </div>
         </div>
     </div>
 
+    <div class="fab-container">
+        <button class="fab interactive"><div class="mag"><span class="material-symbols-rounded">download</span><span>GET SKIN</span></div></button>
+    </div>
+
+    <div id="settings-modal" class="modal-overlay">
+        <div class="modal-card">
+            <h2 style="font-weight:900; margin-bottom:20px;">SETTINGS</h2>
+            <button onclick="closeModals()" class="interactive" style="width:100%; background:#fff; color:#000; padding:15px; border:none; border-radius:15px; font-weight:900;">CLOSE</button>
+        </div>
+    </div>
+
     <script>
+        // TOGGLE VIEW
         function toggleView() {
-            const mainView = document.getElementById('main-3d-view');
-            const compView = document.getElementById('comparison-view');
-            
-            if (mainView.style.display === 'none') {
-                mainView.style.display = 'block';
-                compView.style.display = 'none';
-            } else {
-                mainView.style.display = 'none';
-                compView.style.display = 'grid';
-            }
+            const main = document.getElementById('main-3d-view');
+            const comp = document.getElementById('comparison-view');
+            const isComp = comp.style.display === 'grid';
+            main.style.display = isComp ? 'block' : 'none';
+            comp.style.display = isComp ? 'none' : 'grid';
         }
 
-        // LOADER TIMEOUT
+        // MODALS
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; document.body.classList.add('modal-open'); }
+        function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); document.body.classList.remove('modal-open'); }
+
+        // CURSOR ENGINE
+        const dot = document.getElementById('cursor-dot'), outline = document.getElementById('cursor-outline');
+        let mX = 0, mY = 0, oX = 0, oY = 0, target = null;
+        document.body.classList.add('custom-cursor-active');
+
+        window.addEventListener('mousemove', (e) => {
+            mX = e.clientX; mY = e.clientY;
+            const hit = e.target.closest('.interactive');
+            if (hit !== target) {
+                if (target) { const m = target.querySelector('.mag'); if(m) m.style.transform = ''; }
+                target = hit;
+                if (hit) { outline.classList.add('cursor-morph'); dot.style.opacity = 0; }
+                else { outline.classList.remove('cursor-morph'); dot.style.opacity = 1; }
+            }
+            if (target) {
+                const r = target.getBoundingClientRect();
+                const m = target.querySelector('.mag');
+                if(m) m.style.transform = `translate(${(mX - (r.left + r.width/2)) * 0.3}px, ${(mY - (r.top + r.height/2)) * 0.3}px)`;
+            }
+        });
+
+        function animateCursor() {
+            dot.style.transform = `translate3d(${mX}px, ${mY}px, 0)`;
+            oX += (mX - oX) * 0.15; oY += (mY - oY) * 0.15;
+            if (target) {
+                const r = target.getBoundingClientRect();
+                outline.style.width = r.width + "px"; outline.style.height = r.height + "px";
+                outline.style.transform = `translate3d(${r.left}px, ${r.top}px, 0)`;
+                outline.style.borderRadius = "20px";
+            } else {
+                outline.style.width = "30px"; outline.style.height = "30px";
+                outline.style.transform = `translate3d(${oX - 15}px, ${oY - 15}px, 0)`;
+                outline.style.borderRadius = "50%";
+            }
+            requestAnimationFrame(animateCursor);
+        }
+
+        // INITIALIZE
         window.addEventListener('load', () => {
-            setTimeout(() => {
-                const loader = document.getElementById('loader');
-                loader.style.opacity = '0';
-                setTimeout(() => loader.style.visibility = 'hidden', 800);
-            }, 2000);
+            animateCursor();
+            setInterval(() => { document.getElementById('clock').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }, 1000);
+            setTimeout(() => { 
+                document.getElementById('loader').style.opacity = '0'; 
+                setTimeout(() => document.getElementById('loader').style.visibility = 'hidden', 800);
+            }, 1500);
         });
     </script>
 </body>
