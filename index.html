@@ -6,6 +6,8 @@
     <title>Pix Updates | v3.1.0 Velvet Void</title>
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
+    
     <style>
         :root {
             --primary: #FFB4AB; 
@@ -21,108 +23,93 @@
         body { background: var(--surface); color: #fff; font-family: 'Google Sans Flex', sans-serif; overflow: hidden; height: 100vh; cursor: none; }
         body.modal-open { cursor: auto !important; }
 
-        /* VELVET LOADER */
-        #loader {
-            position: fixed; inset: 0; background: #000; z-index: 99999;
-            display: flex; align-items: center; justify-content: center;
-            transition: opacity 0.8s ease-out, visibility 0.8s;
-        }
+        /* LOADER */
+        #loader { position: fixed; inset: 0; background: #000; z-index: 99999; display: flex; align-items: center; justify-content: center; transition: 0.8s; }
         .pulse-logo { width: 80px; height: 80px; background: var(--primary); border-radius: 24px; animation: m3-expressive-pulse 2s infinite cubic-bezier(0.34, 1.56, 0.64, 1); }
-        
-        .loader-label {
-            position: absolute; bottom: 48px; right: 48px;
-            display: flex; align-items: center; gap: 16px; color: var(--primary);
-        }
+        .loader-label { position: absolute; bottom: 48px; right: 48px; display: flex; align-items: center; gap: 16px; color: var(--primary); }
         .m3-text { font-weight: 800; font-size: 1.1rem; letter-spacing: 2px; animation: m3-text-stretch 2.5s infinite ease-in-out; }
-        .m3-icon { font-size: 1.4rem; animation: m3-spin 1.5s infinite linear; }
-
-        @keyframes m3-text-stretch { 0%, 100% { transform: scaleX(1); opacity: 0.6; } 50% { transform: scaleX(1.1); opacity: 1; } }
-        @keyframes m3-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes m3-expressive-pulse { 0% { transform: scale(0.8) rotate(0deg); border-radius: 40px; } 50% { transform: scale(1.1) rotate(90deg); border-radius: 15px; } 100% { transform: scale(0.8) rotate(180deg); border-radius: 40px; } }
+        
+        @keyframes m3-expressive-pulse { 0%, 100% { transform: scale(0.8) rotate(0deg); border-radius: 40px; } 50% { transform: scale(1.1) rotate(90deg); border-radius: 15px; } }
+        @keyframes m3-text-stretch { 0%, 100% { transform: scaleX(1); opacity: 0.5; } 50% { transform: scaleX(1.1); opacity: 1; } }
 
         /* BACKGROUND */
         .video-bg-container { position: fixed; inset: 0; z-index: -1; background: #000; }
         .radial-mask { position: absolute; inset: 0; mask-image: radial-gradient(circle at 70% 50%, black 40%, transparent 95%); -webkit-mask-image: radial-gradient(circle at 70% 50%, black 40%, transparent 95%); }
         #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: var(--video-opacity); transition: 0.5s; }
 
-        /* CURSOR SYSTEM */
+        /* CURSOR */
         #cursor-dot, #cursor-outline { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 10001; border-radius: 50%; opacity: 0; transition: opacity 0.3s; }
         #cursor-dot { width: 6px; height: 6px; background: #fff; transform: translate(-50%, -50%); }
         #cursor-outline { width: 30px; height: 30px; border: 1.5px solid white; mix-blend-mode: difference; }
 
-        /* INTERFACE */
+        /* NAV */
         nav { padding: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
         .widget { padding: 12px 24px; background: rgba(255,255,255,0.08); backdrop-filter: blur(var(--blur)); border-radius: var(--radius-pill); display: flex; align-items: center; gap: 12px; font-weight: 700; border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; transition: 0.3s; }
-        .widget:hover { background: rgba(255,255,255,0.15); }
         .mag { display: flex; align-items: center; gap: inherit; pointer-events: none; transition: transform 0.2s ease-out; }
-        
+
+        /* UI PANELS */
         .main-layout { display: grid; grid-template-columns: 1fr 400px; gap: 40px; max-width: 1400px; margin: 0 auto; padding: 0 40px; }
         .hero-title { font-size: 6.5rem; font-weight: 900; letter-spacing: -5px; line-height: 0.85; margin-top: 60px; pointer-events: none; }
         
-        .unified-panel { background: var(--card-bg); border-radius: var(--radius-xl); padding: 32px; backdrop-filter: blur(var(--blur)); border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 20px; height: 580px; margin-top: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .unified-panel { background: var(--card-bg); border-radius: var(--radius-xl); padding: 32px; backdrop-filter: blur(var(--blur)); border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 20px; height: 600px; margin-top: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); position: relative; }
+        
+        #display-container { height: 220px; position: relative; overflow: hidden; border-radius: 20px; margin-top: 10px; }
+        model-viewer { width: 100%; height: 100%; background: rgba(0,0,0,0.3); display: none; }
+
         .history-item { padding: 16px; border-radius: 20px; display: block; width: 100%; text-align: left; border: none; background: transparent; color: #fff; margin-bottom: 8px; transition: 0.2s; cursor: pointer; }
         .history-item.active { background: rgba(255,255,255,0.15); border-left: 4px solid var(--primary); font-weight: 800; }
+        
         .badge { background: var(--primary); color: #000; padding: 4px 12px; border-radius: 10px; font-size: 0.7rem; font-weight: 900; width: fit-content; text-transform: uppercase; }
-
         .fab-container { position: fixed; bottom: 40px; left: 40px; z-index: 100; }
-        .fab { height: 60px; padding: 0 32px; background: #fff; color: #000; border-radius: 20px; border: none; display: flex; align-items: center; gap: 12px; font-weight: 900; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .fab { height: 60px; padding: 0 32px; background: #fff; color: #000; border-radius: 20px; border: none; display: flex; align-items: center; gap: 12px; font-weight: 900; cursor: pointer; }
 
-        /* MODALS */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 20000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
-        .modal-card { background: #0a0a0a; padding: 40px; border-radius: var(--radius-xl); width: 500px; display: flex; flex-direction: column; gap: 25px; border: 1px solid #222; }
-        .setting-row { display: flex; justify-content: space-between; align-items: center; }
-        .color-dot { width: 28px; height: 28px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: 0.3s; }
-        .color-dot:hover { transform: scale(1.2); }
-
-        .weather-updating .weather-icon { animation: m3-spin 1s infinite linear; }
-        .version-tag { position: fixed; bottom: 20px; right: 30px; font-size: 0.7rem; font-weight: 700; opacity: 0.2; pointer-events: none; letter-spacing: 2px; text-transform: uppercase; }
+        .modal-card { background: #0a0a0a; padding: 40px; border-radius: var(--radius-xl); width: 450px; border: 1px solid #222; display: flex; flex-direction: column; gap: 20px; }
+        
+        .weather-updating .weather-icon { animation: spin 1s infinite linear; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <div id="loader">
-        <div class="pulse-logo"></div>
-        <div class="loader-label">
-            <span class="m3-text">LOADING</span>
-            <span class="material-symbols-rounded m3-icon">progress_activity</span>
-        </div>
-    </div>
+    <div id="loader"><div class="pulse-logo"></div><div class="loader-label"><span class="m3-text">LOADING SYSTEM</span></div></div>
 
     <div id="cursor-dot"></div>
     <div id="cursor-outline"></div>
 
-    <div class="video-bg-container">
-        <div class="radial-mask">
-            <video id="bg-video" autoplay muted loop playsinline src="skin-preview.mp4"></video>
-        </div>
-    </div>
+    <div class="video-bg-container"><div class="radial-mask"><video id="bg-video" autoplay muted loop playsinline src="skin-preview.mp4"></video></div></div>
 
     <nav>
         <button class="widget interactive" onclick="openModal('settings-modal')">
-            <div class="mag">
-                <span class="material-symbols-rounded">schedule</span>
-                <span id="clock">00:00</span>
-                <span class="material-symbols-rounded" style="opacity: 0.5;">settings</span>
-            </div>
+            <div class="mag"><span class="material-symbols-rounded">schedule</span><span id="clock">00:00</span></div>
         </button>
         <button class="widget interactive" id="weather-widget" onclick="fetchWeather()">
-            <div class="mag">
-                <span id="temp">FETCHING...</span>
-                <span id="weather-icon" class="material-symbols-rounded weather-icon">cloud</span>
-            </div>
+            <div class="mag"><span id="temp">FETCHING...</span><span id="weather-icon" class="material-symbols-rounded weather-icon">cloud</span></div>
         </button>
     </nav>
 
     <div class="main-layout">
-        <div><h1 class="hero-title">PIX<br><span id="primary-title" style="color: var(--primary);">UPDATES</span></h1></div>
+        <div><h1 class="hero-title">PIX<br><span style="color: var(--primary);">UPDATES</span></h1></div>
+        
         <div class="unified-panel">
-            <div id="active-skin-content">
-                <span id="skin-badge" class="badge">V0.0</span>
-                <h2 id="skin-title" style="margin:15px 0 5px 0; font-size:2rem; font-weight:900;">INITIALIZING</h2>
-                <p id="skin-desc" style="opacity:0.6; font-size:0.9rem;">Please wait while the database connects...</p>
+            <button class="interactive" onclick="toggle3D()" style="position: absolute; right: 25px; top: 25px; background: rgba(255,255,255,0.1); border: 1px solid var(--primary); color: #fff; padding: 8px 15px; border-radius: 12px; font-size: 0.7rem; font-weight: 900; cursor: pointer; z-index: 5;">
+                <span id="view-mode-text">VIEW 3D</span>
+            </button>
+
+            <div id="active-skin-header">
+                <span id="skin-badge" class="badge">V1.0.0</span>
+                <h2 id="skin-title" style="margin:10px 0 5px 0; font-size:2rem; font-weight:900;">EMBER KNIGHT</h2>
             </div>
+
+            <div id="display-container">
+                <div id="text-view">
+                    <p id="skin-desc" style="opacity: 0.6; font-size: 0.9rem; line-height: 1.5;">Custom lava flows and heat-mapped gradients. Optimized for high-end shaders and 3D geometry expansion.</p>
+                </div>
+                <model-viewer id="m3d-view" auto-rotate camera-controls shadow-intensity="1" src=""></model-viewer>
+            </div>
+
             <hr style="border:none; border-top:1px solid rgba(255,255,255,0.1);">
-            <div id="history-list" style="overflow-y: auto; flex-grow: 1; padding-right: 5px;"></div>
+            <div id="history-list" style="overflow-y: auto; flex-grow: 1;"></div>
         </div>
     </div>
 
@@ -134,69 +121,33 @@
 
     <div id="settings-modal" class="modal-overlay">
         <div class="modal-card">
-            <h2 style="font-weight: 900; letter-spacing: -1px;">PREFERENCES</h2>
-            <div class="setting-row">
+            <h2 style="font-weight: 900;">PREFERENCES</h2>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
                 <span>Accent Color</span>
-                <div style="display:flex; gap:12px;">
-                    <div class="color-dot" style="background: #FFB4AB;" onclick="updateSetting('--primary', '#FFB4AB')"></div>
-                    <div class="color-dot" style="background: #D0BCFF;" onclick="updateSetting('--primary', '#D0BCFF')"></div>
-                    <div class="color-dot" style="background: #B4E4FF;" onclick="updateSetting('--primary', '#B4E4FF')"></div>
-                    <div class="color-dot" style="background: #C3FBAB;" onclick="updateSetting('--primary', '#C3FBAB')"></div>
+                <div style="display:flex; gap:8px;">
+                    <div style="width:25px; height:25px; border-radius:50%; background:#FFB4AB; cursor:pointer;" onclick="updateSetting('--primary', '#FFB4AB')"></div>
+                    <div style="width:25px; height:25px; border-radius:50%; background:#D0BCFF; cursor:pointer;" onclick="updateSetting('--primary', '#D0BCFF')"></div>
+                    <div style="width:25px; height:25px; border-radius:50%; background:#B4E4FF; cursor:pointer;" onclick="updateSetting('--primary', '#B4E4FF')"></div>
                 </div>
             </div>
-            <div class="setting-row">
-                <span>Glass Blur</span>
-                <input type="range" min="0" max="80" value="40" style="accent-color: var(--primary);" oninput="updateSetting('--blur', this.value + 'px')">
-            </div>
-            <div class="setting-row">
-                <span>Video Dim</span>
-                <input type="range" min="1" max="10" value="7" style="accent-color: var(--primary);" oninput="updateSetting('--video-opacity', this.value/10)">
-            </div>
-            <button onclick="openModal('whats-new-modal')" class="interactive" style="background:rgba(255,255,255,0.05); color:#fff; border:1px solid #333; padding:12px; border-radius:12px; font-weight:700; cursor:pointer;">
-                <div class="mag"><span class="material-symbols-rounded" style="font-size:1.2rem;">history_edu</span> PATCH LOGS</div>
-            </button>
-            <button onclick="closeModals()" class="interactive" style="background:#fff; color:#000; padding:15px; border:none; border-radius:15px; font-weight:900; cursor:pointer;">SAVE CHANGES</button>
+            <button onclick="closeModals()" class="interactive" style="background:#fff; color:#000; padding:15px; border:none; border-radius:15px; font-weight:900; cursor:pointer; margin-top:10px;">SAVE</button>
         </div>
     </div>
-
-    <div id="whats-new-modal" class="modal-overlay">
-        <div class="modal-card">
-            <div class="badge">PATCH v3.1.0</div>
-            <h2 style="font-weight: 900; letter-spacing: -1px; margin-top:-10px;">VELVET VOID</h2>
-            <p style="opacity:0.6; font-size:0.95rem;">System performance and aesthetics upgraded.</p>
-            <button onclick="closeModals()" class="interactive" style="background:var(--primary); color:#000; padding:15px; border:none; border-radius:15px; font-weight:900; cursor:pointer; margin-top:10px;">PROCEED</button>
-        </div>
-    </div>
-
-    <div class="version-tag">PIX UPDATES // VELVET VOID v3.1.0</div>
 
     <script>
-        const CURRENT_VERSION = "3.1.0";
-        const GITHUB_MASTER_LIST = [
-            { name: "The Ember Knight", version: "V3.0", desc: "Custom lava flows and heat-mapped gradients.", video: "skin-preview.mp4", dl: "ember.zip" },
-            { name: "Neon Samurai", version: "V1.2", desc: "Cyberpunk aesthetic with motion-tracked trails.", video: "neon-preview.mp4", dl: "neon.zip" }
+        const skins = [
+            { name: "EMBER KNIGHT", version: "V1.0.0", desc: "Custom lava flows and heat-mapped gradients. Optimized for high-end shaders.", video: "skin-preview.mp4", model: "ember.gltf", dl: "ember.png" },
+            { name: "VOID WALKER", version: "V0.0.9", desc: "Monochrome void aesthetic with particle anchoring testing.", video: "void-preview.mp4", model: "void.gltf", dl: "void.png" }
         ];
-        let skins = [...GITHUB_MASTER_LIST];
         let currentIdx = 0;
+        let is3D = false;
 
-        function updateSetting(variable, value) {
-            document.documentElement.style.setProperty(variable, value);
-            const settings = JSON.parse(localStorage.getItem('pix_prefs')) || {};
-            settings[variable] = value;
-            localStorage.setItem('pix_prefs', JSON.stringify(settings));
-        }
-
-        async function fetchWeather() {
-            const widget = document.getElementById('weather-widget');
-            const icon = document.getElementById('weather-icon');
-            widget.classList.add('weather-updating');
-            icon.textContent = 'sync'; 
-            try {
-                const res = await fetch('https://wttr.in/?format=j1');
-                const data = await res.json();
-                document.getElementById('temp').textContent = data.current_condition[0].temp_F + "°F";
-            } catch (e) { document.getElementById('temp').textContent = "72°F"; }
-            setTimeout(() => { widget.classList.remove('weather-updating'); icon.textContent = 'cloud'; }, 1000);
+        function toggle3D() {
+            is3D = !is3D;
+            document.getElementById('text-view').style.display = is3D ? 'none' : 'block';
+            document.getElementById('m3d-view').style.display = is3D ? 'block' : 'none';
+            document.getElementById('view-mode-text').textContent = is3D ? "VIEW INFO" : "VIEW 3D";
+            if(is3D) document.getElementById('m3d-view').src = skins[currentIdx].model;
         }
 
         function updateUI() {
@@ -205,34 +156,37 @@
             document.getElementById('skin-badge').textContent = s.version;
             document.getElementById('skin-desc').textContent = s.desc;
             document.getElementById('bg-video').src = s.video;
+            if(is3D) document.getElementById('m3d-view').src = s.model;
+            
             document.getElementById('history-list').innerHTML = skins.map((skin, i) => `
                 <button class="history-item interactive ${i === currentIdx ? 'active' : ''}" onclick="currentIdx=${i}; updateUI();">
-                    <div><span style="opacity:0.5; font-size:0.7rem;">${skin.version}</span><br>${skin.name}</div>
+                    <span style="opacity:0.5; font-size:0.7rem;">${skin.version}</span><br>${skin.name}
                 </button>
             `).join('');
         }
 
-        function openModal(id) { 
-            document.getElementById(id).style.display = 'flex'; 
-            document.body.classList.add('modal-open'); 
-        }
-        function closeModals() { 
-            document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); 
-            document.body.classList.remove('modal-open'); 
+        async function fetchWeather() {
+            const widget = document.getElementById('weather-widget');
+            widget.classList.add('weather-updating');
+            try {
+                const res = await fetch('https://wttr.in/?format=j1');
+                const data = await res.json();
+                document.getElementById('temp').textContent = data.current_condition[0].temp_F + "°F";
+            } catch (e) { document.getElementById('temp').textContent = "72°F"; }
+            setTimeout(() => widget.classList.remove('weather-updating'), 1000);
         }
 
-        // CURSOR ENGINE
+        function updateSetting(v, val) { document.documentElement.style.setProperty(v, val); }
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; document.body.classList.add('modal-open'); }
+        function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); document.body.classList.remove('modal-open'); }
+
         const dot = document.getElementById('cursor-dot'), outline = document.getElementById('cursor-outline');
         let mX = 0, mY = 0, oX = 0, oY = 0, target = null;
 
         window.addEventListener('mousemove', (e) => {
             mX = e.clientX; mY = e.clientY;
-            dot.style.opacity = 1; outline.style.opacity = 1;
-            const hit = e.target.closest('.interactive');
-            if (hit !== target) {
-                if (target) { const m = target.querySelector('.mag'); if(m) m.style.transform = ''; }
-                target = hit;
-            }
+            dot.style.opacity = outline.style.opacity = 1;
+            target = e.target.closest('.interactive');
             if (target) {
                 const r = target.getBoundingClientRect();
                 const m = target.querySelector('.mag');
@@ -257,22 +211,9 @@
         }
 
         window.addEventListener('load', () => {
-            const saved = JSON.parse(localStorage.getItem('pix_prefs')) || {};
-            for (const [k, v] of Object.entries(saved)) document.documentElement.style.setProperty(k, v);
-            
             updateUI(); fetchWeather(); animateCursor();
             setInterval(() => { document.getElementById('clock').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }, 1000);
-            
-            setTimeout(() => { 
-                document.getElementById('loader').style.opacity = '0'; 
-                setTimeout(() => {
-                    document.getElementById('loader').style.visibility = 'hidden';
-                    if(localStorage.getItem('pix_v') !== CURRENT_VERSION) {
-                        openModal('whats-new-modal');
-                        localStorage.setItem('pix_v', CURRENT_VERSION);
-                    }
-                }, 800); 
-            }, 2000);
+            setTimeout(() => { document.getElementById('loader').style.opacity = '0'; setTimeout(() => document.getElementById('loader').style.display = 'none', 800); }, 2000);
         });
     </script>
 </body>
