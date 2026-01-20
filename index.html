@@ -25,30 +25,30 @@
         nav { padding: 24px 40px; display: flex; justify-content: space-between; align-items: center; position: fixed; width: 100%; z-index: 100; }
         .widget { padding: 8px 16px; background: rgba(255,255,255,0.08); backdrop-filter: blur(var(--blur)); border-radius: var(--radius-pill); border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.85rem; transition: 0.3s; text-decoration: none; }
 
-        /* SPLIT LAYOUT */
-        .main-container { display: grid; grid-template-columns: 450px 1fr; height: 100vh; padding-top: 100px; }
+        /* SPLIT LAYOUT - Flipped */
+        .main-container { display: grid; grid-template-columns: 1fr 450px; height: 100vh; padding-top: 100px; }
 
-        /* LEFT: SCROLLABLE FEED */
-        .feed-container { padding: 0 40px 40px 40px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; scrollbar-width: none; }
+        /* LEFT: HERO SECTION */
+        .hero-side { display: flex; flex-direction: column; justify-content: center; padding-left: 80px; pointer-events: none; }
+        .hero-title { font-size: 8rem; font-weight: 900; letter-spacing: -6px; line-height: 0.8; }
+        .tag { font-family: monospace; color: var(--primary); font-weight: 900; font-size: 0.75rem; letter-spacing: 2px; }
+
+        /* RIGHT: SCROLLABLE FEED */
+        .feed-container { padding: 0 40px 40px 0; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; scrollbar-width: none; align-items: flex-end; }
         .feed-container::-webkit-scrollbar { display: none; }
 
         .compact-card { 
             background: var(--card-bg); border-radius: var(--radius-lg); padding: 16px; 
             backdrop-filter: blur(var(--blur)); border: 1px solid rgba(255,255,255,0.05); 
             cursor: pointer; transition: 0.3s cubic-bezier(0.2, 0, 0, 1);
-            display: flex; align-items: center; gap: 16px;
+            display: flex; align-items: center; gap: 16px; width: 100%; max-width: 380px;
         }
-        .compact-card:hover { transform: scale(1.02); border-color: var(--primary); background: rgba(255,255,255,0.12); }
+        .compact-card:hover { transform: scale(1.02) translateX(-10px); border-color: var(--primary); background: rgba(255,255,255,0.12); }
         .card-thumb { width: 80px; height: 80px; border-radius: 16px; object-fit: cover; background: #000; }
         .card-info h2 { font-size: 1.1rem; font-weight: 900; }
         .card-info p { font-size: 0.75rem; opacity: 0.5; margin-top: 2px; }
 
-        /* RIGHT: HERO SECTION */
-        .hero-side { display: flex; flex-direction: column; justify-content: center; padding-left: 60px; pointer-events: none; }
-        .hero-title { font-size: 8rem; font-weight: 900; letter-spacing: -6px; line-height: 0.8; }
-        .tag { font-family: monospace; color: var(--primary); font-weight: 900; font-size: 0.75rem; letter-spacing: 2px; }
-
-        /* COMPACT INSPECT MODAL */
+        /* MODAL */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 20000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
         .inspect-card { background: #0a0a0a; width: 850px; height: 550px; border-radius: 40px; border: 1px solid #222; overflow: hidden; display: grid; grid-template-columns: 1fr 1fr; }
         .inspect-visuals { background: #000; position: relative; }
@@ -58,7 +58,7 @@
         .download-btn { height: 60px; background: #fff; color: #000; border-radius: 20px; border: none; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s; }
         .download-btn:hover { background: var(--primary); transform: translateY(-2px); }
 
-        /* LOADER */
+        /* M3 LOADER */
         #loader { position: fixed; inset: 0; background: #000; z-index: 100000; display: flex; align-items: center; justify-content: center; transition: 0.6s; }
         .pulse-logo { width: 60px; height: 60px; background: var(--primary); border-radius: 20px; animation: p 1.5s infinite ease-in-out; }
         @keyframes p { 0%, 100% { transform: scale(0.9); border-radius: 30px; } 50% { transform: scale(1.1); border-radius: 15px; } }
@@ -80,14 +80,14 @@
     </nav>
 
     <div class="main-container">
-        <div class="feed-container" id="skin-feed">
-            <span class="tag" style="margin-bottom: 10px;">LATEST SKINS</span>
-            </div>
-
         <div class="hero-side">
-            <span class="tag">SYSTEM VERSION v3.1.0</span>
-            <h1 class="hero-title">VELVET<br><span style="color: var(--primary);">VOID</span></h1>
+            <span class="tag">VELVET VOID v3.1.0</span>
+            <h1 class="hero-title">PIX<br><span style="color: var(--primary);">UPDATES</span></h1>
         </div>
+
+        <div class="feed-container" id="skin-feed">
+            <span class="tag" style="margin-bottom: 10px; padding-right: 16px;">LATEST SKINS</span>
+            </div>
     </div>
 
     <div id="inspect-modal" class="modal-overlay">
@@ -114,9 +114,10 @@
 
     <script>
         const skinDatabase = [
-            { name: "NEON SPECTRE", tag: "PREMIUM", render: "skin-render.png", model: "model.gltf", png: "skin.png", desc: "Optimized for Velvet Void v3.1.0. High-frequency emissive textures." },
+            { name: "NEON SPECTRE", tag: "PREMIUM", render: "skin-render.png", model: "model.gltf", png: "skin.png", desc: "Flagship update. Optimized emissive mapping." },
             { name: "VOID WALKER", tag: "LEGACY", render: "skin-render2.png", model: "model2.gltf", png: "skin2.png", desc: "Classic build restored for the modern engine." },
-            { name: "CARBON CORE", tag: "UPDATE", render: "skin-render3.png", model: "model3.gltf", png: "skin3.png", desc: "Matte finish with reactive vertex shading." }
+            { name: "CARBON CORE", tag: "UPDATE", render: "skin-render3.png", model: "model3.gltf", png: "skin3.png", desc: "Matte finish with reactive vertex shading." },
+            { name: "STELLAR EDGE", tag: "NEW", render: "skin-render4.png", model: "model4.gltf", png: "skin4.png", desc: "Deep space aesthetic with chrome accents." }
         ];
 
         function renderFeed() {
@@ -153,7 +154,6 @@
 
         async function fetchWeather() {
             const icon = document.getElementById('w-icon');
-            document.getElementById('weather-widget').classList.add('updating');
             icon.textContent = 'sync';
             try {
                 const res = await fetch('https://wttr.in/?format=j1');
