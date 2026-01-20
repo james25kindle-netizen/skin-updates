@@ -19,16 +19,28 @@
 
         /* LOADER */
         #loader { position: fixed; inset: 0; background: #000; z-index: 99999; display: flex; align-items: center; justify-content: center; transition: 0.8s; }
-        .pulse-logo { width: 80px; height: 80px; background: var(--primary); border-radius: 24px; animation: p 2s infinite; }
+        .pulse-logo { width: 80px; height: 80px; background: var(--primary); border-radius: 24px; animation: p 2s infinite cubic-bezier(0.34, 1.56, 0.64, 1); }
         @keyframes p { 0%,100%{transform:scale(0.8);border-radius:40px;} 50%{transform:scale(1.1);border-radius:20px;} }
 
-        /* VIDEO BACKGROUND */
+        /* BACKGROUND */
         .video-bg-container { position: fixed; inset: 0; z-index: -1; background: #000; pointer-events: none; }
         #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: var(--video-opacity); transition: opacity 0.5s; }
 
-        /* GEAR ANIMATION */
+        /* EXPRESSIVE ANIMATIONS */
         .gear-icon { transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); display: inline-block; }
-        .widget:hover .gear-icon { transform: rotate(180deg); }
+        .widget:hover .gear-icon { transform: rotate(-180deg); }
+
+        /* M3 EXPRESSIVE WEATHER SYNC */
+        .weather-icon { display: inline-block; transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .weather-updating .weather-icon { animation: m3-sync 1.2s infinite cubic-bezier(0.45, 0, 0.55, 1); color: var(--primary); }
+        #temp { transition: opacity 0.3s ease; }
+        .weather-updating #temp { opacity: 0.3; }
+
+        @keyframes m3-sync { 
+            0% { transform: rotate(0deg) scale(1); } 
+            50% { transform: rotate(-180deg) scale(1.2); } 
+            100% { transform: rotate(-360deg) scale(1); } 
+        }
 
         /* INTERFACE */
         nav { padding: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
@@ -42,16 +54,11 @@
         model-viewer { width: 100%; height: 250px; background: rgba(0,0,0,0.2); border-radius: 20px; }
         .badge { background: var(--primary); color: #000; padding: 4px 12px; border-radius: 10px; font-size: 0.7rem; font-weight: 900; width: fit-content; }
 
-        .fab-container { position: fixed; bottom: 40px; left: 40px; z-index: 100; }
-        .fab { height: 60px; padding: 0 32px; background: #fff; color: #000; border-radius: 20px; border: none; display: flex; align-items: center; gap: 12px; font-weight: 900; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: 0.3s; }
-        .fab:hover { transform: translateY(-5px); }
-
         /* MODALS */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 20000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
         .modal-card { background: #0a0a0a; padding: 32px; border-radius: 32px; width: 450px; border: 1px solid #222; display: flex; flex-direction: column; gap: 20px; }
         .setting-row { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 16px; }
         .color-dot { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; transition: 0.2s; }
-        .color-dot:hover { transform: scale(1.2); }
     </style>
 </head>
 <body>
@@ -68,9 +75,9 @@
             <span id="clock">00:00</span>
             <span class="material-symbols-rounded gear-icon">settings</span>
         </div>
-        <div class="widget" onclick="fetchWeather()">
+        <div class="widget" id="weather-widget" onclick="fetchWeather()">
             <span id="temp">--°F</span>
-            <span class="material-symbols-rounded" id="w-icon">cloud</span>
+            <span class="material-symbols-rounded weather-icon" id="w-icon">cloud</span>
         </div>
     </nav>
 
@@ -81,19 +88,12 @@
             <span class="badge">ACTIVE SKIN</span>
             <h2 id="skin-title" style="font-size:1.8rem; font-weight:900;">VELVET VOID</h2>
             <model-viewer id="main-viewer" src="model.gltf" auto-rotate camera-controls shadow-intensity="1" exposure="1.2"></model-viewer>
-            <p id="skin-desc" style="opacity:0.6; font-size:0.9rem;">Live weather data and gear animations are now operational. UI preferences save to your local browser.</p>
+            <p id="skin-desc" style="opacity:0.6; font-size:0.9rem;">M3 Expressive loading active. Weather auto-refreshes every 5 minutes.</p>
             <hr style="border:none; border-top:1px solid rgba(255,255,255,0.1);">
             <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:20px;">
                 <span style="opacity:0.5; font-size:0.7rem;">SYSTEM STATUS</span><br><b>Engine Operational</b>
             </div>
         </div>
-    </div>
-
-    <div class="fab-container">
-        <button class="fab" onclick="downloadSkin()">
-            <span class="material-symbols-rounded">download</span>
-            <span>GET SKIN</span>
-        </button>
     </div>
 
     <div id="settings-modal" class="modal-overlay">
@@ -111,23 +111,29 @@
                 <span>Glass Blur</span>
                 <input type="range" min="0" max="80" value="40" oninput="updateSetting('--blur', this.value + 'px')">
             </div>
-            <div class="setting-row">
-                <span>Video Dim</span>
-                <input type="range" min="1" max="10" value="7" oninput="updateSetting('--video-opacity', this.value/10)">
-            </div>
             <button onclick="closeModals()" style="background:#fff; color:#000; padding:15px; border:none; border-radius:15px; font-weight:900; cursor:pointer; margin-top:10px;">SAVE CHANGES</button>
         </div>
     </div>
 
     <script>
-        // WEATHER LOGIC
         async function fetchWeather() {
+            const widget = document.getElementById('weather-widget');
+            const icon = document.getElementById('w-icon');
+            
+            widget.classList.add('weather-updating');
+            icon.textContent = 'sync'; // M3 Expressive icon change
+            
             try {
                 const res = await fetch('https://wttr.in/?format=j1');
                 const data = await res.json();
                 document.getElementById('temp').textContent = data.current_condition[0].temp_F + "°F";
             } catch (e) {
-                document.getElementById('temp').textContent = "72°F"; // Fallback
+                document.getElementById('temp').textContent = "72°F";
+            } finally {
+                setTimeout(() => {
+                    widget.classList.remove('weather-updating');
+                    icon.textContent = 'cloud';
+                }, 1200); // Allow animation to complete
             }
         }
 
@@ -140,16 +146,10 @@
 
         function updateSetting(variable, value) {
             document.documentElement.style.setProperty(variable, value);
-            const settings = JSON.parse(localStorage.getItem('pix_user_prefs')) || {};
-            settings[variable] = value;
-            localStorage.setItem('pix_user_prefs', JSON.stringify(settings));
-        }
-
-        function downloadSkin() {
-            const link = document.createElement('a');
-            link.href = 'model.gltf';
-            link.download = "Velvet_Void_Skin.gltf";
-            link.click();
+            localStorage.setItem('pix_user_prefs', JSON.stringify({
+                ...JSON.parse(localStorage.getItem('pix_user_prefs')),
+                [variable]: value
+            }));
         }
 
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
@@ -167,7 +167,7 @@
             }, 1000);
         });
 
-        setInterval(fetchWeather, 300000); // Update weather every 5 mins
+        setInterval(fetchWeather, 300000); // 5 minute auto-refresh
         setInterval(() => { 
             document.getElementById('clock').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); 
         }, 1000);
