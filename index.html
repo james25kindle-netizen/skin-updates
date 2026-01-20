@@ -10,103 +10,161 @@
 
     <style>
         :root {
-            --primary: #FFB4AB; --surface: #020202; --card-bg: rgba(20, 20, 20, 0.7);
-            --radius-xl: 32px; --radius-pill: 100px; --blur: 40px; --video-opacity: 0.7;
+            --primary: #FFB4AB; --surface: #020202; --card-bg: rgba(20, 20, 20, 0.4);
+            --radius-xl: 40px; --blur: 60px;
         }
         
         * { box-sizing: border-box; -webkit-font-smoothing: antialiased; margin: 0; padding: 0; }
-        body { background: var(--surface); color: #fff; font-family: 'Google Sans Flex', sans-serif; overflow-x: hidden; }
+        body { 
+            background: var(--surface); 
+            color: #fff; 
+            font-family: 'Google Sans Flex', sans-serif; 
+            overflow-y: scroll;
+            scrollbar-width: none; /* Hide scrollbar Firefox */
+        }
+        body::-webkit-scrollbar { display: none; } /* Hide scrollbar Chrome */
 
-        /* LOADER */
-        #loader { position: fixed; inset: 0; background: #000; z-index: 100000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.8s; gap: 24px; }
-        .pulse-logo { width: 80px; height: 80px; background: var(--primary); border-radius: 24px; animation: p 2s infinite cubic-bezier(0.34, 1.56, 0.64, 1); }
-        @keyframes p { 0%, 100% { transform: scale(0.85); border-radius: 40px; } 50% { transform: scale(1.15); border-radius: 18px; } }
-
-        /* BACKGROUND */
+        /* BG VIDEO FIXED */
         .video-bg-container { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
-        #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: var(--video-opacity); }
+        #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; }
 
-        /* NAV */
-        nav { padding: 40px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; pointer-events: none; }
+        /* NAV STICKY */
+        nav { 
+            position: fixed; top: 0; width: 100%; padding: 40px; 
+            display: flex; justify-content: space-between; align-items: center; 
+            z-index: 100; pointer-events: none;
+        }
         nav > * { pointer-events: auto; }
-        .widget { padding: 12px 24px; background: rgba(255,255,255,0.08); backdrop-filter: blur(var(--blur)); border-radius: var(--radius-pill); border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 700; transition: 0.3s; text-decoration: none; }
+        .widget { 
+            padding: 12px 24px; background: rgba(255,255,255,0.05); 
+            backdrop-filter: blur(var(--blur)); border-radius: 100px; 
+            border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 12px; font-weight: 700;
+        }
 
-        /* FEED LAYOUT */
-        .content-wrapper { max-width: 1200px; margin: 0 auto; padding: 40px; display: flex; flex-direction: column; gap: 100px; }
-        .hero-section { margin-bottom: 40px; }
-        .hero-title { font-size: 7rem; font-weight: 900; letter-spacing: -5px; line-height: 0.8; }
-        
-        /* SCROLLABLE LIST */
-        #skin-feed { display: flex; flex-direction: column; gap: 40px; padding-bottom: 100px; }
+        /* LAYOUT ARCHITECTURE */
+        .page-container {
+            display: flex; flex-direction: column; align-items: flex-start;
+            padding: 15vh 80px 10vh 80px; gap: 60px;
+        }
+
+        .hero-section { position: sticky; top: 15vh; margin-bottom: 40px; z-index: 1; pointer-events: none; }
+        .hero-title { font-size: 8rem; font-weight: 900; letter-spacing: -6px; line-height: 0.8; }
+
+        /* THE FEED */
+        #skin-feed { 
+            display: flex; flex-direction: column; gap: 30px; 
+            width: 100%; max-width: 600px; z-index: 2; margin-left: auto;
+        }
 
         .update-card { 
-            background: var(--card-bg); border-radius: var(--radius-xl); padding: 40px; 
-            backdrop-filter: blur(var(--blur)); border: 1px solid rgba(255,255,255,0.05); 
-            cursor: pointer; transition: 0.4s cubic-bezier(0.2, 0, 0, 1);
-            max-width: 500px; /* Limits width to keep the "feed" look */
+            background: var(--card-bg); border-radius: var(--radius-xl); 
+            padding: 40px; backdrop-filter: blur(var(--blur)); 
+            border: 1px solid rgba(255,255,255,0.08); cursor: pointer; 
+            transition: 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+            transform-origin: center left;
         }
-        .update-card:hover { transform: translateX(10px); border-color: var(--primary); }
-        .preview-img { width: 100%; height: 250px; object-fit: cover; border-radius: 20px; margin: 20px 0; background: #111; }
+        .update-card:hover { 
+            background: rgba(255,255,255,0.1); 
+            border-color: var(--primary);
+            transform: scale(1.02) translateX(-10px);
+        }
 
-        /* MODAL */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 20000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(30px); }
-        .inspect-card { background: #0a0a0a; width: 90%; max-width: 1100px; height: 85vh; border-radius: 48px; border: 1px solid #222; overflow: hidden; display: grid; grid-template-columns: 1.2fr 1fr; }
-        .inspect-visuals { background: #000; position: relative; }
-        .inspect-details { padding: 50px; overflow-y: auto; display: flex; flex-direction: column; gap: 28px; }
-        
-        model-viewer { width: 100%; height: 100%; }
-        .tag { font-family: monospace; color: var(--primary); font-weight: 900; font-size: 0.8rem; letter-spacing: 1px; }
+        .preview-img { 
+            width: 100%; height: 300px; object-fit: cover; 
+            border-radius: 24px; margin: 24px 0; background: #000;
+        }
 
-        .download-btn { height: 70px; background: #fff; color: #000; border-radius: 24px; border: none; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; transition: 0.3s; width: 100%; }
-        .download-btn:hover { background: var(--primary); }
+        /* MODAL (AS REQUESTED: BIG & LIKE SETTINGS) */
+        .modal-overlay { 
+            position: fixed; inset: 0; background: rgba(0,0,0,0.92); 
+            z-index: 20000; display: none; align-items: center; justify-content: center; 
+            backdrop-filter: blur(40px); animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .inspect-card { 
+            background: #080808; width: 92vw; height: 88vh; 
+            border-radius: 48px; border: 1px solid #1a1a1a; 
+            overflow: hidden; display: grid; grid-template-columns: 1.3fr 1fr;
+            box-shadow: 0 50px 100px rgba(0,0,0,0.8);
+        }
+
+        .inspect-visuals { background: radial-gradient(circle at center, #111 0%, #000 100%); position: relative; }
+        .inspect-details { padding: 60px; overflow-y: auto; display: flex; flex-direction: column; gap: 32px; }
+
+        model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
+
+        .tag { font-family: monospace; color: var(--primary); font-weight: 900; font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; }
+
+        .download-btn { 
+            height: 80px; background: #fff; color: #000; border-radius: 24px; 
+            border: none; font-weight: 900; cursor: pointer; display: flex; 
+            align-items: center; justify-content: center; gap: 15px; font-size: 1.1rem;
+            transition: 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .download-btn:hover { background: var(--primary); transform: translateY(-4px); }
+
+        /* LOADER */
+        #loader { position: fixed; inset: 0; background: #000; z-index: 100000; display: flex; align-items: center; justify-content: center; transition: 1s; }
+        .pulse-box { width: 60px; height: 60px; background: var(--primary); border-radius: 20px; animation: m3-pulse 1.5s infinite ease-in-out; }
+        @keyframes m3-pulse { 0%, 100% { transform: scale(1) rotate(0deg); border-radius: 20px; } 50% { transform: scale(1.3) rotate(90deg); border-radius: 40px; } }
     </style>
 </head>
 <body>
 
-    <div id="loader"><div class="pulse-logo"></div></div>
+    <div id="loader"><div class="pulse-box"></div></div>
 
     <div class="video-bg-container">
         <video id="bg-video" autoplay muted loop playsinline src="skin-preview.mp4"></video>
     </div>
 
     <nav>
-        <div class="widget"><span id="clock">00:00</span></div>
-        <a href="https://www.google.com/search?q=weather" target="_blank" class="widget" id="weather-widget" onclick="fetchWeather()">
-            <span id="temp">--°F</span><span class="material-symbols-rounded" id="w-icon">cloud</span>
-        </a>
+        <div class="widget"><span id="clock">00:00</span><span class="material-symbols-rounded" style="font-size:1.2rem">settings</span></div>
+        <div class="widget" id="weather-widget" onclick="fetchWeather()">
+            <span id="temp">--°F</span><span class="material-symbols-rounded" id="w-icon">sync</span>
+        </div>
     </nav>
 
-    <div class="content-wrapper">
+    <div class="page-container">
         <div class="hero-section">
             <span class="tag">VELVET VOID v3.1.0</span>
             <h1 class="hero-title">PIX<br><span style="color: var(--primary);">UPDATES</span></h1>
         </div>
 
-        <div id="skin-feed"></div>
+        <div id="skin-feed">
+            </div>
     </div>
 
     <div id="inspect-modal" class="modal-overlay">
         <div class="inspect-card">
             <div class="inspect-visuals">
-                <model-viewer id="modal-viewer" auto-rotate camera-controls shadow-intensity="1"></model-viewer>
-                <button onclick="closeModals()" style="position:absolute; top:30px; left:30px; background:rgba(255,255,255,0.1); border:none; color:#fff; width:50px; height:50px; border-radius:50%; cursor:pointer;">
+                <model-viewer id="modal-viewer" auto-rotate camera-controls shadow-intensity="1" exposure="1"></model-viewer>
+                <button onclick="closeModals()" style="position:absolute; top:30px; left:30px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#fff; width:60px; height:60px; border-radius:50%; cursor:pointer; backdrop-filter:blur(20px);">
                     <span class="material-symbols-rounded">close</span>
                 </button>
             </div>
             <div class="inspect-details">
-                <span class="tag" id="modal-tag">VERSION INFO</span>
-                <h1 id="modal-title" style="font-size: 3rem; font-weight: 900;">SKIN NAME</h1>
-                <div id="modal-desc" style="opacity: 0.6; line-height: 1.6;">Description here...</div>
+                <div>
+                    <span class="tag" id="modal-tag">VERSION INFO</span>
+                    <h1 id="modal-title" style="font-size: 4rem; font-weight: 900; letter-spacing: -2px;">SKIN NAME</h1>
+                </div>
+                <div id="modal-desc" style="opacity: 0.5; font-size: 1.1rem; line-height: 1.6;">Description...</div>
+                
+                <div style="background: rgba(255,255,255,0.03); padding: 30px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.05);">
+                    <span class="tag" style="opacity: 0.5;">CHANGELOG</span>
+                    <p style="margin-top: 10px; font-size: 0.95rem; color: #aaa;">• Visual parity update<br>• Corrected emissive UV maps<br>• Compressed PNG for faster loading</p>
+                </div>
+
                 <button class="download-btn" id="modal-download">
                     <span class="material-symbols-rounded">download</span>
-                    <span>DOWNLOAD PNG</span>
+                    <span>DOWNLOAD PNG SKIN</span>
                 </button>
             </div>
         </div>
     </div>
 
     <script>
-        // ADD NEW SKINS HERE!
+        // JUST ADD DATA HERE TO ADD NEW SKINS
         const skinDatabase = [
             {
                 name: "NEON SPECTRE",
@@ -114,31 +172,34 @@
                 render: "skin-render.png",
                 model: "model.gltf",
                 png: "skin.png",
-                desc: "The flagship skin for Velvet Void. Features emissive armor plating and optimized vertex counts."
+                desc: "High-contrast tactical gear designed for low-light environments. Featuring the new V3 emissive mapping."
             },
             {
-                name: "VOID WALKER",
-                tag: "LEGACY",
-                render: "skin-render2.png", // replace with actual images
+                name: "CARBON SOUL",
+                tag: "BETA ACCESS",
+                render: "skin-render2.png",
                 model: "model2.gltf",
                 png: "skin2.png",
-                desc: "An older build updated for the new engine."
+                desc: "Matte black reinforced plating with industrial orange accents. Optimized for competitive visibility."
             }
         ];
 
         function renderFeed() {
-            const container = document.getElementById('skin-feed');
-            skinDatabase.forEach((skin, index) => {
+            const feed = document.getElementById('skin-feed');
+            skinDatabase.forEach((skin, i) => {
                 const card = document.createElement('div');
                 card.className = 'update-card';
-                card.onclick = () => openInspect(index);
+                card.onclick = () => openInspect(i);
                 card.innerHTML = `
                     <span class="tag">${skin.tag}</span>
-                    <h2 style="font-size: 2rem; font-weight: 900; margin-top: 5px;">${skin.name}</h2>
+                    <h2 style="font-size: 2.5rem; font-weight: 900; margin-top: 10px;">${skin.name}</h2>
                     <img src="${skin.render}" class="preview-img">
-                    <p style="opacity: 0.6;">Click to inspect build.</p>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="opacity:0.4; font-weight:700;">TAP TO INSPECT</span>
+                        <span class="material-symbols-rounded" style="color:var(--primary)">arrow_forward</span>
+                    </div>
                 `;
-                container.appendChild(card);
+                feed.appendChild(card);
             });
         }
 
@@ -160,11 +221,14 @@
         function closeModals() { document.getElementById('inspect-modal').style.display = 'none'; }
 
         async function fetchWeather() {
+            const icon = document.getElementById('w-icon');
+            icon.style.animation = "m3-sync 1s infinite linear";
             try {
                 const res = await fetch('https://wttr.in/?format=j1');
                 const data = await res.json();
                 document.getElementById('temp').textContent = data.current_condition[0].temp_F + "°F";
             } catch (e) { document.getElementById('temp').textContent = "72°F"; }
+            setTimeout(() => icon.style.animation = "none", 1000);
         }
 
         window.addEventListener('load', () => {
@@ -175,8 +239,8 @@
             }, 1000);
             setTimeout(() => { 
                 document.getElementById('loader').style.opacity = '0';
-                setTimeout(() => document.getElementById('loader').style.visibility = 'hidden', 800);
-            }, 2000);
+                setTimeout(() => document.getElementById('loader').style.visibility = 'hidden', 1000);
+            }, 1500);
         });
     </script>
 </body>
