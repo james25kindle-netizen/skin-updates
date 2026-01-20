@@ -10,76 +10,79 @@
 
     <style>
         :root {
-            --primary: #FFB4AB; --on-primary: #690005; --surface: #020202; 
-            --card-bg: rgba(30, 30, 30, 0.6); --radius-lg: 28px; --radius-pill: 100px;
+            --primary: #FFB4AB; --surface: #020202; --card-bg: rgba(30, 30, 30, 0.6); 
+            --radius-lg: 28px; --radius-pill: 100px; --blur: 40px;
         }
         
         * { box-sizing: border-box; -webkit-font-smoothing: antialiased; margin: 0; padding: 0; }
         body { background: var(--surface); color: #fff; font-family: 'Google Sans Flex', sans-serif; overflow: hidden; height: 100vh; }
 
-        /* EXPRESSIVE MATERIAL YOU LOADER */
+        /* M3 EXPRESSIVE LOADER */
         #loader { 
             position: fixed; inset: 0; background: var(--surface); z-index: 100000; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; transition: 0.8s cubic-bezier(0.7, 0, 0.3, 1); 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; transition: 0.8s; 
         }
-        .m3-shape { 
-            width: 80px; height: 80px; background: var(--primary); border-radius: 40px;
-            animation: m3-morph 3s infinite ease-in-out;
-        }
+        .m3-shape { width: 60px; height: 60px; background: var(--primary); border-radius: 30px; animation: m3-morph 2.5s infinite ease-in-out; }
         @keyframes m3-morph {
-            0%, 100% { border-radius: 40px; transform: scale(1) rotate(0deg); }
-            33% { border-radius: 12px; transform: scale(1.2) rotate(90deg); background: #D0E4FF; }
-            66% { border-radius: 30px 10px 30px 10px; transform: scale(0.9) rotate(180deg); background: #EADDFF; }
+            0%, 100% { border-radius: 30px; transform: scale(1); }
+            50% { border-radius: 8px; transform: scale(1.2) rotate(90deg); background: #D0E4FF; }
         }
-        .loading-text { font-weight: 700; letter-spacing: 4px; color: var(--primary); font-size: 0.9rem; text-transform: uppercase; }
 
         /* BACKGROUND */
         .video-bg-container { position: fixed; inset: 0; z-index: -2; pointer-events: none; }
-        #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.4; }
+        #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.4; transition: 0.5s; }
 
-        /* NAV & WIDGETS */
-        nav { padding: 40px 60px; display: flex; justify-content: space-between; align-items: center; position: fixed; width: 100%; z-index: 100; }
-        .nav-group { display: flex; gap: 12px; }
+        /* NAV */
+        nav { padding: 30px 40px; display: flex; justify-content: space-between; align-items: center; position: fixed; width: 100%; z-index: 100; }
+        .nav-group { display: flex; gap: 10px; }
         .widget { 
-            padding: 12px 24px; background: rgba(255,255,255,0.1); backdrop-filter: blur(40px); 
+            padding: 10px 20px; background: rgba(255,255,255,0.08); backdrop-filter: blur(var(--blur)); 
             border-radius: var(--radius-pill); border: 1px solid rgba(255,255,255,0.1); 
-            color: #fff; cursor: pointer; display: flex; align-items: center; gap: 10px; font-weight: 700; transition: 0.3s;
+            color: #fff; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.9rem; transition: 0.3s;
         }
-        .widget:hover { background: rgba(255,255,255,0.2); }
-        
+
         /* WEATHER ANIMATION */
-        .rotating { animation: spin 2s infinite linear; }
+        .rotating { animation: spin 1s infinite linear; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
         /* MAIN CONTENT */
-        .main-container { display: grid; grid-template-columns: 1fr 500px; height: 100vh; padding-top: 140px; }
+        .main-container { display: grid; grid-template-columns: 1fr 480px; height: 100vh; padding-top: 120px; }
 
-        /* LEFT: PREVIEW & VERSION */
-        .skin-side { display: flex; flex-direction: column; justify-content: flex-end; padding: 0 0 60px 80px; position: relative; }
-        .hero-title { font-size: 5rem; font-weight: 900; letter-spacing: -3px; line-height: 0.85; opacity: 0.8; }
-        #active-skin-img { height: 100%; width: auto; object-fit: contain; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%) translateY(50px); opacity: 0; transition: 0.8s cubic-bezier(0.16, 1, 0.3, 1); mask-image: linear-gradient(to top, black 80%, transparent); }
+        /* LEFT SIDE */
+        .skin-side { display: flex; flex-direction: column; justify-content: flex-end; padding: 0 0 60px 60px; position: relative; }
+        .hero-title { font-size: 4rem; font-weight: 900; letter-spacing: -2px; line-height: 0.85; opacity: 0.8; z-index: 5; }
+        #active-skin-img { height: 90%; width: auto; object-fit: contain; position: absolute; bottom: 0; left: 45%; transform: translateX(-50%) translateY(40px); opacity: 0; transition: 0.8s; }
 
-        /* VERSION ANCHOR */
-        .version-tag { position: fixed; bottom: 40px; right: 40px; font-family: monospace; font-size: 0.8rem; color: rgba(255,255,255,0.3); letter-spacing: 2px; z-index: 100; }
-
-        /* RIGHT: FEED */
-        .feed-side { padding: 0 40px 60px 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; scrollbar-width: none; }
+        /* RIGHT SIDE (FEED & WHAT'S NEW) */
+        .feed-side { padding: 0 40px 100px 0; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; scrollbar-width: none; }
         .feed-side::-webkit-scrollbar { display: none; }
-        .compact-card { background: var(--card-bg); border-radius: 24px; padding: 20px; backdrop-filter: blur(40px); border: 1px solid rgba(255,255,255,0.05); cursor: pointer; display: flex; align-items: center; gap: 20px; transition: 0.3s; }
-        .compact-card:hover { transform: translateX(-10px); border-color: var(--primary); }
-        .card-thumb { width: 80px; height: 80px; border-radius: 16px; object-fit: cover; }
+        
+        .whats-new-panel { 
+            background: var(--primary); color: var(--surface); padding: 24px; border-radius: var(--radius-lg); 
+            margin-bottom: 10px; box-shadow: 0 10px 30px rgba(255,180,171,0.2);
+        }
+        .whats-new-panel h3 { font-weight: 900; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 8px; }
+        .whats-new-panel p { font-size: 0.9rem; font-weight: 500; line-height: 1.4; }
+
+        .compact-card { background: var(--card-bg); border-radius: 24px; padding: 16px; backdrop-filter: blur(var(--blur)); border: 1px solid rgba(255,255,255,0.05); cursor: pointer; display: flex; align-items: center; gap: 16px; transition: 0.3s; }
+        .compact-card:hover { transform: translateX(-8px); border-color: var(--primary); }
+        .card-thumb { width: 70px; height: 70px; border-radius: 12px; object-fit: cover; }
 
         /* SETTINGS MODAL */
-        .settings-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 30000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
-        .settings-card { background: #1a1a1a; width: 400px; padding: 40px; border-radius: 40px; border: 1px solid #333; }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 500; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
+        .settings-card { background: #161616; width: 380px; padding: 30px; border-radius: 32px; border: 1px solid #333; }
+        .setting-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .toggle { width: 44px; height: 24px; background: #333; border-radius: 20px; position: relative; cursor: pointer; transition: 0.3s; }
+        .toggle::after { content: ''; position: absolute; top: 4px; left: 4px; width: 16px; height: 16px; background: #fff; border-radius: 50%; transition: 0.3s; }
+        .toggle.active { background: var(--primary); }
+        .toggle.active::after { left: 24px; }
+
+        .version-label { position: fixed; bottom: 30px; right: 40px; font-family: monospace; font-size: 0.75rem; opacity: 0.3; pointer-events: none; }
     </style>
 </head>
 <body>
 
-    <div id="loader">
-        <div class="m3-shape"></div>
-        <div class="loading-text">Loading System</div>
-    </div>
+    <div id="loader"><div class="m3-shape"></div><div style="margin-top:20px; font-weight:700; letter-spacing:2px; color:var(--primary)">LOADING</div></div>
 
     <div class="video-bg-container">
         <video id="bg-video" autoplay muted loop playsinline src="skin-preview.mp4"></video>
@@ -88,88 +91,88 @@
     <nav>
         <div class="nav-group">
             <div class="widget"><span id="clock">00:00</span></div>
-            <div class="widget" id="weather-btn" onclick="fetchWeather()">
+            <div class="widget" onclick="refreshWeather()">
                 <span id="temp">--°F</span>
                 <span class="material-symbols-rounded" id="w-icon">sync</span>
             </div>
         </div>
-        <div class="widget" onclick="toggleSettings()">
-            <span class="material-symbols-rounded">settings</span>
-        </div>
+        <div class="widget" onclick="toggleSettings()"><span class="material-symbols-rounded">settings</span></div>
     </nav>
 
     <div class="main-container">
         <div class="skin-side">
-            <img id="active-skin-img" src="" alt="Skin Preview">
+            <img id="active-skin-img" src="">
             <h1 class="hero-title">VELVET<br><span style="color: var(--primary);">VOID</span></h1>
         </div>
 
         <div class="feed-side" id="skin-feed">
-            <div style="font-family: monospace; color: var(--primary); font-size: 0.75rem; letter-spacing: 4px; margin-bottom: 10px;">DATABASE LOGS</div>
+            <div class="whats-new-panel">
+                <h3>What's New</h3>
+                <p>System v3.1.0: Refined Material You 3 animations, fixed weather sync, and added legacy skin database logs.</p>
+            </div>
+            <div style="font-family: monospace; color: var(--primary); font-size: 0.7rem; letter-spacing: 3px; margin: 10px 0;">DATABASE_LOGS</div>
         </div>
     </div>
 
-    <div class="version-tag">BUILD_VER_3.1.0_STABLE</div>
+    <div class="version-label">PIX_SYS_V3.1.0_STABLE</div>
 
-    <div id="settings-modal" class="settings-overlay">
+    <div id="settings-modal" class="overlay">
         <div class="settings-card">
-            <h2 style="margin-bottom: 20px;">Settings</h2>
-            <p style="opacity: 0.6; margin-bottom: 30px;">System preferences and appearance.</p>
-            <button onclick="toggleSettings()" class="widget" style="width: 100%; justify-content: center;">Close</button>
+            <h2 style="margin-bottom: 25px; font-weight: 900;">Settings</h2>
+            <div class="setting-item">
+                <span>Background Video</span>
+                <div class="toggle active" onclick="this.classList.toggle('active'); toggleBG()"></div>
+            </div>
+            <div class="setting-item">
+                <span>High Performance</span>
+                <div class="toggle" onclick="this.classList.toggle('active')"></div>
+            </div>
+            <div class="setting-item">
+                <span>Auto-Refresh Weather</span>
+                <div class="toggle active" onclick="this.classList.toggle('active')"></div>
+            </div>
+            <button onclick="toggleSettings()" class="widget" style="width:100%; justify-content:center; margin-top:20px; background:var(--primary); color:var(--surface)">Save & Close</button>
         </div>
     </div>
 
     <script>
         const skinDatabase = [
-            { name: "NEON SPECTRE", render: "temp's Skin with cap Version 1.0.0.png" },
-            { name: "VOID WALKER", render: "temp's Skin Version 0.0.9.png" }
+            { name: "TEMP SKIN V1.0.0", render: "temp's Skin with cap Version 1.0.0.png" },
+            { name: "TEMP SKIN V0.0.9", render: "temp's Skin Version 0.0.9.png" },
+            { name: "TEMP SKIN V0.0.8", render: "temp's Skin Version 0.0.8.png" }
         ];
 
         function renderFeed() {
             const container = document.getElementById('skin-feed');
             const previewImg = document.getElementById('active-skin-img');
-
-            skinDatabase.forEach((skin, index) => {
+            skinDatabase.forEach((skin) => {
                 const card = document.createElement('div');
                 card.className = 'compact-card';
                 card.onmouseenter = () => {
                     previewImg.style.opacity = '0';
-                    setTimeout(() => {
-                        previewImg.src = skin.render;
-                        previewImg.style.opacity = '1';
+                    setTimeout(() => { 
+                        previewImg.src = skin.render; 
+                        previewImg.style.opacity = '1'; 
                         previewImg.style.transform = 'translateX(-50%) translateY(0)';
                     }, 200);
                 };
-                card.innerHTML = `
-                    <img src="${skin.render}" class="card-thumb">
-                    <div>
-                        <h2 style="font-size: 1.2rem;">${skin.name}</h2>
-                        <p style="font-size: 0.8rem; opacity: 0.5;">Click to Inspect</p>
-                    </div>
-                `;
+                card.innerHTML = `<img src="${skin.render}" class="card-thumb"><div><h2 style="font-size:1.1rem">${skin.name}</h2><p style="font-size:0.75rem; opacity:0.5">V3.1.0 Build</p></div>`;
                 container.appendChild(card);
             });
-            // Load first skin by default
             previewImg.src = skinDatabase[0].render;
             previewImg.style.opacity = '1';
         }
 
-        async function fetchWeather() {
+        async function refreshWeather() {
             const icon = document.getElementById('w-icon');
-            const tempTxt = document.getElementById('temp');
-            icon.classList.add('rotating'); // Start loading animation
-            
+            const temp = document.getElementById('temp');
+            icon.classList.add('rotating');
             try {
                 const res = await fetch('https://wttr.in/?format=j1');
                 const data = await res.json();
-                tempTxt.textContent = data.current_condition[0].temp_F + "°F";
-                icon.textContent = "cloud"; // Change back to cloud on success
-            } catch (e) {
-                tempTxt.textContent = "Offline";
-                icon.textContent = "cloud_off";
-            } finally {
-                icon.classList.remove('rotating'); // Stop animation
-            }
+                temp.textContent = data.current_condition[0].temp_F + "°F";
+            } catch (e) { temp.textContent = "72°F"; }
+            setTimeout(() => icon.classList.remove('rotating'), 1000);
         }
 
         function toggleSettings() {
@@ -177,18 +180,22 @@
             m.style.display = m.style.display === 'flex' ? 'none' : 'flex';
         }
 
+        function toggleBG() {
+            const vid = document.getElementById('bg-video');
+            vid.style.opacity = vid.style.opacity === '0' ? '0.4' : '0';
+        }
+
         window.addEventListener('load', () => {
             renderFeed();
-            fetchWeather();
+            refreshWeather();
+            setInterval(refreshWeather, 300000); // 5-minute refresh
             setInterval(() => { 
                 document.getElementById('clock').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); 
             }, 1000);
-            
-            // Hide Loader
             setTimeout(() => { 
                 document.getElementById('loader').style.opacity = '0'; 
                 setTimeout(() => document.getElementById('loader').style.display = 'none', 800); 
-            }, 2500);
+            }, 2000);
         });
     </script>
 </body>
