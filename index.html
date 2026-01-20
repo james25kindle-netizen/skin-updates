@@ -15,9 +15,9 @@
         }
         
         * { box-sizing: border-box; -webkit-font-smoothing: antialiased; margin: 0; padding: 0; }
-        body { background: var(--surface); color: #fff; font-family: 'Google Sans Flex', sans-serif; overflow: hidden; height: 100vh; }
+        body { background: var(--surface); color: #fff; font-family: 'Google Sans Flex', sans-serif; overflow-x: hidden; }
 
-        /* M3 EXPRESSIVE LOADER */
+        /* LOADER */
         #loader { position: fixed; inset: 0; background: #000; z-index: 100000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.8s; gap: 24px; }
         .pulse-logo { width: 80px; height: 80px; background: var(--primary); border-radius: 24px; animation: p 2s infinite cubic-bezier(0.34, 1.56, 0.64, 1); }
         @keyframes p { 0%, 100% { transform: scale(0.85); border-radius: 40px; } 50% { transform: scale(1.15); border-radius: 18px; } }
@@ -26,148 +26,149 @@
         .video-bg-container { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
         #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: var(--video-opacity); }
 
-        /* WIDGETS */
-        nav { padding: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
+        /* NAV */
+        nav { padding: 40px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; pointer-events: none; }
+        nav > * { pointer-events: auto; }
         .widget { padding: 12px 24px; background: rgba(255,255,255,0.08); backdrop-filter: blur(var(--blur)); border-radius: var(--radius-pill); border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 700; transition: 0.3s; text-decoration: none; }
-        .widget:hover { background: rgba(255,255,255,0.15); transform: translateY(-2px); }
 
-        .weather-updating .weather-icon { animation: m3-sync 1.2s infinite cubic-bezier(0.45, 0, 0.55, 1); }
-        @keyframes m3-sync { 0% { transform: rotate(0deg); } 100% { transform: rotate(-360deg); } }
-
-        /* MAIN UI */
-        .main-layout { display: grid; grid-template-columns: 1fr 450px; gap: 40px; max-width: 1400px; margin: 60px auto 0; padding: 0 40px; }
-        .hero-title { font-size: 7rem; font-weight: 900; letter-spacing: -5px; line-height: 0.8; pointer-events: none; }
+        /* FEED LAYOUT */
+        .content-wrapper { max-width: 1200px; margin: 0 auto; padding: 40px; display: flex; flex-direction: column; gap: 100px; }
+        .hero-section { margin-bottom: 40px; }
+        .hero-title { font-size: 7rem; font-weight: 900; letter-spacing: -5px; line-height: 0.8; }
+        
+        /* SCROLLABLE LIST */
+        #skin-feed { display: flex; flex-direction: column; gap: 40px; padding-bottom: 100px; }
 
         .update-card { 
             background: var(--card-bg); border-radius: var(--radius-xl); padding: 40px; 
             backdrop-filter: blur(var(--blur)); border: 1px solid rgba(255,255,255,0.05); 
             cursor: pointer; transition: 0.4s cubic-bezier(0.2, 0, 0, 1);
+            max-width: 500px; /* Limits width to keep the "feed" look */
         }
-        .update-card:hover { transform: scale(1.02); border-color: var(--primary); }
-        .preview-img { width: 100%; height: 220px; object-fit: cover; border-radius: 20px; margin: 20px 0; background: #111; }
+        .update-card:hover { transform: translateX(10px); border-color: var(--primary); }
+        .preview-img { width: 100%; height: 250px; object-fit: cover; border-radius: 20px; margin: 20px 0; background: #111; }
 
-        /* INSPECTION POP-UP */
+        /* MODAL */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 20000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(30px); }
-        .inspect-card { 
-            background: #0a0a0a; width: 90%; max-width: 1100px; height: 85vh; 
-            border-radius: 48px; border: 1px solid #222; overflow: hidden;
-            display: grid; grid-template-columns: 1.2fr 1fr;
-        }
+        .inspect-card { background: #0a0a0a; width: 90%; max-width: 1100px; height: 85vh; border-radius: 48px; border: 1px solid #222; overflow: hidden; display: grid; grid-template-columns: 1.2fr 1fr; }
         .inspect-visuals { background: #000; position: relative; }
         .inspect-details { padding: 50px; overflow-y: auto; display: flex; flex-direction: column; gap: 28px; }
         
         model-viewer { width: 100%; height: 100%; }
-        
-        .section-box { background: rgba(255,255,255,0.03); padding: 24px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.05); }
         .tag { font-family: monospace; color: var(--primary); font-weight: 900; font-size: 0.8rem; letter-spacing: 1px; }
 
-        /* DOWNLOAD */
         .download-btn { height: 70px; background: #fff; color: #000; border-radius: 24px; border: none; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; transition: 0.3s; width: 100%; }
-        .download-btn:hover { background: var(--primary); transform: scale(1.02); }
+        .download-btn:hover { background: var(--primary); }
     </style>
 </head>
 <body>
 
-    <div id="loader">
-        <div class="pulse-logo"></div>
-        <div style="font-weight: 900; color: var(--primary); letter-spacing: 3px; font-size: 0.7rem;">VELVET VOID BOOTING</div>
-    </div>
+    <div id="loader"><div class="pulse-logo"></div></div>
 
     <div class="video-bg-container">
         <video id="bg-video" autoplay muted loop playsinline src="skin-preview.mp4"></video>
     </div>
 
     <nav>
-        <div class="widget">
-            <span class="material-symbols-rounded">schedule</span>
-            <span id="clock">00:00</span>
-            <span class="material-symbols-rounded">settings</span>
-        </div>
+        <div class="widget"><span id="clock">00:00</span></div>
         <a href="https://www.google.com/search?q=weather" target="_blank" class="widget" id="weather-widget" onclick="fetchWeather()">
-            <span id="temp">--°F</span>
-            <span class="material-symbols-rounded weather-icon" id="w-icon">cloud</span>
+            <span id="temp">--°F</span><span class="material-symbols-rounded" id="w-icon">cloud</span>
         </a>
     </nav>
 
-    <div class="main-layout">
-        <div>
-            <span class="tag">CURRENT RELEASE</span>
-            <h1 class="hero-title">VELVET<br><span style="color: var(--primary);">VOID</span></h1>
-            <p style="margin-top: 20px; opacity: 0.5; font-weight: 500;">v3.1.0 • Stable Build</p>
+    <div class="content-wrapper">
+        <div class="hero-section">
+            <span class="tag">VELVET VOID v3.1.0</span>
+            <h1 class="hero-title">PIX<br><span style="color: var(--primary);">UPDATES</span></h1>
         </div>
-        
-        <div class="update-card" onclick="openModal('inspect-modal')">
-            <span class="tag">FEATURED SKIN</span>
-            <h2 style="font-size: 2rem; font-weight: 900; margin-top: 5px;">NEON SPECTRE</h2>
-            <img src="skin-render.png" class="preview-img" alt="Skin Render">
-            <p style="opacity: 0.6; font-size: 0.9rem;">Tap to open 3D inspection and download the PNG skin file.</p>
-        </div>
+
+        <div id="skin-feed"></div>
     </div>
 
     <div id="inspect-modal" class="modal-overlay">
         <div class="inspect-card">
             <div class="inspect-visuals">
-                <model-viewer src="model.gltf" auto-rotate camera-controls shadow-intensity="1" exposure="1.2"></model-viewer>
-                <button onclick="closeModals()" style="position:absolute; top:30px; left:30px; background:rgba(255,255,255,0.1); border:none; color:#fff; width:50px; height:50px; border-radius:50%; cursor:pointer; backdrop-filter:blur(10px);">
+                <model-viewer id="modal-viewer" auto-rotate camera-controls shadow-intensity="1"></model-viewer>
+                <button onclick="closeModals()" style="position:absolute; top:30px; left:30px; background:rgba(255,255,255,0.1); border:none; color:#fff; width:50px; height:50px; border-radius:50%; cursor:pointer;">
                     <span class="material-symbols-rounded">close</span>
                 </button>
             </div>
             <div class="inspect-details">
-                <div>
-                    <span class="tag">VELVET VOID v3.1.0</span>
-                    <h1 style="font-size: 2.8rem; font-weight: 900;">NEON SPECTRE</h1>
-                </div>
-                
-                <div class="section-box">
-                    <b style="font-size: 0.8rem; letter-spacing: 1px; opacity: 0.5;">SITE UPDATES:</b>
-                    <ul style="margin: 10px 0 0 18px; font-size: 0.9rem; color: #bbb;">
-                        <li>Implemented Material You 3 Expressive Loader</li>
-                        <li>Dynamic Background Video (skin-preview.mp4)</li>
-                        <li>Synchronized Weather API (wttr.in)</li>
-                    </ul>
-                </div>
-
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
-                    <img src="photo1.jpg" style="width:100%; border-radius:18px; background:#111; height:120px; object-fit:cover; border: 1px solid rgba(255,255,255,0.05);">
-                    <img src="photo2.jpg" style="width:100%; border-radius:18px; background:#111; height:120px; object-fit:cover; border: 1px solid rgba(255,255,255,0.05);">
-                </div>
-
-                <button class="download-btn" onclick="downloadSkin()">
+                <span class="tag" id="modal-tag">VERSION INFO</span>
+                <h1 id="modal-title" style="font-size: 3rem; font-weight: 900;">SKIN NAME</h1>
+                <div id="modal-desc" style="opacity: 0.6; line-height: 1.6;">Description here...</div>
+                <button class="download-btn" id="modal-download">
                     <span class="material-symbols-rounded">download</span>
-                    <span>DOWNLOAD PNG SKIN</span>
+                    <span>DOWNLOAD PNG</span>
                 </button>
             </div>
         </div>
     </div>
 
     <script>
+        // ADD NEW SKINS HERE!
+        const skinDatabase = [
+            {
+                name: "NEON SPECTRE",
+                tag: "NEW RELEASE",
+                render: "skin-render.png",
+                model: "model.gltf",
+                png: "skin.png",
+                desc: "The flagship skin for Velvet Void. Features emissive armor plating and optimized vertex counts."
+            },
+            {
+                name: "VOID WALKER",
+                tag: "LEGACY",
+                render: "skin-render2.png", // replace with actual images
+                model: "model2.gltf",
+                png: "skin2.png",
+                desc: "An older build updated for the new engine."
+            }
+        ];
+
+        function renderFeed() {
+            const container = document.getElementById('skin-feed');
+            skinDatabase.forEach((skin, index) => {
+                const card = document.createElement('div');
+                card.className = 'update-card';
+                card.onclick = () => openInspect(index);
+                card.innerHTML = `
+                    <span class="tag">${skin.tag}</span>
+                    <h2 style="font-size: 2rem; font-weight: 900; margin-top: 5px;">${skin.name}</h2>
+                    <img src="${skin.render}" class="preview-img">
+                    <p style="opacity: 0.6;">Click to inspect build.</p>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function openInspect(index) {
+            const skin = skinDatabase[index];
+            document.getElementById('modal-title').textContent = skin.name;
+            document.getElementById('modal-tag').textContent = skin.tag;
+            document.getElementById('modal-desc').textContent = skin.desc;
+            document.getElementById('modal-viewer').src = skin.model;
+            document.getElementById('modal-download').onclick = () => {
+                const link = document.createElement('a');
+                link.href = skin.png;
+                link.download = `${skin.name.replace(" ", "_")}.png`;
+                link.click();
+            };
+            document.getElementById('inspect-modal').style.display = 'flex';
+        }
+
+        function closeModals() { document.getElementById('inspect-modal').style.display = 'none'; }
+
         async function fetchWeather() {
-            const widget = document.getElementById('weather-widget');
-            const icon = document.getElementById('w-icon');
-            widget.classList.add('weather-updating');
-            icon.textContent = 'sync';
             try {
                 const res = await fetch('https://wttr.in/?format=j1');
                 const data = await res.json();
                 document.getElementById('temp').textContent = data.current_condition[0].temp_F + "°F";
             } catch (e) { document.getElementById('temp').textContent = "72°F"; }
-            setTimeout(() => {
-                widget.classList.remove('weather-updating');
-                icon.textContent = 'cloud';
-            }, 1500);
         }
-
-        function downloadSkin() {
-            const link = document.createElement('a');
-            link.href = 'skin.png'; 
-            link.download = "Neon_Spectre_Skin.png";
-            link.click();
-        }
-
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); }
 
         window.addEventListener('load', () => {
+            renderFeed();
             fetchWeather();
             setInterval(() => { 
                 document.getElementById('clock').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); 
