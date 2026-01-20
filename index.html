@@ -19,7 +19,6 @@
         
         * { box-sizing: border-box; -webkit-font-smoothing: antialiased; margin: 0; padding: 0; }
         body { background: var(--surface); color: #fff; font-family: 'Google Sans Flex', sans-serif; overflow: hidden; height: 100vh; cursor: auto; }
-        body.custom-cursor-active { cursor: none; }
         body.modal-open { cursor: auto !important; }
 
         /* VELVET LOADER */
@@ -33,33 +32,10 @@
         @keyframes m3-expressive-pulse { 0% { transform: scale(0.8); border-radius: 40px; } 50% { transform: scale(1.1); border-radius: 20px; } 100% { transform: scale(0.8); border-radius: 40px; } }
 
         /* WHAT'S NEW MODAL STYLES */
-        .whats-new-list {
-            padding-left: 18px;
-            opacity: 0.85;
-            font-size: 0.9rem;
-            line-height: 1.6;
-        }
-
-        .loading-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 10px;
-        }
-
-        .loading-text {
-            font-weight: 800;
-            letter-spacing: 1px;
-            animation: stretch 2s infinite ease-in-out;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-        }
-
-        .pulse-logo.small {
-            width: 32px;
-            height: 32px;
-            border-radius: 10px;
-        }
+        .whats-new-list { padding-left: 18px; opacity: 0.85; font-size: 0.9rem; line-height: 1.6; }
+        .loading-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+        .loading-text { font-weight: 800; letter-spacing: 1px; animation: stretch 2s infinite ease-in-out; text-transform: uppercase; font-size: 0.75rem; }
+        .pulse-logo.small { width: 32px; height: 32px; border-radius: 10px; }
 
         @keyframes stretch {
             0%,100% { transform: scaleX(1); opacity: .6 }
@@ -77,10 +53,8 @@
             width: 100%;
             transition: transform 0.2s;
         }
-        
-        .primary-btn:active { transform: scale(0.98); }
 
-        /* SETTINGS BUTTON STYLE */
+        /* UI ELEMENTS */
         .interactive {
             background: rgba(255,255,255,0.05);
             color: #fff;
@@ -92,10 +66,8 @@
             transition: 0.3s;
             width: 100%;
         }
-        .interactive:hover { background: rgba(255,255,255,0.1); }
         .mag { display: flex; align-items: center; gap: 10px; justify-content: center; }
 
-        /* MAIN UI STYLES */
         .video-bg-container { position: fixed; inset: 0; z-index: -1; background: #000; }
         .radial-mask { position: absolute; inset: 0; mask-image: radial-gradient(circle at 70% 50%, black 40%, transparent 95%); -webkit-mask-image: radial-gradient(circle at 70% 50%, black 40%, transparent 95%); }
         #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: var(--video-opacity); transition: opacity 0.5s; }
@@ -105,7 +77,6 @@
 
         .main-layout { display: grid; grid-template-columns: 1fr 400px; gap: 40px; max-width: 1400px; margin: 0 auto; padding: 0 40px; }
         .hero-title { font-size: 6.5rem; font-weight: 900; letter-spacing: -5px; line-height: 0.85; margin-top: 60px; pointer-events: none; }
-        
         .unified-panel { background: var(--card-bg); border-radius: var(--radius-xl); padding: 32px; backdrop-filter: blur(var(--blur)); border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 20px; height: 580px; margin-top: 20px; }
 
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 20000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
@@ -120,7 +91,7 @@
     <div id="loader"><div class="pulse-logo"></div></div>
 
     <div class="video-bg-container">
-        <div class="radial-mask"><video id="bg-video" autoplay muted loop playsinline src=""></video></div>
+        <div class="radial-mask"><video id="bg-video" autoplay muted loop playsinline></video></div>
     </div>
 
     <nav>
@@ -144,14 +115,9 @@
     <div id="settings-modal" class="modal-overlay">
         <div class="modal-card">
             <h2 style="font-weight: 900; letter-spacing: -1px;">PREFERENCES</h2>
-            
             <button onclick="openWhatsNew()" class="interactive">
-                <div class="mag">
-                    <span class="material-symbols-rounded">history_edu</span>
-                    WHAT’S NEW
-                </div>
+                <div class="mag"><span class="material-symbols-rounded">history_edu</span>WHAT’S NEW</div>
             </button>
-
             <button onclick="closeModals()" class="primary-btn">CLOSE</button>
         </div>
     </div>
@@ -162,17 +128,14 @@
                 <div class="pulse-logo small"></div>
                 <span class="loading-text">Loading updates…</span>
             </div>
-
             <h2 style="font-weight: 900; letter-spacing: -1px;">What’s New in v0.11 🚀</h2>
-
             <ul class="whats-new-list">
                 <li>🎨 Material 3 Expressive polish everywhere</li>
-                <li>🧍 Interactive 3D skin preview (rotate it!)</li>
+                <li>🧍 Interactive skin preview (flat)</li>
                 <li>🖼️ Side-by-side skin comparison</li>
                 <li>🎞️ Random cinematic backgrounds</li>
                 <li>⚡ Faster loading & smoother motion</li>
             </ul>
-
             <button class="primary-btn" onclick="closeWhatsNew()">Nice. Let’s go</button>
         </div>
     </div>
@@ -185,6 +148,13 @@
 
     <script>
         const SITE_VERSION = "0.11";
+        const bgVideos = ["bg1.mp4", "bg2.mp4", "bg3.mp4", "bg4.mp4"];
+
+        function loadRandomVideo() {
+            const video = document.getElementById("bg-video");
+            const pick = bgVideos[Math.floor(Math.random() * bgVideos.length)];
+            video.src = pick;
+        }
 
         function openModal(id) {
             document.getElementById(id).style.display = 'flex';
@@ -197,16 +167,19 @@
         }
 
         function openWhatsNew() {
-          closeModals(); // Close settings before opening What's New
-          document.getElementById("whats-new-modal").style.display = "flex";
-          document.body.classList.add("modal-open");
+            closeModals();
+            document.getElementById("whats-new-modal").style.display = "flex";
+            document.body.classList.add("modal-open");
         }
 
         function closeWhatsNew() {
-          document.getElementById("whats-new-modal").style.display = "none";
-          document.body.classList.remove("modal-open");
-          localStorage.setItem("pix_seen_version", SITE_VERSION);
+            document.getElementById("whats-new-modal").style.display = "none";
+            document.body.classList.remove("modal-open");
+            localStorage.setItem("pix_seen_version", SITE_VERSION);
         }
+
+        // Initialize
+        loadRandomVideo();
 
         window.addEventListener("load", () => {
             setInterval(() => { 
