@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pix Updates | v3.1.0</title>
+    <title>Pix Updates | Velvet Void v3.1.0</title>
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
@@ -17,7 +17,7 @@
         * { box-sizing: border-box; -webkit-font-smoothing: antialiased; margin: 0; padding: 0; }
         body { background: var(--surface); color: #fff; font-family: 'Google Sans Flex', sans-serif; overflow: hidden; height: 100vh; }
 
-        /* LOADER */
+        /* M3 EXPRESSIVE LOADER */
         #loader { position: fixed; inset: 0; background: #000; z-index: 100000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.8s; gap: 24px; }
         .pulse-logo { width: 80px; height: 80px; background: var(--primary); border-radius: 24px; animation: p 2s infinite cubic-bezier(0.34, 1.56, 0.64, 1); }
         @keyframes p { 0%, 100% { transform: scale(0.85); border-radius: 40px; } 50% { transform: scale(1.15); border-radius: 18px; } }
@@ -31,48 +31,46 @@
         .widget { padding: 12px 24px; background: rgba(255,255,255,0.08); backdrop-filter: blur(var(--blur)); border-radius: var(--radius-pill); border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 700; transition: 0.3s; text-decoration: none; }
         .widget:hover { background: rgba(255,255,255,0.15); transform: translateY(-2px); }
 
-        .weather-updating .weather-icon { animation: spin 1.2s infinite linear; }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+        .weather-updating .weather-icon { animation: m3-sync 1.2s infinite cubic-bezier(0.45, 0, 0.55, 1); }
+        @keyframes m3-sync { 0% { transform: rotate(0deg); } 100% { transform: rotate(-360deg); } }
 
-        /* MAIN LAYOUT */
+        /* MAIN UI */
         .main-layout { display: grid; grid-template-columns: 1fr 450px; gap: 40px; max-width: 1400px; margin: 60px auto 0; padding: 0 40px; }
         .hero-title { font-size: 7rem; font-weight: 900; letter-spacing: -5px; line-height: 0.8; pointer-events: none; }
 
-        /* UPDATES CARD (TRIGGER) */
         .update-card { 
             background: var(--card-bg); border-radius: var(--radius-xl); padding: 40px; 
             backdrop-filter: blur(var(--blur)); border: 1px solid rgba(255,255,255,0.05); 
             cursor: pointer; transition: 0.4s cubic-bezier(0.2, 0, 0, 1);
         }
-        .update-card:hover { transform: scale(1.02); background: rgba(255,255,255,0.1); border-color: var(--primary); }
-        .preview-img { width: 100%; height: 200px; object-fit: cover; border-radius: 20px; margin: 20px 0; background: #111; }
+        .update-card:hover { transform: scale(1.02); border-color: var(--primary); }
+        .preview-img { width: 100%; height: 220px; object-fit: cover; border-radius: 20px; margin: 20px 0; background: #111; }
 
-        /* INSPECTION MODAL (THE BIG POPUP) */
+        /* INSPECTION POP-UP */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 20000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(30px); }
         .inspect-card { 
-            background: #0a0a0a; width: 90%; max-width: 1000px; height: 80vh; 
-            border-radius: 40px; border: 1px solid #222; overflow: hidden;
-            display: grid; grid-template-columns: 1fr 1fr;
+            background: #0a0a0a; width: 90%; max-width: 1100px; height: 85vh; 
+            border-radius: 48px; border: 1px solid #222; overflow: hidden;
+            display: grid; grid-template-columns: 1.2fr 1fr;
         }
-        .inspect-visuals { background: #000; position: relative; display: flex; align-items: center; justify-content: center; }
-        .inspect-details { padding: 60px; overflow-y: auto; display: flex; flex-direction: column; gap: 24px; }
+        .inspect-visuals { background: #000; position: relative; }
+        .inspect-details { padding: 50px; overflow-y: auto; display: flex; flex-direction: column; gap: 28px; }
         
-        model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
+        model-viewer { width: 100%; height: 100%; }
         
-        .changelog { background: rgba(255,255,255,0.03); padding: 20px; border-radius: 20px; font-size: 0.9rem; line-height: 1.6; color: #ccc; }
-        .version-tag { font-family: monospace; color: var(--primary); font-weight: 700; }
+        .section-box { background: rgba(255,255,255,0.03); padding: 24px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.05); }
+        .tag { font-family: monospace; color: var(--primary); font-weight: 900; font-size: 0.8rem; letter-spacing: 1px; }
 
-        /* FAB */
-        .fab-container { position: fixed; bottom: 40px; right: 40px; z-index: 100; }
-        .fab { height: 70px; padding: 0 40px; background: #fff; color: #000; border-radius: 24px; border: none; font-weight: 900; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.3s; }
-        .fab:hover { transform: scale(1.05); background: var(--primary); }
+        /* DOWNLOAD */
+        .download-btn { height: 70px; background: #fff; color: #000; border-radius: 24px; border: none; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; transition: 0.3s; width: 100%; }
+        .download-btn:hover { background: var(--primary); transform: scale(1.02); }
     </style>
 </head>
 <body>
 
     <div id="loader">
         <div class="pulse-logo"></div>
-        <div style="font-weight: 900; color: var(--primary); letter-spacing: 2px;">SYNCING VOID</div>
+        <div style="font-weight: 900; color: var(--primary); letter-spacing: 3px; font-size: 0.7rem;">VELVET VOID BOOTING</div>
     </div>
 
     <div class="video-bg-container">
@@ -80,7 +78,7 @@
     </div>
 
     <nav>
-        <div class="widget" onclick="openModal('settings-modal')">
+        <div class="widget">
             <span class="material-symbols-rounded">schedule</span>
             <span id="clock">00:00</span>
             <span class="material-symbols-rounded">settings</span>
@@ -93,45 +91,48 @@
 
     <div class="main-layout">
         <div>
-            <h1 class="hero-title">PIX<br><span style="color: var(--primary);">UPDATES</span></h1>
+            <span class="tag">CURRENT RELEASE</span>
+            <h1 class="hero-title">VELVET<br><span style="color: var(--primary);">VOID</span></h1>
+            <p style="margin-top: 20px; opacity: 0.5; font-weight: 500;">v3.1.0 • Stable Build</p>
         </div>
         
         <div class="update-card" onclick="openModal('inspect-modal')">
-            <span style="font-weight: 900; opacity: 0.5; font-size: 0.7rem; letter-spacing: 2px;">LATEST UPDATE</span>
-            <h2 style="font-size: 2.5rem; font-weight: 900; margin: 10px 0;">VELVET VOID</h2>
-            <img src="skin-render.png" class="preview-img" alt="Skin Preview">
-            <p style="opacity: 0.7;">Version 3.1.0 • Click to inspect 3D Model and changelog.</p>
+            <span class="tag">FEATURED SKIN</span>
+            <h2 style="font-size: 2rem; font-weight: 900; margin-top: 5px;">NEON SPECTRE</h2>
+            <img src="skin-render.png" class="preview-img" alt="Skin Render">
+            <p style="opacity: 0.6; font-size: 0.9rem;">Tap to open 3D inspection and download the PNG skin file.</p>
         </div>
     </div>
 
     <div id="inspect-modal" class="modal-overlay">
         <div class="inspect-card">
             <div class="inspect-visuals">
-                <model-viewer src="model.gltf" auto-rotate camera-controls shadow-intensity="1" exposure="1"></model-viewer>
+                <model-viewer src="model.gltf" auto-rotate camera-controls shadow-intensity="1" exposure="1.2"></model-viewer>
                 <button onclick="closeModals()" style="position:absolute; top:30px; left:30px; background:rgba(255,255,255,0.1); border:none; color:#fff; width:50px; height:50px; border-radius:50%; cursor:pointer; backdrop-filter:blur(10px);">
                     <span class="material-symbols-rounded">close</span>
                 </button>
             </div>
             <div class="inspect-details">
                 <div>
-                    <span class="version-tag">v3.1.0-stable</span>
-                    <h1 style="font-size: 3rem; font-weight: 900;">VELVET VOID</h1>
+                    <span class="tag">VELVET VOID v3.1.0</span>
+                    <h1 style="font-size: 2.8rem; font-weight: 900;">NEON SPECTRE</h1>
                 </div>
                 
-                <div class="changelog">
-                    <b style="color: #fff;">CHANGES:</b><br>
-                    • Full PBR texture overhaul for Velvet Engine<br>
-                    • Optimized vertex count for mobile previews<br>
-                    • Reactive emissive mapping on armor plates<br>
-                    • Fixed weather-sync latency issues
+                <div class="section-box">
+                    <b style="font-size: 0.8rem; letter-spacing: 1px; opacity: 0.5;">SITE UPDATES:</b>
+                    <ul style="margin: 10px 0 0 18px; font-size: 0.9rem; color: #bbb;">
+                        <li>Implemented Material You 3 Expressive Loader</li>
+                        <li>Dynamic Background Video (skin-preview.mp4)</li>
+                        <li>Synchronized Weather API (wttr.in)</li>
+                    </ul>
                 </div>
 
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
-                    <img src="photo1.jpg" style="width:100%; border-radius:15px; background:#111; height:100px; object-fit:cover;">
-                    <img src="photo2.jpg" style="width:100%; border-radius:15px; background:#111; height:100px; object-fit:cover;">
+                    <img src="photo1.jpg" style="width:100%; border-radius:18px; background:#111; height:120px; object-fit:cover; border: 1px solid rgba(255,255,255,0.05);">
+                    <img src="photo2.jpg" style="width:100%; border-radius:18px; background:#111; height:120px; object-fit:cover; border: 1px solid rgba(255,255,255,0.05);">
                 </div>
 
-                <button class="fab" onclick="downloadSkin()" style="position:static; width:100%; justify-content:center;">
+                <button class="download-btn" onclick="downloadSkin()">
                     <span class="material-symbols-rounded">download</span>
                     <span>DOWNLOAD PNG SKIN</span>
                 </button>
@@ -156,11 +157,10 @@
             }, 1500);
         }
 
-        // Fixed: Downloads the PNG, not the GLTF
         function downloadSkin() {
             const link = document.createElement('a');
             link.href = 'skin.png'; 
-            link.download = "Velvet_Void_Skin.png";
+            link.download = "Neon_Spectre_Skin.png";
             link.click();
         }
 
