@@ -27,12 +27,11 @@
         .video-bg-container { position: fixed; inset: 0; z-index: -1; background: #000; pointer-events: none; }
         #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: var(--video-opacity); transition: opacity 0.5s; }
 
-        /* INTERFACE & WIDGETS */
+        /* WIDGETS */
         nav { padding: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
         .widget { padding: 12px 24px; background: rgba(255,255,255,0.08); backdrop-filter: blur(var(--blur)); border-radius: var(--radius-pill); border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 700; transition: 0.3s; text-decoration: none; }
         .widget:hover { background: rgba(255,255,255,0.15); transform: translateY(-2px); }
 
-        /* GEAR & WEATHER ANIMATIONS */
         .gear-icon { transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); display: inline-block; }
         .widget:hover .gear-icon { transform: rotate(-180deg); }
         .weather-icon { display: inline-block; transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
@@ -47,23 +46,27 @@
         model-viewer { width: 100%; height: 250px; background: rgba(0,0,0,0.2); border-radius: 20px; }
         .badge { background: var(--primary); color: #000; padding: 4px 12px; border-radius: 10px; font-size: 0.7rem; font-weight: 900; width: fit-content; }
 
-        /* DOWNLOAD BUTTON (FAB) */
         .fab-container { position: fixed; bottom: 40px; left: 40px; z-index: 100; }
-        .fab { height: 60px; padding: 0 32px; background: #fff; color: #000; border-radius: 20px; border: none; display: flex; align-items: center; gap: 12px; font-weight: 900; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: 0.3s; text-decoration: none; }
+        .fab { height: 60px; padding: 0 32px; background: #fff; color: #000; border-radius: 20px; border: none; display: flex; align-items: center; gap: 12px; font-weight: 900; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: 0.3s; }
         .fab:hover { transform: translateY(-5px); background: var(--primary); }
 
         /* MODALS */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 20000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
-        .modal-card { background: #0a0a0a; padding: 32px; border-radius: 32px; width: 450px; border: 1px solid #222; display: flex; flex-direction: column; gap: 20px; }
+        .modal-card { background: #0a0a0a; padding: 32px; border-radius: 32px; width: 450px; border: 1px solid #222; display: flex; flex-direction: column; gap: 20px; box-shadow: 0 30px 60px rgba(0,0,0,0.8); }
         .setting-row { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 16px; }
+        
+        .feature-item { display: flex; gap: 15px; align-items: flex-start; margin-bottom: 5px; }
+        .feature-icon { color: var(--primary); font-size: 1.4rem; }
+        
         .color-dot { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; transition: 0.2s; }
+        .secondary-btn { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid #333; padding: 12px; border-radius: 15px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
     </style>
 </head>
 <body>
 
     <div id="loader">
         <div class="pulse-logo"></div>
-        <div class="loader-text">SYSTEM BOOTING</div>
+        <div class="loader-text">VELVET ENGINE BOOTING</div>
     </div>
 
     <div class="video-bg-container">
@@ -84,7 +87,6 @@
 
     <div class="main-layout">
         <div><h1 class="hero-title">PIX<br><span style="color: var(--primary);">UPDATES</span></h1></div>
-        
         <div class="unified-panel">
             <span class="badge">ACTIVE SKIN</span>
             <h2 id="skin-title" style="font-size:1.8rem; font-weight:900;">VELVET VOID</h2>
@@ -106,7 +108,7 @@
 
     <div id="settings-modal" class="modal-overlay">
         <div class="modal-card">
-            <h2 style="font-weight:900;">UI PREFERENCES</h2>
+            <h2 style="font-weight:900; letter-spacing: -1px;">UI PREFERENCES</h2>
             <div class="setting-row">
                 <span>Accent Color</span>
                 <div style="display:flex; gap:10px;">
@@ -119,25 +121,60 @@
                 <span>Glass Blur</span>
                 <input type="range" min="0" max="80" value="40" oninput="updateSetting('--blur', this.value + 'px')">
             </div>
-            <button onclick="closeModals()" style="background:#fff; color:#000; padding:15px; border:none; border-radius:15px; font-weight:900; cursor:pointer; margin-top:10px;">SAVE CHANGES</button>
+            <hr style="border:none; border-top:1px solid #222;">
+            <button onclick="openModal('whats-new-modal')" class="secondary-btn">
+                <span class="material-symbols-rounded" style="font-size:1.2rem;">history_edu</span> WHAT'S NEW?
+            </button>
+            <button onclick="closeModals()" style="background:#fff; color:#000; padding:15px; border:none; border-radius:15px; font-weight:900; cursor:pointer;">SAVE CHANGES</button>
+        </div>
+    </div>
+
+    <div id="whats-new-modal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="badge">PATCH v3.1.0</div>
+            <h2 style="font-weight: 900; letter-spacing: -1.5px; margin-top:-5px;">VELVET VOID ARRIVED</h2>
+            <p style="opacity:0.6; font-size:0.95rem;">We polished the void until it looked expensive. Here is what we broke (and fixed) in this update:</p>
+            
+            <div class="feature-item">
+                <span class="material-symbols-rounded feature-icon">auto_fix_high</span>
+                <div>
+                    <h4 style="font-weight:800;">Expressive Weather</h4>
+                    <p style="font-size:0.8rem; opacity:0.5;">The weather widget now does a little dance when it updates. It also links straight to Google because they have better satellites than us.</p>
+                </div>
+            </div>
+
+            <div class="feature-item">
+                <span class="material-symbols-rounded feature-icon">Settings_Suggest</span>
+                <div>
+                    <h4 style="font-weight:800;">Persistent Memory</h4>
+                    <p style="font-size:0.8rem; opacity:0.5;">The site finally remembers your favorite accent color. It no longer forgets who you are every time you refresh.</p>
+                </div>
+            </div>
+
+            <div class="feature-item">
+                <span class="material-symbols-rounded feature-icon">videocam</span>
+                <div>
+                    <h4 style="font-weight:800;">Cinema Background</h4>
+                    <p style="font-size:0.8rem; opacity:0.5;">We fixed the background video container so it stops blocking your clicks. Technical term: "Pointer Events Magic."</p>
+                </div>
+            </div>
+
+            <button onclick="closeModals()" style="background:var(--primary); color:#000; padding:15px; border:none; border-radius:15px; font-weight:900; cursor:pointer; margin-top:10px;">COOL, TAKE ME BACK</button>
         </div>
     </div>
 
     <script>
+        const SITE_VERSION = "3.1.0";
+
         async function fetchWeather() {
             const widget = document.getElementById('weather-widget');
-            const icon = document.getElementById('w-icon');
             widget.classList.add('weather-updating');
-            
             try {
                 const res = await fetch('https://wttr.in/?format=j1');
                 const data = await res.json();
                 document.getElementById('temp').textContent = data.current_condition[0].temp_F + "°F";
-            } catch (e) {
-                document.getElementById('temp').textContent = "72°F";
-            } finally {
-                setTimeout(() => widget.classList.remove('weather-updating'), 1200);
-            }
+            } catch (e) { document.getElementById('temp').textContent = "72°F"; }
+            finally { setTimeout(() => widget.classList.remove('weather-updating'), 1200); }
         }
 
         function downloadSkin() {
@@ -147,13 +184,6 @@
             link.click();
         }
 
-        function loadSettings() {
-            const settings = JSON.parse(localStorage.getItem('pix_user_prefs')) || {};
-            for (const [key, val] of Object.entries(settings)) {
-                document.documentElement.style.setProperty(key, val);
-            }
-        }
-
         function updateSetting(variable, value) {
             document.documentElement.style.setProperty(variable, value);
             const settings = JSON.parse(localStorage.getItem('pix_user_prefs')) || {};
@@ -161,18 +191,39 @@
             localStorage.setItem('pix_user_prefs', JSON.stringify(settings));
         }
 
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); }
+        function openModal(id) { 
+            closeModals();
+            document.getElementById(id).style.display = 'flex'; 
+        }
+        
+        function closeModals() { 
+            document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); 
+        }
 
         window.addEventListener('load', () => {
-            loadSettings();
+            // Load saved UI settings
+            const settings = JSON.parse(localStorage.getItem('pix_user_prefs')) || {};
+            for (const [key, val] of Object.entries(settings)) {
+                document.documentElement.style.setProperty(key, val);
+            }
+
             fetchWeather();
             const vid = document.getElementById('bg-video');
             vid.play().catch(() => document.addEventListener('click', () => vid.play(), {once: true}));
             
+            // Loader Logic + Automatic What's New Pop-up
             setTimeout(() => { 
                 document.getElementById('loader').style.opacity = '0';
-                setTimeout(() => document.getElementById('loader').style.visibility = 'hidden', 800);
+                setTimeout(() => {
+                    document.getElementById('loader').style.visibility = 'hidden';
+                    
+                    // Check for version update
+                    const lastSeen = localStorage.getItem('pix_last_version');
+                    if (lastSeen !== SITE_VERSION) {
+                        openModal('whats-new-modal');
+                        localStorage.setItem('pix_last_version', SITE_VERSION);
+                    }
+                }, 800);
             }, 1800);
         });
 
