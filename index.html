@@ -2,149 +2,265 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Skin Preview</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pix Updates</title>
 
+<!-- GOOGLE SANS FLEX -->
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" />
+
+<!-- MODEL VIEWER -->
 <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
 
 <style>
-body {
-    margin: 0;
-    background: #020202;
-    color: white;
-    font-family: system-ui, sans-serif;
+:root {
+  --primary:#FFB4AB;
+  --surface:#020202;
+  --card:rgba(20,20,20,.75);
+  --radius:28px;
 }
 
-.wrapper {
-    max-width: 1100px;
-    margin: auto;
-    padding: 40px 20px;
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Google Sans Flex',system-ui,sans-serif;
+  background:var(--surface);
+  color:#fff;
+  height:100vh;
+  overflow:hidden;
 }
 
-h1 {
-    font-size: 3.5rem;
-    margin-bottom: 10px;
+/* LOADER */
+#loader{
+  position:fixed;inset:0;
+  background:#000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+#loader div{
+  width:80px;height:80px;
+  background:var(--primary);
+  border-radius:24px;
+  animation:pulse 2s infinite cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes pulse{
+  0%,100%{transform:scale(.8) rotate(0)}
+  50%{transform:scale(1.1) rotate(90deg)}
 }
 
-.sub {
-    opacity: 0.6;
-    margin-bottom: 40px;
+/* VIDEO BG */
+.video-bg{
+  position:fixed;inset:0;z-index:-1;
+}
+.video-bg video{
+  width:100%;height:100%;
+  object-fit:cover;
+  opacity:.7;
 }
 
-.card {
-    background: rgba(255,255,255,0.04);
-    border-radius: 32px;
-    padding: 24px;
-    border: 1px solid rgba(255,255,255,0.08);
-    margin-bottom: 30px;
+/* NAV */
+nav{
+  padding:32px;
+  display:flex;
+  justify-content:space-between;
+}
+.pill{
+  padding:12px 24px;
+  background:rgba(255,255,255,.1);
+  border-radius:999px;
+  font-weight:700;
 }
 
-/* 3D PREVIEW */
-.preview-3d {
-    height: 350px;
-    overflow: hidden;
-    position: relative;
+/* LAYOUT */
+.main{
+  max-width:1200px;
+  margin:0 auto;
+  padding:0 32px;
+  display:grid;
+  grid-template-columns:1fr 420px;
+  gap:32px;
+}
+.hero{
+  font-size:6rem;
+  font-weight:900;
+  line-height:.85;
+  letter-spacing:-4px;
 }
 
-.preview-3d model-viewer {
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle at top, #111, #000);
-    border-radius: 24px;
+/* PANEL */
+.panel{
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:28px;
+  backdrop-filter:blur(30px);
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+.badge{
+  background:var(--primary);
+  color:#000;
+  font-weight:900;
+  font-size:.7rem;
+  padding:6px 12px;
+  border-radius:10px;
+  width:max-content;
 }
 
-.hint {
-    position: absolute;
-    bottom: 14px;
-    right: 18px;
-    font-size: 0.65rem;
-    letter-spacing: 1px;
-    opacity: 0.5;
-    font-weight: 800;
+/* DISPLAY */
+.display{
+  position:relative;
+  height:220px;
+  border-radius:20px;
+  overflow:hidden;
+}
+
+/* MODEL */
+model-viewer{
+  width:100%;
+  height:100%;
+  background:#000;
 }
 
 /* COMPARISON */
-.compare {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
+.compare img{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  object-fit:cover;
+}
+.compare .after{
+  clip-path:inset(0 50% 0 0);
+}
+.compare::after{
+  content:'';
+  position:absolute;
+  left:50%;top:0;bottom:0;
+  width:3px;background:var(--primary);
 }
 
-.compare-box {
-    position: relative;
+/* HISTORY */
+.history button{
+  background:none;border:none;
+  color:#fff;
+  text-align:left;
+  padding:12px;
+  border-radius:16px;
+  cursor:pointer;
+}
+.history button.active{
+  background:rgba(255,255,255,.15);
+  border-left:4px solid var(--primary);
 }
 
-.compare-box span {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background: white;
-    color: black;
-    padding: 4px 10px;
-    font-size: 0.65rem;
-    font-weight: 900;
-    border-radius: 10px;
+/* FAB */
+.fab{
+  position:fixed;
+  bottom:32px;left:32px;
+  background:#fff;color:#000;
+  padding:18px 28px;
+  border-radius:20px;
+  font-weight:900;
+  border:none;
+  cursor:pointer;
 }
 
-.compare-box img {
-    width: 100%;
-    border-radius: 20px;
-    background: black;
-}
-
-/* BUTTON */
-.download {
-    display: inline-block;
-    margin-top: 20px;
-    background: white;
-    color: black;
-    padding: 14px 26px;
-    border-radius: 18px;
-    font-weight: 900;
-    text-decoration: none;
+/* MOBILE */
+@media(max-width:800px){
+  .main{grid-template-columns:1fr}
+  .hero{font-size:4rem}
 }
 </style>
 </head>
 
 <body>
-<div class="wrapper">
 
-<h1>Temp’s Skin</h1>
-<p class="sub">Version 1.0.0 · 3D Preview + Comparison</p>
+<div id="loader"><div></div></div>
 
-<!-- 3D PREVIEW -->
-<div class="card preview-3d">
-    <model-viewer
+<div class="video-bg">
+  <video autoplay muted loop playsinline src="skin-preview.mp4"></video>
+</div>
+
+<nav>
+  <div class="pill" id="clock">--:--</div>
+  <div class="pill">PIX UPDATES</div>
+</nav>
+
+<div class="main">
+  <div>
+    <div class="hero">PIX<br><span style="color:var(--primary)">UPDATES</span></div>
+  </div>
+
+  <div class="panel">
+    <span class="badge" id="badge">NEW</span>
+    <h2 id="title">EMBER KNIGHT</h2>
+    <p id="desc"></p>
+
+    <div class="display">
+      <model-viewer
+        id="model"
         src="model.gltf"
         camera-controls
         auto-rotate
-        autoplay
-        animation-name="Idle"
-        interaction-prompt="none"
-        shadow-intensity="1"
+        auto-rotate-delay="0"
+        rotation-per-second="20deg"
         exposure="1.1">
-    </model-viewer>
-    <div class="hint">DRAG TO ROTATE</div>
-</div>
-
-<!-- COMPARISON -->
-<div class="card">
-    <div class="compare">
-        <div class="compare-box">
-            <span>OLD</span>
-            <img src="temp's Skin with cap Version 1.0.0.png">
-        </div>
-        <div class="compare-box">
-            <span>NEW</span>
-            <img src="temp's Skin with no cap Version 1.0.0.png">
-        </div>
+      </model-viewer>
     </div>
+
+    <div class="display compare">
+      <img src="old-skin.png">
+      <img src="new-skin.png" class="after">
+    </div>
+
+    <div class="history">
+      <button class="active">V1.0.0 — Ember Knight</button>
+    </div>
+  </div>
 </div>
 
-<a class="download" href="temp's Skin with no cap Version 1.0.0.png" download>
-    DOWNLOAD SKIN
-</a>
+<button class="fab" onclick="download()">DOWNLOAD SKIN</button>
 
-</div>
+<script>
+/* CLOCK */
+setInterval(()=>{
+  clock.textContent=new Date().toLocaleTimeString([],{
+    hour:'2-digit',minute:'2-digit'
+  })
+},1000)
+
+/* UPDATED TEXT */
+const release=new Date("2026-01-01")
+const days=Math.floor((Date.now()-release)/86400000)
+desc.textContent=`Updated ${days} day${days!==1?'s':''} ago`
+
+/* NEW BADGE AUTO REMOVE */
+if(days>7) badge.textContent="V1.0.0"
+
+/* COMPARISON SLIDER */
+document.querySelector('.compare').addEventListener('mousemove',e=>{
+  const r=e.currentTarget.getBoundingClientRect()
+  const pct=(e.clientX-r.left)/r.width*100
+  document.querySelector('.after').style.clipPath=
+    `inset(0 ${100-pct}% 0 0)`
+})
+
+/* DOWNLOAD */
+function download(){
+  const a=document.createElement('a')
+  a.href="temp's Skin with no cap Version 1.0.0.png"
+  a.download=a.href
+  a.click()
+}
+
+/* LOADER */
+window.onload=()=>{
+  setTimeout(()=>{
+    loader.style.opacity=0
+    setTimeout(()=>loader.remove(),600)
+  },1500)
+}
+</script>
+
 </body>
 </html>
