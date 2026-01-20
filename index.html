@@ -15,12 +15,16 @@
         }
         
         * { box-sizing: border-box; -webkit-font-smoothing: antialiased; margin: 0; padding: 0; }
-        body { background: var(--surface); color: #fff; font-family: 'Google Sans Flex', sans-serif; overflow: hidden; height: 100vh; cursor: none; }
-
-        /* CURSOR */
-        #cursor-dot, #cursor-outline { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 10001; border-radius: 50%; opacity: 0; transition: opacity 0.3s; }
-        #cursor-dot { width: 6px; height: 6px; background: #fff; transform: translate(-50%, -50%); }
-        #cursor-outline { width: 30px; height: 30px; border: 1.5px solid white; mix-blend-mode: difference; }
+        
+        /* Standard Mouse Restored */
+        body { 
+            background: var(--surface); 
+            color: #fff; 
+            font-family: 'Google Sans Flex', sans-serif; 
+            overflow: hidden; 
+            height: 100vh; 
+            cursor: default; 
+        }
 
         /* LOADER */
         #loader { position: fixed; inset: 0; background: #000; z-index: 99999; display: flex; align-items: center; justify-content: center; transition: 0.8s; }
@@ -39,6 +43,7 @@
         /* NAV */
         nav { padding: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
         .widget { padding: 12px 24px; background: rgba(255,255,255,0.08); backdrop-filter: blur(var(--blur)); border-radius: var(--radius-pill); border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 700; transition: 0.3s; }
+        .widget:hover { background: rgba(255,255,255,0.15); }
 
         /* PANEL */
         .main-layout { display: grid; grid-template-columns: 1fr 400px; gap: 40px; max-width: 1400px; margin: 0 auto; padding: 0 40px; }
@@ -55,26 +60,25 @@
         /* FAB */
         .fab-container { position: fixed; bottom: 40px; left: 40px; z-index: 100; }
         .fab { height: 60px; padding: 0 32px; background: #fff; color: #000; border-radius: 20px; border: none; display: flex; align-items: center; gap: 12px; font-weight: 900; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: 0.3s; }
+        .fab:hover { transform: translateY(-5px); background: #eee; }
 
         /* SETTINGS MODAL */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 20000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
-        .modal-card { background: #0a0a0a; padding: 32px; border-radius: 32px; width: 480px; border: 1px solid #222; max-height: 80vh; overflow-y: auto; }
+        .modal-card { background: #0a0a0a; padding: 32px; border-radius: 32px; width: 480px; border: 1px solid #222; max-height: 85vh; overflow-y: auto; }
         
         .settings-section { margin-bottom: 24px; }
         .settings-section h3 { font-size: 0.7rem; font-weight: 900; opacity: 0.4; letter-spacing: 1px; margin-bottom: 12px; text-transform: uppercase; }
         
         .setting-row { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 16px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.02); }
-        .setting-row span { font-weight: 600; font-size: 0.9rem; }
         
-        .char-pill { background: rgba(255,255,255,0.05); padding: 10px 20px; border-radius: 12px; border: none; color: #fff; font-weight: 700; cursor: pointer; width: 100%; text-align: left; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+        .char-pill { background: rgba(255,255,255,0.05); padding: 10px 20px; border-radius: 12px; border: none; color: #fff; font-weight: 700; cursor: pointer; width: 100%; text-align: left; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; transition: 0.2s; }
+        .char-pill:hover { background: rgba(255,255,255,0.1); }
         .char-pill.active { background: var(--primary); color: #000; }
     </style>
 </head>
-<body class="custom-cursor-active">
+<body>
 
     <div id="loader"><div class="pulse-logo"></div></div>
-    <div id="cursor-dot"></div>
-    <div id="cursor-outline"></div>
 
     <div class="video-bg-container">
         <video id="bg-video" autoplay muted loop playsinline><source src="background.mp4" type="video/mp4"></video>
@@ -82,12 +86,12 @@
     </div>
 
     <nav>
-        <div class="widget interactive" onclick="openModal('settings-modal')">
+        <div class="widget" onclick="openModal('settings-modal')">
             <span class="material-symbols-rounded">schedule</span>
             <span id="clock">00:00</span>
             <span class="material-symbols-rounded gear-icon">settings</span>
         </div>
-        <div class="widget interactive">
+        <div class="widget">
             <span id="temp">72°F</span>
             <span class="material-symbols-rounded">cloud</span>
         </div>
@@ -99,7 +103,7 @@
         <div class="unified-panel">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <span style="background:var(--primary); color:#000; padding:4px 12px; border-radius:10px; font-weight:900; font-size:0.7rem;">V3.1.0</span>
-                <button class="interactive" onclick="toggle3D()" style="background:var(--primary); border:none; color:#000; font-weight:900; cursor:pointer; font-size:0.7rem; padding: 6px 16px; border-radius:10px;">COMPARE</button>
+                <button onclick="toggle3D()" style="background:var(--primary); border:none; color:#000; font-weight:900; cursor:pointer; font-size:0.7rem; padding: 6px 16px; border-radius:10px;">COMPARE</button>
             </div>
 
             <div id="active-skin-content">
@@ -122,7 +126,7 @@
             
             <hr style="border:none; border-top:1px solid rgba(255,255,255,0.1);">
             <div style="overflow-y: auto; flex-grow: 1;">
-                <div class="interactive" style="background:rgba(255,255,255,0.05); padding:15px; border-radius:20px;">
+                <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:20px;">
                     <span style="opacity:0.5; font-size:0.7rem;">SYSTEM STATUS</span><br><b>Engine Operational</b>
                 </div>
             </div>
@@ -130,7 +134,7 @@
     </div>
 
     <div class="fab-container">
-        <button class="fab interactive" onclick="window.location.href='model.gltf'">
+        <button class="fab" onclick="window.location.href='model.gltf'">
             <span class="material-symbols-rounded">download</span>
             <span>GET SKIN</span>
         </button>
@@ -153,13 +157,7 @@
                 <div class="setting-row"><span>3D Auto-Rotate</span><span style="color:var(--primary)">On</span></div>
             </div>
 
-            <div class="settings-section">
-                <h3>Info</h3>
-                <div class="setting-row"><span>Engine Version</span><span>3.1.0-vvd</span></div>
-                <div class="setting-row"><span>Build Date</span><span>Jan 2026</span></div>
-            </div>
-
-            <button onclick="closeModals()" class="interactive" style="width:100%; background:#fff; color:#000; padding:18px; border:none; border-radius:20px; font-weight:900; cursor:pointer; font-size:1rem; margin-top:10px;">SAVE & EXIT</button>
+            <button onclick="closeModals()" style="width:100%; background:#fff; color:#000; padding:18px; border:none; border-radius:20px; font-weight:900; cursor:pointer; font-size:1rem; margin-top:10px;">SAVE & EXIT</button>
         </div>
     </div>
 
@@ -174,21 +172,6 @@
 
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); }
-
-        const dot = document.getElementById('cursor-dot'), outline = document.getElementById('cursor-outline');
-        let mX = 0, mY = 0, oX = 0, oY = 0;
-        window.addEventListener('mousemove', (e) => {
-            mX = e.clientX; mY = e.clientY;
-            dot.style.opacity = 1; outline.style.opacity = 1;
-        });
-
-        function animate() {
-            dot.style.transform = `translate3d(${mX}px, ${mY}px, 0)`;
-            oX += (mX - oX) * 0.15; oY += (mY - oY) * 0.15;
-            outline.style.transform = `translate3d(${oX - 15}px, ${oY - 15}px, 0)`;
-            requestAnimationFrame(animate);
-        }
-        animate();
 
         setInterval(() => { 
             document.getElementById('clock').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); 
