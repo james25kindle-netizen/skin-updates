@@ -105,7 +105,7 @@
                 <div id="text-view">
                     <p id="skin-desc" style="opacity: 0.6; font-size: 0.9rem; line-height: 1.5;">Custom lava flows and heat-mapped gradients. Optimized for high-end shaders and 3D geometry expansion.</p>
                 </div>
-                <model-viewer id="m3d-view" auto-rotate camera-controls shadow-intensity="1" src=""></model-viewer>
+                <model-viewer id="m3d-view" auto-rotate camera-controls shadow-intensity="1" src="model.gltf"></model-viewer>
             </div>
 
             <hr style="border:none; border-top:1px solid rgba(255,255,255,0.1);">
@@ -119,25 +119,24 @@
         </button>
     </div>
 
-    <div id="settings-modal" class="modal-overlay">
-        <div class="modal-card">
-            <h2 style="font-weight: 900;">PREFERENCES</h2>
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span>Accent Color</span>
-                <div style="display:flex; gap:8px;">
-                    <div style="width:25px; height:25px; border-radius:50%; background:#FFB4AB; cursor:pointer;" onclick="updateSetting('--primary', '#FFB4AB')"></div>
-                    <div style="width:25px; height:25px; border-radius:50%; background:#D0BCFF; cursor:pointer;" onclick="updateSetting('--primary', '#D0BCFF')"></div>
-                    <div style="width:25px; height:25px; border-radius:50%; background:#B4E4FF; cursor:pointer;" onclick="updateSetting('--primary', '#B4E4FF')"></div>
-                </div>
-            </div>
-            <button onclick="closeModals()" class="interactive" style="background:#fff; color:#000; padding:15px; border:none; border-radius:15px; font-weight:900; cursor:pointer; margin-top:10px;">SAVE</button>
-        </div>
-    </div>
-
     <script>
         const skins = [
-            { name: "EMBER KNIGHT", version: "V1.0.0", desc: "Custom lava flows and heat-mapped gradients. Optimized for high-end shaders.", video: "skin-preview.mp4", model: "ember.gltf", dl: "ember.png" },
-            { name: "VOID WALKER", version: "V0.0.9", desc: "Monochrome void aesthetic with particle anchoring testing.", video: "void-preview.mp4", model: "void.gltf", dl: "void.png" }
+            { 
+                name: "EMBER KNIGHT", 
+                version: "V1.0.0", 
+                desc: "Custom lava flows and heat-mapped gradients. Optimized for high-end shaders and 3D geometry expansion.", 
+                video: "skin-preview.mp4", 
+                model: "model.gltf", 
+                dl: "temp's Skin with cap Version 1.0.0.png" 
+            },
+            { 
+                name: "VOID WALKER", 
+                version: "V0.0.9", 
+                desc: "Monochrome void aesthetic with particle anchoring testing.", 
+                video: "void-preview.mp4", 
+                model: "model.gltf", 
+                dl: "temp's Skin Version 0.0.9.png" 
+            }
         ];
         let currentIdx = 0;
         let is3D = false;
@@ -165,6 +164,16 @@
             `).join('');
         }
 
+        function downloadSkin() {
+            const s = skins[currentIdx];
+            const link = document.createElement('a');
+            link.href = s.dl;
+            link.download = s.dl;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
         async function fetchWeather() {
             const widget = document.getElementById('weather-widget');
             widget.classList.add('weather-updating');
@@ -176,7 +185,6 @@
             setTimeout(() => widget.classList.remove('weather-updating'), 1000);
         }
 
-        function updateSetting(v, val) { document.documentElement.style.setProperty(v, val); }
         function openModal(id) { document.getElementById(id).style.display = 'flex'; document.body.classList.add('modal-open'); }
         function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); document.body.classList.remove('modal-open'); }
 
@@ -187,11 +195,6 @@
             mX = e.clientX; mY = e.clientY;
             dot.style.opacity = outline.style.opacity = 1;
             target = e.target.closest('.interactive');
-            if (target) {
-                const r = target.getBoundingClientRect();
-                const m = target.querySelector('.mag');
-                if(m) m.style.transform = `translate(${(mX - (r.left + r.width/2)) * 0.2}px, ${(mY - (r.top + r.height/2)) * 0.2}px)`;
-            }
         });
 
         function animateCursor() {
