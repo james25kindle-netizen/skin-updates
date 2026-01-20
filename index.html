@@ -19,17 +19,16 @@
 
         /* VIDEO BACKGROUND */
         .video-bg-container { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
-        #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; }
+        #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; }
 
-        /* NAV - Scaled Up */
+        /* NAV */
         nav { padding: 40px 60px; display: flex; justify-content: space-between; align-items: center; position: fixed; width: 100%; z-index: 100; }
         .widget { padding: 12px 24px; background: rgba(255,255,255,0.1); backdrop-filter: blur(var(--blur)); border-radius: var(--radius-pill); border: 1px solid rgba(255,255,255,0.15); color: #fff; cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 1rem; transition: 0.3s; text-decoration: none; }
-        .widget:hover { background: rgba(255,255,255,0.2); transform: scale(1.05); }
 
-        /* SPLIT LAYOUT - Wider Sidebar */
+        /* MAIN CONTAINER */
         .main-container { display: grid; grid-template-columns: 550px 1fr; height: 100vh; padding-top: 140px; }
 
-        /* LEFT: SCROLLABLE FEED */
+        /* LEFT: FEED */
         .feed-container { padding: 0 60px 60px 60px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; scrollbar-width: none; }
         .feed-container::-webkit-scrollbar { display: none; }
 
@@ -40,26 +39,34 @@
             display: flex; align-items: center; gap: 24px;
         }
         .compact-card:hover { transform: scale(1.03) translateX(10px); border-color: var(--primary); background: rgba(255,255,255,0.15); }
-        
-        /* Larger Thumbnails */
-        .card-thumb { width: 110px; height: 110px; border-radius: 24px; object-fit: cover; background: #000; box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
-        .card-info h2 { font-size: 1.5rem; font-weight: 900; letter-spacing: -0.5px; }
-        .card-info p { font-size: 0.9rem; opacity: 0.6; margin-top: 4px; }
+        .card-thumb { width: 110px; height: 110px; border-radius: 24px; object-fit: cover; background: #000; }
+        .card-info h2 { font-size: 1.5rem; font-weight: 900; }
 
-        /* RIGHT: HERO SECTION - Massive Text */
-        .hero-side { display: flex; flex-direction: column; justify-content: center; padding-left: 40px; pointer-events: none; }
-        .hero-title { font-size: 10rem; font-weight: 900; letter-spacing: -10px; line-height: 0.75; text-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+        /* RIGHT: STICKY HERO & SKIN PREVIEW */
+        .hero-side { 
+            display: flex; flex-direction: column; justify-content: center; 
+            padding: 0 80px; position: relative; 
+        }
+        .hero-title { font-size: 10rem; font-weight: 900; letter-spacing: -10px; line-height: 0.75; position: relative; z-index: 2; }
         .tag { font-family: monospace; color: var(--primary); font-weight: 900; font-size: 0.9rem; letter-spacing: 4px; text-transform: uppercase; }
 
-        /* MODAL - Scaled Up */
+        /* The Skin on the Right */
+        .right-skin-preview {
+            position: absolute; right: 0; bottom: 10%; width: 60%; height: 70%;
+            object-fit: contain; z-index: 1; pointer-events: none;
+            filter: drop-shadow(0 20px 50px rgba(0,0,0,0.8));
+            mask-image: linear-gradient(to left, black 70%, transparent);
+            transition: 0.5s ease;
+        }
+
+        /* MODAL */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 20000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(25px); }
-        .inspect-card { background: #0a0a0a; width: 1000px; height: 650px; border-radius: 48px; border: 1px solid #333; overflow: hidden; display: grid; grid-template-columns: 1.1fr 0.9fr; box-shadow: 0 50px 100px rgba(0,0,0,0.8); }
+        .inspect-card { background: #0a0a0a; width: 1050px; height: 680px; border-radius: 48px; border: 1px solid #333; overflow: hidden; display: grid; grid-template-columns: 1.1fr 0.9fr; }
         .inspect-visuals { background: #000; position: relative; }
         .inspect-details { padding: 60px; display: flex; flex-direction: column; justify-content: space-between; }
         
         model-viewer { width: 100%; height: 100%; }
-        .download-btn { height: 80px; background: #fff; color: #000; border-radius: 28px; border: none; font-weight: 900; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 15px; transition: 0.3s; }
-        .download-btn:hover { background: var(--primary); transform: scale(1.02); }
+        .download-btn { height: 80px; background: #fff; color: #000; border-radius: 28px; border: none; font-weight: 900; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 15px; }
 
         /* LOADER */
         #loader { position: fixed; inset: 0; background: #000; z-index: 100000; display: flex; align-items: center; justify-content: center; transition: 0.8s; }
@@ -78,8 +85,7 @@
     <nav>
         <div class="widget"><span id="clock">00:00</span></div>
         <a href="https://www.google.com/search?q=weather" target="_blank" class="widget" id="weather-widget" onclick="fetchWeather()">
-            <span id="temp">--°F</span>
-            <span class="material-symbols-rounded weather-icon" id="w-icon">cloud</span>
+            <span id="temp">--°F</span><span class="material-symbols-rounded" id="w-icon">cloud</span>
         </a>
     </nav>
 
@@ -89,38 +95,36 @@
         </div>
 
         <div class="hero-side">
-            <span class="tag">Release v3.1.0 Stable</span>
+            <span class="tag">Release v3.1.0</span>
             <h1 class="hero-title">VELVET<br><span style="color: var(--primary);">VOID</span></h1>
+            <img id="active-skin-img" src="skin-render.png" class="right-skin-preview">
         </div>
     </div>
 
     <div id="inspect-modal" class="modal-overlay">
         <div class="inspect-card">
             <div class="inspect-visuals">
-                <model-viewer id="modal-viewer" auto-rotate camera-controls shadow-intensity="1" exposure="1.2"></model-viewer>
-                <button onclick="closeModals()" style="position:absolute; top:30px; left:30px; background:rgba(255,255,255,0.15); border:none; color:#fff; width:60px; height:60px; border-radius:50%; cursor:pointer; backdrop-filter: blur(10px);">
-                    <span class="material-symbols-rounded" style="font-size: 2rem;">close</span>
-                </button>
+                <model-viewer id="modal-viewer" auto-rotate camera-controls shadow-intensity="1"></model-viewer>
+                <button onclick="closeModals()" style="position:absolute; top:30px; left:30px; background:rgba(255,255,255,0.15); border:none; color:#fff; width:60px; height:60px; border-radius:50%; cursor:pointer;"><span class="material-symbols-rounded">close</span></button>
             </div>
             <div class="inspect-details">
                 <div>
                     <span class="tag" id="modal-tag">VERSION INFO</span>
-                    <h1 id="modal-title" style="font-size: 3.5rem; font-weight: 900; margin-top: 10px; line-height: 1;">SKIN NAME</h1>
-                    <p id="modal-desc" style="opacity: 0.6; font-size: 1.1rem; margin-top: 30px; line-height: 1.6;">Detailed skin information goes here...</p>
+                    <h1 id="modal-title" style="font-size: 3.5rem; font-weight: 900; margin-top: 10px;">SKIN NAME</h1>
+                    <p id="modal-desc" style="opacity: 0.6; font-size: 1.1rem; margin-top: 30px; line-height: 1.6;">Description...</p>
                 </div>
                 <button class="download-btn" id="modal-download">
-                    <span class="material-symbols-rounded" style="font-size: 1.8rem;">download</span>
-                    <span>GET SKIN TEXTURE</span>
+                    <span class="material-symbols-rounded">download</span>
+                    <span>DOWNLOAD PNG SKIN</span>
                 </button>
             </div>
         </div>
     </div>
 
     <script>
-        // ADD NEW SKINS HERE
         const skinDatabase = [
-            { name: "NEON SPECTRE", tag: "LATEST", render: "skin-render.png", model: "model.gltf", png: "skin.png", desc: "The new standard for the Velvet engine. Features high-intensity emissive mapping and polished PBR surfaces." },
-            { name: "VOID WALKER", tag: "LEGACY", render: "skin-render2.png", model: "model2.gltf", png: "skin2.png", desc: "A fan favorite from v2.0, completely remastered for the v3.1.0 pipeline with updated geometry." }
+            { name: "NEON SPECTRE", tag: "LATEST", render: "skin-render.png", model: "model.gltf", png: "skin.png", desc: "Flagship v3.1.0 build with PBR materials." },
+            { name: "VOID WALKER", tag: "LEGACY", render: "skin-render2.png", model: "model2.gltf", png: "skin2.png", desc: "Remastered legacy skin." }
         ];
 
         function renderFeed() {
@@ -128,13 +132,15 @@
             skinDatabase.forEach((skin, index) => {
                 const card = document.createElement('div');
                 card.className = 'compact-card';
+                // Hover updates the right-side preview
+                card.onmouseenter = () => { document.getElementById('active-skin-img').src = skin.render; };
                 card.onclick = () => openInspect(index);
                 card.innerHTML = `
                     <img src="${skin.render}" class="card-thumb">
                     <div class="card-info">
                         <span class="tag" style="font-size: 0.7rem;">${skin.tag}</span>
                         <h2>${skin.name}</h2>
-                        <p>Click to Inspect 3D</p>
+                        <p>Inspect 3D</p>
                     </div>
                 `;
                 container.appendChild(card);
@@ -156,14 +162,11 @@
         function closeModals() { document.getElementById('inspect-modal').style.display = 'none'; }
 
         async function fetchWeather() {
-            const icon = document.getElementById('w-icon');
-            icon.textContent = 'sync';
             try {
                 const res = await fetch('https://wttr.in/?format=j1');
                 const data = await res.json();
                 document.getElementById('temp').textContent = data.current_condition[0].temp_F + "°F";
             } catch (e) { document.getElementById('temp').textContent = "72°F"; }
-            setTimeout(() => icon.textContent = 'cloud', 1200);
         }
 
         window.addEventListener('load', () => {
