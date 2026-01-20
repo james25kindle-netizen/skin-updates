@@ -28,34 +28,29 @@
         .pulse-logo { width: 80px; height: 80px; background: var(--primary); border-radius: 24px; animation: p 2s infinite; }
         @keyframes p { 0%,100%{transform:scale(0.8);border-radius:40px;} 50%{transform:scale(1.1);border-radius:20px;} }
 
-        /* FIXED VIDEO BACKGROUND */
-        .video-bg-container { 
-            position: fixed; inset: 0; z-index: -1; 
-            background: #050505; /* Fallback color */
-        }
-        #bg-video { 
-            width: 100vw; height: 100vh; object-fit: cover; 
-            opacity: 0.5; display: block;
-        }
-        /* Mask that only fades the edges slightly */
+        /* VIDEO BACKGROUND - UPDATED FILENAME */
+        .video-bg-container { position: fixed; inset: 0; z-index: -2; background: #000; overflow: hidden; }
+        #bg-video { width: 100vw; height: 100vh; object-fit: cover; opacity: 0.5; }
+        
+        /* RADIAL OVERLAY - Makes it look 'Velvet' */
         .radial-mask { 
-            position: absolute; inset: 0; 
-            background: radial-gradient(circle at center, transparent 30%, var(--surface) 100%);
+            position: fixed; inset: 0; z-index: -1;
+            background: radial-gradient(circle at 70% 50%, transparent 20%, var(--surface) 100%);
+            pointer-events: none;
         }
 
-        /* GEAR HOVER */
-        .gear-icon { transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); display: inline-block; opacity: 0.5; }
-        .widget:hover .gear-icon { transform: rotate(-90deg); opacity: 1; }
+        /* GEAR - OLD STYLE (Subtle wiggle) */
+        .gear-icon { transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1); display: inline-block; opacity: 0.4; font-size: 1.1rem; }
+        .widget:hover .gear-icon { transform: rotate(45deg); opacity: 0.8; }
 
-        /* NAV */
+        /* NAVIGATION */
         nav { padding: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
-        .widget { padding: 12px 24px; background: rgba(255,255,255,0.08); backdrop-filter: blur(var(--blur)); border-radius: var(--radius-pill); border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 700; transition: 0.3s; }
-        .widget:hover { background: rgba(255,255,255,0.15); }
+        .widget { padding: 12px 24px; background: rgba(255,255,255,0.08); backdrop-filter: blur(var(--blur)); border-radius: var(--radius-pill); border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 700; }
 
-        /* PANEL */
-        .main-layout { display: grid; grid-template-columns: 1fr 400px; gap: 40px; max-width: 1400px; margin: 0 auto; padding: 0 40px; }
+        /* MAIN PANEL */
+        .main-layout { display: grid; grid-template-columns: 1fr 400px; gap: 40px; max-width: 1400px; margin: 0 auto; padding: 0 40px; position: relative; z-index: 5; }
         .hero-title { font-size: 6.5rem; font-weight: 900; letter-spacing: -5px; line-height: 0.85; margin-top: 60px; pointer-events: none; }
-        .unified-panel { background: var(--card-bg); border-radius: var(--radius-xl); padding: 32px; backdrop-filter: blur(var(--blur)); border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 15px; height: 600px; position: relative; }
+        .unified-panel { background: var(--card-bg); border-radius: var(--radius-xl); padding: 32px; backdrop-filter: blur(var(--blur)); border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 15px; height: 600px; }
 
         /* 3D POPUP */
         #active-skin-content { display: none; margin-bottom: 10px; }
@@ -66,9 +61,10 @@
 
         /* FAB */
         .fab-container { position: fixed; bottom: 40px; left: 40px; z-index: 100; }
-        .fab { height: 60px; padding: 0 32px; background: #fff; color: #000; border-radius: 20px; border: none; display: flex; align-items: center; gap: 12px; font-weight: 900; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: 0.3s; }
+        .fab { height: 60px; padding: 0 32px; background: #fff; color: #000; border-radius: 20px; border: none; display: flex; align-items: center; gap: 12px; font-weight: 900; cursor: pointer; transition: 0.3s; }
+        .fab:hover { transform: translateY(-3px); background: var(--primary); }
 
-        /* SETTINGS */
+        /* MODAL */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 20000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
         .modal-card { background: #0a0a0a; padding: 40px; border-radius: 32px; width: 450px; border: 1px solid #222; }
     </style>
@@ -80,11 +76,11 @@
     <div id="cursor-outline"></div>
 
     <div class="video-bg-container">
-        <video id="bg-video" autoplay muted loop playsinline poster="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
-            <source src="background.mp4" type="video/mp4">
+        <video id="bg-video" autoplay muted loop playsinline>
+            <source src="skin-preview.mp4" type="video/mp4">
         </video>
-        <div class="radial-mask"></div>
     </div>
+    <div class="radial-mask"></div>
 
     <nav>
         <div class="widget interactive" onclick="openModal('settings-modal')">
@@ -122,13 +118,13 @@
 
             <div id="info-text">
                 <h2 style="font-size:1.8rem; font-weight:900;">VELVET VOID</h2>
-                <p style="opacity:0.5; font-size:0.8rem;">Tap COMPARE to toggle the 3D update view.</p>
+                <p style="opacity:0.5; font-size:0.8rem;">Update includes high-fidelity 3D modeling.</p>
             </div>
             
             <hr style="border:none; border-top:1px solid rgba(255,255,255,0.1);">
             <div style="overflow-y: auto; flex-grow: 1;">
                 <div class="interactive" style="background:rgba(255,255,255,0.05); padding:15px; border-radius:20px;">
-                    <span style="opacity:0.5; font-size:0.7rem;">SYSTEM STATUS</span><br><b>Engine Operational</b>
+                    <span style="opacity:0.5; font-size:0.7rem;">LOGS</span><br><b>Skin successfully updated.</b>
                 </div>
             </div>
         </div>
@@ -144,7 +140,7 @@
     <div id="settings-modal" class="modal-overlay">
         <div class="modal-card">
             <h2 style="font-weight:900; margin-bottom:20px;">SETTINGS</h2>
-            <p style="opacity:0.6; margin-bottom:20px;">Performance mode is active. Background video is set to 60% opacity.</p>
+            <p style="opacity:0.6; margin-bottom:20px;">Performance optimization is active for skin-preview.mp4 rendering.</p>
             <button onclick="closeModals()" class="interactive" style="width:100%; background:#fff; color:#000; padding:15px; border:none; border-radius:15px; font-weight:900; cursor:pointer;">CLOSE</button>
         </div>
     </div>
@@ -181,10 +177,7 @@
         }, 1000);
 
         window.addEventListener('load', () => {
-            // Force play video on load
-            const video = document.getElementById('bg-video');
-            video.play().catch(() => console.log("Auto-play blocked"));
-
+            document.getElementById('bg-video').play().catch(() => {});
             setTimeout(() => { 
                 document.getElementById('loader').style.opacity = '0';
                 setTimeout(() => document.getElementById('loader').style.visibility = 'hidden', 800);
