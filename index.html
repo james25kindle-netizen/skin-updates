@@ -3,204 +3,236 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pix Updates | v0.11 NEON_DAWN</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+    <title>PIX_OS // NEON_OVERRIDE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <style>
         :root {
-            --primary: #00f3ff; /* Cyber Cyan */
-            --accent: #ff00ff;  /* Neon Magenta */
-            --surface: #050505; 
-            --card-bg: rgba(10, 10, 15, 0.85);
-            --radius-xl: 0px;   /* Hard edges for Cyberpunk */
-            --blur: 15px;
-            --video-opacity: 0.5;
+            --primary: #00f3ff; 
+            --accent: #ff003c;  
+            --bg: #030303;
+            --panel: rgba(0, 20, 30, 0.9);
+            --glitch-speed: 0.3s;
         }
         
-        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; margin: 0; padding: 0; }
-        body { background: var(--surface); color: #fff; font-family: 'Space Mono', monospace; overflow: hidden; height: 100vh; }
-        body.modal-open { filter: grayscale(0.5) contrast(1.2); }
+        * { box-sizing: border-box; margin: 0; padding: 0; cursor: crosshair; }
+        
+        body { 
+            background: var(--bg); 
+            color: var(--primary); 
+            font-family: 'Share Tech Mono', monospace; 
+            overflow: hidden; 
+            height: 100vh;
+            text-transform: uppercase;
+        }
 
-        /* CYBER LOADER */
+        /* SCANLINE & FLICKER OVERLAYS */
+        body::before {
+            content: " ";
+            position: fixed; inset: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 1000;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+
+        body::after {
+            content: " ";
+            position: fixed; inset: 0;
+            background: rgba(0, 243, 255, 0.02);
+            opacity: 0;
+            z-index: 1001;
+            pointer-events: none;
+            animation: flicker 0.15s infinite;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.1; }
+            50% { opacity: 0.02; }
+            100% { opacity: 0.09; }
+        }
+
+        /* BOOT LOADER */
         #loader {
             position: fixed; inset: 0; background: #000; z-index: 99999;
-            display: flex; align-items: center; justify-content: center;
-            transition: opacity 0.8s;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-        .cyber-scanner { 
-            width: 200px; height: 2px; background: var(--primary); 
-            box-shadow: 0 0 15px var(--primary);
-            animation: scan 1.5s infinite ease-in-out;
-        }
-        @keyframes scan { 0% { transform: translateY(-50px); } 50% { transform: translateY(50px); } 100% { transform: translateY(-50px); } }
+        .boot-log { font-size: 0.8rem; color: var(--primary); text-shadow: 0 0 5px var(--primary); }
 
-        /* WHAT'S NEW MODAL */
-        .whats-new-list { padding-left: 18px; font-size: 0.85rem; line-height: 1.8; color: var(--primary); list-style: ">> "; }
-        .loading-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; border-bottom: 1px solid var(--primary); padding-bottom: 5px; }
-        .loading-text { font-weight: 800; letter-spacing: 2px; animation: glitch 1s infinite; font-size: 0.7rem; }
-        
-        @keyframes glitch {
-            0% { clip-path: inset(50% 0 30% 0); transform: translate(-2px, 2px); }
-            20% { clip-path: inset(10% 0 80% 0); transform: translate(2px, -2px); }
-            100% { clip-path: inset(50% 0 30% 0); transform: translate(-2px, 2px); }
-        }
-
-        .primary-btn {
+        /* CYBERPUNK BUTTONS (GLITCH HOVER) */
+        .cyber-btn {
             background: transparent;
             color: var(--primary);
-            font-weight: 900;
-            padding: 14px;
             border: 1px solid var(--primary);
-            cursor: pointer;
-            width: 100%;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-        }
-        .primary-btn:hover { background: var(--primary); color: #000; box-shadow: 0 0 20px var(--primary); }
-
-        /* UI ELEMENTS */
-        .interactive {
-            background: rgba(0, 243, 255, 0.05);
-            color: var(--primary);
-            border: 1px solid rgba(0, 243, 255, 0.2);
-            padding: 12px;
-            cursor: pointer;
-            font-family: inherit;
+            padding: 15px 30px;
+            position: relative;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            letter-spacing: 2px;
+            transition: 0.1s;
+            clip-path: polygon(0% 0%, 100% 0%, 100% 70%, 90% 100%, 0% 100%);
         }
 
-        .video-bg-container { position: fixed; inset: 0; z-index: -1; background: #000; }
-        #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: var(--video-opacity); filter: saturate(1.5) hue-rotate(180deg); }
-
-        nav { padding: 30px; display: flex; justify-content: space-between; position: relative; z-index: 10; }
-        .widget { 
-            padding: 10px 20px; background: var(--card-bg); border: 1px solid var(--primary); 
-            clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
-            color: var(--primary); font-weight: 700; 
+        .cyber-btn:hover {
+            background: var(--primary);
+            color: #000;
+            box-shadow: -5px 0 0 var(--accent);
+            transform: skew(-2deg);
         }
 
-        .main-layout { display: grid; grid-template-columns: 1fr 400px; gap: 40px; max-width: 1400px; margin: 0 auto; padding: 0 40px; }
-        .hero-title { 
-            font-family: 'Syncopate', sans-serif; font-size: 5rem; font-weight: 900; 
-            text-shadow: 3px 3px var(--accent); margin-top: 40px;
-        }
-        .unified-panel { 
-            background: var(--card-bg); border: 1px solid var(--primary); 
-            padding: 32px; height: 580px; margin-top: 20px;
-            box-shadow: -5px 5px 0px var(--accent);
+        /* ASYMMETRIC PANELS */
+        .main-layout { display: grid; grid-template-columns: 1fr 450px; gap: 20px; padding: 40px; position: relative; z-index: 10; }
+        
+        .hero-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 7rem;
+            line-height: 0.8;
+            color: #fff;
+            text-shadow: 4px 4px var(--accent), -2px -2px var(--primary);
+            animation: glitch-text 3s infinite;
         }
 
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 20000; display: none; align-items: center; justify-content: center; }
-        .modal-card { 
-            background: #000; padding: 40px; width: 480px; display: flex; flex-direction: column; gap: 20px; 
-            border: 2px solid var(--primary); position: relative;
+        .unified-panel {
+            background: var(--panel);
+            border: 1px solid var(--primary);
+            padding: 20px;
+            position: relative;
+            box-shadow: inset 0 0 20px rgba(0, 243, 255, 0.2);
         }
-        .modal-card::before { content: "SYSTEM_MSG"; position: absolute; top: -12px; left: 20px; background: var(--primary); color: #000; padding: 2px 8px; font-size: 0.6rem; }
 
-        .fab { 
-            position: fixed; bottom: 40px; left: 40px; height: 60px; padding: 0 32px; 
-            background: var(--accent); color: #000; border: none; font-weight: 900; cursor: pointer;
-            clip-path: polygon(0 0, 100% 0, 100% 75%, 85% 100%, 0 100%);
+        .unified-panel::after {
+            content: "DATA_STREAM_ACTIVE";
+            position: absolute; top: -10px; right: 10px;
+            background: var(--accent); color: #fff;
+            padding: 2px 5px; font-size: 0.6rem;
+        }
+
+        /* MODALS */
+        .modal-overlay { 
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95); 
+            z-index: 20000; display: none; align-items: center; justify-content: center; 
+        }
+
+        .modal-card {
+            border: 2px solid var(--primary);
+            background: #000;
+            padding: 50px;
+            width: 500px;
+            box-shadow: 10px 10px 0 var(--accent);
+        }
+
+        /* VIDEO BG */
+        .video-bg-container { position: fixed; inset: 0; z-index: -1; }
+        #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.4; filter: grayscale(1) contrast(1.5) brightness(0.8); }
+
+        /* DECORATIVE ELEMENTS */
+        .top-nav { display: flex; justify-content: space-between; padding: 20px 40px; border-bottom: 1px solid rgba(0, 243, 255, 0.3); }
+        .stat-box { font-size: 0.7rem; border-left: 2px solid var(--primary); padding-left: 10px; }
+
+        @keyframes glitch-text {
+            0% { transform: translate(0); }
+            1% { transform: translate(-2px, 2px); }
+            2% { transform: translate(2px, -2px); }
+            3% { transform: translate(0); }
+            100% { transform: translate(0); }
         }
     </style>
 </head>
 <body>
 
-    <div id="loader"><div class="cyber-scanner"></div></div>
+    <div id="loader">
+        <div class="boot-log" id="boot-text">INITIALIZING PIX_CORE...</div>
+    </div>
 
     <div class="video-bg-container">
         <video id="bg-video" autoplay muted loop playsinline></video>
     </div>
 
-    <nav>
-        <button class="widget" onclick="openModal('settings-modal')">
-            [ <span id="clock">00:00</span> ]
-        </button>
-    </nav>
-
-    <div class="main-layout">
-        <div><h1 class="hero-title">PIX_<br><span style="color: var(--primary);">NET</span></h1></div>
-        <div class="unified-panel">
-            <span style="border: 1px solid var(--accent); color: var(--accent); padding: 2px 8px; font-size: 0.7rem;">STATUS: ONLINE</span>
-            <h2 style="margin-top:10px; font-size:1.8rem; letter-spacing: -1px;">EMBER_KNIGHT.exe</h2>
-            <p style="opacity:0.6; font-size: 0.8rem;">DIR: /root/skins/v1.0.0</p>
-            <hr style="border:none; border-top:1px solid var(--primary); margin: 20px 0; opacity: 0.3;">
-            <div id="history-list" style="overflow-y: auto; flex-grow: 1;"></div>
+    <div class="top-nav">
+        <div><span style="color:var(--accent)">●</span> SYSTEM_v0.11_STABLE</div>
+        <div class="stat-box">
+            LOCAL_TIME: <span id="clock">00:00:00</span><br>
+            NET_STATUS: ENCRYPTED
         </div>
     </div>
 
-    <div id="settings-modal" class="modal-overlay">
-        <div class="modal-card">
-            <h2>CONFIG_MENU</h2>
-            <button onclick="openWhatsNew()" class="interactive">RUN WHAT_NEW.sh</button>
-            <button onclick="closeModals()" class="primary-btn">EXIT</button>
+    <div class="main-layout">
+        <div>
+            <h1 class="hero-title">NEON<br><span style="color:var(--primary)">P_X</span></h1>
+            <div style="margin-top: 50px;">
+                <button class="cyber-btn" onclick="openModal('whats-new-modal')">VIEW_LOGS</button>
+            </div>
+        </div>
+
+        <div class="unified-panel">
+            <div style="font-size: 0.8rem; margin-bottom: 20px;">[ ARCHIVE_01 ]</div>
+            <h2 style="font-family: 'Orbitron'; font-size: 2rem;">EMBER_KNIGHT</h2>
+            <p style="color: var(--accent); font-weight: bold; margin: 10px 0;">PRIORITY: HIGH</p>
+            <div style="height: 300px; border: 1px dashed var(--primary); margin: 20px 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.5);">
+                <span style="opacity: 0.3;">3D_PREVIEW_DISABLED_BY_USER</span>
+            </div>
+            <button class="cyber-btn" style="width: 100%;" onclick="alert('DOWNLOADING...')">EXTRACT_ASSET</button>
         </div>
     </div>
 
     <div id="whats-new-modal" class="modal-overlay">
         <div class="modal-card">
-            <div class="loading-row">
-                <span class="loading-text">DECRYPTING UPDATES...</span>
+            <h2 style="font-family: 'Orbitron'; margin-bottom: 20px; color: var(--accent);">// UPDATE_REPORT</h2>
+            <div style="font-size: 0.9rem; line-height: 2;">
+                > INTERFACE RE-WIRED FOR HIGH-LATENCY ENV<br>
+                > CRT SCANLINE OVERLAY ENABLED<br>
+                > GLITCH-PROTOCOL v4.0 ACTIVE<br>
+                > ALL ROUNDED EDGES DELETED<br>
+                > NEON SATURATION AT 115%
             </div>
-            <h2 style="color: var(--accent);">V0.11 NEON_DAWN</h2>
-            <ul class="whats-new-list">
-                <li>SYNTH_WAVE visual overhaul</li>
-                <li>Digital glitch transitions</li>
-                <li>Hard-coded UI geometry</li>
-                <li>Random background protocol</li>
-                <li>Performance bypass v3</li>
-            </ul>
-            <button class="primary-btn" onclick="closeWhatsNew()">EXECUTE</button>
+            <button class="cyber-btn" style="margin-top: 30px; width: 100%;" onclick="closeWhatsNew()">CONFIRM_CHOICE</button>
         </div>
     </div>
-
-    <button class="fab">DOWNLOAD_CORE</button>
 
     <script>
         const SITE_VERSION = "0.11";
         const bgVideos = ["bg1.mp4", "bg2.mp4", "bg3.mp4", "bg4.mp4"];
+        
+        // Random Video Protocol
+        const video = document.getElementById("bg-video");
+        video.src = bgVideos[Math.floor(Math.random() * bgVideos.length)];
 
-        function loadRandomVideo() {
-            const video = document.getElementById("bg-video");
-            video.src = bgVideos[Math.floor(Math.random() * bgVideos.length)];
-        }
+        // Boot Sequence Simulation
+        const bootText = document.getElementById("boot-text");
+        const messages = [
+            "BYPASSING SECURITY...",
+            "LOADING NEON_ASSETS...",
+            "DECRYPTING INTERFACE...",
+            "WELCOME TO THE GRID."
+        ];
+        let msgIdx = 0;
 
-        function openModal(id) {
-            document.getElementById(id).style.display = 'flex';
-            document.body.classList.add('modal-open');
-        }
-
-        function closeModals() {
-            document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
-            document.body.classList.remove('modal-open');
-        }
-
-        function openWhatsNew() {
-            closeModals();
-            document.getElementById("whats-new-modal").style.display = "flex";
-        }
-
-        function closeWhatsNew() {
-            document.getElementById("whats-new-modal").style.display = "none";
-            document.body.classList.remove("modal-open");
-            localStorage.setItem("pix_seen_version", SITE_VERSION);
-        }
-
-        loadRandomVideo();
-
-        window.addEventListener("load", () => {
-            setInterval(() => { 
-                document.getElementById('clock').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }); 
-            }, 1000);
-
-            setTimeout(() => { 
-                document.getElementById('loader').style.opacity = '0'; 
+        const bootInterval = setInterval(() => {
+            if(msgIdx < messages.length) {
+                bootText.innerHTML += `<br>> ${messages[msgIdx]}`;
+                msgIdx++;
+            } else {
+                clearInterval(bootInterval);
                 setTimeout(() => {
-                    document.getElementById('loader').style.display = 'none';
-                    const seen = localStorage.getItem("pix_seen_version");
-                    if (seen !== SITE_VERSION) setTimeout(openWhatsNew, 1200); 
-                }, 800);
-            }, 1500);
-        });
+                    document.getElementById('loader').style.opacity = '0';
+                    setTimeout(() => { 
+                        document.getElementById('loader').style.display = 'none';
+                        if(localStorage.getItem("pix_seen") !== SITE_VERSION) openModal('whats-new-modal');
+                    }, 500);
+                }, 1000);
+            }
+        }, 400);
+
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeWhatsNew() { 
+            document.getElementById('whats-new-modal').style.display = 'none';
+            localStorage.setItem("pix_seen", SITE_VERSION);
+        }
+
+        // System Clock
+        setInterval(() => {
+            document.getElementById('clock').textContent = new Date().toLocaleTimeString();
+        }, 1000);
     </script>
 </body>
 </html>
