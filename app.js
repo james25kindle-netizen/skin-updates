@@ -1,33 +1,29 @@
-const updatedDate = new Date("2026-01-10");
-const now = new Date();
-const days = Math.floor((now - updatedDate) / 86400000);
-
-document.getElementById("updated").textContent =
-  days === 0 ? "Updated today" : `Updated ${days} days ago`;
-
-if (days > 7) {
-  document.querySelector(".new")?.remove();
-}
-
-// QR Code
-import("https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js").then(QR => {
-  QR.toCanvas(document.getElementById("qr"), location.href);
+// LOADING
+window.addEventListener("load", () => {
+  setTimeout(() => {
+    document.getElementById("loader").style.display = "none";
+  }, 1200);
 });
 
-function updateClock() {
-  const now = new Date();
-  const time = now.toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit"
-  });
-  const date = now.toLocaleDateString([], {
-    weekday: "short",
-    month: "short",
-    day: "numeric"
-  });
+// UPDATED DAYS
+const updatedDate = new Date("2026-01-01");
+const daysAgo = Math.floor((Date.now() - updatedDate) / 86400000);
+document.getElementById("updatedDays").textContent =
+  daysAgo === 0 ? "today" : `${daysAgo} days ago`;
 
-  document.getElementById("clock").textContent = `${date} • ${time}`;
+// WHAT'S NEW
+const version = "1.0.0";
+const seenVersion = localStorage.getItem("seenVersion");
+
+if (seenVersion !== version) {
+  document.getElementById("whatsNewModal").classList.remove("hidden");
+  localStorage.setItem("seenVersion", version);
 }
 
-updateClock();
-setInterval(updateClock, 1000);
+function closeWhatsNew() {
+  document.getElementById("whatsNewModal").classList.add("hidden");
+}
+
+document.getElementById("showWhatsNew").onclick = () => {
+  document.getElementById("whatsNewModal").classList.remove("hidden");
+};
