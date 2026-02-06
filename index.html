@@ -1,71 +1,238 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>PIX UPDATES</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIX_OS // NEON_OVERRIDE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <style>
+        :root {
+            --primary: #00f3ff; 
+            --accent: #ff003c;  
+            --bg: #030303;
+            --panel: rgba(0, 20, 30, 0.9);
+            --glitch-speed: 0.3s;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; cursor: crosshair; }
+        
+        body { 
+            background: var(--bg); 
+            color: var(--primary); 
+            font-family: 'Share Tech Mono', monospace; 
+            overflow: hidden; 
+            height: 100vh;
+            text-transform: uppercase;
+        }
 
-  <!-- Google Sans Flex -->
-  <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@8..144,100..1000&display=swap" rel="stylesheet">
+        /* SCANLINE & FLICKER OVERLAYS */
+        body::before {
+            content: " ";
+            position: fixed; inset: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 1000;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
 
-  <!-- Model Viewer -->
-  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+        body::after {
+            content: " ";
+            position: fixed; inset: 0;
+            background: rgba(0, 243, 255, 0.02);
+            opacity: 0;
+            z-index: 1001;
+            pointer-events: none;
+            animation: flicker 0.15s infinite;
+        }
 
-  <link rel="stylesheet" href="style.css" />
+        @keyframes flicker {
+            0% { opacity: 0.1; }
+            50% { opacity: 0.02; }
+            100% { opacity: 0.09; }
+        }
+
+        /* BOOT LOADER */
+        #loader {
+            position: fixed; inset: 0; background: #000; z-index: 99999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .boot-log { font-size: 0.8rem; color: var(--primary); text-shadow: 0 0 5px var(--primary); }
+
+        /* CYBERPUNK BUTTONS (GLITCH HOVER) */
+        .cyber-btn {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 15px 30px;
+            position: relative;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            letter-spacing: 2px;
+            transition: 0.1s;
+            clip-path: polygon(0% 0%, 100% 0%, 100% 70%, 90% 100%, 0% 100%);
+        }
+
+        .cyber-btn:hover {
+            background: var(--primary);
+            color: #000;
+            box-shadow: -5px 0 0 var(--accent);
+            transform: skew(-2deg);
+        }
+
+        /* ASYMMETRIC PANELS */
+        .main-layout { display: grid; grid-template-columns: 1fr 450px; gap: 20px; padding: 40px; position: relative; z-index: 10; }
+        
+        .hero-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 7rem;
+            line-height: 0.8;
+            color: #fff;
+            text-shadow: 4px 4px var(--accent), -2px -2px var(--primary);
+            animation: glitch-text 3s infinite;
+        }
+
+        .unified-panel {
+            background: var(--panel);
+            border: 1px solid var(--primary);
+            padding: 20px;
+            position: relative;
+            box-shadow: inset 0 0 20px rgba(0, 243, 255, 0.2);
+        }
+
+        .unified-panel::after {
+            content: "DATA_STREAM_ACTIVE";
+            position: absolute; top: -10px; right: 10px;
+            background: var(--accent); color: #fff;
+            padding: 2px 5px; font-size: 0.6rem;
+        }
+
+        /* MODALS */
+        .modal-overlay { 
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95); 
+            z-index: 20000; display: none; align-items: center; justify-content: center; 
+        }
+
+        .modal-card {
+            border: 2px solid var(--primary);
+            background: #000;
+            padding: 50px;
+            width: 500px;
+            box-shadow: 10px 10px 0 var(--accent);
+        }
+
+        /* VIDEO BG */
+        .video-bg-container { position: fixed; inset: 0; z-index: -1; }
+        #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.4; filter: grayscale(1) contrast(1.5) brightness(0.8); }
+
+        /* DECORATIVE ELEMENTS */
+        .top-nav { display: flex; justify-content: space-between; padding: 20px 40px; border-bottom: 1px solid rgba(0, 243, 255, 0.3); }
+        .stat-box { font-size: 0.7rem; border-left: 2px solid var(--primary); padding-left: 10px; }
+
+        @keyframes glitch-text {
+            0% { transform: translate(0); }
+            1% { transform: translate(-2px, 2px); }
+            2% { transform: translate(2px, -2px); }
+            3% { transform: translate(0); }
+            100% { transform: translate(0); }
+        }
+    </style>
 </head>
 <body>
 
-  <!-- LOADING -->
-  <div id="loader">
-    <div class="spinner"></div>
-    <div class="loader-label">LOADING</div>
-  </div>
-
-  <!-- HEADER -->
-  <header class="scanlines">
-    <h1 class="glitch" data-text="PIX UPDATES">PIX UPDATES</h1>
-    <p>Cyberpunk skin update system</p>
-  </header>
-
-  <!-- MAIN -->
-  <main>
-    <section class="card scanlines">
-      <h2 class="glitch" data-text="VERSION 1.0.0">VERSION 1.0.0</h2>
-      <span class="badge">NEW</span>
-
-      <p class="meta">Updated <span id="updatedDays"></span></p>
-
-      <model-viewer
-        src="model.gltf"
-        auto-rotate
-        camera-controls
-        environment-image="neutral"
-        shadow-intensity="1.4">
-      </model-viewer>
-
-      <button>Download Skin</button>
-    </section>
-  </main>
-
-  <!-- SETTINGS -->
-  <footer>
-    <button id="showWhatsNew">What’s New</button>
-  </footer>
-
-  <!-- WHATS NEW MODAL -->
-  <div id="whatsNewModal" class="modal hidden">
-    <div class="modal-card scanlines">
-      <h2 class="glitch" data-text="WHAT’S NEW">WHAT’S NEW</h2>
-      <p>
-        🚀 New cyberpunk UI<br>
-        🎮 3D skin preview<br>
-        ✨ Neon effects everywhere<br>
-        😎 And more chaos incoming
-      </p>
-      <button onclick="closeWhatsNew()">Got it</button>
+    <div id="loader">
+        <div class="boot-log" id="boot-text">INITIALIZING PIX_CORE...</div>
     </div>
-  </div>
 
-  <script src="app.js"></script>
+    <div class="video-bg-container">
+        <video id="bg-video" autoplay muted loop playsinline></video>
+    </div>
+
+    <div class="top-nav">
+        <div><span style="color:var(--accent)">●</span> SYSTEM_v0.11_STABLE</div>
+        <div class="stat-box">
+            LOCAL_TIME: <span id="clock">00:00:00</span><br>
+            NET_STATUS: ENCRYPTED
+        </div>
+    </div>
+
+    <div class="main-layout">
+        <div>
+            <h1 class="hero-title">NEON<br><span style="color:var(--primary)">P_X</span></h1>
+            <div style="margin-top: 50px;">
+                <button class="cyber-btn" onclick="openModal('whats-new-modal')">VIEW_LOGS</button>
+            </div>
+        </div>
+
+        <div class="unified-panel">
+            <div style="font-size: 0.8rem; margin-bottom: 20px;">[ ARCHIVE_01 ]</div>
+            <h2 style="font-family: 'Orbitron'; font-size: 2rem;">EMBER_KNIGHT</h2>
+            <p style="color: var(--accent); font-weight: bold; margin: 10px 0;">PRIORITY: HIGH</p>
+            <div style="height: 300px; border: 1px dashed var(--primary); margin: 20px 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.5);">
+                <span style="opacity: 0.3;">3D_PREVIEW_DISABLED_BY_USER</span>
+            </div>
+            <button class="cyber-btn" style="width: 100%;" onclick="alert('DOWNLOADING...')">EXTRACT_ASSET</button>
+        </div>
+    </div>
+
+    <div id="whats-new-modal" class="modal-overlay">
+        <div class="modal-card">
+            <h2 style="font-family: 'Orbitron'; margin-bottom: 20px; color: var(--accent);">// UPDATE_REPORT</h2>
+            <div style="font-size: 0.9rem; line-height: 2;">
+                > INTERFACE RE-WIRED FOR HIGH-LATENCY ENV<br>
+                > CRT SCANLINE OVERLAY ENABLED<br>
+                > GLITCH-PROTOCOL v4.0 ACTIVE<br>
+                > ALL ROUNDED EDGES DELETED<br>
+                > NEON SATURATION AT 115%
+            </div>
+            <button class="cyber-btn" style="margin-top: 30px; width: 100%;" onclick="closeWhatsNew()">CONFIRM_CHOICE</button>
+        </div>
+    </div>
+
+    <script>
+        const SITE_VERSION = "0.11";
+        const bgVideos = ["bg1.mp4", "bg2.mp4", "bg3.mp4", "bg4.mp4"];
+        
+        // Random Video Protocol
+        const video = document.getElementById("bg-video");
+        video.src = bgVideos[Math.floor(Math.random() * bgVideos.length)];
+
+        // Boot Sequence Simulation
+        const bootText = document.getElementById("boot-text");
+        const messages = [
+            "BYPASSING SECURITY...",
+            "LOADING NEON_ASSETS...",
+            "DECRYPTING INTERFACE...",
+            "WELCOME TO THE GRID."
+        ];
+        let msgIdx = 0;
+
+        const bootInterval = setInterval(() => {
+            if(msgIdx < messages.length) {
+                bootText.innerHTML += `<br>> ${messages[msgIdx]}`;
+                msgIdx++;
+            } else {
+                clearInterval(bootInterval);
+                setTimeout(() => {
+                    document.getElementById('loader').style.opacity = '0';
+                    setTimeout(() => { 
+                        document.getElementById('loader').style.display = 'none';
+                        if(localStorage.getItem("pix_seen") !== SITE_VERSION) openModal('whats-new-modal');
+                    }, 500);
+                }, 1000);
+            }
+        }, 400);
+
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeWhatsNew() { 
+            document.getElementById('whats-new-modal').style.display = 'none';
+            localStorage.setItem("pix_seen", SITE_VERSION);
+        }
+
+        // System Clock
+        setInterval(() => {
+            document.getElementById('clock').textContent = new Date().toLocaleTimeString();
+        }, 1000);
+    </script>
 </body>
 </html>
