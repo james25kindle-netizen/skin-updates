@@ -30,7 +30,8 @@
         body::before {
             content: " ";
             position: fixed; inset: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
             z-index: 1000;
             background-size: 100% 2px, 3px 100%;
             pointer-events: none;
@@ -57,9 +58,9 @@
             position: fixed; inset: 0; background: #000; z-index: 99999;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-        .boot-log { font-size: 0.8rem; color: var(--primary); text-shadow: 0 0 5px var(--primary); }
+        .boot-log { font-size: 0.8rem; color: var(--primary); text-shadow: 0 0 5px var(--primary); line-height: 1.5; }
 
-        /* CYBERPUNK BUTTONS (GLITCH HOVER) */
+        /* CYBERPUNK BUTTONS */
         .cyber-btn {
             background: transparent;
             color: var(--primary);
@@ -71,6 +72,7 @@
             letter-spacing: 2px;
             transition: 0.1s;
             clip-path: polygon(0% 0%, 100% 0%, 100% 70%, 90% 100%, 0% 100%);
+            overflow: hidden;
         }
 
         .cyber-btn:hover {
@@ -80,62 +82,89 @@
             transform: skew(-2deg);
         }
 
+        .cyber-btn::before {
+            content: ""; position: absolute; top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.4s;
+        }
+        .cyber-btn:hover::before { left: 100%; }
+
         /* ASYMMETRIC PANELS */
-        .main-layout { display: grid; grid-template-columns: 1fr 450px; gap: 20px; padding: 40px; position: relative; z-index: 10; }
+        .main-layout { display: grid; grid-template-columns: 1fr 450px; gap: 20px; padding: 40px; position: relative; z-index: 10; height: calc(100vh - 100px); }
         
         .hero-title {
             font-family: 'Orbitron', sans-serif;
-            font-size: 7rem;
+            font-size: 8rem;
             line-height: 0.8;
             color: #fff;
             text-shadow: 4px 4px var(--accent), -2px -2px var(--primary);
             animation: glitch-text 3s infinite;
+            pointer-events: none;
         }
 
         .unified-panel {
             background: var(--panel);
             border: 1px solid var(--primary);
-            padding: 20px;
+            padding: 25px;
             position: relative;
-            box-shadow: inset 0 0 20px rgba(0, 243, 255, 0.2);
+            box-shadow: inset 0 0 20px rgba(0, 243, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Decorative Corner */
+        .unified-panel::before {
+            content: ""; position: absolute; bottom: -2px; right: -2px;
+            width: 30px; height: 30px;
+            background: var(--accent);
+            clip-path: polygon(100% 0, 100% 100%, 0 100%);
         }
 
         .unified-panel::after {
             content: "DATA_STREAM_ACTIVE";
             position: absolute; top: -10px; right: 10px;
             background: var(--accent); color: #fff;
-            padding: 2px 5px; font-size: 0.6rem;
+            padding: 2px 8px; font-size: 0.6rem; font-weight: 900;
         }
 
         /* MODALS */
         .modal-overlay { 
             position: fixed; inset: 0; background: rgba(0,0,0,0.95); 
             z-index: 20000; display: none; align-items: center; justify-content: center; 
+            backdrop-filter: grayscale(1) blur(5px);
         }
 
         .modal-card {
             border: 2px solid var(--primary);
             background: #000;
             padding: 50px;
-            width: 500px;
-            box-shadow: 10px 10px 0 var(--accent);
+            width: 550px;
+            box-shadow: 15px 15px 0 var(--accent);
+            position: relative;
         }
 
         /* VIDEO BG */
-        .video-bg-container { position: fixed; inset: 0; z-index: -1; }
-        #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.4; filter: grayscale(1) contrast(1.5) brightness(0.8); }
+        .video-bg-container { position: fixed; inset: 0; z-index: -1; background: #000; }
+        #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.35; filter: contrast(1.2) brightness(0.7); }
 
         /* DECORATIVE ELEMENTS */
-        .top-nav { display: flex; justify-content: space-between; padding: 20px 40px; border-bottom: 1px solid rgba(0, 243, 255, 0.3); }
-        .stat-box { font-size: 0.7rem; border-left: 2px solid var(--primary); padding-left: 10px; }
+        .top-nav { display: flex; justify-content: space-between; padding: 20px 40px; border-bottom: 1px solid rgba(0, 243, 255, 0.2); background: rgba(0,0,0,0.4); }
+        .stat-box { font-size: 0.7rem; border-left: 2px solid var(--primary); padding-left: 15px; letter-spacing: 1px; }
 
         @keyframes glitch-text {
             0% { transform: translate(0); }
-            1% { transform: translate(-2px, 2px); }
-            2% { transform: translate(2px, -2px); }
-            3% { transform: translate(0); }
+            1% { transform: translate(-3px, 1px); color: var(--accent); }
+            2% { transform: translate(3px, -1px); color: var(--primary); }
+            3% { transform: translate(0); color: #fff; }
+            95% { transform: translate(0); }
+            97% { transform: translate(-5px, 2px); }
             100% { transform: translate(0); }
         }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: var(--primary); }
     </style>
 </head>
 <body>
@@ -149,43 +178,49 @@
     </div>
 
     <div class="top-nav">
-        <div><span style="color:var(--accent)">●</span> SYSTEM_v0.11_STABLE</div>
+        <div><span style="color:var(--accent); animation: flicker 0.5s infinite;">●</span> SYSTEM_v0.11_OVERRIDE</div>
         <div class="stat-box">
             LOCAL_TIME: <span id="clock">00:00:00</span><br>
-            NET_STATUS: ENCRYPTED
+            NET_STATUS: <span style="color:var(--accent)">VULNERABLE</span>
         </div>
     </div>
 
     <div class="main-layout">
-        <div>
+        <div style="display: flex; flex-direction: column; justify-content: center;">
             <h1 class="hero-title">NEON<br><span style="color:var(--primary)">P_X</span></h1>
-            <div style="margin-top: 50px;">
-                <button class="cyber-btn" onclick="openModal('whats-new-modal')">VIEW_LOGS</button>
+            <div style="margin-top: 50px; display: flex; gap: 20px;">
+                <button class="cyber-btn" onclick="openModal('whats-new-modal')">SYS_LOGS</button>
+                <button class="cyber-btn" style="--primary: #fff; border-color: rgba(255,255,255,0.3);">NETWORK</button>
             </div>
         </div>
 
-        <div class="unified-panel">
-            <div style="font-size: 0.8rem; margin-bottom: 20px;">[ ARCHIVE_01 ]</div>
-            <h2 style="font-family: 'Orbitron'; font-size: 2rem;">EMBER_KNIGHT</h2>
-            <p style="color: var(--accent); font-weight: bold; margin: 10px 0;">PRIORITY: HIGH</p>
-            <div style="height: 300px; border: 1px dashed var(--primary); margin: 20px 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.5);">
-                <span style="opacity: 0.3;">3D_PREVIEW_DISABLED_BY_USER</span>
+        <div class="unified-panel" style="align-self: center;">
+            <div style="font-size: 0.8rem; margin-bottom: 20px; opacity: 0.5;">// ARCHIVE: 08-24-2026</div>
+            <h2 style="font-family: 'Orbitron'; font-size: 2.2rem; letter-spacing: -1px;">EMBER_KNIGHT</h2>
+            <p style="color: var(--accent); font-weight: bold; margin: 10px 0; font-size: 0.8rem;">[ THREAT_LEVEL: OMEGA ]</p>
+            
+            <div style="height: 320px; border: 1px solid rgba(0, 243, 255, 0.2); margin: 20px 0; position: relative; overflow: hidden; background: rgba(0,0,0,0.6);">
+                <div style="position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent 0, transparent 2px, rgba(0,243,255,0.05) 3px); pointer-events: none;"></div>
+                <div style="display: flex; align-items: center; justify-content: center; height: 100%;">
+                    <span style="opacity: 0.2; font-size: 0.7rem; letter-spacing: 5px;">NO_VISUAL_FEED</span>
+                </div>
             </div>
-            <button class="cyber-btn" style="width: 100%;" onclick="alert('DOWNLOADING...')">EXTRACT_ASSET</button>
+            
+            <button class="cyber-btn" style="width: 100%;" onclick="alert('EXTRACTING...')">EXTRACT_CORE_ASSET</button>
         </div>
     </div>
 
     <div id="whats-new-modal" class="modal-overlay">
         <div class="modal-card">
-            <h2 style="font-family: 'Orbitron'; margin-bottom: 20px; color: var(--accent);">// UPDATE_REPORT</h2>
-            <div style="font-size: 0.9rem; line-height: 2;">
-                > INTERFACE RE-WIRED FOR HIGH-LATENCY ENV<br>
-                > CRT SCANLINE OVERLAY ENABLED<br>
-                > GLITCH-PROTOCOL v4.0 ACTIVE<br>
-                > ALL ROUNDED EDGES DELETED<br>
-                > NEON SATURATION AT 115%
+            <h2 style="font-family: 'Orbitron'; margin-bottom: 25px; color: var(--accent); border-bottom: 1px solid var(--accent);">// PATCH_OVERRIDE_REPORT</h2>
+            <div style="font-size: 0.9rem; line-height: 2; font-family: 'Share Tech Mono';">
+                > INTERFACE RE-WIRED [SUCCESS]<br>
+                > CRT SCANLINE OVERLAY [ACTIVE]<br>
+                > GLITCH-PROTOCOL v4.0 [ENABLED]<br>
+                > NEON SATURATION [STABLE at 115%]<br>
+                > LOGIC_GATE: BYPASSED
             </div>
-            <button class="cyber-btn" style="margin-top: 30px; width: 100%;" onclick="closeWhatsNew()">CONFIRM_CHOICE</button>
+            <button class="cyber-btn" style="margin-top: 40px; width: 100%;" onclick="closeWhatsNew()">EXECUTE_REBOOT</button>
         </div>
     </div>
 
@@ -193,15 +228,16 @@
         const SITE_VERSION = "0.11";
         const bgVideos = ["bg1.mp4", "bg2.mp4", "bg3.mp4", "bg4.mp4"];
         
-        // Random Video Protocol
         const video = document.getElementById("bg-video");
         video.src = bgVideos[Math.floor(Math.random() * bgVideos.length)];
 
-        // Boot Sequence Simulation
+        // Enhanced Boot Sequence
         const bootText = document.getElementById("boot-text");
         const messages = [
             "BYPASSING SECURITY...",
+            "MOUNTING /ROOT/SYSTEM...",
             "LOADING NEON_ASSETS...",
+            "INJECTING GLITCH_CORE...",
             "DECRYPTING INTERFACE...",
             "WELCOME TO THE GRID."
         ];
@@ -209,7 +245,9 @@
 
         const bootInterval = setInterval(() => {
             if(msgIdx < messages.length) {
-                bootText.innerHTML += `<br>> ${messages[msgIdx]}`;
+                const span = document.createElement('div');
+                span.innerHTML = `> ${messages[msgIdx]}`;
+                bootText.appendChild(span);
                 msgIdx++;
             } else {
                 clearInterval(bootInterval);
@@ -221,18 +259,34 @@
                     }, 500);
                 }, 1000);
             }
-        }, 400);
+        }, 300);
 
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function openModal(id) { 
+            document.getElementById(id).style.display = 'flex'; 
+        }
+        
         function closeWhatsNew() { 
             document.getElementById('whats-new-modal').style.display = 'none';
             localStorage.setItem("pix_seen", SITE_VERSION);
         }
 
-        // System Clock
+        // Clock with Milliseconds for "Tech" feel
         setInterval(() => {
-            document.getElementById('clock').textContent = new Date().toLocaleTimeString();
-        }, 1000);
+            const now = new Date();
+            const time = now.toLocaleTimeString('en-GB');
+            const ms = Math.floor(now.getMilliseconds() / 10).toString().padStart(2, '0');
+            document.getElementById('clock').textContent = `${time}:${ms}`;
+        }, 40);
+
+        // Random Text Jitter on UI Elements
+        setInterval(() => {
+            const elements = document.querySelectorAll('h2, .stat-box');
+            if(Math.random() > 0.95) {
+                const el = elements[Math.floor(Math.random() * elements.length)];
+                el.style.transform = `translate(${Math.random()*2}px)`;
+                setTimeout(() => el.style.transform = 'translate(0)', 50);
+            }
+        }, 200);
     </script>
 </body>
 </html>
