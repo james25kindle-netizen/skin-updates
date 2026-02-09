@@ -108,10 +108,10 @@
 
     <nav class="top-nav">
         <div class="weather-widget">
-            <span class="material-symbols-rounded weather-icon" id="w-icon">partly_cloudy_day</span>
+            <span class="material-symbols-rounded weather-icon" id="w-icon">radar</span>
             <div class="stat-box" style="border-color: var(--accent);">
-                ENV_TEMP: <span id="temp">24°C</span><br>
-                CONDITION: <span id="condition">ACID_RAIN_PROBABLE</span>
+                ENV_TEMP: <span id="temp">75°F</span><br>
+                CONDITION: <span id="condition">SCANNING_ATMOSPHERE</span>
             </div>
         </div>
 
@@ -144,8 +144,8 @@
             <h2 style="font-family: 'Orbitron'; margin-bottom: 25px; color: var(--accent);">// PATCH_0.11_REPORT</h2>
             <div style="font-size: 0.9rem; line-height: 2;">
                 > 12H TIME DECODING ENABLED<br>
-                > WEATHER SENSORS CALIBRATED<br>
-                > GLITCH-PROTOCOL v4.0 ACTIVE<br>
+                > WEATHER SENSORS CALIBRATED (FAHRENHEIT)<br>
+                > ACID_RAIN PROTOCOL PURGED<br>
                 > CRT SCANLINE OVERLAY ENABLED
             </div>
             <button class="cyber-btn" style="margin-top: 40px; width: 100%;" onclick="closeWhatsNew()">EXECUTE_REBOOT</button>
@@ -176,12 +176,12 @@
         }
         setInterval(updateClock, 40);
 
-        // Weather Protocol
+        // Weather Protocol - Fahrenheit & New Conditions
         const weatherData = [
-            { t: "28°C", c: "NEON_STORM", i: "bolt" },
-            { t: "19°C", c: "ACID_RAIN", i: "water_drop" },
-            { t: "24°C", c: "SMOG_OVERCAST", i: "cloudy_filled" },
-            { t: "31°C", c: "HEAT_WAVE", i: "wb_sunny" }
+            { t: "82°F", c: "NEON_STORM", i: "bolt" },
+            { t: "72°F", c: "STABLE_ORBIT", i: "language" },
+            { t: "75°F", c: "ION_CLOUDS", i: "cloudy_filled" },
+            { t: "88°F", c: "CYBER_SUMMER", i: "wb_sunny" }
         ];
         const pick = weatherData[Math.floor(Math.random() * weatherData.length)];
         document.getElementById('temp').textContent = pick.t;
