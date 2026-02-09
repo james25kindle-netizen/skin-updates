@@ -47,8 +47,16 @@
             padding: 15px 30px; font-family: 'Orbitron', sans-serif; font-weight: 900;
             letter-spacing: 2px; transition: 0.1s;
             clip-path: polygon(0% 0%, 100% 0%, 100% 70%, 90% 100%, 0% 100%);
+            cursor: pointer;
         }
         .cyber-btn:hover { background: var(--primary); color: #000; box-shadow: -5px 0 0 var(--accent); }
+
+        .icon-btn {
+            background: transparent; border: 1px solid var(--primary); color: var(--primary);
+            width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: 0.2s;
+        }
+        .icon-btn:hover { background: var(--primary); color: #000; }
 
         /* LAYOUT */
         .top-nav { 
@@ -95,7 +103,17 @@
         .modal-card {
             border: 2px solid var(--primary); background: #000; padding: 50px;
             width: 550px; box-shadow: 15px 15px 0 var(--accent);
+            display: flex; flex-direction: column; gap: 20px;
         }
+
+        /* SETTINGS SPECIFIC */
+        .setting-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,243,255,0.3); padding-bottom: 10px; margin-bottom: 10px; }
+        .setting-label { font-size: 0.9rem; }
+        .toggle-switch { 
+            width: 40px; height: 20px; border: 1px solid var(--primary); 
+            display: flex; align-items: center; padding: 2px; cursor: pointer; 
+        }
+        .toggle-knob { width: 14px; height: 14px; background: var(--primary); margin-left: auto; }
     </style>
 </head>
 <body>
@@ -110,14 +128,17 @@
         <div class="weather-widget">
             <span class="material-symbols-rounded weather-icon" id="w-icon">radar</span>
             <div class="stat-box" style="border-color: var(--accent);">
-                ENV_TEMP: <span id="temp">75°F</span><br>
-                CONDITION: <span id="condition">SCANNING_ATMOSPHERE</span>
+                ENV_TEMP: <span id="temp">75°F</span>
             </div>
         </div>
 
-        <div class="stat-box">
-            LOCAL_TIME: <span id="clock" style="color: #fff; font-weight: 900;">00:00:00:00</span><br>
-            STATION: <span style="color:var(--primary)">V0.11_NEON</span>
+        <div style="display: flex; gap: 20px; align-items: center;">
+            <div class="stat-box">
+                LOCAL_TIME: <span id="clock" style="color: #fff; font-weight: 900;">00:00:00:00</span>
+            </div>
+            <button class="icon-btn" onclick="openModal('settings-modal')">
+                <span class="material-symbols-rounded">settings</span>
+            </button>
         </div>
     </nav>
 
@@ -141,14 +162,35 @@
 
     <div id="whats-new-modal" class="modal-overlay">
         <div class="modal-card">
-            <h2 style="font-family: 'Orbitron'; margin-bottom: 25px; color: var(--accent);">// PATCH_0.11_REPORT</h2>
+            <h2 style="font-family: 'Orbitron'; color: var(--accent);">// PATCH_0.11</h2>
             <div style="font-size: 0.9rem; line-height: 2;">
                 > 12H TIME DECODING ENABLED<br>
                 > WEATHER SENSORS CALIBRATED (FAHRENHEIT)<br>
-                > ACID_RAIN PROTOCOL PURGED<br>
+                > CONFIG_MENU RESTORED<br>
                 > CRT SCANLINE OVERLAY ENABLED
             </div>
-            <button class="cyber-btn" style="margin-top: 40px; width: 100%;" onclick="closeWhatsNew()">EXECUTE_REBOOT</button>
+            <button class="cyber-btn" onclick="closeModal('whats-new-modal')">EXECUTE</button>
+        </div>
+    </div>
+
+    <div id="settings-modal" class="modal-overlay">
+        <div class="modal-card">
+            <h2 style="font-family: 'Orbitron'; color: var(--primary);">SYSTEM_CONFIG</h2>
+            
+            <div class="setting-row">
+                <span class="setting-label">GLITCH_EFFECTS</span>
+                <div class="toggle-switch"><div class="toggle-knob"></div></div>
+            </div>
+            <div class="setting-row">
+                <span class="setting-label">AUDIO_FEEDBACK</span>
+                <div class="toggle-switch"><div class="toggle-knob" style="opacity: 0.3; margin-left: 0;"></div></div>
+            </div>
+            <div class="setting-row">
+                <span class="setting-label">CRT_OVERLAY</span>
+                <div class="toggle-switch"><div class="toggle-knob"></div></div>
+            </div>
+
+            <button class="cyber-btn" onclick="closeModal('settings-modal')">SAVE_EXIT</button>
         </div>
     </div>
 
@@ -158,7 +200,7 @@
         
         document.getElementById("bg-video").src = bgVideos[Math.floor(Math.random() * bgVideos.length)];
 
-        // 12H Clock with Milliseconds
+        // 12H Clock
         function updateClock() {
             const now = new Date();
             let hours = now.getHours();
@@ -176,17 +218,9 @@
         }
         setInterval(updateClock, 40);
 
-        // Weather Protocol - Fahrenheit & New Conditions
-        const weatherData = [
-            { t: "82°F", c: "NEON_STORM", i: "bolt" },
-            { t: "72°F", c: "STABLE_ORBIT", i: "language" },
-            { t: "75°F", c: "ION_CLOUDS", i: "cloudy_filled" },
-            { t: "88°F", c: "CYBER_SUMMER", i: "wb_sunny" }
-        ];
-        const pick = weatherData[Math.floor(Math.random() * weatherData.length)];
-        document.getElementById('temp').textContent = pick.t;
-        document.getElementById('condition').textContent = pick.c;
-        document.getElementById('w-icon').textContent = pick.i;
+        // Simple Weather (Fahrenheit only)
+        const temps = ["72°F", "75°F", "88°F", "64°F", "92°F"];
+        document.getElementById('temp').textContent = temps[Math.floor(Math.random() * temps.length)];
 
         // Boot Loader
         const bootText = document.getElementById("boot-text");
@@ -209,9 +243,9 @@
         }, 300);
 
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeWhatsNew() { 
-            document.getElementById('whats-new-modal').style.display = 'none';
-            localStorage.setItem("pix_seen", SITE_VERSION);
+        function closeModal(id) { 
+            document.getElementById(id).style.display = 'none';
+            if(id === 'whats-new-modal') localStorage.setItem("pix_seen", SITE_VERSION);
         }
     </script>
 </body>
