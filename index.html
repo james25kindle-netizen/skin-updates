@@ -3,250 +3,210 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PIX_OS // NEON_OVERRIDE</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <title>PIX_ECO // SOLAR_OS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;600&family=Playfair+Display:ital,wght@1,600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <style>
         :root {
-            --primary: #00f3ff; 
-            --accent: #ff003c;  
-            --bg: #030303;
-            --panel: rgba(0, 20, 30, 0.9);
-        }
-        
-        * { box-sizing: border-box; margin: 0; padding: 0; cursor: crosshair; }
-        
-        body { 
-            background: var(--bg); 
-            color: var(--primary); 
-            font-family: 'Share Tech Mono', monospace; 
-            overflow: hidden; 
-            height: 100vh;
-            text-transform: uppercase;
+            --clay: #fdfaf5;
+            --leaf: #2d5a27;
+            --bloom: #e88d67;
+            --sky: #a8dadc;
+            --glass: rgba(255, 255, 255, 0.7);
         }
 
-        /* OVERLAYS */
-        body::before {
-            content: " ";
-            position: fixed; inset: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            z-index: 1000; background-size: 100% 2px, 3px 100%; pointer-events: none;
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--clay);
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(163,72%,85%,1) 0, transparent 50%), 
+                radial-gradient(at 50% 0%, hsla(43,89%,80%,1) 0, transparent 50%);
+            color: var(--leaf);
+            font-family: 'Outfit', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        /* BOOT LOADER */
-        #loader {
-            position: fixed; inset: 0; background: #000; z-index: 99999;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-        }
-        .boot-log { font-size: 0.8rem; color: var(--primary); text-shadow: 0 0 5px var(--primary); line-height: 1.5; }
-
-        /* BUTTONS */
-        .cyber-btn {
-            background: transparent; color: var(--primary); border: 1px solid var(--primary);
-            padding: 15px 30px; font-family: 'Orbitron', sans-serif; font-weight: 900;
-            letter-spacing: 2px; transition: 0.1s;
-            clip-path: polygon(0% 0%, 100% 0%, 100% 70%, 90% 100%, 0% 100%);
-            cursor: pointer;
-        }
-        .cyber-btn:hover { background: var(--primary); color: #000; box-shadow: -5px 0 0 var(--accent); }
-
-        .icon-btn {
-            background: transparent; border: 1px solid var(--primary); color: var(--primary);
-            width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: 0.2s;
-        }
-        .icon-btn:hover { background: var(--primary); color: #000; }
-
-        /* LAYOUT */
-        .top-nav { 
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 40px; border-bottom: 1px solid rgba(0, 243, 255, 0.2); 
-            background: rgba(0,0,0,0.6); position: relative; z-index: 100;
+        /* SOFT BLURRED HUD */
+        .eco-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 60px;
             backdrop-filter: blur(10px);
+            background: var(--glass);
+            border-bottom: 1px solid rgba(45, 90, 39, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
-        .main-layout { display: grid; grid-template-columns: 1fr 450px; gap: 20px; padding: 40px; position: relative; z-index: 10; height: calc(100vh - 80px); }
-        
+        /* TYPOGRAPHY */
         .hero-title {
-            font-family: 'Orbitron', sans-serif; font-size: 8rem; line-height: 0.8; color: #fff;
-            text-shadow: 4px 4px var(--accent), -2px -2px var(--primary);
+            font-family: 'Playfair Display', serif;
+            font-size: 5rem;
+            font-style: italic;
+            line-height: 1.1;
+            margin-bottom: 20px;
         }
 
-        .unified-panel {
-            background: var(--panel); border: 1px solid var(--primary); padding: 25px;
-            position: relative; box-shadow: inset 0 0 20px rgba(0, 243, 255, 0.1);
+        /* BUTTONS - ROUNDED & ORGANIC */
+        .eco-btn {
+            background: var(--leaf);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
-        .unified-panel::after {
-            content: "DATA_STREAM_ACTIVE"; position: absolute; top: -10px; right: 10px;
-            background: var(--accent); color: #fff; padding: 2px 8px; font-size: 0.6rem;
+        .eco-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(45, 90, 39, 0.2);
         }
 
-        .stat-box { 
-            font-size: 0.75rem; border-left: 2px solid var(--primary); 
-            padding: 0 15px; letter-spacing: 1px; line-height: 1.4;
+        /* MAIN LAYOUT */
+        .container {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 60px;
+            padding: 80px 60px;
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
-        .weather-widget { display: flex; align-items: center; gap: 15px; }
-        .weather-icon { font-size: 2rem; color: var(--accent); }
-
-        /* VIDEO BG */
-        .video-bg-container { position: fixed; inset: 0; z-index: -1; background: #000; }
-        #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.3; filter: contrast(1.2) brightness(0.7); }
-
-        /* MODALS */
-        .modal-overlay { 
-            position: fixed; inset: 0; background: rgba(0,0,0,0.95); 
-            z-index: 20000; display: none; align-items: center; justify-content: center; 
-        }
-        .modal-card {
-            border: 2px solid var(--primary); background: #000; padding: 50px;
-            width: 550px; box-shadow: 15px 15px 0 var(--accent);
-            display: flex; flex-direction: column; gap: 20px;
+        /* CARDS */
+        .garden-panel {
+            background: var(--glass);
+            border-radius: 30px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.03);
+            position: relative;
+            overflow: hidden;
         }
 
-        /* SETTINGS SPECIFIC */
-        .setting-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,243,255,0.3); padding-bottom: 10px; margin-bottom: 10px; }
-        .setting-label { font-size: 0.9rem; }
-        .toggle-switch { 
-            width: 40px; height: 20px; border: 1px solid var(--primary); 
-            display: flex; align-items: center; padding: 2px; cursor: pointer; 
+        .garden-panel::before {
+            content: "RENEWABLE_ENERGY_100%";
+            position: absolute; top: 20px; right: -30px;
+            background: var(--bloom); color: white;
+            padding: 5px 40px; transform: rotate(45deg);
+            font-size: 0.6rem; font-weight: 900;
         }
-        .toggle-knob { width: 14px; height: 14px; background: var(--primary); margin-left: auto; }
+
+        /* WEATHER & TIME HUD */
+        .stat-group {
+            display: flex;
+            gap: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-item span { color: var(--bloom); }
+
+        .image-placeholder {
+            width: 100%;
+            height: 350px;
+            background: linear-gradient(135deg, #e0e7ff, #f3f4f6);
+            border-radius: 20px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+        }
+
+        /* ANIMATION */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .floating-icon {
+            animation: float 4s ease-in-out infinite;
+        }
     </style>
 </head>
 <body>
 
-    <div id="loader"><div class="boot-log" id="boot-text">INITIALIZING PIX_CORE...</div></div>
-
-    <div class="video-bg-container">
-        <video id="bg-video" autoplay muted loop playsinline></video>
-    </div>
-
-    <nav class="top-nav">
-        <div class="weather-widget">
-            <span class="material-symbols-rounded weather-icon" id="w-icon">radar</span>
-            <div class="stat-box" style="border-color: var(--accent);">
-                ENV_TEMP: <span id="temp">75°F</span>
+    <nav class="eco-nav">
+        <div class="stat-group">
+            <div class="stat-item">
+                <span class="material-symbols-rounded">wb_sunny</span>
+                <div id="temp">78°F</div>
+            </div>
+            <div class="stat-item">
+                <span class="material-symbols-rounded">bolt</span>
+                <div>GRID_STABLE</div>
             </div>
         </div>
 
-        <div style="display: flex; gap: 20px; align-items: center;">
-            <div class="stat-box">
-                LOCAL_TIME: <span id="clock" style="color: #fff; font-weight: 900;">00:00:00:00</span>
+        <div class="stat-group">
+            <div class="stat-item">
+                <div id="clock">12:00:00 PM</div>
             </div>
-            <button class="icon-btn" onclick="openModal('settings-modal')">
+            <button class="icon-btn" style="background:none; border:none; color:var(--leaf); cursor:pointer;">
                 <span class="material-symbols-rounded">settings</span>
             </button>
         </div>
     </nav>
 
-    <div class="main-layout">
-        <div style="display: flex; flex-direction: column; justify-content: center;">
-            <h1 class="hero-title">NEON<br><span style="color:var(--primary)">P_X</span></h1>
-            <div style="margin-top: 50px; display: flex; gap: 20px;">
-                <button class="cyber-btn" onclick="openModal('whats-new-modal')">SYS_LOGS</button>
-            </div>
+    <main class="container">
+        <div>
+            <h1 class="hero-title">Breathe <br>Deeply.</h1>
+            <p style="font-size: 1.2rem; line-height: 1.6; margin-bottom: 30px; opacity: 0.8;">
+                Welcome to the PIX_ECO network. Our systems are currently running on 100% solar-thermal energy. The air quality index in your sector is excellent.
+            </p>
+            <button class="eco-btn">EXPLORE HABITAT</button>
         </div>
 
-        <div class="unified-panel" style="align-self: center;">
-            <div style="font-size: 0.8rem; margin-bottom: 20px; opacity: 0.5;">// ARCHIVE: 08-24-2026</div>
-            <h2 style="font-family: 'Orbitron'; font-size: 2.2rem;">EMBER_KNIGHT</h2>
-            <div style="height: 300px; border: 1px solid rgba(0, 243, 255, 0.2); margin: 20px 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center;">
-                <span style="opacity: 0.2; letter-spacing: 5px; font-size: 0.7rem;">ENCRYPTED_FEED</span>
-            </div>
-            <button class="cyber-btn" style="width: 100%;">EXTRACT_CORE</button>
-        </div>
-    </div>
-
-    <div id="whats-new-modal" class="modal-overlay">
-        <div class="modal-card">
-            <h2 style="font-family: 'Orbitron'; color: var(--accent);">// PATCH_0.11</h2>
-            <div style="font-size: 0.9rem; line-height: 2;">
-                > 12H TIME DECODING ENABLED<br>
-                > WEATHER SENSORS CALIBRATED (FAHRENHEIT)<br>
-                > CONFIG_MENU RESTORED<br>
-                > CRT SCANLINE OVERLAY ENABLED
-            </div>
-            <button class="cyber-btn" onclick="closeModal('whats-new-modal')">EXECUTE</button>
-        </div>
-    </div>
-
-    <div id="settings-modal" class="modal-overlay">
-        <div class="modal-card">
-            <h2 style="font-family: 'Orbitron'; color: var(--primary);">SYSTEM_CONFIG</h2>
+        <div class="garden-panel">
+            <h2 style="font-family: 'Playfair Display'; margin-bottom: 10px;">The Ember Knight</h2>
+            <p style="font-size: 0.8rem; color: var(--bloom); font-weight: 600; margin-bottom: 20px;">ARCHIVE // BIOLOGICAL_STUDY</p>
             
-            <div class="setting-row">
-                <span class="setting-label">GLITCH_EFFECTS</span>
-                <div class="toggle-switch"><div class="toggle-knob"></div></div>
-            </div>
-            <div class="setting-row">
-                <span class="setting-label">AUDIO_FEEDBACK</span>
-                <div class="toggle-switch"><div class="toggle-knob" style="opacity: 0.3; margin-left: 0;"></div></div>
-            </div>
-            <div class="setting-row">
-                <span class="setting-label">CRT_OVERLAY</span>
-                <div class="toggle-switch"><div class="toggle-knob"></div></div>
+            <div class="image-placeholder">
+                <span class="material-symbols-rounded floating-icon" style="font-size: 4rem;">psychology_alt</span>
             </div>
 
-            <button class="cyber-btn" onclick="closeModal('settings-modal')">SAVE_EXIT</button>
+            <p style="font-size: 0.9rem; line-height: 1.5; margin-bottom: 20px;">
+                A study on human-AI integration within forest ecosystems. Data indicates a 40% increase in biodiversity.
+            </p>
+            <button class="eco-btn" style="width: 100%; background: var(--bloom);">VIEW DATABASE</button>
         </div>
-    </div>
+    </main>
 
     <script>
-        const SITE_VERSION = "0.11";
-        const bgVideos = ["bg1.mp4", "bg2.mp4", "bg3.mp4", "bg4.mp4"];
-        
-        document.getElementById("bg-video").src = bgVideos[Math.floor(Math.random() * bgVideos.length)];
-
         // 12H Clock
         function updateClock() {
             const now = new Date();
             let hours = now.getHours();
             const ampm = hours >= 12 ? 'PM' : 'AM';
-            hours = hours % 12;
-            hours = hours ? hours : 12; 
-            const timePart = [
+            hours = hours % 12 || 12;
+            const time = [
                 hours.toString().padStart(2, '0'),
                 now.getMinutes().toString().padStart(2, '0'),
                 now.getSeconds().toString().padStart(2, '0')
             ].join(':');
-            const ms = Math.floor(now.getMilliseconds() / 10).toString().padStart(2, '0');
-            
-            document.getElementById('clock').textContent = `${timePart}:${ms} ${ampm}`;
+            document.getElementById('clock').textContent = `${time} ${ampm}`;
         }
-        setInterval(updateClock, 40);
+        setInterval(updateClock, 1000);
+        updateClock();
 
-        // Simple Weather (Fahrenheit only)
-        const temps = ["72°F", "75°F", "88°F", "64°F", "92°F"];
+        // Random Temp
+        const temps = ["74°F", "78°F", "81°F", "76°F"];
         document.getElementById('temp').textContent = temps[Math.floor(Math.random() * temps.length)];
-
-        // Boot Loader
-        const bootText = document.getElementById("boot-text");
-        const messages = ["BYPASSING SECURITY...", "DECRYPTING INTERFACE...", "WELCOME TO THE GRID."];
-        let msgIdx = 0;
-        const bootInterval = setInterval(() => {
-            if(msgIdx < messages.length) {
-                bootText.innerHTML += `<br>> ${messages[msgIdx]}`;
-                msgIdx++;
-            } else {
-                clearInterval(bootInterval);
-                setTimeout(() => {
-                    document.getElementById('loader').style.opacity = '0';
-                    setTimeout(() => { 
-                        document.getElementById('loader').style.display = 'none';
-                        if(localStorage.getItem("pix_seen") !== SITE_VERSION) openModal('whats-new-modal');
-                    }, 500);
-                }, 1000);
-            }
-        }, 300);
-
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModal(id) { 
-            document.getElementById(id).style.display = 'none';
-            if(id === 'whats-new-modal') localStorage.setItem("pix_seen", SITE_VERSION);
-        }
     </script>
 </body>
 </html>
