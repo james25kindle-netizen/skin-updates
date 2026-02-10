@@ -3,503 +3,427 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Skin_Lab // M3</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;700;800&display=swap" rel="stylesheet">
+    <title>PIX_LABS // EXPRESSIVE_M3</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&family=Bebas+Neue&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     
     <script src="https://bs-community.github.io/skinview3d/js/skinview3d.bundle.js"></script>
 
     <style>
         :root {
-            /* MATERIAL 3 TOKENS (Expressive Indigo Theme) */
-            --md-sys-color-primary: #385de6;
-            --md-sys-color-on-primary: #ffffff;
-            --md-sys-color-primary-container: #detop4;
-            --md-sys-color-secondary: #5b5d72;
-            --md-sys-color-surface: #fdfbff;
-            --md-sys-color-surface-container: #f0f4f8;
-            --md-sys-color-surface-container-high: #e6eef5;
-            --md-sys-color-on-surface: #1a1b1f;
-            --md-sys-color-outline: #74777f;
-            
-            --md-elevation-level-1: 0 2px 6px rgba(0,0,0,0.05);
-            --md-elevation-level-3: 0 8px 16px rgba(0,0,0,0.1);
-            
-            /* ANIMATION CURVES */
-            --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            --ease-material: cubic-bezier(0.2, 0.0, 0, 1.0);
-        }
+            /* BASE VARIABLES (Overwritten by JS on load) */
+            --primary: #6750A4;
+            --on-primary: #FFFFFF;
+            --primary-container: #EADDFF;
+            --on-primary-container: #21005D;
+            --surface: #FDF8FD;
+            --surface-container: #F3EDF7;
+            --outline: #79747E;
 
-        /* DARK MODE OVERRIDES */
-        [data-theme="dark"] {
-            --md-sys-color-primary: #baccff;
-            --md-sys-color-on-primary: #002978;
-            --md-sys-color-surface: #101216;
-            --md-sys-color-surface-container: #1e2229;
-            --md-sys-color-surface-container-high: #2b3038;
-            --md-sys-color-on-surface: #e3e2e6;
+            /* SHAPES & ANIMATION */
+            --shape-xl: 48px;
+            --shape-l: 28px;
+            --shape-m: 16px;
+            --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --ease-expo: cubic-bezier(0.19, 1, 0.22, 1);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        
+
         body {
-            background-color: var(--md-sys-color-surface);
-            color: var(--md-sys-color-on-surface);
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--surface);
+            color: var(--on-primary-container);
+            font-family: 'Outfit', sans-serif;
             overflow-x: hidden;
-            transition: background 0.5s var(--ease-material);
+            transition: background 0.5s ease;
         }
 
         /* --- LOADER --- */
         #loader {
             position: fixed; inset: 0; z-index: 9999;
-            background: var(--md-sys-color-primary);
-            display: flex; justify-content: center; align-items: center;
-            transition: opacity 0.6s var(--ease-material);
+            background: var(--surface);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 0.5s ease;
         }
-        .spinner {
-            width: 60px; height: 60px; border: 6px solid rgba(255,255,255,0.3);
-            border-top-color: white; border-radius: 50%;
-            animation: spin 1s var(--ease-material) infinite;
+        .blob {
+            width: 80px; height: 80px; background: var(--primary);
+            border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+            animation: blob-bounce 2s infinite ease-in-out;
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* --- LAYOUT --- */
-        .app-container {
-            max-width: 1200px; margin: 0 auto; padding: 20px;
-            display: grid; gap: 24px;
-            opacity: 0; transform: translateY(20px);
-            animation: enter-up 0.8s var(--ease-spring) forwards 0.5s;
+        @keyframes blob-bounce {
+            0%, 100% { transform: scale(1) translateY(0); border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
+            50% { transform: scale(1.1) translateY(-20px); border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
         }
 
-        /* --- HEADER & HUD --- */
-        header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 12px 0;
+        /* --- LAYOUT GRID --- */
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 24px;
+            padding: 24px;
+            max-width: 1600px;
+            margin: 0 auto;
+            min-height: 100vh;
+            opacity: 0; transform: translateY(30px);
+            animation: enter-up 1s var(--ease-expo) forwards 0.5s;
         }
+        @media (max-width: 900px) { .grid-container { grid-template-columns: 1fr; } }
 
-        .hud-card {
-            background: var(--md-sys-color-surface-container);
-            padding: 12px 24px; border-radius: 100px;
-            display: flex; align-items: center; gap: 16px;
-            box-shadow: var(--md-elevation-level-1);
-        }
-
-        .weather-icon {
-            font-size: 24px; 
-            animation: float 3s ease-in-out infinite;
-            color: var(--md-sys-color-primary);
-        }
-
-        .icon-btn {
-            background: var(--md-sys-color-surface-container-high);
-            border: none; width: 48px; height: 48px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: 0.3s var(--ease-spring);
-            color: var(--md-sys-color-on-surface);
-        }
-        .icon-btn:hover { transform: scale(1.1); background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); }
-
-        /* --- MAIN CONTENT GRID --- */
-        .content-grid {
-            display: grid; grid-template-columns: 1.5fr 1fr; gap: 24px;
-        }
-        @media (max-width: 800px) { .content-grid { grid-template-columns: 1fr; } }
-
-        /* --- 3D VIEWER CARD --- */
-        .hero-card {
-            background: var(--md-sys-color-surface-container-high);
-            border-radius: 32px; padding: 24px;
-            display: flex; flex-direction: column; align-items: center;
-            position: relative; overflow: hidden;
-            box-shadow: var(--md-elevation-level-3);
-            height: 500px;
+        /* --- 3D VIEWER CONTAINER --- */
+        .viewer-card {
+            background: var(--primary-container);
+            border-radius: var(--shape-xl);
+            position: relative;
+            overflow: hidden;
+            height: 80vh;
+            min-height: 600px;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
         }
 
         #skin-viewer { width: 100%; height: 100%; cursor: grab; }
 
-        .tag-pill {
-            position: absolute; top: 24px; left: 24px;
-            background: var(--md-sys-color-primary); color: white;
-            padding: 8px 16px; border-radius: 12px; font-weight: 700; font-size: 0.8rem;
-            z-index: 10;
+        /* Floating Controls inside Viewer */
+        .viewer-controls {
+            position: absolute; bottom: 32px;
+            background: rgba(255,255,255,0.4);
+            backdrop-filter: blur(12px);
+            padding: 8px; border-radius: 100px;
+            display: flex; gap: 8px;
+            border: 1px solid rgba(255,255,255,0.5);
         }
 
-        /* --- INFO & HISTORY --- */
-        .info-panel { display: flex; flex-direction: column; gap: 24px; }
-
-        .download-card {
-            background: var(--md-sys-color-primary); color: white;
-            padding: 32px; border-radius: 32px;
-            display: flex; flex-direction: column; gap: 16px;
-            transition: 0.3s var(--ease-spring);
+        .control-btn {
+            width: 48px; height: 48px; border-radius: 50%; border: none;
+            background: transparent; color: var(--on-primary-container);
+            cursor: pointer; transition: 0.3s var(--ease-spring);
+            display: flex; align-items: center; justify-content: center;
         }
-        .download-card:hover { transform: scale(1.02); }
+        .control-btn:hover { background: var(--on-primary-container); color: var(--primary-container); transform: scale(1.1); }
 
-        .btn-large {
-            background: white; color: var(--md-sys-color-primary);
-            border: none; padding: 16px 32px; border-radius: 100px;
-            font-weight: 800; font-size: 1.1rem; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            transition: 0.2s;
-        }
-        .btn-large:active { transform: scale(0.95); opacity: 0.9; }
+        /* --- INFO & ACTIONS --- */
+        .sidebar { display: flex; flex-direction: column; gap: 24px; }
 
-        .history-list {
-            background: var(--md-sys-color-surface-container);
-            border-radius: 28px; padding: 24px;
-            max-height: 300px; overflow-y: auto;
+        /* Header Pill */
+        .header-pill {
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--surface-container); padding: 16px 32px;
+            border-radius: 100px;
         }
 
-        .version-row {
+        /* Hero Text */
+        .title-block h1 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 8rem; line-height: 0.85;
+            color: var(--on-primary-container);
+            margin: 20px 0;
+        }
+
+        /* Large Action Button */
+        .btn-download {
+            background: var(--primary); color: var(--on-primary);
+            padding: 32px; border-radius: var(--shape-xl);
+            border: none; width: 100%;
+            display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; transition: 0.3s var(--ease-spring);
+            font-size: 1.5rem; font-weight: 700;
+        }
+        .btn-download:hover { transform: scale(1.02); box-shadow: 0 10px 30px -10px var(--primary); }
+
+        /* History List */
+        .history-card {
+            background: var(--surface-container);
+            padding: 24px; border-radius: var(--shape-xl);
+            flex-grow: 1;
+        }
+        .history-item {
             display: flex; justify-content: space-between; align-items: center;
             padding: 16px; border-bottom: 1px solid rgba(0,0,0,0.05);
-            transition: 0.2s;
+            cursor: pointer; transition: 0.2s; border-radius: var(--shape-m);
         }
-        .version-row:last-child { border-bottom: none; }
-        .version-row:hover { background: rgba(0,0,0,0.03); border-radius: 12px; }
+        .history-item:hover { background: rgba(0,0,0,0.03); }
 
         /* --- MODALS --- */
         .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.5);
-            z-index: 2000; display: none; align-items: center; justify-content: center;
-            backdrop-filter: blur(8px); opacity: 0; transition: opacity 0.3s;
+            position: fixed; inset: 0; z-index: 2000;
+            background: rgba(0,0,0,0.4); backdrop-filter: blur(8px);
+            display: none; align-items: center; justify-content: center;
         }
-        .modal-overlay.active { opacity: 1; }
-        
-        .modal-sheet {
-            background: var(--md-sys-color-surface);
-            width: 90%; max-width: 500px;
-            border-radius: 32px; padding: 32px;
-            transform: translateY(50px); transition: transform 0.4s var(--ease-spring);
-            box-shadow: var(--md-elevation-level-3);
+        .modal-card {
+            background: var(--surface); padding: 48px;
+            border-radius: var(--shape-xl); width: 90%; max-width: 500px;
+            animation: modal-pop 0.4s var(--ease-spring);
         }
-        .modal-overlay.active .modal-sheet { transform: translateY(0); }
 
         /* --- UTILS --- */
-        .text-headline { font-size: 3rem; line-height: 1; letter-spacing: -1px; margin-bottom: 8px; }
-        .text-subhead { opacity: 0.7; font-weight: 500; }
-        .badge-new { background: #ffd700; color: black; padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; margin-left: 8px; }
+        .chip { background: var(--primary); color: var(--on-primary); padding: 4px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; }
+        .icon-btn { background: none; border: none; cursor: pointer; color: var(--on-primary-container); }
 
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
         @keyframes enter-up { to { opacity: 1; transform: translateY(0); } }
-
-        /* Setting Switches */
-        .switch {
-            position: relative; display: inline-block; width: 50px; height: 28px;
-        }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider {
-            position: absolute; cursor: pointer; inset: 0;
-            background-color: #ccc; border-radius: 34px; transition: .4s;
-        }
-        .slider:before {
-            position: absolute; content: ""; height: 20px; width: 20px;
-            left: 4px; bottom: 4px; background-color: white; border-radius: 50%; transition: .4s var(--ease-spring);
-        }
-        input:checked + .slider { background-color: var(--md-sys-color-primary); }
-        input:checked + .slider:before { transform: translateX(22px); }
+        @keyframes modal-pop { from { transform: scale(0.8); opacity: 0; } }
 
     </style>
 </head>
 <body>
 
     <div id="loader">
-        <div class="spinner"></div>
+        <div class="blob"></div>
+        <h2 style="margin-top:20px; font-weight: 500; letter-spacing: 2px;">LOADING RESOURCES</h2>
     </div>
 
-    <div class="app-container">
+    <div class="grid-container">
         
-        <header>
-            <div>
-                <h2 style="font-weight: 800; font-size: 1.5rem;">PIX_LABS</h2>
-                <div style="font-size: 0.8rem; opacity: 0.6;">Material Expressive v2</div>
+        <div class="viewer-card">
+            <div style="position: absolute; top: 32px; left: 32px; z-index: 10;">
+                <div class="chip" id="version-tag">V1.0</div>
             </div>
-
-            <div style="display: flex; gap: 12px;">
-                <div class="hud-card">
-                    <span class="material-symbols-rounded weather-icon" id="weather-icon">sunny</span>
-                    <div>
-                        <div id="clock" style="font-weight: 700; font-variant-numeric: tabular-nums;">12:00 PM</div>
-                        <div style="font-size: 0.75rem; opacity: 0.7;">72°F • Clear</div>
-                    </div>
-                </div>
-
-                <button class="icon-btn" onclick="toggleModal('settings-modal')">
-                    <span class="material-symbols-rounded">settings</span>
+            
+            <canvas id="skin-viewer"></canvas>
+            
+            <div class="viewer-controls">
+                <button class="control-btn" onclick="toggleRotate()">
+                    <span class="material-symbols-rounded">360</span>
+                </button>
+                <button class="control-btn" onclick="setAnim('walk')">
+                    <span class="material-symbols-rounded">directions_walk</span>
+                </button>
+                <button class="control-btn" onclick="setAnim('run')">
+                    <span class="material-symbols-rounded">sprint</span>
+                </button>
+                <button class="control-btn" onclick="setAnim('idle')">
+                    <span class="material-symbols-rounded">accessibility_new</span>
                 </button>
             </div>
-        </header>
+        </div>
 
-        <div class="content-grid">
+        <div class="sidebar">
             
-            <div class="hero-card">
-                <div class="tag-pill" id="latest-version-tag">V2.0</div>
-                <canvas id="skin-viewer"></canvas>
-                
-                <div style="position: absolute; bottom: 24px; display: flex; gap: 12px;">
-                    <button class="icon-btn" onclick="controls.autoRotate = !controls.autoRotate">
-                        <span class="material-symbols-rounded">360</span>
-                    </button>
-                    <button class="icon-btn" onclick="skinViewer.animation = new skinview3d.WalkingAnimation()">
-                        <span class="material-symbols-rounded">directions_walk</span>
-                    </button>
-                    <button class="icon-btn" onclick="skinViewer.animation = new skinview3d.IdleAnimation()">
-                        <span class="material-symbols-rounded">accessibility_new</span>
+            <div class="header-pill">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <span class="material-symbols-rounded">grid_view</span>
+                    <span style="font-weight:700;">PIX_LABS</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:16px;">
+                    <span id="clock" style="font-variant-numeric: tabular-nums;">00:00</span>
+                    <button class="icon-btn" onclick="openModal('settings-modal')">
+                        <span class="material-symbols-rounded">settings</span>
                     </button>
                 </div>
             </div>
 
-            <div class="info-panel">
-                
-                <div class="download-card">
-                    <div>
-                        <div class="text-subhead" id="update-name-display">UPDATE NAME</div>
-                        <div class="text-headline" id="skin-name-display">Skin Name</div>
-                        <p style="opacity: 0.9;" id="desc-display">Description loading...</p>
-                    </div>
-                    <button class="btn-large" onclick="downloadCurrent()">
-                        <span class="material-symbols-rounded">download</span> 
-                        DOWNLOAD SKIN
-                    </button>
-                </div>
-
-                <div class="history-list">
-                    <h3 style="margin-bottom: 16px; font-size: 1.1rem;">Version Archives</h3>
-                    <div id="history-container">
-                        </div>
-                </div>
-
+            <div class="title-block">
+                <div style="text-transform: uppercase; letter-spacing: 2px; font-weight: 700; opacity: 0.6;" id="update-name">UPDATE NAME</div>
+                <h1 id="skin-name">SKIN NAME</h1>
+                <p id="skin-desc" style="font-size: 1.2rem; line-height: 1.6; opacity: 0.8; margin-bottom: 24px;">
+                    Description loading...
+                </p>
+                <button class="btn-download" onclick="downloadCurrent()">
+                    <span>DOWNLOAD .PNG</span>
+                    <span class="material-symbols-rounded" style="font-size: 2rem;">download</span>
+                </button>
             </div>
+
+            <div class="history-card">
+                <h3 style="margin-bottom: 16px; opacity: 0.5; font-size: 0.9rem; letter-spacing: 1px;">PREVIOUS VERSIONS</h3>
+                <div id="history-list"></div>
+            </div>
+
         </div>
     </div>
 
     <div id="whats-new-modal" class="modal-overlay">
-        <div class="modal-sheet">
-            <span class="material-symbols-rounded" style="font-size: 3rem; color: #ffd700; margin-bottom: 16px;">celebration</span>
-            <h2 style="font-size: 2rem; margin-bottom: 12px;">What's New!</h2>
-            <div style="background: var(--md-sys-color-surface-container); padding: 16px; border-radius: 16px; margin-bottom: 24px;">
-                <h4 id="modal-update-title" style="margin-bottom: 8px;">Update Title</h4>
-                <p id="modal-update-desc" style="font-size: 0.9rem; line-height: 1.6;">Update description goes here.</p>
+        <div class="modal-card">
+            <h2 style="font-family: 'Bebas Neue'; font-size: 4rem; line-height: 0.9; margin-bottom: 16px;">FRESH<br>DROP</h2>
+            <div style="background: var(--primary-container); color: var(--on-primary-container); padding: 20px; border-radius: 20px; margin-bottom: 24px;">
+                <h4 id="modal-title" style="margin-bottom: 8px;">Update Title</h4>
+                <p id="modal-desc">Details here.</p>
             </div>
-            <button class="btn-large" style="background: var(--md-sys-color-primary); color: white; width: 100%;" onclick="closeWhatsNew()">
-                Got it!
-            </button>
+            <button class="btn-download" style="padding: 20px;" onclick="closeWhatsNew()">LET'S GO</button>
         </div>
     </div>
 
     <div id="settings-modal" class="modal-overlay">
-        <div class="modal-sheet">
-            <h2 style="margin-bottom: 24px;">Settings</h2>
-            
-            <div class="version-row">
-                <span>Dark Mode</span>
-                <label class="switch">
-                    <input type="checkbox" id="theme-toggle" onchange="toggleTheme()">
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div class="version-row">
-                <span>Auto-Rotate 3D Model</span>
-                <label class="switch">
+        <div class="modal-card">
+            <h2 style="margin-bottom: 24px;">SETTINGS</h2>
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+                <div class="history-item">
+                    <span>Auto-Rotate Model</span>
                     <input type="checkbox" checked onchange="controls.autoRotate = this.checked">
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div class="version-row">
-                <span>Show Particle Effects</span>
-                <label class="switch">
+                </div>
+                <div class="history-item">
+                    <span>High Quality Rendering</span>
                     <input type="checkbox" checked>
-                    <span class="slider"></span>
-                </label>
+                </div>
             </div>
-
-            <button class="btn-large" style="margin-top: 24px; width: 100%;" onclick="toggleModal('settings-modal')">Close</button>
+            <button class="btn-download" style="padding: 20px; margin-top: 24px;" onclick="document.getElementById('settings-modal').style.display='none'">CLOSE</button>
         </div>
     </div>
 
     <script>
-        /* ========================================
-        USER CONFIGURATION AREA
-        (Add new skins here to update the site!)
-        ======================================== 
-        */
-        const SKIN_DATABASE = [
+        /* =========================================
+           1. EXPRESSIVE COLOR ENGINE
+           (This runs first to paint the site)
+           ========================================= */
+        const PALETTES = [
+            { name: "CITRON", p: "#6D5E0F", pc: "#F8E38E", s: "#FFFBF2", sc: "#F2EBDC", on: "#241F00" },
+            { name: "ROSE", p: "#9C4146", pc: "#FFDADD", s: "#FFF8F7", sc: "#F4DDDE", on: "#410006" },
+            { name: "INDIGO", p: "#4F599C", pc: "#DEE0FF", s: "#FDFBFF", sc: "#E4E6F7", on: "#08104E" },
+            { name: "JASPER", p: "#006A60", pc: "#74F8E5", s: "#F4FBF9", sc: "#CCE8E3", on: "#00201C" },
+            { name: "BERRY", p: "#884883", pc: "#FFD6F7", s: "#FFF7FA", sc: "#F4DFED", on: "#360034" }
+        ];
+
+        function applyRandomTheme() {
+            const theme = PALETTES[Math.floor(Math.random() * PALETTES.length)];
+            const root = document.documentElement;
+            
+            root.style.setProperty('--primary', theme.p);
+            root.style.setProperty('--primary-container', theme.pc);
+            root.style.setProperty('--surface', theme.s);
+            root.style.setProperty('--surface-container', theme.sc);
+            root.style.setProperty('--on-primary-container', theme.on);
+            
+            console.log(`%c THEME LOADED: ${theme.name} `, `background: ${theme.p}; color: #fff; border-radius: 4px; padding: 4px;`);
+        }
+        applyRandomTheme(); // Run immediately
+
+        /* =========================================
+           2. DATA MANAGEMENT (User Editable)
+           ========================================= */
+        const SKIN_DB = [
             {
-                version: "3.5.0",
-                updateName: "The Glazed Terracotta Update",
-                skinName: "Neon Knight",
-                description: "Added emission layers and improved shading on the boots.",
-                skinFile: "https://raw.githubusercontent.com/bs-community/skinview3d/master/examples/img/skin.png", // Replace with your file path
-                whatsNewText: "We've completely overhauled the shading engine! The Neon Knight now glows in the dark."
+                version: "2.1.0",
+                updateName: "The Neon Shift",
+                skinName: "Cyber_Steve",
+                desc: "Added emissive textures to the visor and upgraded the boot geometry.",
+                file: "https://raw.githubusercontent.com/bs-community/skinview3d/master/examples/img/skin.png", // <--- PUT YOUR LINK HERE
+                whatsNew: "We overhauled the lighting engine! The visor now actually glows in the dark."
             },
             {
-                version: "3.4.0",
-                updateName: "Deep Dark Patch",
-                skinName: "Stealth Suit",
-                description: "A matte black tactical suit for night ops.",
-                skinFile: "https://raw.githubusercontent.com/bs-community/skinview3d/master/examples/img/1_8_texturemap_redux.png",
-                whatsNewText: "Minor bug fixes to the alpha layer transparency."
-            },
-            {
-                version: "3.0.0",
-                updateName: "The Origins Update",
-                skinName: "Base Steve",
-                description: "The classic look. Reliable. Timeless.",
-                skinFile: "https://raw.githubusercontent.com/bs-community/skinview3d/master/examples/img/hie.png",
-                whatsNewText: "Initial release of the skin tracker system."
+                version: "2.0.0",
+                updateName: "Foundation Update",
+                skinName: "Base_Ops_01",
+                desc: "Standard issue tactical gear. Matte finish.",
+                file: "https://raw.githubusercontent.com/bs-community/skinview3d/master/examples/img/1_8_texturemap_redux.png",
+                whatsNew: "Initial release of the PIX_LABS tracker."
             }
         ];
 
-        /* ========================================
-           SYSTEM LOGIC (Do not edit unless needed)
-           ======================================== */
+        /* =========================================
+           3. APP LOGIC
+           ========================================= */
+        let skinViewer, controls;
+        let activeSkinIndex = 0;
 
-        const latestSkin = SKIN_DATABASE[0];
-        let skinViewer;
-        let controls;
-
-        // 1. INITIALIZATION
-        window.onload = function() {
+        window.onload = () => {
             // Remove Loader
             setTimeout(() => {
                 document.getElementById('loader').style.opacity = '0';
-                setTimeout(() => document.getElementById('loader').remove(), 600);
+                setTimeout(() => document.getElementById('loader').remove(), 500);
             }, 800);
 
-            // Setup 3D Viewer
-            init3DViewer(latestSkin.skinFile);
+            // Init 3D
+            initViewer();
+            
+            // Render UI
+            loadSkin(0);
+            renderHistory();
+            checkUpdate();
 
-            // Populate Data
-            renderUI();
-            checkNewVersion();
-
-            // Start Clock
-            setInterval(updateClock, 1000);
-            updateClock();
+            // Clock
+            setInterval(() => {
+                document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+            }, 1000);
         };
 
-        // 2. 3D VIEWER SETUP
-        function init3DViewer(skinUrl) {
+        function initViewer() {
             skinViewer = new skinview3d.SkinViewer({
                 canvas: document.getElementById("skin-viewer"),
                 width: 400,
-                height: 500,
-                skin: skinUrl
+                height: 600,
+                skin: SKIN_DB[0].file
             });
+            
+            // Responsive resize
+            window.addEventListener('resize', () => {
+                skinViewer.width = document.querySelector('.viewer-card').clientWidth;
+                skinViewer.height = document.querySelector('.viewer-card').clientHeight;
+            });
+            // Trigger once
+            window.dispatchEvent(new Event('resize'));
 
-            // Set Initial Animation
             skinViewer.animation = new skinview3d.WalkingAnimation();
-            skinViewer.animation.speed = 0.5;
-
-            // Controls
             controls = skinview3d.createOrbitControls(skinViewer);
-            controls.enableZoom = true;
             controls.autoRotate = true;
             controls.autoRotateSpeed = 2;
         }
 
-        // 3. UI RENDERING
-        function renderUI() {
-            // Update Hero Section
-            document.getElementById('latest-version-tag').innerText = `v${latestSkin.version}`;
-            document.getElementById('update-name-display').innerText = latestSkin.updateName.toUpperCase();
-            document.getElementById('skin-name-display').innerText = latestSkin.skinName;
-            document.getElementById('desc-display').innerText = latestSkin.description;
+        function loadSkin(index) {
+            activeSkinIndex = index;
+            const data = SKIN_DB[index];
 
-            // Render History List
-            const listContainer = document.getElementById('history-container');
-            listContainer.innerHTML = ''; // Clear
+            // Update UI Text
+            document.getElementById('version-tag').innerText = `V${data.version}`;
+            document.getElementById('update-name').innerText = data.updateName;
+            document.getElementById('skin-name').innerText = data.skinName;
+            document.getElementById('skin-desc').innerText = data.desc;
 
-            SKIN_DATABASE.forEach((item, index) => {
-                const isLatest = index === 0;
-                const row = document.createElement('div');
-                row.className = 'version-row';
-                row.innerHTML = `
-                    <div style="display:flex; align-items:center;">
-                        <span style="font-weight:700; width: 60px;">v${item.version}</span>
-                        <span>${item.skinName}</span>
-                        ${isLatest ? '<span class="badge-new">NEW</span>' : ''}
+            // Load 3D
+            skinViewer.loadSkin(data.file);
+        }
+
+        function renderHistory() {
+            const list = document.getElementById('history-list');
+            list.innerHTML = '';
+            
+            SKIN_DB.forEach((item, idx) => {
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                div.innerHTML = `
+                    <div style="display:flex; flex-direction:column;">
+                        <span style="font-weight:700;">V${item.version}</span>
+                        <span style="font-size:0.8rem; opacity:0.6;">${item.skinName}</span>
                     </div>
-                    <button class="icon-btn" style="width:32px; height:32px;" onclick="loadSkin(${index})">
-                        <span class="material-symbols-rounded" style="font-size:1.2rem">${isLatest ? 'visibility' : 'history'}</span>
-                    </button>
+                    <span class="material-symbols-rounded" style="opacity: ${idx === 0 ? '1' : '0.3'}">
+                        ${idx === 0 ? 'star' : 'history'}
+                    </span>
                 `;
-                listContainer.appendChild(row);
+                div.onclick = () => loadSkin(idx);
+                list.appendChild(div);
             });
         }
 
-        // 4. FUNCTIONALITY
-        function loadSkin(index) {
-            const selected = SKIN_DATABASE[index];
-            // Update 3D Model
-            skinViewer.loadSkin(selected.skinFile);
+        function checkUpdate() {
+            const latest = SKIN_DB[0];
+            const stored = localStorage.getItem('pix_version');
             
-            // Update Text
-            document.getElementById('latest-version-tag').innerText = `v${selected.version}`;
-            document.getElementById('skin-name-display').innerText = selected.skinName;
-            document.getElementById('desc-display').innerText = selected.description;
-            
-            // Animation reset
-            controls.autoRotate = true;
-        }
-
-        function downloadCurrent() {
-            const currentName = document.getElementById('skin-name-display').innerText;
-            // Find object in DB
-            const skinObj = SKIN_DATABASE.find(s => s.skinName === currentName);
-            
-            if(skinObj) {
-                const link = document.createElement('a');
-                link.href = skinObj.skinFile;
-                link.download = `${skinObj.skinName}_v${skinObj.version}.png`;
-                link.click();
-            }
-        }
-
-        // 5. WHAT'S NEW LOGIC
-        function checkNewVersion() {
-            const lastSeen = localStorage.getItem('site_version');
-            if (lastSeen !== latestSkin.version) {
-                // Populate Modal
-                document.getElementById('modal-update-title').innerText = `${latestSkin.updateName} (v${latestSkin.version})`;
-                document.getElementById('modal-update-desc').innerText = latestSkin.whatsNewText;
-                
-                // Show Modal
-                const modal = document.getElementById('whats-new-modal');
-                modal.style.display = 'flex';
-                setTimeout(() => modal.classList.add('active'), 10);
+            if(stored !== latest.version) {
+                document.getElementById('modal-title').innerText = `${latest.updateName} (V${latest.version})`;
+                document.getElementById('modal-desc').innerText = latest.whatsNew;
+                openModal('whats-new-modal');
             }
         }
 
         function closeWhatsNew() {
-            localStorage.setItem('site_version', latestSkin.version);
-            toggleModal('whats-new-modal');
+            localStorage.setItem('pix_version', SKIN_DB[0].version);
+            document.getElementById('whats-new-modal').style.display = 'none';
         }
 
-        // 6. UTILS
-        function toggleModal(id) {
-            const el = document.getElementById(id);
-            if (el.classList.contains('active')) {
-                el.classList.remove('active');
-                setTimeout(() => el.style.display = 'none', 300);
-            } else {
-                el.style.display = 'flex';
-                setTimeout(() => el.classList.add('active'), 10);
-            }
+        function downloadCurrent() {
+            const data = SKIN_DB[activeSkinIndex];
+            const link = document.createElement('a');
+            link.href = data.file;
+            link.download = `${data.skinName}_v${data.version}.png`;
+            link.click();
         }
 
-        function updateClock() {
-            const now = new Date();
-            const timeString = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-            document.getElementById('clock').innerText = timeString;
-        }
-
-        function toggleTheme() {
-            const isDark = document.body.getAttribute('data-theme') === 'dark';
-            document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+        // --- CONTROLS ---
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function toggleRotate() { controls.autoRotate = !controls.autoRotate; }
+        function setAnim(type) {
+            if(type==='walk') skinViewer.animation = new skinview3d.WalkingAnimation();
+            if(type==='run') skinViewer.animation = new skinview3d.RunningAnimation();
+            if(type==='idle') skinViewer.animation = new skinview3d.IdleAnimation();
         }
     </script>
 </body>
