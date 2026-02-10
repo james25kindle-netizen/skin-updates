@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PIX_LABS // ALPHA 0.0.2</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;900&family=Bebas+Neue&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;900&family=Bebas+Neue&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <script src="https://cdn.jsdelivr.net/npm/skinview3d@3.0.0/dist/skinview3d.bundle.min.js"></script>
 
@@ -13,15 +13,14 @@
         :root {
             --p: #6750A4; --on-p: #ffffff; 
             --s-container: #F3EDF7; --on-s-container: #1D192B;
-            --surface: #fdf8fd;
             --bg-1: #EADDFF; --bg-2: #D0BCFF;
             --spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; transition: all 0.6s cubic-bezier(0.2, 0, 0, 1); }
 
         body {
-            background-color: var(--surface);
+            background-color: #fdf8fd;
             color: var(--on-s-container);
             font-family: 'Outfit', sans-serif;
             overflow: hidden; height: 100vh; display: flex;
@@ -36,7 +35,6 @@
         }
         @keyframes move-aura { 0% { transform: scale(1); } 100% { transform: scale(1.1) rotate(2deg); } }
 
-        /* --- NAV RAIL --- */
         nav.nav-rail {
             width: 80px; height: 100%; display: flex; flex-direction: column; 
             align-items: center; padding: 30px 0; gap: 20px;
@@ -48,15 +46,15 @@
             width: 50px; height: 50px; border-radius: 25px;
             background: rgba(255,255,255,0.5); border: none; cursor: pointer;
             display: grid; place-items: center; position: relative;
-            transition: all 0.4s var(--spring); font-weight: 900;
+            font-weight: 900;
         }
-        .v-pill.active { background: var(--p); color: white; border-radius: 12px; transform: scale(1.1); }
+        .v-pill.active { background: var(--p); color: white; border-radius: 12px; }
+
         .badge-new {
             position: absolute; top: -4px; right: -4px; background: #ff3d00;
             color: white; font-size: 9px; padding: 2px 5px; border-radius: 6px;
         }
 
-        /* --- MAIN --- */
         main { flex: 1; display: grid; grid-template-columns: 1fr 450px; padding: 40px; gap: 40px; align-items: center; }
 
         .viewer-box {
@@ -67,19 +65,16 @@
 
         #skin-viewer { width: 100%; height: 100%; cursor: grab; }
 
-        /* --- EXPRESSIVE BUTTONS --- */
         .btn-group { display: flex; gap: 15px; margin-top: 30px; }
         .m3-btn {
             height: 60px; padding: 0 30px; border-radius: 30px;
             background: var(--on-s-container); color: white; border: none;
             font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 10px;
-            transition: all 0.5s var(--spring);
         }
-        /* The "Push" Effect */
         .btn-group:hover .m3-btn:not(:hover) { transform: scale(0.92); opacity: 0.6; filter: blur(1px); }
         .m3-btn:hover { border-radius: 12px; padding: 0 45px; transform: scale(1.08); background: var(--p); }
 
-        h1 { font-family: 'Bebas Neue'; font-size: 8.5rem; line-height: 0.8; letter-spacing: -3px; margin-bottom: 20px; }
+        h1 { font-family: 'Bebas Neue'; font-size: 8.5rem; line-height: 0.8; letter-spacing: -3px; }
         #clock { position: fixed; top: 30px; right: 40px; font-weight: 900; opacity: 0.4; }
     </style>
 </head>
@@ -103,7 +98,7 @@
 
         <div class="content">
             <p id="v-tag" style="font-weight: 900; opacity: 0.3; letter-spacing: 5px; font-size: 0.8rem;"></p>
-            <h1 id="v-title">LOADING...</h1>
+            <h1 id="v-title">PIX_LABS</h1>
             <p id="v-desc" style="font-size: 1.15rem; line-height: 1.6; opacity: 0.7;"></p>
             
             <div class="btn-group">
@@ -117,7 +112,7 @@
         const VERSIONS = [
             {
                 id: "0.0.1", title: "ALPHA",
-                desc: "The original prototype. Simple, clean, and the foundation for everything to follow.",
+                desc: "The original prototype. Please excuse any imperfections or mistakes.",
                 skin: "skin alpha.png", 
                 model: "alpha.gltf",
                 colors: ["#EADDFF", "#D0BCFF", "#6750A4"],
@@ -125,7 +120,7 @@
             },
             {
                 id: "0.0.2", title: "ALPHA 0.0.2",
-                desc: "This update adds eyes, hair, fixes textures, and adds intricate details to the sweater.",
+                desc: "Adds eyes, hair, fixes textures, and adds intricate details to the sweater.",
                 skin: "alpha 0.0.2.png", 
                 model: "alpha 0.0.2.gltf",
                 colors: ["#A3F7EB", "#4FD8C7", "#006A60"],
@@ -141,25 +136,20 @@
             document.getElementById('v-tag').innerText = `VERSION // ${v.id}`;
             document.getElementById('v-desc').innerText = v.desc;
 
-            // Theme Swap
             document.documentElement.style.setProperty('--bg-1', v.colors[0]);
             document.documentElement.style.setProperty('--bg-2', v.colors[1]);
             document.documentElement.style.setProperty('--p', v.colors[2]);
 
-            // Engine Update
             if (viewer) {
-                // We use encodeURIComponent to handle the spaces in your file names
+                // FALLBACK SYSTEM: Tries local file first, then placeholder
                 viewer.loadSkin(encodeURI(v.skin)).catch(() => {
-                    console.warn("File not found, using fallback.");
-                    viewer.loadSkin("https://raw.githubusercontent.com/bs-community/skinview3d/master/examples/img/skin.png");
+                    console.log("Local skin not found, loading fallback...");
+                    viewer.loadSkin("https://textures.minecraft.net/texture/316934c9955d1445b2067fc69e2c694f4544d93f7733471df4227092809d37");
                 });
             }
 
-            // Button Updates
             document.getElementById('dl-png').onclick = () => window.open(v.skin);
             document.getElementById('dl-gltf').onclick = () => window.open(v.model);
-
-            // Active State
             document.querySelectorAll('.v-pill-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
         }
 
@@ -169,10 +159,8 @@
         }
 
         window.onload = () => {
-            // 1. Clock
             setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-US', {hour12:false}); }, 1000);
 
-            // 2. Build Nav
             const rail = document.getElementById('rail');
             VERSIONS.forEach((v, i) => {
                 const b = document.createElement('button');
@@ -183,26 +171,20 @@
                 rail.appendChild(b);
             });
 
-            // 3. Initialize Viewer with Safety Check
             const parent = document.getElementById('viewer-parent');
-            if (parent.clientWidth > 0) {
-                viewer = new skinview3d.SkinViewer({
-                    canvas: document.getElementById("skin-viewer"),
-                    width: parent.clientWidth,
-                    height: parent.clientHeight
-                });
-                viewer.animation = new skinview3d.WalkingAnimation();
-                skinview3d.createOrbitControls(viewer).autoRotate = true;
-                
-                updateVersion(1); // Load latest
-            }
+            viewer = new skinview3d.SkinViewer({
+                canvas: document.getElementById("skin-viewer"),
+                width: parent.clientWidth,
+                height: parent.clientHeight
+            });
+            viewer.animation = new skinview3d.WalkingAnimation();
+            skinview3d.createOrbitControls(viewer).autoRotate = true;
+            
+            updateVersion(1); 
 
-            // 4. Robust Resize
             window.addEventListener('resize', () => {
-                if (viewer) {
-                    viewer.width = parent.clientWidth;
-                    viewer.height = parent.clientHeight;
-                }
+                viewer.width = parent.clientWidth;
+                viewer.height = parent.clientHeight;
             });
         };
     </script>
