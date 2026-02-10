@@ -23,8 +23,8 @@
             background-color: var(--s);
             color: var(--on-pc);
             font-family: 'Outfit', sans-serif;
-            overflow-x: hidden;
-            min-height: 100vh;
+            overflow: hidden; /* Keeps the Alpha experience contained */
+            height: 100vh;
         }
 
         .bg-layer {
@@ -34,6 +34,7 @@
             z-index: -1; filter: blur(80px);
             animation: pulse-bg 15s ease-in-out infinite alternate;
         }
+
         @keyframes pulse-bg { 0% { transform: scale(1); } 100% { transform: scale(1.2) rotate(4deg); } }
 
         header {
@@ -50,7 +51,6 @@
             display: flex; gap: 12px; font-weight: 700;
         }
 
-        /* --- THE MORPHING BUTTONS --- */
         .m3-fab {
             width: 70px; height: 70px;
             border-radius: 50%;
@@ -58,9 +58,8 @@
             border: none; cursor: pointer;
             display: flex; align-items: center; justify-content: center;
             transition: all 0.5s var(--spring-easing);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
-        .m3-fab:hover { border-radius: 15px; transform: scale(1.1) rotate(5deg); }
+        .m3-fab:hover { border-radius: 15px; transform: scale(1.1); }
 
         .m3-label-btn {
             height: 64px; padding: 0 40px;
@@ -70,21 +69,21 @@
             display: flex; align-items: center; gap: 15px;
             cursor: pointer; transition: all 0.5s var(--spring-easing);
         }
-        .m3-label-btn:hover { border-radius: 12px; padding: 0 50px; }
+        .m3-label-btn:hover { border-radius: 12px; }
 
-        /* --- LAYOUT --- */
         .main-stage {
             display: grid;
             grid-template-columns: 1.1fr 0.9fr;
             gap: 60px;
-            padding: 0 60px 100px 60px;
+            padding: 0 60px;
             max-width: 1600px;
             margin: 0 auto;
+            height: calc(100vh - 150px);
             align-items: center;
         }
 
         .viewer-container {
-            height: 75vh;
+            height: 100%;
             background: rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(25px);
             border-radius: 60px;
@@ -93,17 +92,14 @@
             border: 1px solid rgba(255, 255, 255, 0.4);
         }
 
+        #skin-viewer { width: 100%; height: 100%; outline: none; }
+
         .display-text h1 {
             font-family: 'Bebas Neue', sans-serif;
             font-size: clamp(6rem, 15vw, 13rem);
             line-height: 0.8;
             letter-spacing: -8px;
             margin: 10px 0;
-        }
-
-        @media (max-width: 1100px) {
-            .main-stage { grid-template-columns: 1fr; padding: 20px; }
-            header { padding: 20px; }
         }
     </style>
 </head>
@@ -114,14 +110,8 @@
     <header>
         <div style="font-family: 'Space Grotesk'; font-weight: 900; font-size: 1.4rem;">PIX_LABS</div>
         <div style="display: flex; gap: 12px;">
-            <div class="status-pill">
-                <span class="material-symbols-rounded">cloud</span>
-                <span id="weather">72°F</span>
-            </div>
-            <div class="status-pill">
-                <span class="material-symbols-rounded">schedule</span>
-                <span id="clock">00:00:00</span>
-            </div>
+            <div class="status-pill"><span class="material-symbols-rounded">cloud</span><span id="weather">72°F</span></div>
+            <div class="status-pill"><span class="material-symbols-rounded">schedule</span><span id="clock">00:00:00</span></div>
         </div>
     </header>
 
@@ -129,12 +119,8 @@
         <div class="viewer-container">
             <canvas id="skin-viewer"></canvas>
             <div style="position: absolute; bottom: 30px; left: 30px; display: flex; gap: 15px;">
-                <button class="m3-fab" onclick="skinViewer.animation = new skinview3d.WalkingAnimation()">
-                    <span class="material-symbols-rounded">directions_walk</span>
-                </button>
-                <button class="m3-fab" onclick="skinViewer.animation = null">
-                    <span class="material-symbols-rounded">stop</span>
-                </button>
+                <button class="m3-fab" onclick="skinViewer.animation = new skinview3d.WalkingAnimation()"><span class="material-symbols-rounded">directions_run</span></button>
+                <button class="m3-fab" onclick="skinViewer.animation = null"><span class="material-symbols-rounded">stop</span></button>
             </div>
         </div>
 
@@ -146,10 +132,10 @@
             </p>
             
             <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-                <button class="m3-label-btn" onclick="downloadFile()">
+                <button class="m3-label-btn" onclick="downloadAsset('skin alpha.png')">
                     GET PNG <span class="material-symbols-rounded">download</span>
                 </button>
-                <button class="m3-label-btn" style="background: var(--pc); color: var(--on-pc);" onclick="alert('Alpha GLTF Download Pending...')">
+                <button class="m3-label-btn" style="background: var(--pc); color: var(--on-pc);" onclick="downloadAsset('alpha.gltf')">
                     GET GLTF <span class="material-symbols-rounded">deployed_code</span>
                 </button>
             </div>
@@ -159,7 +145,6 @@
     <script>
         let skinViewer;
 
-        // --- 1. CLOCK ---
         function startClock() {
             setInterval(() => {
                 const now = new Date();
@@ -167,54 +152,42 @@
             }, 1000);
         }
 
-        // --- 2. THEME ROTATION ---
-        function applyRandomPalette() {
-            const palettes = [
-                { p: "#6750A4", pc: "#EADDFF", bg1: "#EADDFF", bg2: "#D0BCFF" },
-                { p: "#006A60", pc: "#74F8E5", bg1: "#A3F7EB", bg2: "#4FD8C7" },
-                { p: "#9C4146", pc: "#FFDADD", bg1: "#FFDADD", bg2: "#FFB4BB" }
-            ];
-            const t = palettes[Math.floor(Math.random() * palettes.length)];
-            const r = document.documentElement.style;
-            r.setProperty('--p', t.p); r.setProperty('--pc', t.pc);
-            r.setProperty('--bg-grad-1', t.bg1); r.setProperty('--bg-grad-2', t.bg2);
-        }
-
-        // --- 3. INIT 3D ---
         window.onload = () => {
             startClock();
-            applyRandomPalette();
 
             skinViewer = new skinview3d.SkinViewer({
-                canvas: document.getElementById("skin-viewer"),
-                width: 600,
-                height: 800
+                canvas: document.getElementById("skin-viewer")
             });
 
-            // LOAD YOUR ALPHA FILES
-            // This expects the files to be in the same folder as this HTML
+            // LOADING FILES
             skinViewer.loadSkin("skin alpha.png");
             
-            /* If you want to use the .gltf model instead of a standard player:
-               skinViewer.loadModel("alpha.gltf");
-            */
-
+            // ANIMATION & CONTROLS
             skinViewer.animation = new skinview3d.WalkingAnimation();
-            skinview3d.createOrbitControls(skinViewer).autoRotate = true;
+            const controls = skinview3d.createOrbitControls(skinViewer);
+            controls.enableZoom = false; 
+            controls.autoRotate = true;
+
+            // CENTER BUG FIX: Force a resize calculation 100ms after load
+            setTimeout(() => {
+                window.dispatchEvent(new Event('resize'));
+            }, 100);
 
             window.addEventListener('resize', () => {
                 const box = document.querySelector('.viewer-container');
                 skinViewer.width = box.clientWidth;
                 skinViewer.height = box.clientHeight;
             });
-            window.dispatchEvent(new Event('resize'));
         };
 
-        function downloadFile() {
+        // FIXED DOWNLOAD FUNCTION
+        function downloadAsset(filename) {
             const link = document.createElement('a');
-            link.href = "skin alpha.png";
-            link.download = "skin_alpha_001.png";
+            link.href = filename;
+            link.download = filename;
+            document.body.appendChild(link);
             link.click();
+            document.body.removeChild(link);
         }
     </script>
 </body>
