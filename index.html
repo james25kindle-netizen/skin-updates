@@ -1,34 +1,164 @@
-// --- 1. THE 12H CLOCK LOGIC ---
-function updateClock() {
-    const now = new Date();
-    // Setting hour12: true gives us that classic 12h format with AM/PM
-    const timeString = now.toLocaleTimeString('en-US', { 
-        hour: '2-digit', 
-        minute: '2-digit', 
-        second: '2-digit', 
-        hour12: true 
-    });
-    document.getElementById('clock').innerText = timeString;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIX_LABS // ALPHA 0.0.2</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;900&family=Bebas+Neue&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
 
-// --- 2. THE WEATHER LOGIC ---
-async function updateWeather() {
-    const weatherEl = document.getElementById('weather-display');
-    
-    // You can replace 'London' with your city or use geolocation!
-    const API_KEY = 'YOUR_OPENWEATHER_API_KEY'; 
-    const CITY = 'London'; 
-    
-    try {
-        // If you don't have a key yet, this will catch and show demo data
-        const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${CITY}&units=metric&appid=${API_KEY}`);
-        const data = await response.json();
-        
-        const temp = Math.round(data.main.temp);
-        const condition = data.weather[0].main;
-        weatherEl.innerHTML = `<span class="material-symbols-rounded">cloud</span> ${temp}°C // ${condition}`;
-    } catch (error) {
-        // DEMO MODE: Shows if no API key is present
-        weatherEl.innerHTML = `<span class="material-symbols-rounded">sunny</span> 22°C // SUNNY`;
-    }
-}
+    <style>
+        :root {
+            --p: #6750A4; --on-s-container: #1D192B;
+            --bg-1: #EADDFF; --bg-2: #D0BCFF;
+            --spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: #fdf8fd; color: var(--on-s-container); font-family: 'Outfit', sans-serif; height: 100vh; display: flex; overflow: hidden; }
+
+        .aura-bg {
+            position: fixed; inset: 0;
+            background: radial-gradient(circle at 80% 20%, var(--bg-1) 0%, transparent 40%),
+                        radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%);
+            z-index: -1; filter: blur(60px);
+            animation: move-aura 15s infinite alternate linear;
+        }
+        @keyframes move-aura { 0% { transform: scale(1); } 100% { transform: scale(1.1) rotate(2deg); } }
+
+        /* Status Bar Layout */
+        .status-bar {
+            position: fixed; top: 30px; right: 40px;
+            display: flex; flex-direction: column; align-items: flex-end; gap: 10px; z-index: 100;
+        }
+
+        .weather-chip {
+            background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            padding: 10px 20px; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.3);
+            display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 0.95rem;
+            color: #1D192B; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        #clock {
+            font-weight: 900; opacity: 0.6; letter-spacing: 1.5px;
+            font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; font-variant-numeric: tabular-nums;
+        }
+
+        /* Nav Rail */
+        nav.nav-rail {
+            width: 80px; height: 100%; display: flex; flex-direction: column; align-items: center; 
+            padding: 30px 0; gap: 20px; background: rgba(255, 255, 255, 0.2); 
+            backdrop-filter: blur(15px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50;
+        }
+
+        .v-pill {
+            width: 50px; height: 50px; border-radius: 25px; background: rgba(255,255,255,0.5); 
+            border: none; cursor: pointer; display: grid; place-items: center; position: relative;
+            transition: all 0.4s var(--spring); font-weight: 900;
+        }
+        .v-pill.active { background: var(--p); color: white; border-radius: 12px; }
+        .badge-new { position: absolute; top: -4px; right: -4px; background: #ff3d00; color: white; font-size: 9px; padding: 2px 5px; border-radius: 6px; }
+
+        /* Main */
+        main { flex: 1; display: grid; grid-template-columns: 1fr 450px; padding: 40px; gap: 40px; align-items: center; }
+        .viewer-box { height: 80vh; background: white; border-radius: 48px; position: relative; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.05); }
+        model-viewer { width: 100%; height: 100%; }
+
+        .btn-group { display: flex; gap: 15px; margin-top: 30px; }
+        .m3-btn {
+            height: 64px; padding: 0 32px; border-radius: 32px; background: var(--on-s-container); 
+            color: white; border: none; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 10px;
+            transition: all 0.5s var(--spring);
+        }
+        .m3-btn:hover { border-radius: 16px; transform: scale(1.08); background: var(--p); }
+
+        h1 { font-family: 'Bebas Neue'; font-size: 8.5rem; line-height: 0.8; letter-spacing: -3px; }
+    </style>
+</head>
+<body>
+
+    <div class="aura-bg"></div>
+
+    <div class="status-bar">
+        <div id="weather-display" class="weather-chip">
+            <span class="material-symbols-rounded">sync</span>
+            <span id="temp">FETCHING...</span>
+        </div>
+        <div id="clock">00:00:00 AM</div>
+    </div>
+
+    <nav class="nav-rail" id="rail">
+        <div style="font-weight: 900; opacity: 0.3; font-size: 0.7rem; margin-bottom: 20px;">PIX</div>
+    </nav>
+
+    <main>
+        <div class="viewer-box">
+            <model-viewer id="mv" auto-rotate camera-controls shadow-intensity="1" environment-image="neutral"></model-viewer>
+        </div>
+
+        <div class="content">
+            <p id="v-tag" style="font-weight: 900; opacity: 0.3; letter-spacing: 5px; font-size: 0.8rem;"></p>
+            <h1 id="v-title">PIX_LABS</h1>
+            <p id="v-desc" style="font-size: 1.15rem; line-height: 1.6; opacity: 0.7;"></p>
+            
+            <div class="btn-group">
+                <button class="m3-btn">GET PNG <span class="material-symbols-rounded">image</span></button>
+                <button class="m3-btn" style="background:#F3EDF7; color:#1D192B;">GET GLTF <span class="material-symbols-rounded">3d_rotation</span></button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const VERSIONS = [
+            { id: "0.0.1", title: "ALPHA", desc: "The original prototype.", model: "alpha.gltf", colors: ["#EADDFF", "#D0BCFF", "#6750A4"], new: false },
+            { id: "0.0.2", title: "ALPHA 0.0.2", desc: "Added eyes, hair, and sweater details.", model: "PASTE_YOUR_DISCORD_LINK_HERE", colors: ["#A3F7EB", "#4FD8C7", "#006A60"], new: true }
+        ];
+
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+        }
+
+        async function updateWeather() {
+            const API_KEY = 'bd5e378503939ddaee76f12ad7a97608';
+            const CITY = 'London'; // <--- CHANGE CITY HERE
+            try {
+                const r = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${CITY}&units=metric&appid=${API_KEY}`);
+                const d = await r.json();
+                document.getElementById('temp').innerText = `${Math.round(d.main.temp)}°C // ${d.name.toUpperCase()}`;
+                document.querySelector('.weather-chip .material-symbols-rounded').innerText = d.weather[0].main.toLowerCase().includes('cloud') ? 'cloud' : 'sunny';
+            } catch (e) { document.getElementById('temp').innerText = "OFFLINE"; }
+        }
+
+        function switchVersion(idx) {
+            const v = VERSIONS[idx];
+            document.getElementById('v-title').innerText = v.title;
+            document.getElementById('v-tag').innerText = `VERSION // ${v.id}`;
+            document.getElementById('v-desc').innerText = v.desc;
+            document.documentElement.style.setProperty('--bg-1', v.colors[0]);
+            document.documentElement.style.setProperty('--bg-2', v.colors[1]);
+            document.documentElement.style.setProperty('--p', v.colors[2]);
+            document.getElementById('mv').src = v.model;
+            document.querySelectorAll('.v-pill-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
+        }
+
+        window.onload = () => {
+            const rail = document.getElementById('rail');
+            VERSIONS.forEach((v, i) => {
+                const b = document.createElement('button');
+                b.className = 'v-pill v-pill-btn';
+                b.innerHTML = `<span>${i+1}</span>` + (v.new ? `<div class="badge-new">NEW</div>` : '');
+                b.onclick = () => switchVersion(i);
+                rail.appendChild(b);
+            });
+            setInterval(updateClock, 1000);
+            updateClock();
+            updateWeather();
+            switchVersion(1);
+        };
+    </script>
+</body>
+</html>
