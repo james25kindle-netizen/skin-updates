@@ -14,7 +14,7 @@
             --p: #6750A4; --on-p: #ffffff; --pc: #EADDFF; --on-pc: #21005D;
             --s: #fdf8fd; --sc: #F3EDF7;
             --bg-grad-1: #EADDFF; --bg-grad-2: #D0BCFF;
-            --spring-easing: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -23,7 +23,7 @@
             background-color: var(--s);
             color: var(--on-pc);
             font-family: 'Outfit', sans-serif;
-            overflow: hidden; /* Keeps the Alpha experience contained */
+            overflow: hidden;
             height: 100vh;
         }
 
@@ -34,72 +34,85 @@
             z-index: -1; filter: blur(80px);
             animation: pulse-bg 15s ease-in-out infinite alternate;
         }
-
         @keyframes pulse-bg { 0% { transform: scale(1); } 100% { transform: scale(1.2) rotate(4deg); } }
 
-        header {
-            padding: 30px 60px;
-            display: flex; justify-content: space-between; align-items: center;
-        }
+        header { padding: 30px 60px; display: flex; justify-content: space-between; align-items: center; }
 
         .status-pill {
             background: rgba(255, 255, 255, 0.4);
             backdrop-filter: blur(10px);
-            padding: 10px 24px;
-            border-radius: 100px;
+            padding: 10px 24px; border-radius: 100px;
             border: 1px solid rgba(255, 255, 255, 0.5);
             display: flex; gap: 12px; font-weight: 700;
         }
 
+        /* --- EXPRESSIVE BUTTON GROUP --- */
+        .button-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .m3-label-btn {
+            height: 64px; padding: 0 35px;
+            border-radius: 32px;
+            background: var(--on-pc); color: white;
+            border: none; font-weight: 900; font-size: 1rem;
+            display: flex; align-items: center; gap: 12px;
+            cursor: pointer; 
+            transition: all 0.6s var(--spring);
+        }
+
+        /* Hovering one button affects the whole group */
+        .button-group:hover .m3-label-btn:not(:hover) {
+            transform: scale(0.9);
+            opacity: 0.6;
+            filter: blur(1px);
+        }
+
+        .m3-label-btn:hover {
+            border-radius: 12px;
+            padding: 0 50px;
+            transform: scale(1.1) !important;
+            opacity: 1 !important;
+            filter: blur(0) !important;
+            background: var(--p);
+        }
+
         .m3-fab {
-            width: 70px; height: 70px;
-            border-radius: 50%;
+            width: 70px; height: 70px; border-radius: 50%;
             background: var(--p); color: var(--on-p);
             border: none; cursor: pointer;
             display: flex; align-items: center; justify-content: center;
-            transition: all 0.5s var(--spring-easing);
+            transition: all 0.5s var(--spring);
         }
         .m3-fab:hover { border-radius: 15px; transform: scale(1.1); }
 
-        .m3-label-btn {
-            height: 64px; padding: 0 40px;
-            border-radius: 32px;
-            background: var(--on-pc); color: white;
-            border: none; font-weight: 900; font-size: 1.1rem;
-            display: flex; align-items: center; gap: 15px;
-            cursor: pointer; transition: all 0.5s var(--spring-easing);
-        }
-        .m3-label-btn:hover { border-radius: 12px; }
-
+        /* --- LAYOUT --- */
         .main-stage {
             display: grid;
             grid-template-columns: 1.1fr 0.9fr;
-            gap: 60px;
-            padding: 0 60px;
-            max-width: 1600px;
-            margin: 0 auto;
+            gap: 60px; padding: 0 60px;
+            max-width: 1600px; margin: 0 auto;
             height: calc(100vh - 150px);
             align-items: center;
         }
 
         .viewer-container {
-            height: 100%;
+            height: 90%;
             background: rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(25px);
             border-radius: 60px;
             position: relative;
-            overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.4);
         }
 
-        #skin-viewer { width: 100%; height: 100%; outline: none; }
+        #skin-viewer { width: 100%; height: 100%; border-radius: 60px; }
 
         .display-text h1 {
             font-family: 'Bebas Neue', sans-serif;
             font-size: clamp(6rem, 15vw, 13rem);
-            line-height: 0.8;
-            letter-spacing: -8px;
-            margin: 10px 0;
+            line-height: 0.8; letter-spacing: -8px; margin: 10px 0;
         }
     </style>
 </head>
@@ -110,7 +123,7 @@
     <header>
         <div style="font-family: 'Space Grotesk'; font-weight: 900; font-size: 1.4rem;">PIX_LABS</div>
         <div style="display: flex; gap: 12px;">
-            <div class="status-pill"><span class="material-symbols-rounded">cloud</span><span id="weather">72°F</span></div>
+            <div class="status-pill"><span class="material-symbols-rounded">cloud</span><span>72°F</span></div>
             <div class="status-pill"><span class="material-symbols-rounded">schedule</span><span id="clock">00:00:00</span></div>
         </div>
     </header>
@@ -131,11 +144,11 @@
                 This is the first version please excuse any imperfections or mistakes.
             </p>
             
-            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+            <div class="button-group">
                 <button class="m3-label-btn" onclick="downloadAsset('skin alpha.png')">
                     GET PNG <span class="material-symbols-rounded">download</span>
                 </button>
-                <button class="m3-label-btn" style="background: var(--pc); color: var(--on-pc);" onclick="downloadAsset('alpha.gltf')">
+                <button class="m3-label-btn" style="background: var(--sc); color: var(--on-pc);" onclick="downloadAsset('alpha.gltf')">
                     GET GLTF <span class="material-symbols-rounded">deployed_code</span>
                 </button>
             </div>
@@ -147,40 +160,37 @@
 
         function startClock() {
             setInterval(() => {
-                const now = new Date();
-                document.getElementById('clock').innerText = now.toLocaleTimeString('en-US', { hour12: false });
+                document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-US', { hour12: false });
             }, 1000);
         }
 
         window.onload = () => {
             startClock();
 
+            // FIX: Initialize with defined dimensions to prevent "disappearing" bug
+            const container = document.querySelector('.viewer-container');
             skinViewer = new skinview3d.SkinViewer({
-                canvas: document.getElementById("skin-viewer")
+                canvas: document.getElementById("skin-viewer"),
+                width: container.clientWidth,
+                height: container.clientHeight
             });
 
-            // LOADING FILES
-            skinViewer.loadSkin("skin alpha.png");
+            // LOAD SKIN
+            skinViewer.loadSkin("skin alpha.png").catch(e => console.error("Skin failed to load. Check filename."));
             
-            // ANIMATION & CONTROLS
             skinViewer.animation = new skinview3d.WalkingAnimation();
             const controls = skinview3d.createOrbitControls(skinViewer);
-            controls.enableZoom = false; 
+            controls.enableZoom = false;
             controls.autoRotate = true;
 
-            // CENTER BUG FIX: Force a resize calculation 100ms after load
-            setTimeout(() => {
-                window.dispatchEvent(new Event('resize'));
-            }, 100);
-
-            window.addEventListener('resize', () => {
-                const box = document.querySelector('.viewer-container');
-                skinViewer.width = box.clientWidth;
-                skinViewer.height = box.clientHeight;
+            // Robust Resize handling
+            const resizeObserver = new ResizeObserver(() => {
+                skinViewer.width = container.clientWidth;
+                skinViewer.height = container.clientHeight;
             });
+            resizeObserver.observe(container);
         };
 
-        // FIXED DOWNLOAD FUNCTION
         function downloadAsset(filename) {
             const link = document.createElement('a');
             link.href = filename;
