@@ -3,427 +3,263 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PIX_LABS // EXPRESSIVE_M3</title>
+    <title>PIX_LABS // ULTRA_EXPRESSIVE</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;900&family=Bebas+Neue&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-    
     <script src="https://bs-community.github.io/skinview3d/js/skinview3d.bundle.js"></script>
 
     <style>
         :root {
-            /* BASE VARIABLES (Overwritten by JS on load) */
-            --primary: #6750A4;
-            --on-primary: #FFFFFF;
-            --primary-container: #EADDFF;
-            --on-primary-container: #21005D;
-            --surface: #FDF8FD;
-            --surface-container: #F3EDF7;
-            --outline: #79747E;
-
-            /* SHAPES & ANIMATION */
-            --shape-xl: 48px;
-            --shape-l: 28px;
-            --shape-m: 16px;
-            --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            --ease-expo: cubic-bezier(0.19, 1, 0.22, 1);
+            --p: #6750A4; --on-p: #ffffff; --pc: #EADDFF; --on-pc: #21005D;
+            --s: #fdf8fd; --sc: #F3EDF7;
+            --radius-main: 40px;
+            --radius-blob: 30% 70% 70% 30% / 30% 30% 70% 70%;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><circle cx="10" cy="10" r="10" fill="rgba(0,0,0,0.1)"/></svg>'), auto; }
 
         body {
-            background-color: var(--surface);
-            color: var(--on-primary-container);
+            background-color: var(--s);
+            color: var(--on-pc);
             font-family: 'Outfit', sans-serif;
-            overflow-x: hidden;
-            transition: background 0.5s ease;
+            padding: clamp(10px, 4vw, 40px);
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        /* --- LOADER --- */
-        #loader {
-            position: fixed; inset: 0; z-index: 9999;
-            background: var(--surface);
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            transition: opacity 0.5s ease;
+        /* --- MATERIAL 3 EXPRESSIVE SHAPES --- */
+        .flower-fab {
+            width: 80px; height: 80px;
+            background: var(--pc); color: var(--on-pc);
+            border: none; border-radius: var(--radius-blob);
+            display: flex; align-items: center; justify-content: center;
+            transition: 0.5s var(--radius-blob);
+            cursor: pointer;
         }
-        .blob {
-            width: 80px; height: 80px; background: var(--primary);
-            border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
-            animation: blob-bounce 2s infinite ease-in-out;
-        }
-        @keyframes blob-bounce {
-            0%, 100% { transform: scale(1) translateY(0); border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
-            50% { transform: scale(1.1) translateY(-20px); border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
-        }
+        .flower-fab:hover { border-radius: 50%; transform: rotate(90deg) scale(1.1); background: var(--p); color: var(--on-p); }
 
-        /* --- LAYOUT GRID --- */
-        .grid-container {
+        /* --- THE GRID --- */
+        .expressive-layout {
             display: grid;
-            grid-template-columns: 1.2fr 0.8fr;
-            gap: 24px;
-            padding: 24px;
-            max-width: 1600px;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+            max-width: 1800px;
             margin: 0 auto;
-            min-height: 100vh;
-            opacity: 0; transform: translateY(30px);
-            animation: enter-up 1s var(--ease-expo) forwards 0.5s;
         }
-        @media (max-width: 900px) { .grid-container { grid-template-columns: 1fr; } }
 
-        /* --- 3D VIEWER CONTAINER --- */
-        .viewer-card {
-            background: var(--primary-container);
-            border-radius: var(--shape-xl);
+        /* --- 3D VIEWPORT CONTAINER --- */
+        .hero-viewport {
+            background: var(--pc);
+            border-radius: var(--radius-main);
+            height: 75vh;
             position: relative;
             overflow: hidden;
-            height: 80vh;
-            min-height: 600px;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-        }
-
-        #skin-viewer { width: 100%; height: 100%; cursor: grab; }
-
-        /* Floating Controls inside Viewer */
-        .viewer-controls {
-            position: absolute; bottom: 32px;
-            background: rgba(255,255,255,0.4);
-            backdrop-filter: blur(12px);
-            padding: 8px; border-radius: 100px;
-            display: flex; gap: 8px;
-            border: 1px solid rgba(255,255,255,0.5);
-        }
-
-        .control-btn {
-            width: 48px; height: 48px; border-radius: 50%; border: none;
-            background: transparent; color: var(--on-primary-container);
-            cursor: pointer; transition: 0.3s var(--ease-spring);
             display: flex; align-items: center; justify-content: center;
         }
-        .control-btn:hover { background: var(--on-primary-container); color: var(--primary-container); transform: scale(1.1); }
 
-        /* --- INFO & ACTIONS --- */
-        .sidebar { display: flex; flex-direction: column; gap: 24px; }
+        #skin-viewer { width: 100%; height: 100%; }
 
-        /* Header Pill */
-        .header-pill {
-            display: flex; justify-content: space-between; align-items: center;
-            background: var(--surface-container); padding: 16px 32px;
-            border-radius: 100px;
+        /* --- WIGGLY PROGRESS BAR (From Reference) --- */
+        .wiggle-container {
+            width: 100%; height: 8px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 10px;
+            position: relative; margin: 20px 0;
+        }
+        .wiggle-fill {
+            height: 100%; width: 65%;
+            background: var(--p);
+            border-radius: 10px;
+            position: relative;
+        }
+        .wiggle-fill::after {
+            content: ""; position: absolute; right: -5px; top: -4px;
+            width: 16px; height: 16px; background: var(--on-pc);
+            border-radius: 50%;
         }
 
-        /* Hero Text */
-        .title-block h1 {
+        /* --- TYPOGRAPHY --- */
+        .display-title {
             font-family: 'Bebas Neue', sans-serif;
-            font-size: 8rem; line-height: 0.85;
-            color: var(--on-primary-container);
+            font-size: clamp(5rem, 12vw, 15rem);
+            line-height: 0.8;
+            letter-spacing: -4px;
             margin: 20px 0;
+            color: var(--on-pc);
         }
 
-        /* Large Action Button */
-        .btn-download {
-            background: var(--primary); color: var(--on-primary);
-            padding: 32px; border-radius: var(--shape-xl);
-            border: none; width: 100%;
-            display: flex; justify-content: space-between; align-items: center;
-            cursor: pointer; transition: 0.3s var(--ease-spring);
-            font-size: 1.5rem; font-weight: 700;
+        .side-card {
+            background: var(--sc);
+            border-radius: var(--radius-main);
+            padding: 40px;
+            display: flex; flex-direction: column; gap: 24px;
         }
-        .btn-download:hover { transform: scale(1.02); box-shadow: 0 10px 30px -10px var(--primary); }
 
-        /* History List */
-        .history-card {
-            background: var(--surface-container);
-            padding: 24px; border-radius: var(--shape-xl);
-            flex-grow: 1;
-        }
-        .history-item {
+        .action-pill {
+            background: var(--p); color: var(--on-p);
+            padding: 30px; border-radius: 100px;
+            border: none; font-size: 1.5rem; font-weight: 900;
             display: flex; justify-content: space-between; align-items: center;
-            padding: 16px; border-bottom: 1px solid rgba(0,0,0,0.05);
-            cursor: pointer; transition: 0.2s; border-radius: var(--shape-m);
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .history-item:hover { background: rgba(0,0,0,0.03); }
+        .action-pill:hover { border-radius: 40px; transform: translateY(-5px); }
 
         /* --- MODALS --- */
-        .modal-overlay {
-            position: fixed; inset: 0; z-index: 2000;
-            background: rgba(0,0,0,0.4); backdrop-filter: blur(8px);
+        .m3-modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.2);
+            backdrop-filter: blur(20px); z-index: 1000;
             display: none; align-items: center; justify-content: center;
         }
-        .modal-card {
-            background: var(--surface); padding: 48px;
-            border-radius: var(--shape-xl); width: 90%; max-width: 500px;
-            animation: modal-pop 0.4s var(--ease-spring);
+        .m3-sheet {
+            background: var(--s); padding: 50px;
+            border-radius: 60px; width: 90%; max-width: 600px;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.1);
+            text-align: center;
         }
 
-        /* --- UTILS --- */
-        .chip { background: var(--primary); color: var(--on-primary); padding: 4px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; }
-        .icon-btn { background: none; border: none; cursor: pointer; color: var(--on-primary-container); }
-
-        @keyframes enter-up { to { opacity: 1; transform: translateY(0); } }
-        @keyframes modal-pop { from { transform: scale(0.8); opacity: 0; } }
-
+        @media (max-width: 1100px) {
+            .expressive-layout { grid-template-columns: 1fr; }
+            .hero-viewport { height: 50vh; }
+        }
     </style>
 </head>
 <body>
 
-    <div id="loader">
-        <div class="blob"></div>
-        <h2 style="margin-top:20px; font-weight: 500; letter-spacing: 2px;">LOADING RESOURCES</h2>
-    </div>
+    <header style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px;">
+        <div>
+            <p style="font-weight: 900; letter-spacing: 4px; font-size: 0.8rem; opacity: 0.5;">PIX_LABS // M3_EXP</p>
+            <h2 id="clock" style="font-size: 2.5rem; font-family: 'Space Grotesk';">00:00</h2>
+        </div>
+        <button class="flower-fab" onclick="openModal('settings-modal')">
+            <span class="material-symbols-rounded" style="font-size: 2.5rem;">motion_photos_on</span>
+        </button>
+    </header>
 
-    <div class="grid-container">
-        
-        <div class="viewer-card">
-            <div style="position: absolute; top: 32px; left: 32px; z-index: 10;">
-                <div class="chip" id="version-tag">V1.0</div>
-            </div>
-            
+    <main class="expressive-layout">
+        <section class="hero-viewport">
             <canvas id="skin-viewer"></canvas>
+            <div style="position: absolute; bottom: 30px; display: flex; gap: 15px;">
+                <button class="flower-fab" style="width: 60px; height: 60px;" onclick="toggleAnim('walk')"><span class="material-symbols-rounded">directions_run</span></button>
+                <button class="flower-fab" style="width: 60px; height: 60px;" onclick="toggleAnim('idle')"><span class="material-symbols-rounded">emoji_people</span></button>
+            </div>
+        </section>
+
+        <section class="side-card">
+            <div style="display: flex; gap: 10px;">
+                <span class="chip" style="background: var(--on-pc); color: var(--s); padding: 8px 20px; border-radius: 50px; font-weight: 800;" id="ver-tag">V1.0</span>
+                <span class="chip" style="border: 2px solid var(--p); padding: 8px 20px; border-radius: 50px; font-weight: 800;">MILANO_EDITION</span>
+            </div>
+
+            <h1 class="display-title" id="skin-name">G_01</h1>
             
-            <div class="viewer-controls">
-                <button class="control-btn" onclick="toggleRotate()">
-                    <span class="material-symbols-rounded">360</span>
-                </button>
-                <button class="control-btn" onclick="setAnim('walk')">
-                    <span class="material-symbols-rounded">directions_walk</span>
-                </button>
-                <button class="control-btn" onclick="setAnim('run')">
-                    <span class="material-symbols-rounded">sprint</span>
-                </button>
-                <button class="control-btn" onclick="setAnim('idle')">
-                    <span class="material-symbols-rounded">accessibility_new</span>
-                </button>
+            <div class="wiggle-container">
+                <div class="wiggle-fill"></div>
             </div>
-        </div>
 
-        <div class="sidebar">
-            
-            <div class="header-pill">
-                <div style="display:flex; align-items:center; gap:12px;">
-                    <span class="material-symbols-rounded">grid_view</span>
-                    <span style="font-weight:700;">PIX_LABS</span>
+            <p style="font-size: 1.2rem; font-weight: 500; opacity: 0.7;" id="skin-desc">
+                High-performance aesthetic for the digital avant-garde. Optimized for the 2026 Grid.
+            </p>
+
+            <button class="action-pill" onclick="downloadCurrent()">
+                DOWNLOAD
+                <span class="material-symbols-rounded" style="font-size: 3rem;">arrow_outward</span>
+            </button>
+
+            <div id="history-box" style="margin-top: 20px;">
                 </div>
-                <div style="display:flex; align-items:center; gap:16px;">
-                    <span id="clock" style="font-variant-numeric: tabular-nums;">00:00</span>
-                    <button class="icon-btn" onclick="openModal('settings-modal')">
-                        <span class="material-symbols-rounded">settings</span>
-                    </button>
-                </div>
-            </div>
+        </section>
+    </main>
 
-            <div class="title-block">
-                <div style="text-transform: uppercase; letter-spacing: 2px; font-weight: 700; opacity: 0.6;" id="update-name">UPDATE NAME</div>
-                <h1 id="skin-name">SKIN NAME</h1>
-                <p id="skin-desc" style="font-size: 1.2rem; line-height: 1.6; opacity: 0.8; margin-bottom: 24px;">
-                    Description loading...
-                </p>
-                <button class="btn-download" onclick="downloadCurrent()">
-                    <span>DOWNLOAD .PNG</span>
-                    <span class="material-symbols-rounded" style="font-size: 2rem;">download</span>
-                </button>
-            </div>
-
-            <div class="history-card">
-                <h3 style="margin-bottom: 16px; opacity: 0.5; font-size: 0.9rem; letter-spacing: 1px;">PREVIOUS VERSIONS</h3>
-                <div id="history-list"></div>
-            </div>
-
-        </div>
-    </div>
-
-    <div id="whats-new-modal" class="modal-overlay">
-        <div class="modal-card">
-            <h2 style="font-family: 'Bebas Neue'; font-size: 4rem; line-height: 0.9; margin-bottom: 16px;">FRESH<br>DROP</h2>
-            <div style="background: var(--primary-container); color: var(--on-primary-container); padding: 20px; border-radius: 20px; margin-bottom: 24px;">
-                <h4 id="modal-title" style="margin-bottom: 8px;">Update Title</h4>
-                <p id="modal-desc">Details here.</p>
-            </div>
-            <button class="btn-download" style="padding: 20px;" onclick="closeWhatsNew()">LET'S GO</button>
-        </div>
-    </div>
-
-    <div id="settings-modal" class="modal-overlay">
-        <div class="modal-card">
-            <h2 style="margin-bottom: 24px;">SETTINGS</h2>
-            <div style="display: flex; flex-direction: column; gap: 16px;">
-                <div class="history-item">
-                    <span>Auto-Rotate Model</span>
-                    <input type="checkbox" checked onchange="controls.autoRotate = this.checked">
-                </div>
-                <div class="history-item">
-                    <span>High Quality Rendering</span>
-                    <input type="checkbox" checked>
-                </div>
-            </div>
-            <button class="btn-download" style="padding: 20px; margin-top: 24px;" onclick="document.getElementById('settings-modal').style.display='none'">CLOSE</button>
+    <div id="update-modal" class="m3-modal">
+        <div class="m3-sheet">
+            <span class="material-symbols-rounded" style="font-size: 5rem; color: var(--p);">auto_awesome</span>
+            <h2 class="display-title" style="font-size: 5rem;">NEW DROP</h2>
+            <p id="modal-desc" style="margin-bottom: 30px; font-size: 1.2rem;"></p>
+            <button class="action-pill" style="width: 100%; justify-content: center;" onclick="closeModal('update-modal')">EXPLORE</button>
         </div>
     </div>
 
     <script>
-        /* =========================================
-           1. EXPRESSIVE COLOR ENGINE
-           (This runs first to paint the site)
-           ========================================= */
-        const PALETTES = [
-            { name: "CITRON", p: "#6D5E0F", pc: "#F8E38E", s: "#FFFBF2", sc: "#F2EBDC", on: "#241F00" },
-            { name: "ROSE", p: "#9C4146", pc: "#FFDADD", s: "#FFF8F7", sc: "#F4DDDE", on: "#410006" },
-            { name: "INDIGO", p: "#4F599C", pc: "#DEE0FF", s: "#FDFBFF", sc: "#E4E6F7", on: "#08104E" },
-            { name: "JASPER", p: "#006A60", pc: "#74F8E5", s: "#F4FBF9", sc: "#CCE8E3", on: "#00201C" },
-            { name: "BERRY", p: "#884883", pc: "#FFD6F7", s: "#FFF7FA", sc: "#F4DFED", on: "#360034" }
+        // 1. DYNAMIC COLOR SCHEMES
+        const THEMES = [
+            { p: "#6750A4", pc: "#EADDFF", s: "#FDF8FD", sc: "#F3EDF7", on: "#21005D" }, // Lavender
+            { p: "#006A60", pc: "#74F8E5", s: "#F4FBF9", sc: "#E0F2F0", on: "#00201C" }, // Teal
+            { p: "#9C4146", pc: "#FFDADD", s: "#FFF8F7", sc: "#F5E7E8", on: "#410006" }, // Rose
+            { p: "#6D5E0F", pc: "#F8E38E", s: "#FFFBF2", sc: "#F5EFDE", on: "#241F00" }  // Citron
         ];
 
-        function applyRandomTheme() {
-            const theme = PALETTES[Math.floor(Math.random() * PALETTES.length)];
-            const root = document.documentElement;
+        function applyTheme() {
+            const t = THEMES[Math.floor(Math.random() * THEMES.length)];
+            const r = document.documentElement.style;
+            r.setProperty('--p', t.p); r.setProperty('--pc', t.pc);
+            r.setProperty('--s', t.s); r.setProperty('--sc', t.sc);
+            r.setProperty('--on-pc', t.on);
             
-            root.style.setProperty('--primary', theme.p);
-            root.style.setProperty('--primary-container', theme.pc);
-            root.style.setProperty('--surface', theme.s);
-            root.style.setProperty('--surface-container', theme.sc);
-            root.style.setProperty('--on-primary-container', theme.on);
-            
-            console.log(`%c THEME LOADED: ${theme.name} `, `background: ${theme.p}; color: #fff; border-radius: 4px; padding: 4px;`);
+            // Randomize blob shape for FABs
+            const b = `${Math.random()*40+20}% ${Math.random()*40+40}% ${Math.random()*40+20}% ${Math.random()*40+40}% / ${Math.random()*40+20}% ${Math.random()*40+20}% ${Math.random()*40+40}% ${Math.random()*40+40}%`;
+            r.setProperty('--radius-blob', b);
         }
-        applyRandomTheme(); // Run immediately
 
-        /* =========================================
-           2. DATA MANAGEMENT (User Editable)
-           ========================================= */
-        const SKIN_DB = [
-            {
-                version: "2.1.0",
-                updateName: "The Neon Shift",
-                skinName: "Cyber_Steve",
-                desc: "Added emissive textures to the visor and upgraded the boot geometry.",
-                file: "https://raw.githubusercontent.com/bs-community/skinview3d/master/examples/img/skin.png", // <--- PUT YOUR LINK HERE
-                whatsNew: "We overhauled the lighting engine! The visor now actually glows in the dark."
-            },
-            {
-                version: "2.0.0",
-                updateName: "Foundation Update",
-                skinName: "Base_Ops_01",
-                desc: "Standard issue tactical gear. Matte finish.",
-                file: "https://raw.githubusercontent.com/bs-community/skinview3d/master/examples/img/1_8_texturemap_redux.png",
-                whatsNew: "Initial release of the PIX_LABS tracker."
-            }
+        // 2. DATA
+        const SKINS = [
+            { ver: "4.8.0", name: "NEO_G", desc: "Expressive geometry for the modern player.", file: "https://raw.githubusercontent.com/bs-community/skinview3d/master/examples/img/skin.png", update: "Added squircled shading and dynamic color reactivity." },
+            { ver: "4.5.0", name: "BASE", desc: "The original blueprint.", file: "https://raw.githubusercontent.com/bs-community/skinview3d/master/examples/img/1_8_texturemap_redux.png", update: "Foundation patch." }
         ];
 
-        /* =========================================
-           3. APP LOGIC
-           ========================================= */
-        let skinViewer, controls;
-        let activeSkinIndex = 0;
+        let skinViewer;
 
         window.onload = () => {
-            // Remove Loader
-            setTimeout(() => {
-                document.getElementById('loader').style.opacity = '0';
-                setTimeout(() => document.getElementById('loader').remove(), 500);
-            }, 800);
-
-            // Init 3D
-            initViewer();
-            
-            // Render UI
+            applyTheme();
+            init3D();
             loadSkin(0);
-            renderHistory();
             checkUpdate();
-
-            // Clock
-            setInterval(() => {
-                document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-            }, 1000);
+            setInterval(updateClock, 1000); updateClock();
         };
 
-        function initViewer() {
+        function init3D() {
             skinViewer = new skinview3d.SkinViewer({
                 canvas: document.getElementById("skin-viewer"),
-                width: 400,
-                height: 600,
-                skin: SKIN_DB[0].file
+                width: 600, height: 800, skin: SKINS[0].file
             });
-            
-            // Responsive resize
-            window.addEventListener('resize', () => {
-                skinViewer.width = document.querySelector('.viewer-card').clientWidth;
-                skinViewer.height = document.querySelector('.viewer-card').clientHeight;
-            });
-            // Trigger once
-            window.dispatchEvent(new Event('resize'));
-
             skinViewer.animation = new skinview3d.WalkingAnimation();
-            controls = skinview3d.createOrbitControls(skinViewer);
-            controls.autoRotate = true;
-            controls.autoRotateSpeed = 2;
+            skinview3d.createOrbitControls(skinViewer).autoRotate = true;
         }
 
-        function loadSkin(index) {
-            activeSkinIndex = index;
-            const data = SKIN_DB[index];
-
-            // Update UI Text
-            document.getElementById('version-tag').innerText = `V${data.version}`;
-            document.getElementById('update-name').innerText = data.updateName;
-            document.getElementById('skin-name').innerText = data.skinName;
-            document.getElementById('skin-desc').innerText = data.desc;
-
-            // Load 3D
-            skinViewer.loadSkin(data.file);
-        }
-
-        function renderHistory() {
-            const list = document.getElementById('history-list');
-            list.innerHTML = '';
-            
-            SKIN_DB.forEach((item, idx) => {
-                const div = document.createElement('div');
-                div.className = 'history-item';
-                div.innerHTML = `
-                    <div style="display:flex; flex-direction:column;">
-                        <span style="font-weight:700;">V${item.version}</span>
-                        <span style="font-size:0.8rem; opacity:0.6;">${item.skinName}</span>
-                    </div>
-                    <span class="material-symbols-rounded" style="opacity: ${idx === 0 ? '1' : '0.3'}">
-                        ${idx === 0 ? 'star' : 'history'}
-                    </span>
-                `;
-                div.onclick = () => loadSkin(idx);
-                list.appendChild(div);
-            });
+        function loadSkin(i) {
+            const s = SKINS[i];
+            document.getElementById('skin-name').innerText = s.name;
+            document.getElementById('skin-desc').innerText = s.desc;
+            document.getElementById('ver-tag').innerText = `V${s.ver}`;
+            skinViewer.loadSkin(s.file);
         }
 
         function checkUpdate() {
-            const latest = SKIN_DB[0];
-            const stored = localStorage.getItem('pix_version');
-            
-            if(stored !== latest.version) {
-                document.getElementById('modal-title').innerText = `${latest.updateName} (V${latest.version})`;
-                document.getElementById('modal-desc').innerText = latest.whatsNew;
-                openModal('whats-new-modal');
+            if(localStorage.getItem('pix_v') !== SKINS[0].ver) {
+                document.getElementById('modal-desc').innerText = SKINS[0].update;
+                document.getElementById('update-modal').style.display = 'flex';
             }
         }
 
-        function closeWhatsNew() {
-            localStorage.setItem('pix_version', SKIN_DB[0].version);
-            document.getElementById('whats-new-modal').style.display = 'none';
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+            localStorage.setItem('pix_v', SKINS[0].ver);
+        }
+
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+
+        function updateClock() {
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        }
+
+        function toggleAnim(t) {
+            skinViewer.animation = t === 'walk' ? new skinview3d.WalkingAnimation() : new skinview3d.IdleAnimation();
         }
 
         function downloadCurrent() {
-            const data = SKIN_DB[activeSkinIndex];
             const link = document.createElement('a');
-            link.href = data.file;
-            link.download = `${data.skinName}_v${data.version}.png`;
+            link.href = SKINS[0].file;
+            link.download = `PIX_SKIN_${SKINS[0].ver}.png`;
             link.click();
-        }
-
-        // --- CONTROLS ---
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function toggleRotate() { controls.autoRotate = !controls.autoRotate; }
-        function setAnim(type) {
-            if(type==='walk') skinViewer.animation = new skinview3d.WalkingAnimation();
-            if(type==='run') skinViewer.animation = new skinview3d.RunningAnimation();
-            if(type==='idle') skinViewer.animation = new skinview3d.IdleAnimation();
         }
     </script>
 </body>
