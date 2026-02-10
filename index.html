@@ -35,4 +35,144 @@
 
         .weather-chip {
             background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            padding: 10px 20px
+            padding: 10px 20px; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.3);
+            display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 0.95rem;
+            color: #1D192B; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        #clock {
+            font-weight: 900; opacity: 0.6; letter-spacing: 1.5px;
+            font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; font-variant-numeric: tabular-nums;
+        }
+
+        nav.nav-rail {
+            width: 80px; height: 100%; display: flex; flex-direction: column; align-items: center; 
+            padding: 30px 0; gap: 20px; background: rgba(255, 255, 255, 0.2); 
+            backdrop-filter: blur(15px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50;
+        }
+
+        .v-pill {
+            width: 50px; height: 50px; border-radius: 25px; background: rgba(255,255,255,0.5); 
+            border: none; cursor: pointer; display: grid; place-items: center; position: relative;
+            transition: all 0.4s var(--spring); font-weight: 900;
+        }
+        .v-pill.active { background: var(--p); color: white; border-radius: 12px; }
+
+        main { flex: 1; display: grid; grid-template-columns: 1fr 450px; padding: 40px; gap: 40px; align-items: center; }
+        .viewer-box { height: 80vh; background: white; border-radius: 48px; position: relative; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.05); }
+        model-viewer { width: 100%; height: 100%; }
+
+        .btn-group { display: flex; gap: 15px; margin-top: 30px; }
+        .m3-btn {
+            height: 64px; padding: 0 32px; border-radius: 32px; background: var(--on-s-container); 
+            color: white; border: none; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 10px;
+            transition: all 0.5s var(--spring);
+        }
+        .m3-btn:hover { border-radius: 16px; transform: scale(1.08); background: var(--p); }
+
+        h1 { font-family: 'Bebas Neue'; font-size: 8.5rem; line-height: 0.8; letter-spacing: -3px; }
+    </style>
+</head>
+<body>
+
+    <div class="aura-bg"></div>
+
+    <div class="status-bar">
+        <div id="weather-display" class="weather-chip">
+            <span class="material-symbols-rounded">thermostat</span>
+            <span id="temp">LOCATING...</span>
+        </div>
+        <div id="clock">00:00:00 AM</div>
+    </div>
+
+    <nav class="nav-rail" id="rail">
+        <div style="font-weight: 900; opacity: 0.3; font-size: 0.7rem; margin-bottom: 20px;">PIX</div>
+    </nav>
+
+    <main>
+        <div class="viewer-box">
+            <model-viewer id="mv" auto-rotate camera-controls shadow-intensity="1" environment-image="neutral"></model-viewer>
+        </div>
+
+        <div class="content">
+            <p id="v-tag" style="font-weight: 900; opacity: 0.3; letter-spacing: 5px; font-size: 0.8rem;"></p>
+            <h1 id="v-title">PIX_LABS</h1>
+            <p id="v-desc" style="font-size: 1.15rem; line-height: 1.6; opacity: 0.7;"></p>
+            
+            <div class="btn-group">
+                <button class="m3-btn">DOWNLOAD ASSET</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // --- 1. CONFIGURATION ---
+        const VERSIONS = [
+            { 
+                id: "0.0.1", 
+                title: "ALPHA", 
+                desc: "The original foundation prototype.", 
+                model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", 
+                colors: ["#EADDFF", "#D0BCFF", "#6750A4"] 
+            },
+            { 
+                id: "0.0.2", 
+                title: "ALPHA 0.0.2", 
+                desc: "Enhanced geometry with custom textures and details.", 
+                model: "PASTE_YOUR_0.0.2_RAW_LINK_HERE", 
+                colors: ["#A3F7EB", "#4FD8C7", "#006A60"] 
+            }
+        ];
+
+        // --- 2. 12-HOUR CLOCK ---
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString('en-US', { 
+                hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true 
+            });
+        }
+
+        // --- 3. WEATHER (°F) ---
+        async function updateWeather() {
+            const tempEl = document.getElementById('temp');
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(async (pos) => {
+                    try {
+                        const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&current_weather=true&temperature_unit=fahrenheit`);
+                        const d = await r.json();
+                        tempEl.innerText = `${Math.round(d.current_weather.temperature)}°F // LOCAL`;
+                    } catch (e) { tempEl.innerText = "OFFLINE"; }
+                });
+            }
+        }
+
+        // --- 4. ENGINE CORE ---
+        function switchVersion(idx) {
+            const v = VERSIONS[idx];
+            document.getElementById('v-title').innerText = v.title;
+            document.getElementById('v-tag').innerText = `VERSION // ${v.id}`;
+            document.getElementById('v-desc').innerText = v.desc;
+            document.documentElement.style.setProperty('--bg-1', v.colors[0]);
+            document.documentElement.style.setProperty('--bg-2', v.colors[1]);
+            document.documentElement.style.setProperty('--p', v.colors[2]);
+            document.getElementById('mv').src = v.model;
+            document.querySelectorAll('.v-pill-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
+        }
+
+        window.onload = () => {
+            const rail = document.getElementById('rail');
+            VERSIONS.forEach((v, i) => {
+                const b = document.createElement('button');
+                b.className = 'v-pill v-pill-btn';
+                b.innerHTML = `<span>${i+1}</span>`;
+                b.onclick = () => switchVersion(i);
+                rail.appendChild(b);
+            });
+            setInterval(updateClock, 1000);
+            updateClock();
+            updateWeather();
+            switchVersion(0); // Start with Alpha 0.0.1
+        };
+    </script>
+</body>
+</html>
