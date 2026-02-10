@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PIX_LABS // ALPHA 0.0.1</title>
+    <title>PIX_LABS // VERSION CONTROL</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;900&family=Bebas+Neue&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
@@ -13,11 +13,11 @@
         :root {
             --p: #6750A4; --on-p: #ffffff; --pc: #EADDFF; --on-pc: #21005D;
             --s: #fdf8fd; --sc: #F3EDF7;
-            --bg-grad-1: #EADDFF; --bg-grad-2: #D0BCFF;
+            --bg-1: #EADDFF; --bg-2: #D0BCFF;
             --spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; transition: background-color 0.8s ease, color 0.8s ease; }
 
         body {
             background-color: var(--s);
@@ -25,12 +25,14 @@
             font-family: 'Outfit', sans-serif;
             overflow: hidden;
             height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         .bg-layer {
             position: fixed; inset: 0;
-            background: radial-gradient(circle at 10% 10%, var(--bg-grad-1) 0%, transparent 40%),
-                        radial-gradient(circle at 90% 90%, var(--bg-grad-2) 0%, transparent 40%);
+            background: radial-gradient(circle at 10% 10%, var(--bg-1) 0%, transparent 40%),
+                        radial-gradient(circle at 90% 90%, var(--bg-2) 0%, transparent 40%);
             z-index: -1; filter: blur(80px);
             animation: pulse-bg 15s ease-in-out infinite alternate;
         }
@@ -38,158 +40,152 @@
 
         header { padding: 30px 60px; display: flex; justify-content: space-between; align-items: center; }
 
-        .status-pill {
-            background: rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(10px);
-            padding: 10px 24px; border-radius: 100px;
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            display: flex; gap: 12px; font-weight: 700;
-        }
-
-        /* --- EXPRESSIVE BUTTON GROUP --- */
-        .button-group {
+        /* --- VERSION SELECTOR (MATERIAL 3 CHIPS) --- */
+        .version-nav {
             display: flex;
-            gap: 15px;
-            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.2);
+            padding: 8px;
+            border-radius: 100px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.4);
         }
 
-        .m3-label-btn {
-            height: 64px; padding: 0 35px;
-            border-radius: 32px;
-            background: var(--on-pc); color: white;
-            border: none; font-weight: 900; font-size: 1rem;
-            display: flex; align-items: center; gap: 12px;
-            cursor: pointer; 
-            transition: all 0.6s var(--spring);
+        .v-chip {
+            padding: 8px 20px;
+            border-radius: 100px;
+            border: none;
+            cursor: pointer;
+            font-weight: 800;
+            font-size: 0.8rem;
+            background: transparent;
+            color: var(--on-pc);
+            transition: 0.4s var(--spring);
         }
 
-        /* Hovering one button affects the whole group */
-        .button-group:hover .m3-label-btn:not(:hover) {
-            transform: scale(0.9);
-            opacity: 0.6;
-            filter: blur(1px);
-        }
-
-        .m3-label-btn:hover {
-            border-radius: 12px;
-            padding: 0 50px;
-            transform: scale(1.1) !important;
-            opacity: 1 !important;
-            filter: blur(0) !important;
+        .v-chip.active {
             background: var(--p);
+            color: var(--on-p);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
-        .m3-fab {
-            width: 70px; height: 70px; border-radius: 50%;
-            background: var(--p); color: var(--on-p);
-            border: none; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            transition: all 0.5s var(--spring);
+        /* --- EXPRESSIVE BUTTONS --- */
+        .button-group { display: flex; gap: 15px; align-items: center; }
+        
+        .m3-label-btn {
+            height: 64px; padding: 0 35px; border-radius: 32px;
+            background: var(--on-pc); color: white; border: none;
+            font-weight: 900; cursor: pointer; transition: all 0.6s var(--spring);
+            display: flex; align-items: center; gap: 12px;
         }
-        .m3-fab:hover { border-radius: 15px; transform: scale(1.1); }
+
+        .button-group:hover .m3-label-btn:not(:hover) { transform: scale(0.9); opacity: 0.6; }
+        .m3-label-btn:hover { border-radius: 12px; padding: 0 50px; transform: scale(1.1); background: var(--p); }
 
         /* --- LAYOUT --- */
         .main-stage {
-            display: grid;
-            grid-template-columns: 1.1fr 0.9fr;
-            gap: 60px; padding: 0 60px;
-            max-width: 1600px; margin: 0 auto;
-            height: calc(100vh - 150px);
-            align-items: center;
+            display: grid; grid-template-columns: 1.1fr 0.9fr;
+            gap: 60px; padding: 0 60px; max-width: 1600px;
+            margin: 0 auto; height: calc(100vh - 150px); align-items: center;
         }
 
         .viewer-container {
-            height: 90%;
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(25px);
-            border-radius: 60px;
-            position: relative;
-            border: 1px solid rgba(255, 255, 255, 0.4);
+            height: 90%; background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(25px); border-radius: 60px;
+            position: relative; border: 1px solid rgba(255, 255, 255, 0.4);
         }
 
         #skin-viewer { width: 100%; height: 100%; border-radius: 60px; }
 
         .display-text h1 {
             font-family: 'Bebas Neue', sans-serif;
-            font-size: clamp(6rem, 15vw, 13rem);
-            line-height: 0.8; letter-spacing: -8px; margin: 10px 0;
+            font-size: clamp(5rem, 12vw, 10rem);
+            line-height: 0.8; letter-spacing: -6px; margin: 10px 0;
         }
     </style>
 </head>
 <body>
 
-    <div class="bg-layer"></div>
+    <div class="bg-layer" id="bg-dynamic"></div>
 
     <header>
         <div style="font-family: 'Space Grotesk'; font-weight: 900; font-size: 1.4rem;">PIX_LABS</div>
-        <div style="display: flex; gap: 12px;">
-            <div class="status-pill"><span class="material-symbols-rounded">cloud</span><span>72°F</span></div>
-            <div class="status-pill"><span class="material-symbols-rounded">schedule</span><span id="clock">00:00:00</span></div>
-        </div>
+        <div class="version-nav" id="version-nav">
+            </div>
+        <div style="font-weight: 800; opacity: 0.5;" id="clock">00:00:00</div>
     </header>
 
     <main class="main-stage">
         <div class="viewer-container">
             <canvas id="skin-viewer"></canvas>
             <div style="position: absolute; bottom: 30px; left: 30px; display: flex; gap: 15px;">
-                <button class="m3-fab" onclick="skinViewer.animation = new skinview3d.WalkingAnimation()"><span class="material-symbols-rounded">directions_run</span></button>
-                <button class="m3-fab" onclick="skinViewer.animation = null"><span class="material-symbols-rounded">stop</span></button>
+                <button class="v-chip active" style="width:60px; height:60px; padding:0; display:grid; place-items:center;" onclick="skinViewer.animation = new skinview3d.WalkingAnimation()"><span class="material-symbols-rounded">directions_run</span></button>
+                <button class="v-chip active" style="width:60px; height:60px; padding:0; display:grid; place-items:center;" onclick="skinViewer.animation = null"><span class="material-symbols-rounded">stop</span></button>
             </div>
         </div>
 
         <div class="display-text">
-            <p style="font-weight: 900; opacity: 0.4; letter-spacing: 5px;">DEPLOYMENT // 0.0.1</p>
-            <h1>ALPHA</h1>
-            <p style="font-size: 1.3rem; line-height: 1.5; margin-bottom: 40px; opacity: 0.7; font-weight: 500;">
-                This is the first version please excuse any imperfections or mistakes.
-            </p>
+            <p id="v-tag" style="font-weight: 900; opacity: 0.4; letter-spacing: 5px; text-transform: uppercase;"></p>
+            <h1 id="v-title"></h1>
+            <p id="v-desc" style="font-size: 1.2rem; line-height: 1.5; margin-bottom: 40px; opacity: 0.7; font-weight: 500;"></p>
             
             <div class="button-group">
-                <button class="m3-label-btn" onclick="downloadAsset('skin alpha.png')">
-                    GET PNG <span class="material-symbols-rounded">download</span>
-                </button>
-                <button class="m3-label-btn" style="background: var(--sc); color: var(--on-pc);" onclick="downloadAsset('alpha.gltf')">
-                    GET GLTF <span class="material-symbols-rounded">deployed_code</span>
-                </button>
+                <button class="m3-label-btn" id="dl-png">GET PNG <span class="material-symbols-rounded">download</span></button>
+                <button class="m3-label-btn" id="dl-gltf" style="background: var(--sc); color: var(--on-pc);">GET GLTF <span class="material-symbols-rounded">deployed_code</span></button>
             </div>
         </div>
     </main>
 
     <script>
+        // --- DATA ARCHIVE ---
+        const VERSION_DATA = [
+            {
+                id: "0.0.1",
+                title: "ALPHA",
+                desc: "This is the first version please excuse any imperfections or mistakes.",
+                skin: "skin alpha.png",
+                model: "alpha.gltf",
+                theme: { p: "#6750A4", pc: "#EADDFF", bg1: "#EADDFF", bg2: "#D0BCFF" }
+            },
+            {
+                id: "0.0.2",
+                title: "BETA_PRE",
+                desc: "Refined geometry and improved texture mapping. The journey continues.",
+                skin: "skin_alpha_v2.png", // Update these with your real filenames
+                model: "alpha_v2.gltf",
+                theme: { p: "#006A60", pc: "#74F8E5", bg1: "#A3F7EB", bg2: "#4FD8C7" }
+            }
+        ];
+
         let skinViewer;
 
-        function startClock() {
-            setInterval(() => {
-                document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-US', { hour12: false });
-            }, 1000);
-        }
-
-        window.onload = () => {
-            startClock();
-
-            // FIX: Initialize with defined dimensions to prevent "disappearing" bug
-            const container = document.querySelector('.viewer-container');
-            skinViewer = new skinview3d.SkinViewer({
-                canvas: document.getElementById("skin-viewer"),
-                width: container.clientWidth,
-                height: container.clientHeight
-            });
-
-            // LOAD SKIN
-            skinViewer.loadSkin("skin alpha.png").catch(e => console.error("Skin failed to load. Check filename."));
+        function switchVersion(index) {
+            const data = VERSION_DATA[index];
             
-            skinViewer.animation = new skinview3d.WalkingAnimation();
-            const controls = skinview3d.createOrbitControls(skinViewer);
-            controls.enableZoom = false;
-            controls.autoRotate = true;
+            // Update Text
+            document.getElementById('v-tag').innerText = `Deployment // ${data.id}`;
+            document.getElementById('v-title').innerText = data.title;
+            document.getElementById('v-desc').innerText = data.desc;
+            
+            // Update Theme
+            const r = document.documentElement.style;
+            r.setProperty('--p', data.theme.p);
+            r.setProperty('--pc', data.theme.pc);
+            r.setProperty('--bg-1', data.theme.bg1);
+            r.setProperty('--bg-2', data.theme.bg2);
 
-            // Robust Resize handling
-            const resizeObserver = new ResizeObserver(() => {
-                skinViewer.width = container.clientWidth;
-                skinViewer.height = container.clientHeight;
+            // Update 3D
+            skinViewer.loadSkin(data.skin).catch(() => console.warn("Skin file not found yet."));
+            
+            // Update Downloads
+            document.getElementById('dl-png').onclick = () => downloadAsset(data.skin);
+            document.getElementById('dl-gltf').onclick = () => downloadAsset(data.model);
+
+            // Update UI Chips
+            document.querySelectorAll('.v-chip').forEach((btn, i) => {
+                btn.classList.toggle('active', i === index);
             });
-            resizeObserver.observe(container);
-        };
+        }
 
         function downloadAsset(filename) {
             const link = document.createElement('a');
@@ -199,6 +195,40 @@
             link.click();
             document.body.removeChild(link);
         }
+
+        window.onload = () => {
+            // Init Clock
+            setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-US', { hour12: false }); }, 1000);
+
+            // Init Viewer
+            const container = document.querySelector('.viewer-container');
+            skinViewer = new skinview3d.SkinViewer({
+                canvas: document.getElementById("skin-viewer"),
+                width: container.clientWidth,
+                height: container.clientHeight
+            });
+            skinViewer.animation = new skinview3d.WalkingAnimation();
+            skinview3d.createOrbitControls(skinViewer).autoRotate = true;
+
+            // Render Nav Chips
+            const nav = document.getElementById('version-nav');
+            VERSION_DATA.forEach((v, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'v-chip';
+                btn.innerText = `V${v.id}`;
+                btn.onclick = () => switchVersion(i);
+                nav.appendChild(btn);
+            });
+
+            // Load Default
+            switchVersion(0);
+
+            // Resize Observer
+            new ResizeObserver(() => {
+                skinViewer.width = container.clientWidth;
+                skinViewer.height = container.clientHeight;
+            }).observe(container);
+        };
     </script>
 </body>
 </html>
