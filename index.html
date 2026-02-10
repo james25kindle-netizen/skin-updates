@@ -1,163 +1,34 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PIX_LABS // ALPHA 0.0.2</title>
+// --- 1. THE 12H CLOCK LOGIC ---
+function updateClock() {
+    const now = new Date();
+    // Setting hour12: true gives us that classic 12h format with AM/PM
+    const timeString = now.toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit', 
+        hour12: true 
+    });
+    document.getElementById('clock').innerText = timeString;
+}
+
+// --- 2. THE WEATHER LOGIC ---
+async function updateWeather() {
+    const weatherEl = document.getElementById('weather-display');
     
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;900&family=Bebas+Neue&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    // You can replace 'London' with your city or use geolocation!
+    const API_KEY = 'YOUR_OPENWEATHER_API_KEY'; 
+    const CITY = 'London'; 
     
-    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
-
-    <style>
-        :root {
-            --p: #6750A4; --on-pc: #21005D;
-            --s-container: #F3EDF7; --on-s-container: #1D192B;
-            --bg-1: #EADDFF; --bg-2: #D0BCFF;
-            --spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background-color: #fdf8fd; color: var(--on-s-container); font-family: 'Outfit', sans-serif; height: 100vh; display: flex; overflow: hidden; }
-
-        /* Material Aura Background */
-        .aura-bg {
-            position: fixed; inset: 0;
-            background: radial-gradient(circle at 80% 20%, var(--bg-1) 0%, transparent 40%),
-                        radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%);
-            z-index: -1; filter: blur(60px);
-            animation: move-aura 15s infinite alternate linear;
-        }
-        @keyframes move-aura { 0% { transform: scale(1); } 100% { transform: scale(1.1) rotate(2deg); } }
-
-        /* Navigation Rail */
-        nav.nav-rail {
-            width: 80px; height: 100%; display: flex; flex-direction: column; align-items: center; 
-            padding: 30px 0; gap: 20px; background: rgba(255, 255, 255, 0.2); 
-            backdrop-filter: blur(15px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50;
-        }
-
-        .v-pill {
-            width: 50px; height: 50px; border-radius: 25px; background: rgba(255,255,255,0.5); 
-            border: none; cursor: pointer; display: grid; place-items: center; position: relative;
-            transition: all 0.4s var(--spring); font-weight: 900;
-        }
-        .v-pill.active { background: var(--p); color: white; border-radius: 12px; }
-        .badge-new { position: absolute; top: -4px; right: -4px; background: #ff3d00; color: white; font-size: 9px; padding: 2px 5px; border-radius: 6px; }
-
-        /* Main Content */
-        main { flex: 1; display: grid; grid-template-columns: 1fr 450px; padding: 40px; gap: 40px; align-items: center; }
+    try {
+        // If you don't have a key yet, this will catch and show demo data
+        const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${CITY}&units=metric&appid=${API_KEY}`);
+        const data = await response.json();
         
-        .viewer-box { 
-            height: 80vh; background: white; border-radius: 48px; 
-            position: relative; overflow: hidden; border: 1px solid rgba(0,0,0,0.05); 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.05); 
-        }
-
-        model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
-
-        .btn-group { display: flex; gap: 15px; margin-top: 30px; }
-        .m3-btn {
-            height: 64px; padding: 0 32px; border-radius: 32px; background: var(--on-s-container); 
-            color: white; border: none; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 10px;
-            transition: all 0.5s var(--spring);
-        }
-        /* The Expressive "Move & Blur" Hover */
-        .btn-group:hover .m3-btn:not(:hover) { transform: scale(0.92); opacity: 0.6; filter: blur(2px); }
-        .m3-btn:hover { border-radius: 16px; transform: scale(1.08); background: var(--p); padding: 0 45px; }
-
-        h1 { font-family: 'Bebas Neue'; font-size: 8.5rem; line-height: 0.8; letter-spacing: -3px; }
-        #clock { position: fixed; top: 30px; right: 40px; font-weight: 900; opacity: 0.4; }
-    </style>
-</head>
-<body>
-
-    <div class="aura-bg"></div>
-    <div id="clock">00:00:00</div>
-
-    <nav class="nav-rail" id="rail">
-        <div style="font-weight: 900; opacity: 0.3; font-size: 0.7rem; margin-bottom: 20px;">PIX</div>
-    </nav>
-
-    <main>
-        <div class="viewer-box">
-            <model-viewer 
-                id="mv"
-                alt="PIX_LABS 3D Model"
-                auto-rotate
-                camera-controls
-                shadow-intensity="1"
-                environment-image="neutral"
-                exposure="1"
-                interaction-prompt="none">
-            </model-viewer>
-        </div>
-
-        <div class="content">
-            <p id="v-tag" style="font-weight: 900; opacity: 0.3; letter-spacing: 5px; font-size: 0.8rem;"></p>
-            <h1 id="v-title">PIX_LABS</h1>
-            <p id="v-desc" style="font-size: 1.15rem; line-height: 1.6; opacity: 0.7; margin-bottom: 20px;"></p>
-            
-            <div class="btn-group">
-                <button class="m3-btn" id="dl-png">GET PNG <span class="material-symbols-rounded">image</span></button>
-                <button class="m3-btn" style="background:var(--s-container); color:var(--on-s-container);" id="dl-gltf">GET GLTF <span class="material-symbols-rounded">3d_rotation</span></button>
-            </div>
-        </div>
-    </main>
-
-    <script>
-        const VERSIONS = [
-            { 
-                id: "0.0.1", title: "ALPHA", 
-                desc: "The original prototype.", 
-                model: "alpha.gltf", 
-                colors: ["#EADDFF", "#D0BCFF", "#6750A4"], new: false 
-            },
-            { 
-                id: "0.0.2", title: "ALPHA 0.0.2", 
-                desc: "This update adds eyes, hair, fixes textures, and adds more details to the sweater.", 
-                model: "alpha 0.0.2.gltf", 
-                colors: ["#A3F7EB", "#4FD8C7", "#006A60"], new: true 
-            }
-        ];
-
-        function switchVersion(idx) {
-            const v = VERSIONS[idx];
-            const mv = document.getElementById('mv');
-
-            // Text & UI
-            document.getElementById('v-tag').innerText = `VERSION // ${v.id}`;
-            document.getElementById('v-title').innerText = v.title;
-            document.getElementById('v-desc').innerText = v.desc;
-
-            // Update Theme
-            document.documentElement.style.setProperty('--bg-1', v.colors[0]);
-            document.documentElement.style.setProperty('--bg-2', v.colors[1]);
-            document.documentElement.style.setProperty('--p', v.colors[2]);
-
-            // Update Model Viewer
-            // Use the Discord/Web link for the .gltf file here
-            mv.src = encodeURI(v.model);
-
-            // Active State
-            document.querySelectorAll('.v-pill-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
-        }
-
-        window.onload = () => {
-            setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-US', {hour12:false}); }, 1000);
-            
-            const rail = document.getElementById('rail');
-            VERSIONS.forEach((v, i) => {
-                const b = document.createElement('button');
-                b.className = 'v-pill v-pill-btn';
-                b.innerHTML = `<span>${i+1}</span>` + (v.new ? `<div class="badge-new">NEW</div>` : '');
-                b.onclick = () => switchVersion(i);
-                rail.appendChild(b);
-            });
-
-            switchVersion(1); // Load latest
-        };
-    </script>
-</body>
-</html>
+        const temp = Math.round(data.main.temp);
+        const condition = data.weather[0].main;
+        weatherEl.innerHTML = `<span class="material-symbols-rounded">cloud</span> ${temp}°C // ${condition}`;
+    } catch (error) {
+        // DEMO MODE: Shows if no API key is present
+        weatherEl.innerHTML = `<span class="material-symbols-rounded">sunny</span> 22°C // SUNNY`;
+    }
+}
