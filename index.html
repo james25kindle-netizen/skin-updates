@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PIX_LABS // GLTF_EXPRESSIVE</title>
+    <title>PIX_LABS // MODEL_FIX</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;900&family=Bebas+Neue&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
@@ -20,68 +20,66 @@
             --spring-easing: cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             background-color: var(--s);
             color: var(--on-pc);
             font-family: 'Outfit', sans-serif;
-            overflow-x: hidden;
             min-height: 100vh;
+            overflow: hidden; /* Keep it clean like an app */
         }
 
         .bg-layer {
             position: fixed; inset: 0;
             background: radial-gradient(circle at 10% 10%, var(--bg-grad-1) 0%, transparent 40%),
                         radial-gradient(circle at 90% 90%, var(--bg-grad-2) 0%, transparent 40%);
-            z-index: -1;
-            filter: blur(80px);
+            z-index: -1; filter: blur(80px);
             animation: pulse-bg 15s ease-in-out infinite alternate;
         }
         @keyframes pulse-bg { 0% { transform: scale(1); } 100% { transform: scale(1.2) rotate(4deg); } }
 
         header {
-            padding: 30px clamp(20px, 5vw, 60px);
+            padding: 30px 40px;
             display: flex; justify-content: space-between; align-items: center;
         }
 
-        .status-group {
+        .status-pill {
             display: flex; gap: 12px; background: rgba(255, 255, 255, 0.3);
             backdrop-filter: blur(10px); padding: 8px 20px; border-radius: 100px;
             border: 1px solid rgba(255, 255, 255, 0.5); font-weight: 700;
         }
 
-        /* --- EXPRESSIVE BUTTONS (CIRCLE TO SQUARE) --- */
+        .hero-layout {
+            display: grid; grid-template-columns: 1fr 450px; gap: 40px;
+            padding: 0 40px; max-width: 1600px; margin: 0 auto;
+            height: calc(100vh - 150px); align-items: center;
+        }
+
+        .viewer-box {
+            height: 100%; background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(20px); border-radius: 60px;
+            position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.4);
+        }
+
+        /* --- CIRCLE TO SQUARE BUTTONS --- */
         .m3-btn {
             width: 72px; height: 72px; border-radius: 50%;
             background: var(--p); color: var(--on-p); border: none;
             cursor: pointer; display: flex; align-items: center; justify-content: center;
             transition: all 0.5s var(--spring-easing);
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            text-decoration: none;
         }
-        .m3-btn:hover { border-radius: 18px; transform: scale(1.1) rotate(5deg); }
-
-        .hero-container {
-            display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 40px;
-            padding: 0 clamp(20px, 5vw, 60px); max-width: 1600px; margin: 0 auto 100px auto;
-            align-items: center;
-        }
-
-        .viewer-box {
-            height: 70vh; background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(20px); border-radius: 60px;
-            position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.4);
-        }
-
-        #three-canvas { width: 100%; height: 100%; outline: none; }
+        .m3-btn:hover { border-radius: 18px; transform: scale(1.1); }
 
         .title-display {
             font-family: 'Bebas Neue', sans-serif;
-            font-size: clamp(6rem, 15vw, 13rem);
-            line-height: 0.8; letter-spacing: -8px; margin: 20px 0; color: var(--on-pc);
+            font-size: 8rem; line-height: 0.8; letter-spacing: -6px;
+            margin: 20px 0;
         }
 
-        @media (max-width: 1100px) { .hero-container { grid-template-columns: 1fr; } }
+        #file-input { display: none; }
     </style>
 </head>
 <body>
@@ -91,82 +89,74 @@
     <header>
         <div style="font-family: 'Space Grotesk'; font-weight: 900; font-size: 1.4rem;">PIX_LABS</div>
         <div style="display: flex; gap: 15px;">
-            <div class="status-group">
+            <div class="status-pill">
                 <span class="material-symbols-rounded">partly_cloudy_day</span>
-                <span id="weather-text">72°F</span>
+                <span>72°F</span>
             </div>
-            <div class="status-group">
+            <div class="status-pill">
                 <span class="material-symbols-rounded">schedule</span>
-                <span id="clock-text">00:00:00</span>
+                <span id="clock-display">00:00:00</span>
             </div>
         </div>
     </header>
 
-    <main class="hero-container">
+    <main class="hero-layout">
         <div class="viewer-box" id="container-3d">
-            <div style="position: absolute; bottom: 30px; left: 30px; display: flex; gap: 10px; z-index: 10;">
-                <button class="m3-btn" id="rotate-toggle"><span class="material-symbols-rounded">360</span></button>
-                <button class="m3-btn" onclick="location.reload()"><span class="material-symbols-rounded">refresh</span></button>
+            <div id="loader-overlay" style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 5; text-align: center; padding: 20px;">
+                <h2 style="font-family: 'Bebas Neue'; font-size: 3rem;">MODEL NOT LOADED</h2>
+                <p style="margin-bottom: 20px; opacity: 0.6;">Select 'alpha.gltf' to begin</p>
+                <label for="file-input" class="m3-btn" style="width: auto; padding: 0 40px; border-radius: 30px;">
+                    <span class="material-symbols-rounded" style="margin-right: 10px;">upload_file</span> SELECT MODEL
+                </label>
+                <input type="file" id="file-input" accept=".gltf">
             </div>
         </div>
 
         <div>
-            <span style="font-weight: 900; opacity: 0.3; letter-spacing: 5px;">ALPHA_MODEL_V1</span>
+            <span style="font-weight: 900; opacity: 0.3; letter-spacing: 5px;">ALPHA_SYSTEM_V1</span>
             <h1 class="title-display">ALPHA</h1>
-            <p style="font-size: 1.2rem; margin-bottom: 40px; opacity: 0.6; font-weight: 500;">
-                Custom .GLTF integration. High-fidelity rendering with Material 3 Expressive aesthetics.
+            <p style="font-size: 1.1rem; opacity: 0.6; line-height: 1.5; margin-bottom: 30px;">
+                Direct file access enabled to bypass browser security blocks. Upload your .gltf to visualize.
             </p>
-            <button class="m3-btn" style="width: auto; height: 60px; padding: 0 40px; border-radius: 30px; font-weight: 900;">
-                VIEW DETAILS
-            </button>
+            <div style="display: flex; gap: 15px;">
+                <button class="m3-btn" id="rotate-btn"><span class="material-symbols-rounded">sync</span></button>
+                <button class="m3-btn" onclick="location.reload()"><span class="material-symbols-rounded">restart_alt</span></button>
+            </div>
         </div>
     </main>
 
     <script>
-        // --- 1. CLOCK & WEATHER ---
-        function updateClock() {
-            document.getElementById('clock-text').innerText = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        // --- 1. CLOCK FIX ---
+        function runClock() {
+            const el = document.getElementById('clock-display');
+            const now = new Date();
+            el.innerText = now.toLocaleTimeString('en-US', { hour12: false });
         }
-        setInterval(updateClock, 1000); updateClock();
+        setInterval(runClock, 1000);
+        runClock();
 
-        // --- 2. THREE.JS ENGINE ---
+        // --- 2. 3D SETUP ---
         let scene, camera, renderer, controls, model;
         const container = document.getElementById('container-3d');
 
-        function init3D() {
+        function initScene() {
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-            camera.position.set(0, 1, 5);
+            camera.position.set(0, 0, 5);
 
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(container.clientWidth, container.clientHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
             container.appendChild(renderer.domElement);
 
-            // Lighting
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-            scene.add(ambientLight);
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-            directionalLight.position.set(5, 10, 7.5);
-            scene.add(directionalLight);
+            scene.add(new THREE.AmbientLight(0xffffff, 1));
+            const sun = new THREE.DirectionalLight(0xffffff, 1);
+            sun.position.set(5, 10, 5);
+            scene.add(sun);
 
             controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.autoRotate = true;
-
-            // Load alpha.gltf
-            const loader = new THREE.GLTFLoader();
-            loader.load('alpha.gltf', function (gltf) {
-                model = gltf.scene;
-                scene.add(model);
-                
-                // Center model
-                const box = new THREE.Box3().setFromObject(model);
-                const center = box.getCenter(new THREE.Vector3());
-                model.position.sub(center);
-            }, undefined, function (error) {
-                console.error("Error loading GLTF:", error);
-            });
 
             animate();
         }
@@ -177,30 +167,47 @@
             renderer.render(scene, camera);
         }
 
-        // Resize Fix
+        // --- 3. THE "NOT WORKING" FIX (File Reader) ---
+        document.getElementById('file-input').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const contents = event.target.result;
+                const loader = new THREE.GLTFLoader();
+                
+                // Remove old model if exists
+                if(model) scene.remove(model);
+
+                loader.parse(contents, '', function(gltf) {
+                    model = gltf.scene;
+                    scene.add(model);
+                    
+                    // Auto-center and Scale
+                    const box = new THREE.Box3().setFromObject(model);
+                    const size = box.getSize(new THREE.Vector3()).length();
+                    const center = box.getCenter(new THREE.Vector3());
+                    model.position.x += (model.position.x - center.x);
+                    model.position.y += (model.position.y - center.y);
+                    model.position.z += (model.position.z - center.z);
+                    camera.position.z = size * 1.5;
+                    
+                    document.getElementById('loader-overlay').style.display = 'none';
+                });
+            };
+            reader.readAsArrayBuffer(file);
+        });
+
+        document.getElementById('rotate-btn').onclick = () => controls.autoRotate = !controls.autoRotate;
+
         window.addEventListener('resize', () => {
             camera.aspect = container.clientWidth / container.clientHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(container.clientWidth, container.clientHeight);
         });
 
-        // Toggle Rotation
-        document.getElementById('rotate-toggle').onclick = () => {
-            controls.autoRotate = !controls.autoRotate;
-        };
-
-        // --- 3. THEME ENGINE ---
-        const themes = [
-            { p: "#6750A4", pc: "#EADDFF", bg1: "#EADDFF", bg2: "#D0BCFF" },
-            { p: "#006A60", pc: "#74F8E5", bg1: "#A3F7EB", bg2: "#4FD8C7" },
-            { p: "#9C4146", pc: "#FFDADD", bg1: "#FFDADD", bg2: "#FFB4BB" }
-        ];
-        const t = themes[Math.floor(Math.random() * themes.length)];
-        const r = document.documentElement.style;
-        r.setProperty('--p', t.p); r.setProperty('--pc', t.pc);
-        r.setProperty('--bg-grad-1', t.bg1); r.setProperty('--bg-grad-2', t.bg2);
-
-        init3D();
+        initScene();
     </script>
 </body>
 </html>
