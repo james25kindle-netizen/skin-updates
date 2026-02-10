@@ -26,6 +26,7 @@
             z-index: -1; filter: blur(60px);
             animation: move-aura 15s infinite alternate linear;
         }
+        @keyframes move-aura { 0% { transform: scale(1); } 100% { transform: scale(1.1) rotate(2deg); } }
 
         .status-bar {
             position: fixed; top: 30px; right: 40px;
@@ -33,13 +34,16 @@
         }
 
         .weather-chip {
-            background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
             padding: 10px 20px; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.3);
             display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 0.95rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            color: #1D192B; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
 
-        #clock { font-weight: 900; opacity: 0.6; font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; }
+        #clock {
+            font-weight: 900; opacity: 0.6; letter-spacing: 1.5px;
+            font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; font-variant-numeric: tabular-nums;
+        }
 
         nav.nav-rail {
             width: 80px; height: 100%; display: flex; flex-direction: column; align-items: center; 
@@ -49,18 +53,25 @@
 
         .v-pill {
             width: 50px; height: 50px; border-radius: 25px; background: rgba(255,255,255,0.5); 
-            border: none; cursor: pointer; display: grid; place-items: center; transition: 0.4s var(--spring);
+            border: none; cursor: pointer; display: grid; place-items: center; position: relative;
+            transition: all 0.4s var(--spring); font-weight: 900;
         }
         .v-pill.active { background: var(--p); color: white; border-radius: 12px; }
+        .badge-new { position: absolute; top: -4px; right: -4px; background: #ff3d00; color: white; font-size: 9px; padding: 2px 5px; border-radius: 6px; }
 
         main { flex: 1; display: grid; grid-template-columns: 1fr 450px; padding: 40px; gap: 40px; align-items: center; }
         .viewer-box { height: 80vh; background: white; border-radius: 48px; position: relative; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.05); }
-        
-        model-viewer { width: 100%; height: 100%; background: radial-gradient(#ffffff, #f0f0f0); }
+        model-viewer { width: 100%; height: 100%; }
+
+        .btn-group { display: flex; gap: 15px; margin-top: 30px; }
+        .m3-btn {
+            height: 64px; padding: 0 32px; border-radius: 32px; background: var(--on-s-container); 
+            color: white; border: none; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 10px;
+            transition: all 0.5s var(--spring);
+        }
+        .m3-btn:hover { border-radius: 16px; transform: scale(1.08); background: var(--p); }
 
         h1 { font-family: 'Bebas Neue'; font-size: 8.5rem; line-height: 0.8; letter-spacing: -3px; }
-        .m3-btn { height: 64px; padding: 0 32px; border-radius: 32px; background: var(--on-s-container); color: white; border: none; font-weight: 800; cursor: pointer; transition: 0.5s var(--spring); }
-        .m3-btn:hover { border-radius: 16px; transform: scale(1.05); background: var(--p); }
     </style>
 </head>
 <body>
@@ -68,73 +79,93 @@
     <div class="aura-bg"></div>
 
     <div class="status-bar">
-        <div class="weather-chip">
+        <div id="weather-display" class="weather-chip">
             <span class="material-symbols-rounded">thermostat</span>
-            <span id="temp">FINDING YOU...</span>
+            <span id="temp">LOCATING...</span>
         </div>
         <div id="clock">00:00:00 AM</div>
     </div>
 
-    <nav class="nav-rail" id="rail"></nav>
+    <nav class="nav-rail" id="rail">
+        <div style="font-weight: 900; opacity: 0.3; font-size: 0.7rem; margin-bottom: 20px;">PIX</div>
+    </nav>
 
     <main>
         <div class="viewer-box">
-            <model-viewer id="mv" 
-                camera-controls 
-                auto-rotate 
-                shadow-intensity="1" 
-                environment-image="neutral"
-                ar-status="not-presenting">
-            </model-viewer>
+            <model-viewer id="mv" auto-rotate camera-controls shadow-intensity="1" environment-image="neutral"></model-viewer>
         </div>
 
         <div class="content">
-            <p id="v-tag" style="opacity: 0.3; font-weight: 900; letter-spacing: 5px;"></p>
+            <p id="v-tag" style="font-weight: 900; opacity: 0.3; letter-spacing: 5px; font-size: 0.8rem;"></p>
             <h1 id="v-title">PIX_LABS</h1>
-            <p id="v-desc" style="opacity: 0.7; font-size: 1.1rem; margin-bottom: 25px;"></p>
-            <button class="m3-btn">GET MODEL <span class="material-symbols-rounded">download</span></button>
+            <p id="v-desc" style="font-size: 1.15rem; line-height: 1.6; opacity: 0.7;"></p>
+            
+            <div class="btn-group">
+                <button class="m3-btn">GET PNG <span class="material-symbols-rounded">image</span></button>
+                <button class="m3-btn" style="background:#F3EDF7; color:#1D192B;">GET GLTF <span class="material-symbols-rounded">3d_rotation</span></button>
+            </div>
         </div>
     </main>
 
     <script>
+        // --- 1. CONFIGURATION (PASTE RAW GITHUB LINKS HERE) ---
         const VERSIONS = [
-            { id: "0.0.1", title: "ALPHA", desc: "The foundation prototype.", model: "https://modelviewer.dev/shared-assets/models/Astronaut.glb", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
-            { id: "0.0.2", title: "ALPHA 0.0.2", desc: "Upgraded textures and custom geometry.", model: "PASTE_YOUR_DISCORD_LINK_HERE", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
+            { id: "0.0.1", title: "ALPHA", desc: "The original prototype.", model: "https://modelviewer.dev/shared-assets/models/Astronaut.glb", colors: ["#EADDFF", "#D0BCFF", "#6750A4"], new: false },
+            { id: "0.0.2", title: "ALPHA 0.0.2", desc: "Custom geometry with hair and sweater details.", model: "PASTE_YOUR_RAW_GITHUB_GLTF_LINK_HERE", colors: ["#A3F7EB", "#4FD8C7", "#006A60"], new: true }
         ];
 
-        // --- WEATHER (°F) & CLOCK ---
+        // --- 2. 12-HOUR CLOCK ---
         function updateClock() {
-            document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-US', { hour12: true });
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString('en-US', { 
+                hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true 
+            });
         }
 
+        // --- 3. AUTO-LOCATION WEATHER (°F) ---
         async function updateWeather() {
-            if (navigator.geolocation) {
+            const tempEl = document.getElementById('temp');
+            const iconEl = document.querySelector('.weather-chip .material-symbols-rounded');
+
+            if ("geolocation" in navigator) {
                 navigator.geolocation.getCurrentPosition(async (pos) => {
-                    // Fetching with imperial units for Fahrenheit
-                    const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&current_weather=true&temperature_unit=fahrenheit`);
-                    const d = await r.json();
-                    document.getElementById('temp').innerText = `${Math.round(d.current_weather.temperature)}°F // LOCAL`;
-                });
+                    const { latitude: lat, longitude: lon } = pos.coords;
+                    try {
+                        const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&temperature_unit=fahrenheit`);
+                        const d = await r.json();
+                        const temp = Math.round(d.current_weather.temperature);
+                        const code = d.current_weather.weathercode;
+
+                        tempEl.innerText = `${temp}°F // LOCAL`;
+                        
+                        if (code === 0) iconEl.innerText = 'sunny';
+                        else if (code <= 3) iconEl.innerText = 'partly_cloudy_day';
+                        else if (code >= 51 && code <= 67) iconEl.innerText = 'umbrella';
+                        else iconEl.innerText = 'cloud';
+                    } catch (e) { tempEl.innerText = "OFFLINE"; }
+                }, () => { tempEl.innerText = "CHECK LOC."; });
             }
         }
 
-        // --- 3D ENGINE LOGIC ---
         function switchVersion(idx) {
             const v = VERSIONS[idx];
             const mv = document.getElementById('mv');
-            
+
             document.getElementById('v-title').innerText = v.title;
-            document.getElementById('v-tag').innerText = `VER // ${v.id}`;
+            document.getElementById('v-tag').innerText = `VERSION // ${v.id}`;
             document.getElementById('v-desc').innerText = v.desc;
             document.documentElement.style.setProperty('--bg-1', v.colors[0]);
             document.documentElement.style.setProperty('--bg-2', v.colors[1]);
             document.documentElement.style.setProperty('--p', v.colors[2]);
-
-            // Load Model with Error Catch
+            
+            // Set Model Source
             mv.src = v.model;
+
+            // Fail-safe Robot if link is bad
             mv.addEventListener('error', () => {
-                console.warn("Model failed to load. Showing fallback.");
-                mv.src = "https://modelviewer.dev/shared-assets/models/RobotExpressive.glb";
+                if(mv.src !== "https://modelviewer.dev/shared-assets/models/RobotExpressive.glb") {
+                   mv.src = "https://modelviewer.dev/shared-assets/models/RobotExpressive.glb";
+                }
             });
 
             document.querySelectorAll('.v-pill-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
@@ -145,13 +176,14 @@
             VERSIONS.forEach((v, i) => {
                 const b = document.createElement('button');
                 b.className = 'v-pill v-pill-btn';
-                b.innerHTML = `<span>${i+1}</span>`;
+                b.innerHTML = `<span>${i+1}</span>` + (v.new ? `<div class="badge-new">NEW</div>` : '');
                 b.onclick = () => switchVersion(i);
                 rail.appendChild(b);
             });
             setInterval(updateClock, 1000);
+            updateClock();
             updateWeather();
-            switchVersion(1);
+            switchVersion(1); 
         };
     </script>
 </body>
