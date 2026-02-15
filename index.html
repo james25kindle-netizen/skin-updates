@@ -24,8 +24,9 @@
         
         .aura-bg { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); pointer-events: none; }
         
-        /* VERSION STAMP */
-        .hub-version { position: fixed; bottom: 30px; left: 120px; font-family: 'Space Grotesk'; font-size: 0.7rem; font-weight: 900; opacity: 0.3; letter-spacing: 2px; z-index: 10; pointer-events: none; }
+        /* CLICKABLE VERSION STAMP */
+        .hub-version-link { position: fixed; bottom: 30px; left: 120px; font-family: 'Space Grotesk'; font-size: 0.7rem; font-weight: 900; opacity: 0.3; letter-spacing: 2px; z-index: 10; cursor: pointer; border: none; background: none; color: inherit; transition: opacity 0.2s; }
+        .hub-version-link:hover { opacity: 1; }
 
         .status-bar { position: fixed; top: 30px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; z-index: 100; }
         .weather-chip { background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(20px); padding: 2px 18px 2px 6px; border-radius: 40px; border: 1px solid rgba(255, 255, 255, 0.4); display: flex; align-items: center; gap: 6px; }
@@ -34,7 +35,6 @@
         
         nav.nav-rail { width: 90px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 12px; background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(15px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; }
         .nav-logo { font-weight: 900; font-size: 0.7rem; letter-spacing: 3px; opacity: 0.4; margin-bottom: 20px; font-family: 'Space Grotesk'; }
-        .rail-label { font-size: 0.5rem; font-weight: 900; opacity: 0.3; letter-spacing: 1px; margin-bottom: 5px; text-transform: uppercase; }
 
         .v-pill { width: 48px; height: 48px; border-radius: 24px; background: rgba(0,0,0,0.05); border: none; cursor: pointer; display: grid; place-items: center; transition: all 0.5s var(--spring); font-weight: 900; color: inherit; }
         .v-pill.active { height: 64px; width: 32px; border-radius: 16px; background: var(--p); color: white; }
@@ -54,14 +54,12 @@
         .side-sheet.open { right: 0; }
 
         .news-card { background: rgba(0,0,0,0.05); padding: 15px; border-radius: 16px; font-size: 0.85rem; border: 1px solid rgba(0,0,0,0.05); line-height: 1.4; }
-        .color-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 10px 0; }
-        .color-circle { width: 100%; aspect-ratio: 1; border-radius: 50%; cursor: pointer; display: grid; place-items: center; font-size: 0.55rem; font-weight: 900; transition: transform 0.2s; }
     </style>
 </head>
 <body>
     <div class="aura-bg"></div>
     
-    <div class="hub-version">HUB_CORE // v0.1.7</div>
+    <button class="hub-version-link" onclick="toggleSettings()">v0.1.8</button>
 
     <div class="status-bar">
         <div class="weather-chip" id="weather-chip">
@@ -73,13 +71,12 @@
 
     <nav class="nav-rail" id="rail">
         <div class="nav-logo">PIX</div>
-        <div class="rail-label">VERSIONS</div>
     </nav>
 
     <main>
         <div class="viewer-box"><model-viewer id="mv" auto-rotate camera-controls shadow-intensity="1" environment-image="neutral" camera-orbit="180deg 75deg 105%" field-of-view="30deg"></model-viewer></div>
         <div class="content">
-            <p id="v-tag" style="font-weight:900; opacity:0.3; letter-spacing:5px; font-size:0.8rem;"></p>
+            <p id="v-tag" style="font-weight:900; opacity:0.3; letter-spacing:5px; font-size:0.8rem; text-transform:uppercase;"></p>
             <h1 id="v-title">PIX_LABS</h1>
             <p id="v-desc" style="font-size:1.15rem; opacity:0.7; margin-bottom:25px;"></p>
             <div class="btn-group" style="display:flex; gap:12px;">
@@ -94,16 +91,9 @@
     <div class="side-sheet" id="side-sheet">
         <h2 style="font-family: 'Space Grotesk';">PREFERENCES</h2>
         <div class="news-card">
-            <strong>STAMP OF APPROVAL (v0.1.7)</strong><br><br>
-            🏷️ <strong>Version HUD:</strong> Added the core version number to the home screen for easy tracking.<br><br>
-            ✅ <strong>Feedback Loop:</strong> Kept the "READY!" animation because it's high-key satisfying.<br><br>
-            🪄 <strong>Canvas Mode:</strong> All skins still use the "Screenshot" tech to bypass Windows errors.
-        </div>
-        <div>
-            <label style="font-weight: 800; font-size: 0.7rem; opacity: 0.5;">COLOR PRESETS</label>
-            <div class="color-grid" id="preset-grid">
-                <div class="color-circle" style="background:#6750A4; color: white;" onclick="setMode('skin')">DFT</div>
-            </div>
+            <strong>CODENAME UPDATE (v0.1.8)</strong><br><br>
+            ✨ <strong>Finesse:</strong> Removed the generic "HUB_CORE" text and replaced it with a clickable version stamp.<br><br>
+            🏷️ <strong>Codenames:</strong> Every version now gets a fun name (like VIOLET_DUSK) instead of just a number.
         </div>
         <div style="display:flex; justify-content:space-between; align-items:center;"><span>OLED Mode</span><input type="checkbox" id="oled-toggle" onchange="updateOLED(this.checked)"></div>
         <div style="display:flex; justify-content:space-between; align-items:center;"><span>24h Time</span><input type="checkbox" id="format-toggle" onchange="updateFormat(this.checked)"></div>
@@ -111,10 +101,10 @@
     </div>
 
     <script>
-        const PRESETS = [ ["#C4EED0", "#A2E0B8", "#006D3B"], ["#D1E4FF", "#A6C8FF", "#004A77"], ["#FFD8E4", "#F9B1C8", "#880E4F"] ];
+        // ADD YOUR FUN CODENAMES HERE IN THE "codename" SECTION
         const VERSIONS = [
-            { id: "0.0.1", title: "ALPHA", desc: "Foundation build.", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/skin%20alpha.png", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
-            { id: "0.0.2", title: "ALPHA", desc: "Enhanced build.", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.png", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
+            { id: "0.0.1", codename: "ORIGIN_PRIME", title: "ALPHA", desc: "The foundation of everything.", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/skin%20alpha.png", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
+            { id: "0.0.2", codename: "NEON_GLITCH", title: "ALPHA", desc: "Refined geometry and textures.", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.png", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
         ];
 
         let currentIdx = 1;
@@ -128,15 +118,13 @@
         async function triggerDownload(type, btn) {
             const originalText = btn.innerHTML;
             btn.style.pointerEvents = 'none';
-
             const v = VERSIONS[currentIdx];
             const url = type === 'skin' ? v.skin : v.model;
-            const cleanFileName = `PIX_${v.id}_${type}.${type === 'skin' ? 'png' : 'gltf'}`;
+            const cleanFileName = `PIX_${v.codename}_${type}.${type === 'skin' ? 'png' : 'gltf'}`;
             
             try {
                 const response = await fetch(url);
                 const blob = await response.blob();
-                
                 if (type === 'skin') {
                     const img = new Image();
                     img.crossOrigin = "anonymous";
@@ -159,40 +147,25 @@
                     link.click();
                     btn.innerHTML = `READY! <span class="material-symbols-rounded">check_circle</span>`;
                 }
-            } catch (e) { 
-                window.open(url, '_blank'); 
-            } finally {
-                setTimeout(() => { 
-                    btn.innerHTML = originalText; 
-                    btn.style.pointerEvents = 'auto'; 
-                }, 2000);
-            }
-        }
-
-        function setMode(mode, val) {
-            let c = (mode === 'skin') ? VERSIONS[currentIdx].colors : PRESETS[val];
-            document.documentElement.style.setProperty('--bg-1', c[0]);
-            document.documentElement.style.setProperty('--bg-2', c[1]);
-            document.documentElement.style.setProperty('--p', c[2]);
+            } catch (e) { window.open(url, '_blank'); }
+            finally { setTimeout(() => { btn.innerHTML = originalText; btn.style.pointerEvents = 'auto'; }, 2000); }
         }
 
         function switchVersion(idx) {
             currentIdx = idx; const v = VERSIONS[idx];
             document.getElementById('v-title').innerText = v.title;
-            document.getElementById('v-tag').innerText = `VERSION // ${v.id}`;
+            // DISPLAYS THE FUN CODENAME
+            document.getElementById('v-tag').innerText = `DATA_REF // ${v.codename}`;
             document.getElementById('v-desc').innerText = v.desc;
             document.getElementById('mv').setAttribute('src', v.model);
             document.querySelectorAll('.v-pill').forEach((p, i) => p.classList.toggle('active', i === idx));
-            setMode('skin');
+            
+            document.documentElement.style.setProperty('--bg-1', v.colors[0]);
+            document.documentElement.style.setProperty('--bg-2', v.colors[1]);
+            document.documentElement.style.setProperty('--p', v.colors[2]);
         }
 
         window.onload = () => {
-            const grid = document.getElementById('preset-grid');
-            PRESETS.forEach((p, i) => {
-                const d = document.createElement('div'); d.className = 'color-circle';
-                d.style.background = p[2]; d.onclick = () => setMode('preset', i);
-                grid.appendChild(d);
-            });
             const rail = document.getElementById('rail');
             VERSIONS.forEach((_, i) => {
                 const b = document.createElement('button'); b.className = 'v-pill';
