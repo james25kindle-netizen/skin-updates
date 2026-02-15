@@ -17,19 +17,17 @@
         body.oled { background-color: #000 !important; color: #FFFFFF !important; }
         body.oled .viewer-box { background: #0a0a0a; border: 1px solid #222; }
         body.oled .weather-chip, body.oled nav.nav-rail { background: rgba(255,255,255,0.08); color: #FFFFFF; }
-        body.oled .side-sheet { background: #050505; border-left: 1px solid #333; }
+        body.oled .side-sheet { background: #050505; border-left: 1px solid #333; color: white; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background-color: #fdf8fd; color: var(--on-s-container); font-family: 'Outfit', sans-serif; height: 100vh; display: flex; overflow: hidden; }
+        body { background-color: #fdf8fd; color: var(--on-s-container); font-family: 'Outfit', sans-serif; height: 100vh; display: flex; overflow: hidden; transition: background 0.5s ease; }
         
         .aura-bg { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); }
         
-        /* WEATHER CHIP */
         .status-bar { position: fixed; top: 30px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; z-index: 100; }
         .weather-chip { background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(20px); padding: 2px 18px 2px 6px; border-radius: 40px; border: 1px solid rgba(255, 255, 255, 0.4); display: flex; align-items: center; gap: 6px; box-shadow: 0 8px 32px rgba(0,0,0,0.05); }
         .weather-chip svg { width: 44px; height: 44px; }
         #temp { font-weight: 800; font-size: 1.25rem; letter-spacing: -0.5px; }
-
         #clock { font-weight: 900; opacity: 0.6; font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; }
         
         nav.nav-rail { width: 90px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 12px; background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(15px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; }
@@ -44,9 +42,15 @@
         .m3-btn { flex: 1; height: 64px; border-radius: 32px; background: var(--on-s-container); color: white; border: none; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: flex 0.6s var(--spring), background 0.3s ease; }
         .m3-btn:hover { flex: 2.5; background: var(--p); }
 
-        .settings-fab { position: fixed; bottom: 30px; right: 30px; width: 56px; height: 56px; border-radius: 16px; background: var(--p); color: white; border: none; cursor: pointer; display: grid; place-items: center; z-index: 200; }
-        .side-sheet { position: fixed; top: 0; right: -400px; width: 350px; height: 100%; background: white; z-index: 300; transition: right 0.5s var(--spring); padding: 40px; display: flex; flex-direction: column; gap: 20px; }
+        .settings-fab { position: fixed; bottom: 30px; right: 30px; width: 56px; height: 56px; border-radius: 16px; background: var(--p); color: white; border: none; cursor: pointer; display: grid; place-items: center; z-index: 200; box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+        .side-sheet { position: fixed; top: 0; right: -400px; width: 350px; height: 100%; background: white; z-index: 300; transition: right 0.5s var(--spring); padding: 30px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
         .side-sheet.open { right: 0; }
+
+        .color-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 10px 0; }
+        .color-circle { width: 100%; aspect-ratio: 1; border-radius: 50%; border: 3px solid transparent; cursor: pointer; }
+        .color-circle.active { border-color: var(--on-s-container); transform: scale(1.1); }
+        
+        .news-card { background: rgba(0,0,0,0.05); padding: 15px; border-radius: 16px; font-size: 0.9rem; }
     </style>
 </head>
 <body>
@@ -59,19 +63,17 @@
         <div id="clock">00:00:00 AM</div>
     </div>
 
-    <nav class="nav-rail" id="rail"><div style="font-weight:900; opacity:0.2; font-size:0.6rem; margin-bottom:10px;">PIX</div></nav>
+    <nav class="nav-rail" id="rail"></nav>
 
     <main>
-        <div class="viewer-box">
-            <model-viewer id="mv" auto-rotate camera-controls shadow-intensity="1" environment-image="neutral" camera-orbit="180deg 75deg 105%" field-of-view="30deg"></model-viewer>
-        </div>
+        <div class="viewer-box"><model-viewer id="mv" auto-rotate camera-controls shadow-intensity="1" environment-image="neutral" camera-orbit="180deg 75deg 105%" field-of-view="30deg"></model-viewer></div>
         <div class="content">
             <p id="v-tag" style="font-weight:900; opacity:0.3; letter-spacing:5px; font-size:0.8rem;"></p>
             <h1 id="v-title">PIX_LABS</h1>
-            <p id="v-desc" style="font-size:1.15rem; line-height:1.6; opacity:0.7; margin-bottom:25px;"></p>
+            <p id="v-desc" style="font-size:1.15rem; opacity:0.7; margin-bottom:25px;"></p>
             <div class="btn-group" style="display:flex; gap:12px;">
-                <button class="m3-btn" onclick="handleDownload('skin')">GET SKIN <span class="material-symbols-rounded">checkroom</span></button>
-                <button class="m3-btn" style="background:rgba(0,0,0,0.05); color:var(--on-s-container);" onclick="handleDownload('model')">GET MODEL <span class="material-symbols-rounded">3d_rotation</span></button>
+                <button class="m3-btn" onclick="handleDownload('skin')">GET SKIN</button>
+                <button class="m3-btn" style="background:rgba(0,0,0,0.05); color:var(--on-s-container);" onclick="handleDownload('model')">GET MODEL</button>
             </div>
         </div>
     </main>
@@ -79,14 +81,33 @@
     <button class="settings-fab" onclick="toggleSettings()"><span class="material-symbols-rounded">settings</span></button>
 
     <div class="side-sheet" id="side-sheet">
-        <button onclick="toggleSettings()" style="background:none; border:none; cursor:pointer;"><span class="material-symbols-rounded">close</span></button>
-        <h2 style="font-family: 'Space Grotesk';">PREFERENCES</h2>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2 style="font-family: 'Space Grotesk';">PREFERENCES</h2>
+            <button onclick="toggleSettings()" style="background:none; border:none; cursor:pointer;"><span class="material-symbols-rounded">close</span></button>
+        </div>
+        
+        <div class="news-card">
+            <strong>WHAT'S NEW (v0.0.9)</strong><br>
+            • Inlined Animated Weather Icons<br>
+            • Restored Seconds to Clock<br>
+            • Color Preset Library<br>
+            • Logic for Rain/Storm codes
+        </div>
+
+        <div>
+            <label>Color Presets</label>
+            <div class="color-grid" id="preset-grid">
+                <div class="color-circle" style="background:#6750A4" onclick="setMode('skin')"></div>
+            </div>
+            <label>Custom Hex</label>
+            <input type="color" oninput="setMode('custom', this.value)" style="width:100%; height:40px; border:none; border-radius:8px; margin-top:5px;">
+        </div>
+
         <div style="display:flex; justify-content:space-between;"><span>OLED Mode</span><input type="checkbox" id="oled-toggle" onchange="updateOLED(this.checked)"></div>
         <div style="display:flex; justify-content:space-between;"><span>24h Clock</span><input type="checkbox" id="format-toggle" onchange="updateFormat(this.checked)"></div>
     </div>
 
     <script>
-        // GOOGLE-STYLE ANIMATED SVG DATA
         const ICONS = {
             sunny: `<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="12" fill="#fbbf24"><animateTransform attributeName="transform" type="rotate" from="0 32 32" to="360 32 32" dur="10s" repeatCount="indefinite"/></circle><path d="M32 12V6m0 52v-6m14.1-34.1l4.3-4.3m-36.8 36.8l4.3-4.3m0-28.2l-4.3-4.3m36.8 36.8l-4.3-4.3M12 32H6m52 0h-6" stroke="#fbbf24" stroke-width="3" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" from="0 32 32" to="360 32 32" dur="20s" repeatCount="indefinite"/></path></svg>`,
             cloudy: `<svg viewBox="0 0 64 64"><path d="M46 31.5h-.3a10.5 10.5 0 00-19-8 7 7 0 00-10.6 6 7.2 7.2 0 00.1 1.1A7.5 7.5 0 0018 45.5h28a7 7 0 000-14z" fill="#e5e7eb"><animateTransform attributeName="transform" type="translate" values="-1 0; 1 0; -1 0" dur="4s" repeatCount="indefinite"/></path></svg>`,
@@ -94,27 +115,35 @@
             storm: `<svg viewBox="0 0 64 64"><path d="M46 31.5h-.3a10.5 10.5 0 00-19-8 7 7 0 00-10.6 6 7.2 7.2 0 00.1 1.1A7.5 7.5 0 0018 45.5h28a7 7 0 000-14z" fill="#475569"/><path d="M30 46l-2 6h4l-2 6" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linejoin="round"><animate attributeName="opacity" values="1;0.2;1" dur="0.5s" repeatCount="indefinite"/></path></svg>`
         };
 
+        const PRESETS = [ ["#C4EED0", "#A2E0B8", "#006D3B"], ["#D1E4FF", "#A6C8FF", "#004A77"], ["#FFD8E4", "#F9B1C8", "#880E4F"], ["#FEEFC3", "#FDE293", "#EA8600"] ];
         const VERSIONS = [
             { id: "0.0.1", title: "ALPHA", desc: "Foundation build.", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
             { id: "0.0.2", title: "ALPHA", desc: "Enhanced build.", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
         ];
 
+        let currentIdx = 1;
         let state = JSON.parse(localStorage.getItem('pix_settings')) || { oled: false, is24h: false };
 
         function toggleSettings() { document.getElementById('side-sheet').classList.toggle('open'); }
-        function updateOLED(v) { state.oled = v; document.body.classList.toggle('oled', v); localStorage.setItem('pix_settings', JSON.stringify(state)); }
-        function updateFormat(v) { state.is24h = v; }
+        function updateOLED(v) { state.oled = v; document.body.classList.toggle('oled', v); save(); }
+        function updateFormat(v) { state.is24h = v; save(); }
+        function save() { localStorage.setItem('pix_settings', JSON.stringify(state)); }
+
+        function setMode(mode, val) {
+            let c = (mode === 'skin') ? VERSIONS[currentIdx].colors : (mode === 'preset') ? PRESETS[val] : [val+'44', val+'88', val];
+            document.documentElement.style.setProperty('--bg-1', c[0]);
+            document.documentElement.style.setProperty('--bg-2', c[1]);
+            document.documentElement.style.setProperty('--p', c[2]);
+        }
 
         function switchVersion(idx) {
-            const v = VERSIONS[idx];
+            currentIdx = idx; const v = VERSIONS[idx];
             document.getElementById('v-title').innerText = v.title;
             document.getElementById('v-tag').innerText = `VERSION // ${v.id}`;
             document.getElementById('v-desc').innerText = v.desc;
             document.getElementById('mv').setAttribute('src', v.model);
-            document.documentElement.style.setProperty('--bg-1', v.colors[0]);
-            document.documentElement.style.setProperty('--bg-2', v.colors[1]);
-            document.documentElement.style.setProperty('--p', v.colors[2]);
             document.querySelectorAll('.v-pill').forEach((p, i) => p.classList.toggle('active', i === idx));
+            setMode('skin');
         }
 
         async function updateWeather() {
@@ -122,18 +151,22 @@
                 const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&current_weather=true&temperature_unit=fahrenheit`);
                 const d = await r.json();
                 document.getElementById('temp').innerText = `${Math.round(d.current_weather.temperature)}°F`;
-                
                 const code = d.current_weather.weathercode;
                 let icon = ICONS.sunny;
                 if (code > 0 && code < 4) icon = ICONS.cloudy;
                 else if (code >= 51 && code < 80) icon = ICONS.rain;
                 else if (code >= 80) icon = ICONS.storm;
-                
                 document.getElementById('icon-target').innerHTML = icon;
-            }, () => { document.getElementById('temp').innerText = "Loc. Off"; });
+            });
         }
 
         window.onload = () => {
+            const grid = document.getElementById('preset-grid');
+            PRESETS.forEach((p, i) => {
+                const d = document.createElement('div'); d.className = 'color-circle';
+                d.style.background = p[2]; d.onclick = () => setMode('preset', i);
+                grid.appendChild(d);
+            });
             const rail = document.getElementById('rail');
             VERSIONS.forEach((_, i) => {
                 const b = document.createElement('button'); b.className = 'v-pill';
@@ -143,7 +176,7 @@
             switchVersion(1);
             updateWeather();
             setInterval(() => {
-                document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-US', { hour12: !state.is24h, hour: '2-digit', minute: '2-digit' });
+                document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-US', { hour12: !state.is24h, hour: '2-digit', minute: '2-digit', second: '2-digit' });
             }, 1000);
         };
     </script>
