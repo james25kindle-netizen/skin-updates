@@ -24,10 +24,10 @@
         
         .aura-bg { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); pointer-events: none; }
         
-        /* SIDE RAIL LOGO STYLE */
+        /* SIDE RAIL LOGO ONLY */
         .nav-logo-brand { 
             font-family: 'Michroma', sans-serif; 
-            font-size: 0.9rem; 
+            font-size: 0.85rem; 
             letter-spacing: 2px; 
             opacity: 0.8; 
             margin-bottom: 20px;
@@ -42,7 +42,7 @@
 
         .status-bar { position: fixed; top: 30px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; z-index: 100; }
         .weather-chip { background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(20px); padding: 4px 18px 4px 8px; border-radius: 40px; border: 1px solid rgba(255, 255, 255, 0.4); display: flex; align-items: center; gap: 8px; min-height: 52px; }
-        .weather-chip img { width: 42px; height: 42px; display: block; }
+        .weather-chip img { width: 42px; height: 42px; }
         
         #clock { font-weight: 900; opacity: 0.6; font-family: 'Space Grotesk'; font-size: 1.2rem; }
         
@@ -57,9 +57,12 @@
         .viewer-box { height: 80vh; background: white; border-radius: 48px; position: relative; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.05); }
         model-viewer { width: 100%; height: 100%; }
         
-        h1 { font-family: 'Bebas Neue'; font-size: 8.5rem; line-height: 0.8; letter-spacing: -3px; }
+        /* MAIN TEXT BACK TO ALPHA STYLE */
+        h1 { font-family: 'Bebas Neue'; font-size: 8.5rem; line-height: 0.8; letter-spacing: -3px; color: var(--on-s-container); }
+        
         .m3-btn { flex: 1; height: 64px; border-radius: 32px; background: var(--on-s-container); color: white; border: none; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.6s var(--spring); }
         .m3-btn:hover { flex: 2.5; background: var(--p); }
+        .m3-btn:active { transform: scale(0.9); }
 
         .settings-fab { position: fixed; bottom: 30px; right: 30px; width: 56px; height: 56px; border-radius: 16px; background: var(--p); color: white; border: none; cursor: pointer; display: grid; place-items: center; z-index: 200; transition: all 0.6s var(--spring); }
         .side-sheet { position: fixed; top: 0; right: -400px; width: 350px; height: 100%; background: white; z-index: 300; transition: right 0.5s var(--spring); padding: 30px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
@@ -94,7 +97,7 @@
         <div class="viewer-box"><model-viewer id="mv" auto-rotate camera-controls shadow-intensity="1" environment-image="neutral" camera-orbit="180deg 75deg 105%" field-of-view="30deg"></model-viewer></div>
         <div class="content">
             <p id="v-tag" style="font-weight:900; opacity:0.3; letter-spacing:5px; font-size:0.8rem;"></p>
-            <h1 id="v-title">PIX_LABS</h1>
+            <h1 id="v-title">ALPHA</h1>
             <p id="v-desc" style="font-size:1.15rem; opacity:0.7; margin-bottom:25px;"></p>
             <div class="btn-group" style="display:flex; gap:12px;">
                 <button class="m3-btn" onclick="triggerDownload('skin', this)">GET SKIN</button>
@@ -109,8 +112,8 @@
         <h2 style="font-family: 'Space Grotesk';">PREFERENCES</h2>
         <div class="news-card">
             <strong>WHAT'S NEW (v0.1.9)</strong><br><br>
-            🎨 <strong>Logo Rail:</strong> The side "PIX" now uses a dedicated brand font.<br><br>
-            🛡️ <strong>Weather:</strong> Robust GitLab image linking restored.
+            🛠️ <strong>Restoration:</strong> Skins correctly named "ALPHA".<br><br>
+            🏷️ <strong>Naming:</strong> Re-synced to Version // 0.x format.
         </div>
         <div>
             <label style="font-weight: 800; font-size: 0.7rem; opacity: 0.5;">COLOR PRESETS</label>
@@ -145,7 +148,6 @@
                 const temp = Math.round(weather.current_weather.temperature);
                 const code = weather.current_weather.weathercode;
                 document.getElementById('temp').innerText = `${temp}°F`;
-                
                 let icon = 'clear_day';
                 if (code >= 1 && code <= 3) icon = 'mostly_cloudy';
                 if (code >= 45 && code <= 48) icon = 'foggy';
@@ -153,7 +155,6 @@
                 if (code >= 71 && code <= 77) icon = 'snowy';
                 if (code >= 80 && code <= 82) icon = 'heavy_rain';
                 if (code >= 95) icon = 'thunderstorm';
-                
                 document.getElementById('weather-img').src = `https://gitlab.com/bignutty/google-weather-icons/-/raw/master/${icon}.png`;
             } catch (e) { document.getElementById('temp').innerText = '72°F'; }
         }
