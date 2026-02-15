@@ -16,7 +16,6 @@
         .weather-chip { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(12px); padding: 10px 20px; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.3); display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 0.95rem; }
         #clock { font-weight: 900; opacity: 0.6; font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; }
         
-        /* EXPRESSIVE RAIL */
         nav.nav-rail { width: 90px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 12px; background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(15px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; }
         .v-pill { width: 48px; height: 48px; border-radius: 24px; background: rgba(0,0,0,0.05); border: none; cursor: pointer; display: grid; place-items: center; transition: all 0.5s var(--spring); font-weight: 900; font-family: 'Space Grotesk'; color: var(--on-s-container); }
         .v-pill.active { height: 64px; width: 32px; border-radius: 16px; background: var(--p); color: white; }
@@ -26,7 +25,6 @@
         model-viewer { width: 100%; height: 100%; }
         h1 { font-family: 'Bebas Neue'; font-size: 8.5rem; line-height: 0.8; letter-spacing: -3px; }
 
-        /* EXPRESSIVE ACTION BUTTONS */
         .btn-group { display: flex; gap: 12px; margin-top: 30px; width: 100%; }
         .m3-btn { flex: 1; height: 64px; border-radius: 32px; background: var(--on-s-container); color: white; border: none; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: flex 0.6s var(--spring), background 0.3s ease, border-radius 0.6s var(--spring), transform 0.2s ease; overflow: hidden; }
         .m3-btn:hover { flex: 2.5; background: var(--p); border-radius: 20px; }
@@ -50,8 +48,8 @@
             <h1 id="v-title">PIX_LABS</h1>
             <p id="v-desc" style="font-size:1.15rem; line-height:1.6; opacity:0.7; margin-bottom:25px;"></p>
             <div class="btn-group">
-                <button class="m3-btn" onclick="downloadSkin()">GET SKIN <span class="material-symbols-rounded">checkroom</span></button>
-                <button class="m3-btn m3-btn-secondary" onclick="downloadModel()">GET MODEL <span class="material-symbols-rounded">3d_rotation</span></button>
+                <button class="m3-btn" onclick="handleDownload('skin')">GET SKIN <span class="material-symbols-rounded">checkroom</span></button>
+                <button class="m3-btn m3-btn-secondary" onclick="handleDownload('model')">GET MODEL <span class="material-symbols-rounded">3d_rotation</span></button>
             </div>
         </div>
     </main>
@@ -63,7 +61,33 @@
         ];
 
         let currentIdx = 0;
+
+        // --- IMPROVED AUTO-DOWNLOAD LOGIC ---
+        async function handleDownload(type) {
+            const v = VERSIONS[currentIdx];
+            const url = type === 'skin' ? v.skin : v.model;
+            const extension = type === 'skin' ? '.png' : '.gltf';
+            const fileName = `PIX_${v.title}_${v.id}${extension}`;
+
+            try {
+                const response = await fetch(url);
+                const blob = await response.blob();
+                const blobUrl = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = blobUrl;
+                link.download = fileName;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(blobUrl);
+            } catch (err) {
+                console.error("Download failed, opening in new tab instead.", err);
+                window.open(url, '_blank');
+            }
+        }
+
         function updateClock() { document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-US', { hour12: true }); }
+        
         async function updateWeather() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(async (pos) => {
@@ -71,7 +95,7 @@
                         const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&current_weather=true&temperature_unit=fahrenheit`);
                         const d = await r.json();
                         document.getElementById('temp').innerText = `${Math.round(d.current_weather.temperature)}°F // LOCAL`;
-                    } catch (e) { document.getElementById('temp').innerText = "OFFLINE"; }
+                    } catch(e) { document.getElementById('temp').innerText = "OFFLINE"; }
                 });
             }
         }
@@ -91,9 +115,6 @@
             mv.jumpCameraToGoal();
             document.querySelectorAll('.v-pill-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
         }
-
-        function downloadSkin() { window.open(VERSIONS[currentIdx].skin); }
-        function downloadModel() { window.open(VERSIONS[currentIdx].model); }
 
         window.onload = () => {
             const rail = document.getElementById('rail');
