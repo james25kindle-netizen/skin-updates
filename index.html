@@ -20,7 +20,6 @@
         body.oled .viewer-box { background: #0a0a0a !important; border: 1px solid #1a1a1a; }
         body.oled .side-sheet { background: #111; border-left: 1px solid #333; color: #fff; }
         body.oled .m3-btn { background: #FFFFFF !important; color: #000 !important; }
-        body.oled .v-pill.active { background: #FFFFFF !important; color: #000 !important; }
         body.oled .news-card { background: #1a1a1a !important; border-color: #333; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; user-select: none; }
@@ -29,21 +28,41 @@
         @keyframes auraPulse { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } }
         .aura-bg { position: fixed; inset: -10%; background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); animation: auraPulse 10s infinite ease-in-out; }
         
-        /* NAV RAIL RESTORED */
+        /* NAV RAIL */
         nav.nav-rail { width: 90px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 12px; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; }
         .v-pill { width: 48px; height: 48px; border-radius: 24px; background: rgba(0,0,0,0.05); border: none; cursor: pointer; display: flex; flex-direction: column; justify-content: center; align-items: center; font-weight: 900; transition: 0.5s var(--spring); color: inherit; }
         .v-pill:hover { transform: scale(1.15); background: var(--p); color: white; }
         .v-pill.active { height: 80px; width: 34px; border-radius: 17px; background: var(--p); color: white; }
 
+        /* MAIN LAYOUT - CENTERED FIX */
         main { flex: 1; display: grid; grid-template-columns: 1fr 450px; padding: 40px; gap: 40px; align-items: center; height: 100%; }
-        .viewer-box { height: 90%; width: 100%; background: white; border-radius: 48px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.03); transition: 0.5s var(--spring); }
+        .viewer-box { 
+            height: 90%; 
+            width: 100%; 
+            background: white; 
+            border-radius: 48px; 
+            overflow: hidden; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.03); 
+            transition: 0.5s var(--spring);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        /* MODEL VIEWER - CENTERED ANCHOR */
+        model-viewer { 
+            width: 100%; 
+            height: 100%; 
+            --poster-color: transparent;
+        }
         
         h1 { font-family: 'Bebas Neue'; font-size: 8.5rem; line-height: 0.8; letter-spacing: -3px; margin: 10px 0; }
 
         /* BUTTONS */
         .btn-group { display: flex; gap: 12px; margin-top: 20px; }
-        .m3-btn { flex: 1; height: 64px; border-radius: 32px; background: var(--p); color: white; border: none; font-weight: 800; cursor: pointer; transition: 0.5s var(--spring); position: relative; overflow: hidden; }
-        .m3-btn:hover { flex: 1.5; filter: brightness(1.1); }
+        .m3-btn { flex: 1; height: 64px; border-radius: 32px; background: var(--p); color: white; border: none; font-weight: 800; cursor: pointer; transition: 0.5s var(--spring); position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .m3-btn:hover { flex: 1.5; filter: brightness(1.1); transform: scale(1.02); }
         .m3-btn-secondary { background: rgba(0,0,0,0.05); color: var(--on-s-container); }
         .progress-bar { position: absolute; bottom: 0; left: 0; height: 100%; background: rgba(255,255,255,0.2); width: 0%; transition: width 0.3s ease; }
 
@@ -53,19 +72,18 @@
         .weather-chip:hover { transform: scale(1.05); background: white; }
 
         /* SITE INFO FOOTER */
-        .site-footer { position: fixed; bottom: 30px; left: 125px; color: inherit; cursor: pointer; transition: 0.3s; }
-        .site-footer:hover { opacity: 0.7; }
+        .site-footer { position: fixed; bottom: 30px; left: 125px; color: inherit; cursor: pointer; transition: 0.3s; z-index: 100; }
         .site-footer b { font-family: 'Space Grotesk'; font-size: 0.8rem; display: block; }
         .site-footer i { font-style: normal; font-size: 0.6rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.5; }
 
-        /* SETTINGS FAB ANIMATION */
+        /* SETTINGS FAB */
         #settings-fab { position: fixed; bottom: 30px; right: 30px; width: 64px; height: 64px; border-radius: 20px; background: var(--p); color: white; border: none; cursor: pointer; z-index: 200; display: grid; place-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.15); transition: 0.6s var(--spring); }
         #settings-fab:hover { transform: rotate(180deg) scale(1.1); border-radius: 32px; }
 
-        /* EXPRESSIVE NEWS CARDS */
+        /* SIDE SHEET */
         .side-sheet { position: fixed; top: 0; right: -400px; width: 380px; height: 100%; background: #fdf8fd; z-index: 300; transition: right 0.6s var(--spring); padding: 30px; display: flex; flex-direction: column; gap: 24px; overflow-y: auto; }
         .side-sheet.open { right: 0; }
-        .news-card { background: white; padding: 24px; border-radius: 32px; border: 1px solid rgba(0,0,0,0.05); position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
+        .news-card { background: white; padding: 24px; border-radius: 32px; border: 1px solid rgba(0,0,0,0.05); position: relative; }
         .news-tag { position: absolute; top: -10px; right: 20px; background: var(--p); color: white; padding: 4px 12px; font-size: 0.6rem; font-weight: 900; border-radius: 10px; }
     </style>
 </head>
@@ -87,12 +105,12 @@
 
     <main>
         <div class="viewer-box">
-            <model-viewer id="mv" auto-rotate camera-controls shadow-intensity="1" environment-image="neutral" camera-orbit="45deg 55deg 140%" field-of-view="30deg"></model-viewer>
+            <model-viewer id="mv" auto-rotate camera-controls shadow-intensity="1" environment-image="neutral" camera-orbit="0deg 75deg 105%" min-camera-orbit="auto auto auto" max-camera-orbit="auto auto auto" bounds="tight"></model-viewer>
         </div>
         <div class="content">
             <p id="v-tag" style="font-weight:900; opacity:0.3; letter-spacing:5px; font-size:0.8rem;"></p>
             <h1 id="v-title">ALPHA</h1>
-            <p id="v-desc" style="font-size:1.2rem; opacity:0.7; font-weight:500;">Expressive Design. Real Precision.</p>
+            <p id="v-desc" style="font-size:1.2rem; opacity:0.7; font-weight:500;">Centered on the future.</p>
             <div class="btn-group">
                 <button class="m3-btn" onclick="forceDownload('skin')">
                     <div class="progress-bar"></div>
@@ -107,8 +125,8 @@
     </main>
 
     <div class="site-footer" onclick="toggleSettings()">
-        <b>v0.5.4</b>
-        <i>Expressive Update</i>
+        <b>v0.5.5</b>
+        <i>Center-Focus Update</i>
     </div>
 
     <button id="settings-fab" onclick="toggleSettings()">
@@ -119,14 +137,9 @@
         <h2 style="font-family:'Space Grotesk'; font-size:1.8rem;">WHAT'S NEW</h2>
         
         <div class="news-card">
-            <div class="news-tag">EXPRESSIVE</div>
-            <h4 style="font-family:'Space Grotesk'; color:var(--p); font-size:1.1rem;">MATERIAL YOU 3</h4>
-            <p style="font-size:0.85rem; margin-top:8px; line-height:1.4;">Bolder shapes, smoother spring physics, and high-contrast cards. The UI now feels like it's breathing.</p>
-        </div>
-
-        <div class="news-card">
-            <h4 style="font-family:'Space Grotesk'; opacity:0.7;">FIXES</h4>
-            <p style="font-size:0.8rem; margin-top:5px;">• Weather Chip linked to Google<br>• Settings FAB Animation restored<br>• Rail text visibility fixed</p>
+            <div class="news-tag">STABILITY</div>
+            <h4 style="font-family:'Space Grotesk'; color:var(--p); font-size:1.1rem;">3D FRAME ALIGNMENT</h4>
+            <p style="font-size:0.85rem; margin-top:8px; line-height:1.4;">The viewport has been recalibrated to ensure the model stays perfectly centered within its frame at all times.</p>
         </div>
 
         <h3 style="font-size:0.7rem; opacity:0.4; letter-spacing:1px; margin-top:10px;">PRESET THEMES</h3>
