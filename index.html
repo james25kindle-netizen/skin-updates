@@ -42,7 +42,7 @@
 
         .status-bar { position: fixed; top: 30px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; z-index: 100; }
         .weather-chip { background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(20px); padding: 4px 18px 4px 8px; border-radius: 40px; border: 1px solid rgba(255, 255, 255, 0.4); display: flex; align-items: center; gap: 8px; min-height: 52px; }
-        .weather-chip img { width: 42px; height: 42px; }
+        .weather-chip img { width: 42px; height: 42px; object-fit: contain; }
         
         #clock { font-weight: 900; opacity: 0.6; font-family: 'Space Grotesk'; font-size: 1.2rem; }
         
@@ -57,12 +57,10 @@
         .viewer-box { height: 80vh; background: white; border-radius: 48px; position: relative; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.05); }
         model-viewer { width: 100%; height: 100%; }
         
-        /* MAIN TEXT BACK TO ALPHA STYLE */
         h1 { font-family: 'Bebas Neue'; font-size: 8.5rem; line-height: 0.8; letter-spacing: -3px; color: var(--on-s-container); }
         
         .m3-btn { flex: 1; height: 64px; border-radius: 32px; background: var(--on-s-container); color: white; border: none; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.6s var(--spring); }
         .m3-btn:hover { flex: 2.5; background: var(--p); }
-        .m3-btn:active { transform: scale(0.9); }
 
         .settings-fab { position: fixed; bottom: 30px; right: 30px; width: 56px; height: 56px; border-radius: 16px; background: var(--p); color: white; border: none; cursor: pointer; display: grid; place-items: center; z-index: 200; transition: all 0.6s var(--spring); }
         .side-sheet { position: fixed; top: 0; right: -400px; width: 350px; height: 100%; background: white; z-index: 300; transition: right 0.5s var(--spring); padding: 30px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
@@ -82,7 +80,7 @@
 
     <div class="status-bar">
         <div class="weather-chip" id="weather-chip">
-            <img id="weather-img" src="https://gitlab.com/bignutty/google-weather-icons/-/raw/master/clear_day.png" alt="Weather">
+            <img id="weather-img" src="https://cdn.weatherapi.com/weather/64x64/day/113.png" alt="Weather">
             <span id="temp">--°F</span>
         </div>
         <div id="clock">00:00:00 AM</div>
@@ -111,9 +109,9 @@
     <div class="side-sheet" id="side-sheet">
         <h2 style="font-family: 'Space Grotesk';">PREFERENCES</h2>
         <div class="news-card">
-            <strong>WHAT'S NEW (v0.1.9)</strong><br><br>
-            🛠️ <strong>Restoration:</strong> Skins correctly named "ALPHA".<br><br>
-            🏷️ <strong>Naming:</strong> Re-synced to Version // 0.x format.
+            <strong>STABILITY PATCH (v0.1.9)</strong><br><br>
+            ☁️ <strong>Weather Fix:</strong> Switched to CDN hosting for icons to prevent GitLab hotlink blocks.<br><br>
+            🏷️ <strong>Naming:</strong> Corrected "ALPHA" title persistence.
         </div>
         <div>
             <label style="font-weight: 800; font-size: 0.7rem; opacity: 0.5;">COLOR PRESETS</label>
@@ -148,14 +146,17 @@
                 const temp = Math.round(weather.current_weather.temperature);
                 const code = weather.current_weather.weathercode;
                 document.getElementById('temp').innerText = `${temp}°F`;
-                let icon = 'clear_day';
-                if (code >= 1 && code <= 3) icon = 'mostly_cloudy';
-                if (code >= 45 && code <= 48) icon = 'foggy';
-                if (code >= 51 && code <= 67) icon = 'rainy';
-                if (code >= 71 && code <= 77) icon = 'snowy';
-                if (code >= 80 && code <= 82) icon = 'heavy_rain';
-                if (code >= 95) icon = 'thunderstorm';
-                document.getElementById('weather-img').src = `https://gitlab.com/bignutty/google-weather-icons/-/raw/master/${icon}.png`;
+                
+                // Optimized WeatherAPI CDN mapping
+                let iconId = '113'; 
+                if (code >= 1 && code <= 3) iconId = '116'; // Cloudy
+                if (code >= 45 && code <= 48) iconId = '143'; // Mist
+                if (code >= 51 && code <= 67) iconId = '296'; // Rain
+                if (code >= 71 && code <= 77) iconId = '326'; // Snow
+                if (code >= 80 && code <= 82) iconId = '302'; // Heavy Rain
+                if (code >= 95) iconId = '389'; // Thunder
+                
+                document.getElementById('weather-img').src = `https://cdn.weatherapi.com/weather/64x64/day/${iconId}.png`;
             } catch (e) { document.getElementById('temp').innerText = '72°F'; }
         }
 
