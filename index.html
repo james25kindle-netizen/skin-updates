@@ -28,55 +28,49 @@
         
         .aura-bg { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); pointer-events: none; }
         
-        /* STATUS BAR */
-        .status-bar { position: fixed; top: 30px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; z-index: 100; }
-        .weather-chip { background: rgba(255, 255, 255, 0.3); backdrop-filter: blur(20px); padding: 0 16px 0 8px; border-radius: 28px; border: 1px solid rgba(255, 255, 255, 0.2); display: flex; align-items: center; gap: 6px; height: 44px; cursor: pointer; }
-
-        /* NAV RAIL & PUSH EFFECT */
+        /* NAV RAIL */
         nav.nav-rail { width: 90px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 12px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(15px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; }
         .v-pill { width: 48px; height: 48px; border-radius: 24px; background: rgba(0,0,0,0.05); border: none; cursor: pointer; display: grid; place-items: center; font-weight: 900; color: inherit; transition: all 0.5s var(--spring); }
-        
-        /* Restore Push Logic */
         .nav-rail:has(.v-pill:hover) .v-pill:not(:hover) { transform: scale(0.8); opacity: 0.5; }
         .v-pill:hover { transform: scale(1.2); background: var(--p); color: white; }
         .v-pill.active { height: 80px; width: 34px; border-radius: 17px; background: var(--p); color: white; }
 
-        /* DOWNLOAD BUTTONS & HOVER PUSH */
+        /* DOWNLOAD BUTTONS */
         .btn-group { display: flex; gap: 12px; width: 100%; margin-top: 20px; }
         .m3-btn { flex: 1; height: 64px; border-radius: 32px; background: var(--p); color: white; border: none; font-weight: 800; cursor: pointer; transition: flex 0.6s var(--spring), background 0.3s; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
         .m3-btn:hover { flex: 2; filter: brightness(1.1); }
         .m3-btn-secondary { background: rgba(0,0,0,0.05); color: var(--on-s-container); }
-        
         .progress-bar { position: absolute; bottom: 0; left: 0; height: 100%; background: rgba(255,255,255,0.15); width: 0%; transition: width 0.3s ease; }
         .btn-content { display: flex; align-items: center; gap: 8px; z-index: 2; }
 
-        /* LAYOUT & BOTTOM INFO */
+        /* SIDE SHEET ELEMENTS */
+        .side-sheet { position: fixed; top: 0; right: -400px; width: 360px; height: 100%; background: white; z-index: 300; transition: right 0.5s var(--spring); padding: 30px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
+        .side-sheet.open { right: 0; }
+        .news-card { background: rgba(0,0,0,0.04); padding: 18px; border-radius: 24px; font-size: 0.85rem; line-height: 1.4; border: 1px solid rgba(0,0,0,0.05); }
+        .color-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 10px 0; }
+        .color-circle { width: 100%; aspect-ratio: 1; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: 0.3s; display: grid; place-items: center; font-size: 0.6rem; font-weight: 900; }
+        .color-circle:hover { transform: scale(1.1); }
+        
+        /* UTILS */
+        .status-bar { position: fixed; top: 30px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; z-index: 100; }
+        .v-info-bottom { position: fixed; bottom: 30px; left: 125px; background: none; border: none; color: inherit; text-align: left; cursor: pointer; z-index: 100; }
         main { flex: 1; display: grid; grid-template-columns: 1fr 450px; padding: 40px; gap: 40px; align-items: center; }
         .viewer-box { height: 80vh; background: white; border-radius: 48px; position: relative; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.03); }
         model-viewer { width: 100%; height: 100%; }
         h1 { font-family: 'Bebas Neue'; font-size: 8.5rem; line-height: 0.8; letter-spacing: -3px; }
-        
-        .v-info-bottom { position: fixed; bottom: 30px; left: 125px; background: none; border: none; color: inherit; text-align: left; cursor: pointer; z-index: 100; }
-
-        /* SIDE SHEET */
-        .side-sheet { position: fixed; top: 0; right: -400px; width: 350px; height: 100%; background: white; z-index: 300; transition: right 0.5s var(--spring); padding: 30px; display: flex; flex-direction: column; gap: 18px; overflow-y: auto; }
-        .side-sheet.open { right: 0; }
-        .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; }
-        
-        .check-icon { font-size: 22px; animation: pop 0.3s var(--spring); }
-        @keyframes pop { from { transform: scale(0); } to { transform: scale(1); } }
+        .input-hex { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.1); background: rgba(0,0,0,0.03); font-family: 'Space Grotesk'; font-weight: 700; }
     </style>
 </head>
 <body>
     <div class="aura-bg"></div>
 
     <button class="v-info-bottom" onclick="toggleSettings()">
-        <span style="font-family:'Space Grotesk'; font-size:0.75rem; font-weight:900; display:block;">v0.4.5</span>
-        <span style="font-size:0.6rem; opacity:0.5; text-transform:uppercase;">Hub Restored</span>
+        <span style="font-family:'Space Grotesk'; font-size:0.75rem; font-weight:900; display:block;">v0.4.6</span>
+        <span style="font-size:0.6rem; opacity:0.5; text-transform:uppercase;">Pixel Labs Hub</span>
     </button>
 
     <div class="status-bar">
-        <div class="weather-chip" onclick="window.open('https://google.com/search?q=weather')">
+        <div class="weather-chip" style="background:rgba(255,255,255,0.3); backdrop-filter:blur(20px); padding:0 16px 0 8px; border-radius:28px; display:flex; align-items:center; gap:6px; height:44px;">
             <img id="w-icon" src="https://cdn.weatherapi.com/weather/64x64/day/113.png" style="width:30px">
             <span id="temp">--°F</span>
         </div>
@@ -85,7 +79,7 @@
     
     <nav class="nav-rail" id="rail">
         <div class="nav-logo-brand" style="font-family:'Michroma'; font-size:0.8rem; margin-bottom:20px; font-weight:bold;">PIX</div>
-        <div style="font-size:0.5rem; font-weight:900; opacity:0.3; text-transform:uppercase; margin-bottom:5px;">Versions</div>
+        <div style="font-size:0.65rem; font-weight:900; opacity:0.4; text-transform:uppercase; margin-bottom:5px; letter-spacing:1px;">Versions</div>
     </nav>
 
     <main>
@@ -93,7 +87,7 @@
         <div class="content">
             <p id="v-tag" style="font-weight:900; opacity:0.3; letter-spacing:5px; font-size:0.8rem;"></p>
             <h1 id="v-title">ALPHA</h1>
-            <p id="v-desc" style="font-size:1.15rem; opacity:0.7;">The adaptive digital identity.</p>
+            <p id="v-desc" style="font-size:1.15rem; opacity:0.7;">The evolution of digital texture.</p>
             <div class="btn-group">
                 <button id="btn-skin" class="m3-btn" onclick="forceDownload('skin')">
                     <div class="progress-bar"></div>
@@ -107,62 +101,85 @@
         </div>
     </main>
 
-    <button id="settings-fab" onclick="toggleSettings()" style="position:fixed; bottom:30px; right:30px; width:56px; height:56px; border-radius:16px; background:var(--p); color:white; border:none; cursor:pointer; z-index:200; display:grid; place-items:center; transition: 0.3s;">
+    <button id="settings-fab" onclick="toggleSettings()" style="position:fixed; bottom:30px; right:30px; width:56px; height:56px; border-radius:16px; background:var(--p); color:white; border:none; cursor:pointer; z-index:200; display:grid; place-items:center;">
         <span class="material-symbols-rounded">settings</span>
     </button>
 
     <div class="side-sheet" id="side-sheet">
-        <h2 style="font-family:'Space Grotesk';">SETTINGS</h2>
+        <h2 style="font-family:'Space Grotesk';">WHAT'S NEW</h2>
+        <div class="news-card">
+            <strong>Update v0.4.6</strong><br>
+            • Restored Theme Presets & Hex Input<br>
+            • Larger Sidebar Version Labels<br>
+            • Fixed Rail Push physics
+        </div>
+
+        <h3 style="font-size:0.7rem; opacity:0.5; margin-top:10px;">THEME PRESETS</h3>
+        <div class="color-grid" id="preset-grid">
+            <div class="color-circle" style="background:#6750A4; color:white" onclick="setTheme('default')">DFT</div>
+        </div>
+
+        <h3 style="font-size:0.7rem; opacity:0.5;">CUSTOM ACCENT</h3>
+        <input type="text" class="input-hex" id="custom-hex" placeholder="#HEX CODE" oninput="applyHex(this.value)">
+
+        <hr style="opacity:0.1; margin:10px 0;">
         
-        <div class="setting-item"><span>OLED Mode</span><input type="checkbox" id="oled-toggle" onchange="updateOLED(this.checked)"></div>
-        <div class="setting-item"><span>Auto-Dark Mode</span><input type="checkbox" id="auto-toggle" onchange="updateAuto(this.checked)"></div>
-        <div class="setting-item"><span>24h Time</span><input type="checkbox" id="format-toggle" onchange="updateFormat(this.checked)"></div>
+        <div style="display:flex; justify-content:space-between;"><span>OLED Mode</span><input type="checkbox" id="oled-toggle" onchange="updateOLED(this.checked)"></div>
+        <div style="display:flex; justify-content:space-between;"><span>Auto-Dark</span><input type="checkbox" id="auto-toggle" onchange="updateAuto(this.checked)"></div>
+        <div style="display:flex; justify-content:space-between;"><span>24h Clock</span><input type="checkbox" id="format-toggle" onchange="updateFormat(this.checked)"></div>
         
         <button onclick="toggleSettings()" style="margin-top:auto; padding:16px; border-radius:16px; border:none; background:var(--on-s-container); color:white; cursor:pointer; font-weight:900;">DONE</button>
     </div>
 
     <script>
+        const PRESETS = [ ["#D1E4FF", "#A6C8FF", "#004A77"], ["#C4EED0", "#A2E0B8", "#006D3B"], ["#FDE293", "#FADB7D", "#A67100"], ["#FFD8E4", "#F9B1C8", "#880E4F"] ];
         const VERSIONS = [
             { id: "0.1", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/skin%20alpha.png", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
             { id: "0.2", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.png", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
         ];
 
-        let state = JSON.parse(localStorage.getItem('pix_pref')) || { oled: false, auto: true, is24h: false };
+        let state = JSON.parse(localStorage.getItem('pix_pref')) || { oled: false, auto: true, is24h: false, themeType: 'default', themeVal: 0 };
         let currentIdx = 1;
 
         function toggleSettings() { document.getElementById('side-sheet').classList.toggle('open'); }
         
+        function setTheme(type, val) {
+            state.themeType = type; state.themeVal = val;
+            let c = (type === 'default') ? VERSIONS[currentIdx].colors : PRESETS[val];
+            document.documentElement.style.setProperty('--bg-1', c[0]);
+            document.documentElement.style.setProperty('--bg-2', c[1]);
+            document.documentElement.style.setProperty('--p', c[2]);
+            localStorage.setItem('pix_pref', JSON.stringify(state));
+        }
+
+        function applyHex(hex) {
+            if(/^#[0-9A-F]{6}$/i.test(hex)) {
+                document.documentElement.style.setProperty('--p', hex);
+                state.themeType = 'custom'; state.themeVal = hex;
+                localStorage.setItem('pix_pref', JSON.stringify(state));
+            }
+        }
+
         async function forceDownload(type) {
             const btn = type === 'skin' ? document.getElementById('btn-skin') : document.getElementById('btn-model');
             const bar = btn.querySelector('.progress-bar');
             const content = btn.querySelector('.btn-content');
             const url = type === 'skin' ? VERSIONS[currentIdx].skin : VERSIONS[currentIdx].model;
-            
-            content.innerHTML = `<span>FETCHING</span>`;
-            bar.style.width = "40%";
-
+            content.innerHTML = `<span>FETCHING</span>`; bar.style.width = "40%";
             try {
                 const response = await fetch(url);
                 bar.style.width = "100%";
                 const blob = await response.blob();
-                const a = document.createElement('a');
-                a.href = window.URL.createObjectURL(blob);
-                a.download = url.split('/').pop();
-                a.click();
-                content.innerHTML = `<span>READY</span> <span class="material-symbols-rounded check-icon">check_circle</span>`;
+                const a = document.createElement('a'); a.href = window.URL.createObjectURL(blob);
+                a.download = url.split('/').pop(); a.click();
+                content.innerHTML = `<span>READY</span> <span class="material-symbols-rounded" style="font-size:20px;">check_circle</span>`;
             } catch (e) { content.innerText = "ERROR"; }
-            finally {
-                setTimeout(() => { 
-                    content.innerHTML = `<span>${type === 'skin' ? 'GET SKIN' : 'GET MODEL'}</span>`;
-                    bar.style.width = "0%";
-                }, 3000);
-            }
+            finally { setTimeout(() => { content.innerHTML = `<span>${type === 'skin' ? 'GET SKIN' : 'GET MODEL'}</span>`; bar.style.width = "0%"; }, 3000); }
         }
 
-        function updateOLED(v) { state.oled = v; checkMode(); save(); }
-        function updateAuto(v) { state.auto = v; checkMode(); save(); }
-        function updateFormat(v) { state.is24h = v; save(); }
-        function save() { localStorage.setItem('pix_pref', JSON.stringify(state)); }
+        function updateOLED(v) { state.oled = v; checkMode(); localStorage.setItem('pix_pref', JSON.stringify(state)); }
+        function updateAuto(v) { state.auto = v; checkMode(); localStorage.setItem('pix_pref', JSON.stringify(state)); }
+        function updateFormat(v) { state.is24h = v; localStorage.setItem('pix_pref', JSON.stringify(state)); }
 
         function checkMode() {
             const h = new Date().getHours();
@@ -175,20 +192,16 @@
             document.getElementById('v-tag').innerText = `VERSION // ${VERSIONS[idx].id}`;
             document.getElementById('mv').setAttribute('src', VERSIONS[idx].model);
             document.querySelectorAll('.v-pill').forEach((p, i) => p.classList.toggle('active', i === idx));
-            const c = VERSIONS[idx].colors;
-            document.documentElement.style.setProperty('--bg-1', c[0]);
-            document.documentElement.style.setProperty('--bg-2', c[1]);
-            document.documentElement.style.setProperty('--p', c[2]);
-        }
-
-        async function updateWeather() {
-            try {
-                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=37.5&longitude=-121.9&current_weather=true&temperature_unit=fahrenheit`).then(r => r.json());
-                document.getElementById('temp').innerText = `${Math.round(res.current_weather.temperature)}°F`;
-            } catch (e) { document.getElementById('temp').innerText = '72°F'; }
+            setTheme(state.themeType, state.themeVal);
         }
 
         window.onload = () => {
+            const grid = document.getElementById('preset-grid');
+            PRESETS.forEach((p, i) => {
+                const d = document.createElement('div'); d.className = 'color-circle';
+                d.style.backgroundColor = p[2]; d.onclick = () => setTheme('preset', i);
+                grid.appendChild(d);
+            });
             const rail = document.getElementById('rail');
             VERSIONS.forEach((_, i) => {
                 const b = document.createElement('button'); b.className = 'v-pill';
@@ -198,7 +211,7 @@
             document.getElementById('oled-toggle').checked = state.oled;
             document.getElementById('auto-toggle').checked = state.auto;
             document.getElementById('format-toggle').checked = state.is24h;
-            checkMode(); switchVersion(currentIdx); updateWeather();
+            checkMode(); switchVersion(currentIdx);
             setInterval(() => {
                 document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-US', { hour12: !state.is24h });
             }, 1000);
