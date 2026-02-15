@@ -14,43 +14,46 @@
             --blur: 60px;
         }
 
+        /* OLED OVERRIDES - FIXING THE PURPLE BLEED */
         body.oled { background-color: #000 !important; color: #FFFFFF !important; }
+        body.oled .aura-bg { display: none; } /* Kill the purple glow */
         body.oled .viewer-box { background: #0a0a0a; border: 1px solid #222; }
-        body.oled .weather-chip, body.oled nav.nav-rail { background: rgba(255,255,255,0.08); color: #FFFFFF; }
+        body.oled .weather-chip, body.oled nav.nav-rail { background: rgba(255,255,255,0.08); color: #FFFFFF; border-color: rgba(255,255,255,0.1); }
         body.oled .side-sheet { background: #050505; border-left: 1px solid #333; color: white; }
+        body.oled h1 { color: #FFFFFF !important; }
+        body.oled .m3-btn { background: #FFFFFF !important; color: #000000 !important; }
+        body.oled .m3-btn-secondary { background: rgba(255,255,255,0.1) !important; color: #FFFFFF !important; }
+        body.oled .v-pill { background: rgba(255,255,255,0.1); color: #fff; }
+        body.oled .v-pill.active { background: #FFFFFF; color: #000; }
+        body.oled .nav-logo-brand { background: none; -webkit-text-fill-color: #FFFFFF; color: #FFFFFF; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
-        body { background-color: #fdf8fd; color: var(--on-s-container); font-family: 'Outfit', sans-serif; height: 100vh; display: flex; overflow: hidden; transition: background 0.5s ease; }
+        body { background-color: #fdf8fd; color: var(--on-s-container); font-family: 'Outfit', sans-serif; height: 100vh; display: flex; overflow: hidden; transition: background 0.5s ease, color 0.5s ease; }
         
         .aura-bg { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); pointer-events: none; }
         
-        /* EXPRESSIVE RAIL */
+        /* RAIL */
         .v-pill { width: 48px; height: 48px; border-radius: 24px; background: rgba(0,0,0,0.05); border: none; cursor: pointer; display: grid; place-items: center; font-weight: 900; color: inherit; transition: all 0.5s var(--spring); }
-        .v-pill:hover { height: 60px; background: var(--p); color: white; }
+        .v-pill:hover { height: 60px; transform: scale(1.05); }
         .v-pill.active { height: 80px; width: 34px; border-radius: 17px; background: var(--on-s-container); color: white; }
 
-        /* SQUISHY BUTTONS */
+        /* BUTTONS */
         .btn-group { display: flex; gap: 12px; width: 100%; }
         .m3-btn { flex: 1; height: 64px; border-radius: 32px; background: var(--on-s-container); color: white; border: none; font-weight: 800; cursor: pointer; transition: flex 0.6s var(--spring), background 0.3s, transform 0.2s; display: flex; align-items: center; justify-content: center; }
-        .m3-btn:hover { flex: 2.5; background: var(--p); }
-        .m3-btn:active { transform: scale(0.95); }
+        .m3-btn:hover { flex: 2.5; }
         .m3-btn-secondary { background: rgba(0,0,0,0.05); color: var(--on-s-container); }
 
         nav.nav-rail { width: 90px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 12px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(15px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; }
         main { flex: 1; display: grid; grid-template-columns: 1fr 450px; padding: 40px; gap: 40px; align-items: center; }
         .viewer-box { height: 80vh; background: white; border-radius: 48px; position: relative; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.05); }
         model-viewer { width: 100%; height: 100%; }
-        h1 { font-family: 'Bebas Neue'; font-size: 8.5rem; line-height: 0.8; letter-spacing: -3px; color: var(--on-s-container); }
+        h1 { font-family: 'Bebas Neue'; font-size: 8.5rem; line-height: 0.8; letter-spacing: -3px; color: var(--on-s-container); transition: color 0.5s; }
 
-        /* SIDE SHEET */
         .side-sheet { position: fixed; top: 0; right: -400px; width: 350px; height: 100%; background: white; z-index: 300; transition: right 0.5s var(--spring); padding: 30px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
         .side-sheet.open { right: 0; }
-        .news-card { background: rgba(0,0,0,0.05); padding: 15px; border-radius: 20px; font-size: 0.8rem; line-height: 1.4; }
+        .news-card { background: rgba(0,0,0,0.05); padding: 15px; border-radius: 20px; font-size: 0.8rem; }
         .color-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
         .color-circle { width: 100%; aspect-ratio: 1; border-radius: 50%; cursor: pointer; display: grid; place-items: center; font-size: 0.55rem; font-weight: 900; }
-        
-        .custom-row { display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.04); padding: 12px; border-radius: 20px; }
-        input[type="color"] { border: none; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; background: none; }
         
         .status-bar { position: fixed; top: 30px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; z-index: 100; }
         .weather-chip { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(20px); padding: 0 16px 0 8px; border-radius: 28px; border: 1px solid rgba(255, 255, 255, 0.3); display: flex; align-items: center; gap: 6px; height: 44px; cursor: pointer; }
@@ -60,8 +63,8 @@
     <div class="aura-bg"></div>
     
     <button class="v-info-bottom" onclick="toggleSettings()" style="position:fixed; bottom:30px; left:125px; background:none; border:none; color:inherit; text-align:left; cursor:pointer;">
-        <span style="font-family:'Space Grotesk'; font-size:0.75rem; font-weight:900; display:block;">v0.3.5</span>
-        <span style="font-size:0.6rem; opacity:0.5; text-transform:uppercase;">Legacy Restore</span>
+        <span style="font-family:'Space Grotesk'; font-size:0.75rem; font-weight:900; display:block;">v0.3.6</span>
+        <span style="font-size:0.6rem; opacity:0.5; text-transform:uppercase;">True Black Patch</span>
     </button>
 
     <div class="status-bar">
@@ -82,7 +85,7 @@
         <div class="content">
             <p id="v-tag" style="font-weight:900; opacity:0.3; letter-spacing:5px; font-size:0.8rem;"></p>
             <h1 id="v-title">ALPHA</h1>
-            <p id="v-desc" style="font-size:1.15rem; opacity:0.7; margin-bottom:25px;">The original PIX identity, refined for Material You.</p>
+            <p id="v-desc" style="font-size:1.15rem; opacity:0.7; margin-bottom:25px;">The PIX identity, refined.</p>
             <div class="btn-group">
                 <button class="m3-btn" onclick="forceDownload('skin')">GET SKIN</button>
                 <button class="m3-btn m3-btn-secondary" onclick="forceDownload('model')">GET MODEL</button>
@@ -99,9 +102,8 @@
         
         <div class="news-card">
             <strong>WHAT'S NEW</strong><br>
-            ✨ restored Version labels and side rail branding.<br>
-            🌙 auto-dark mode now follows your local time.<br>
-            🎲 randomizer improved with chaotic palettes.
+            🌑 <strong>OLED Patch:</strong> Buttons and text now turn white/black in OLED mode—no more purple bleed.<br>
+            🕒 <strong>Auto-Dark:</strong> Dynamic mode switching based on time.
         </div>
 
         <div>
@@ -109,7 +111,7 @@
             <div class="color-grid" id="preset-grid">
                 <div class="color-circle" style="background:#6750A4; color:white" onclick="setTheme('default')">DFT</div>
             </div>
-            <div class="custom-row" style="margin-top:10px;">
+            <div style="display:flex; align-items:center; gap:12px; background:rgba(0,0,0,0.04); padding:12px; border-radius:20px; margin-top:10px;">
                 <input type="color" id="custom-color" oninput="applyCustomHex(this.value)">
                 <span style="font-size:0.8rem; font-weight:800;">CUSTOM</span>
             </div>
@@ -191,15 +193,17 @@
         }
 
         window.onload = () => {
+            const grid = document.getElementById('preset-grid');
             PRESETS.forEach((p, i) => {
                 const d = document.createElement('div'); d.className = 'color-circle';
                 d.style.background = p[2]; d.onclick = () => setTheme('preset', i);
-                document.getElementById('preset-grid').appendChild(d);
+                grid.appendChild(d);
             });
+            const rail = document.getElementById('rail');
             VERSIONS.forEach((_, i) => {
                 const b = document.createElement('button'); b.className = 'v-pill';
                 b.innerHTML = i+1; b.onclick = () => switchVersion(i);
-                document.getElementById('rail').appendChild(b);
+                rail.appendChild(b);
             });
             document.getElementById('oled-toggle').checked = state.oled;
             document.getElementById('auto-toggle').checked = state.auto;
