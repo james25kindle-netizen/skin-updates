@@ -16,7 +16,7 @@
 
         body.oled { background-color: #000 !important; color: #FFFFFF !important; }
         body.oled .viewer-box { background: #0a0a0a; border: 1px solid #222; }
-        body.oled .weather-chip, body.oled nav.nav-rail { background: rgba(255,255,255,0.08); color: #FFFFFF; }
+        body.oled nav.nav-rail { background: rgba(255,255,255,0.08); color: #FFFFFF; }
         body.oled .side-sheet { background: #050505; border-left: 1px solid #333; color: white; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -24,13 +24,13 @@
         
         .aura-bg { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); pointer-events: none; }
         
-        /* CLICKABLE VERSION STAMP */
-        .hub-version-link { position: fixed; bottom: 30px; left: 120px; font-family: 'Space Grotesk'; font-size: 0.7rem; font-weight: 900; opacity: 0.3; letter-spacing: 2px; z-index: 10; cursor: pointer; border: none; background: none; color: inherit; transition: opacity 0.2s; }
-        .hub-version-link:hover { opacity: 1; }
+        /* THE OS STYLE VERSION TAG */
+        .hub-os-status { position: fixed; bottom: 30px; left: 120px; font-family: 'Space Grotesk'; z-index: 10; cursor: pointer; border: none; background: none; color: inherit; text-align: left; transition: transform 0.3s var(--spring); }
+        .hub-os-status:hover { transform: translateX(5px); }
+        .hub-os-status .v-label { font-size: 0.75rem; font-weight: 900; letter-spacing: 1px; }
+        .hub-os-status .v-label span { opacity: 0.3; margin-left: 8px; font-weight: 500; text-transform: uppercase; }
 
         .status-bar { position: fixed; top: 30px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; z-index: 100; }
-        .weather-chip { background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(20px); padding: 2px 18px 2px 6px; border-radius: 40px; border: 1px solid rgba(255, 255, 255, 0.4); display: flex; align-items: center; gap: 6px; }
-        .weather-chip svg { width: 44px; height: 44px; }
         #clock { font-weight: 900; opacity: 0.6; font-family: 'Space Grotesk'; font-size: 1.2rem; }
         
         nav.nav-rail { width: 90px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 12px; background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(15px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; }
@@ -48,24 +48,21 @@
         .m3-btn:hover { flex: 2.5; background: var(--p); transform: translateY(-3px); }
 
         .settings-fab { position: fixed; bottom: 30px; right: 30px; width: 56px; height: 56px; border-radius: 16px; background: var(--p); color: white; border: none; cursor: pointer; display: grid; place-items: center; z-index: 200; transition: all 0.6s var(--spring); }
-        .settings-fab:hover { border-radius: 28px; transform: scale(1.1) rotate(15deg); }
 
         .side-sheet { position: fixed; top: 0; right: -400px; width: 350px; height: 100%; background: white; z-index: 300; transition: right 0.5s var(--spring); padding: 30px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
         .side-sheet.open { right: 0; }
 
-        .news-card { background: rgba(0,0,0,0.05); padding: 15px; border-radius: 16px; font-size: 0.85rem; border: 1px solid rgba(0,0,0,0.05); line-height: 1.4; }
+        .news-card { background: rgba(0,0,0,0.05); padding: 15px; border-radius: 16px; font-size: 0.85rem; line-height: 1.4; }
     </style>
 </head>
 <body>
     <div class="aura-bg"></div>
     
-    <button class="hub-version-link" onclick="toggleSettings()">v0.1.8</button>
+    <button class="hub-os-status" onclick="toggleSettings()">
+        <div class="v-label" id="os-display">v0.1.9 <span id="os-name">ULTRA_VIOLET</span></div>
+    </button>
 
     <div class="status-bar">
-        <div class="weather-chip" id="weather-chip">
-            <div id="icon-target"></div>
-            <span id="temp">--°F</span>
-        </div>
         <div id="clock">00:00:00 AM</div>
     </div>
 
@@ -76,7 +73,7 @@
     <main>
         <div class="viewer-box"><model-viewer id="mv" auto-rotate camera-controls shadow-intensity="1" environment-image="neutral" camera-orbit="180deg 75deg 105%" field-of-view="30deg"></model-viewer></div>
         <div class="content">
-            <p id="v-tag" style="font-weight:900; opacity:0.3; letter-spacing:5px; font-size:0.8rem; text-transform:uppercase;"></p>
+            <p id="v-tag" style="font-weight:900; opacity:0.3; letter-spacing:5px; font-size:0.8rem;"></p>
             <h1 id="v-title">PIX_LABS</h1>
             <p id="v-desc" style="font-size:1.15rem; opacity:0.7; margin-bottom:25px;"></p>
             <div class="btn-group" style="display:flex; gap:12px;">
@@ -89,11 +86,11 @@
     <button class="settings-fab" onclick="toggleSettings()"><span class="material-symbols-rounded">settings</span></button>
 
     <div class="side-sheet" id="side-sheet">
-        <h2 style="font-family: 'Space Grotesk';">PREFERENCES</h2>
+        <h2 style="font-family: 'Space Grotesk';">CORE PREFERENCES</h2>
         <div class="news-card">
-            <strong>CODENAME UPDATE (v0.1.8)</strong><br><br>
-            ✨ <strong>Finesse:</strong> Removed the generic "HUB_CORE" text and replaced it with a clickable version stamp.<br><br>
-            🏷️ <strong>Codenames:</strong> Every version now gets a fun name (like VIOLET_DUSK) instead of just a number.
+            <strong>OS NAMING SCHEME (v0.1.9)</strong><br><br>
+            🏷️ <strong>Naming Style:</strong> The version in the corner now looks like a system status (e.g., v0.1.9 ULTRA_VIOLET).<br><br>
+            🛠️ <strong>Maintenance:</strong> Cleaned up the branding to keep PIX_LABS front and center.
         </div>
         <div style="display:flex; justify-content:space-between; align-items:center;"><span>OLED Mode</span><input type="checkbox" id="oled-toggle" onchange="updateOLED(this.checked)"></div>
         <div style="display:flex; justify-content:space-between; align-items:center;"><span>24h Time</span><input type="checkbox" id="format-toggle" onchange="updateFormat(this.checked)"></div>
@@ -101,10 +98,15 @@
     </div>
 
     <script>
-        // ADD YOUR FUN CODENAMES HERE IN THE "codename" SECTION
+        // UPDATE HUB OS VERSION INFO HERE
+        const HUB_OS = {
+            version: "v0.1.9",
+            name: "ULTRA_VIOLET"
+        };
+
         const VERSIONS = [
-            { id: "0.0.1", codename: "ORIGIN_PRIME", title: "ALPHA", desc: "The foundation of everything.", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/skin%20alpha.png", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
-            { id: "0.0.2", codename: "NEON_GLITCH", title: "ALPHA", desc: "Refined geometry and textures.", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.png", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
+            { id: "0.0.1", codename: "ORIGIN", title: "ALPHA", desc: "First iteration.", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/skin%20alpha.png", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
+            { id: "0.0.2", codename: "GHOST", title: "ALPHA", desc: "Refined build.", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.png", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
         ];
 
         let currentIdx = 1;
@@ -154,18 +156,19 @@
         function switchVersion(idx) {
             currentIdx = idx; const v = VERSIONS[idx];
             document.getElementById('v-title').innerText = v.title;
-            // DISPLAYS THE FUN CODENAME
             document.getElementById('v-tag').innerText = `DATA_REF // ${v.codename}`;
             document.getElementById('v-desc').innerText = v.desc;
             document.getElementById('mv').setAttribute('src', v.model);
             document.querySelectorAll('.v-pill').forEach((p, i) => p.classList.toggle('active', i === idx));
-            
             document.documentElement.style.setProperty('--bg-1', v.colors[0]);
             document.documentElement.style.setProperty('--bg-2', v.colors[1]);
             document.documentElement.style.setProperty('--p', v.colors[2]);
         }
 
         window.onload = () => {
+            // APPLY OS INFO
+            document.getElementById('os-display').innerHTML = `${HUB_OS.version} <span>${HUB_OS.name}</span>`;
+
             const rail = document.getElementById('rail');
             VERSIONS.forEach((_, i) => {
                 const b = document.createElement('button'); b.className = 'v-pill';
