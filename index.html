@@ -18,52 +18,58 @@
         body.oled .viewer-box { background: #0a0a0a; border: 1px solid #222; }
         body.oled .weather-chip, body.oled nav.nav-rail { background: rgba(255,255,255,0.08); color: #FFFFFF; }
         body.oled .side-sheet { background: #050505; border-left: 1px solid #333; color: white; }
-        body.oled .m3-btn-secondary { background: rgba(255,255,255,0.12) !important; color: white !important; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background-color: #fdf8fd; color: var(--on-s-container); font-family: 'Outfit', sans-serif; height: 100vh; display: flex; overflow: hidden; transition: background 0.5s ease; }
         
         .aura-bg { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); pointer-events: none; }
         
-        /* THE "PUSH" EFFECT */
-        button, .weather-chip, .v-pill { transition: transform 0.1s ease, filter 0.2s; }
-        button:active, .weather-chip:active, .v-pill:active { transform: scale(0.95) translateY(2px); filter: brightness(0.9); }
+        /* EXPRESSIVE DOWNLOAD BUTTONS */
+        .btn-group { display: flex; gap: 12px; width: 100%; transition: all 0.5s var(--spring); }
+        .m3-btn { 
+            flex: 1; height: 64px; border-radius: 32px; 
+            background: var(--on-s-container); color: white; border: none; 
+            font-weight: 800; cursor: pointer; overflow: hidden;
+            transition: flex 0.6s var(--spring), background 0.3s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .m3-btn:hover { flex: 2.5; background: var(--p); }
+        .m3-btn:active { transform: scale(0.98); }
+        .m3-btn-secondary { background: rgba(0,0,0,0.05); color: var(--on-s-container); }
 
-        /* LOGO & RAIL FIXES */
+        /* EXPRESSIVE VERSION PILLS */
+        .v-pill { 
+            width: 48px; height: 48px; border-radius: 24px; 
+            background: rgba(0,0,0,0.05); border: none; cursor: pointer; 
+            display: grid; place-items: center; font-weight: 900; color: inherit;
+            transition: all 0.5s var(--spring);
+        }
+        .v-pill:hover { height: 56px; background: rgba(0,0,0,0.1); }
+        .v-pill.active { height: 84px; width: 32px; border-radius: 16px; background: var(--p); color: white; }
+
+        /* RE-RESTORED BRANDING & FOOTER */
         .nav-logo-brand { font-family: 'Michroma', sans-serif; font-size: 0.85rem; letter-spacing: 2px; opacity: 0.8; margin-bottom: 20px; font-weight: bold; background: linear-gradient(to bottom, var(--p), var(--on-s-container)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .rail-label { font-size: 0.55rem; font-weight: 900; opacity: 0.3; letter-spacing: 1px; margin-bottom: 5px; text-transform: uppercase; }
-
-        /* VERSION INFO AT BOTTOM */
-        .v-info-bottom { position: fixed; bottom: 30px; left: 125px; display: flex; flex-direction: column; gap: 2px; z-index: 10; cursor: pointer; border: none; background: none; text-align: left; color: inherit; }
+        .v-info-bottom { position: fixed; bottom: 30px; left: 125px; display: flex; flex-direction: column; z-index: 10; cursor: pointer; border: none; background: none; text-align: left; color: inherit; }
         .v-num { font-family: 'Space Grotesk'; font-size: 0.75rem; font-weight: 900; letter-spacing: 1px; }
         .v-name { font-size: 0.65rem; opacity: 0.5; font-weight: 500; text-transform: uppercase; }
 
-        /* WEATHER CLICK ANIMATION */
-        @keyframes weather-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .spinning { animation: weather-spin 0.6s var(--spring); }
-
+        /* WEATHER STYLING */
         .status-bar { position: fixed; top: 30px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; z-index: 100; }
-        .weather-chip { background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(20px); padding: 4px 18px 4px 8px; border-radius: 40px; border: 1px solid rgba(255, 255, 255, 0.4); display: flex; align-items: center; gap: 8px; min-height: 52px; cursor: pointer; }
-        .weather-chip img { width: 42px; height: 42px; }
-        
-        #clock { font-weight: 900; opacity: 0.6; font-family: 'Space Grotesk'; font-size: 1.2rem; }
-        
+        .weather-chip { background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(20px); padding: 4px 18px 4px 8px; border-radius: 40px; border: 1px solid rgba(255, 255, 255, 0.4); display: flex; align-items: center; gap: 8px; min-height: 52px; cursor: pointer; transition: transform 0.2s; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .spinning img { animation: spin 0.7s var(--spring); }
+
         nav.nav-rail { width: 90px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 12px; background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(15px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; }
-        .v-pill { width: 48px; height: 48px; border-radius: 24px; background: rgba(0,0,0,0.05); border: none; cursor: pointer; display: grid; place-items: center; font-weight: 900; color: inherit; }
-        .v-pill.active { height: 64px; width: 32px; border-radius: 16px; background: var(--p); color: white; }
-        
         main { flex: 1; display: grid; grid-template-columns: 1fr 450px; padding: 40px; gap: 40px; align-items: center; }
         .viewer-box { height: 80vh; background: white; border-radius: 48px; position: relative; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.05); }
         model-viewer { width: 100%; height: 100%; }
-        
         h1 { font-family: 'Bebas Neue'; font-size: 8.5rem; line-height: 0.8; letter-spacing: -3px; color: var(--on-s-container); }
-        .m3-btn { flex: 1; height: 64px; border-radius: 32px; background: var(--on-s-container); color: white; border: none; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .m3-btn-secondary { background: rgba(0,0,0,0.05); color: var(--on-s-container); }
 
         .side-sheet { position: fixed; top: 0; right: -400px; width: 350px; height: 100%; background: white; z-index: 300; transition: right 0.5s var(--spring); padding: 30px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
         .side-sheet.open { right: 0; }
         .news-card { background: rgba(0,0,0,0.05); padding: 15px; border-radius: 16px; font-size: 0.8rem; line-height: 1.4; }
-        .color-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 5px; }
+        .color-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
         .color-circle { width: 100%; aspect-ratio: 1; border-radius: 50%; cursor: pointer; display: grid; place-items: center; font-size: 0.55rem; font-weight: 900; }
     </style>
 </head>
@@ -71,8 +77,8 @@
     <div class="aura-bg"></div>
     
     <button class="v-info-bottom" onclick="toggleSettings()">
-        <span class="v-num">v0.2.8</span>
-        <span class="v-name">Tactile Update</span>
+        <span class="v-num">v0.2.9</span>
+        <span class="v-name">Expressive Update</span>
     </button>
 
     <div class="status-bar">
@@ -80,7 +86,7 @@
             <img id="weather-img" src="https://cdn.weatherapi.com/weather/64x64/day/113.png" alt="Weather">
             <span id="temp">--°F</span>
         </div>
-        <div id="clock">00:00:00 AM</div>
+        <div id="clock" style="font-weight:900; opacity:0.6; font-family:'Space Grotesk'; font-size:1.2rem;">00:00:00 AM</div>
     </div>
 
     <nav class="nav-rail" id="rail">
@@ -94,42 +100,29 @@
             <p id="v-tag" style="font-weight:900; opacity:0.3; letter-spacing:5px; font-size:0.8rem;"></p>
             <h1 id="v-title">ALPHA</h1>
             <p id="v-desc" style="font-size:1.15rem; opacity:0.7; margin-bottom:25px;"></p>
-            <div class="btn-group" style="display:flex; gap:12px;">
+            <div class="btn-group">
                 <button class="m3-btn" onclick="forceDownload('skin')">GET SKIN</button>
                 <button class="m3-btn m3-btn-secondary" onclick="forceDownload('model')">GET MODEL</button>
             </div>
         </div>
     </main>
 
-    <button class="settings-fab" onclick="toggleSettings()" style="position:fixed; bottom:30px; right:30px; width:56px; height:56px; border-radius:16px; background:var(--p); color:white; border:none; cursor:pointer; z-index:200; display:grid; place-items:center;">
+    <button onclick="toggleSettings()" style="position:fixed; bottom:30px; right:30px; width:56px; height:56px; border-radius:16px; background:var(--p); color:white; border:none; cursor:pointer; z-index:200; display:grid; place-items:center;">
         <span class="material-symbols-rounded">settings</span>
     </button>
 
     <div class="side-sheet" id="side-sheet">
-        <h2 style="font-family: 'Space Grotesk';">SETTINGS</h2>
-        
+        <h2>SETTINGS</h2>
         <div class="news-card">
-            <strong>WHAT'S NEW (v0.2.8)</strong><br><br>
-            🔘 <strong>Tactile Feedback:</strong> Added the "Push" effect to all interactives.<br>
-            🛠️ <strong>Version Restored:</strong> Fixed bottom labels and naming (v0.2 is back to ALPHA).<br>
-            🌦️ <strong>Weather Logic:</strong> Fixed animation triggers.
+            <strong>EXPRESSIVE (v0.2.9)</strong><br><br>
+            🪄 <strong>Dynamic Resizing:</strong> Buttons now "push" neighbors in a fluid M3 layout.<br>
+            🛠️ <strong>Alpha Naming:</strong> Fixed v0.2 label consistency.
         </div>
-
         <div>
             <label style="font-weight: 800; font-size: 0.7rem; opacity: 0.5;">COLOR PRESETS</label>
-            <div class="color-grid" id="preset-grid">
-                <div class="color-circle" style="background:#6750A4; color: white;" onclick="setTheme('default')">DFT</div>
-            </div>
+            <div class="color-grid" id="preset-grid"></div>
         </div>
-
-        <div>
-            <label style="font-weight: 800; font-size: 0.7rem; opacity: 0.5;">CUSTOM ACCENT</label>
-            <input type="color" class="custom-picker" id="custom-color" style="width:100%; height:40px; border-radius:12px; border:none;" oninput="setTheme('custom', this.value)">
-        </div>
-
         <div style="display:flex; justify-content:space-between; align-items:center;"><span>Auto-Dark Mode</span><input type="checkbox" id="auto-dark-toggle" onchange="updateAutoDark(this.checked)"></div>
-        <div style="display:flex; justify-content:space-between; align-items:center;"><span>24h Time</span><input type="checkbox" id="format-toggle" onchange="updateFormat(this.checked)"></div>
-        
         <button onclick="toggleSettings()" style="margin-top:20px; padding:15px; border-radius:12px; border:none; background:var(--on-s-container); color:white; cursor:pointer;">CLOSE</button>
     </div>
 
@@ -139,21 +132,20 @@
         ];
 
         const VERSIONS = [
-            { id: "0.1", title: "ALPHA", desc: "Initial system core.", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/skin%20alpha.png", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
-            { id: "0.2", title: "ALPHA", desc: "The evolved build.", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.png", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
+            { id: "0.1", title: "ALPHA", desc: "Original build.", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/skin%20alpha.png", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
+            { id: "0.2", title: "ALPHA", desc: "Advanced build.", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.png", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
         ];
 
         let currentIdx = 1;
-        let state = JSON.parse(localStorage.getItem('pix_settings')) || { autoDark: false, is24h: false, activeTheme: 'default' };
+        let state = JSON.parse(localStorage.getItem('pix_settings')) || { autoDark: false, is24h: false };
 
         function toggleSettings() { document.getElementById('side-sheet').classList.toggle('open'); }
         
         function animateWeather() {
-            const img = document.getElementById('weather-img');
-            img.classList.remove('spinning');
-            void img.offsetWidth; // Trigger reflow
-            img.classList.add('spinning');
+            const btn = document.getElementById('weather-btn');
+            btn.classList.add('spinning');
             updateWeather();
+            setTimeout(() => btn.classList.remove('spinning'), 700);
         }
 
         async function forceDownload(type) {
@@ -169,13 +161,10 @@
         }
 
         function setTheme(type, val) {
-            state.activeTheme = type;
-            let c = (type === 'default') ? VERSIONS[currentIdx].colors : 
-                    (type === 'preset') ? PRESETS[val] : [val + '33', val + '77', val];
+            let c = (type === 'default') ? VERSIONS[currentIdx].colors : PRESETS[val];
             document.documentElement.style.setProperty('--bg-1', c[0]);
             document.documentElement.style.setProperty('--bg-2', c[1]);
             document.documentElement.style.setProperty('--p', c[2]);
-            localStorage.setItem('pix_settings', JSON.stringify(state));
         }
 
         function switchVersion(idx) {
@@ -186,7 +175,7 @@
             document.getElementById('v-desc').innerText = v.desc;
             document.getElementById('mv').setAttribute('src', v.model);
             document.querySelectorAll('.v-pill').forEach((p, i) => p.classList.toggle('active', i === idx));
-            setTheme(state.activeTheme, state.presetIdx);
+            setTheme('default');
         }
 
         async function updateWeather() {
@@ -198,7 +187,6 @@
 
         function updateAutoDark(v) { state.autoDark = v; checkTime(); }
         function checkTime() { if(state.autoDark) { const h = new Date().getHours(); document.body.classList.toggle('oled', h >= 19 || h < 7); } }
-        function updateFormat(v) { state.is24h = v; }
 
         window.onload = () => {
             const grid = document.getElementById('preset-grid');
@@ -217,7 +205,7 @@
             updateWeather();
             setInterval(() => {
                 checkTime();
-                document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-US', { hour12: !state.is24h });
+                document.getElementById('clock').innerText = new Date().toLocaleTimeString();
             }, 1000);
         };
     </script>
