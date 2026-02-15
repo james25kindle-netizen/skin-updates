@@ -22,72 +22,51 @@
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
         body { background-color: #fdf8fd; color: var(--on-s-container); font-family: 'Outfit', sans-serif; height: 100vh; display: flex; overflow: hidden; transition: background 0.5s ease; }
         
-        /* AURA BACKGROUND WITH PULSE */
-        .aura-bg { 
-            position: fixed; inset: 0; 
-            background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 50%), 
-                        radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); 
-            z-index: -1; filter: blur(var(--blur)); pointer-events: none;
-            animation: auraPulse 8s infinite alternate ease-in-out;
-        }
-
-        @keyframes auraPulse {
-            0% { transform: scale(1); opacity: 0.8; }
-            100% { transform: scale(1.2); opacity: 1; }
-        }
+        .aura-bg { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); pointer-events: none; }
         
-        /* M3 RAIL BUTTONS - BOUNCY & STRETCHY */
-        .v-pill { 
-            width: 48px; height: 48px; border-radius: 24px; 
-            background: rgba(0,0,0,0.05); border: none; cursor: pointer; 
-            display: grid; place-items: center; font-weight: 900; color: inherit; 
-            transition: all 0.5s var(--spring); 
-        }
-        .v-pill:hover { height: 60px; transform: translateY(-3px); background: var(--p); color: white; }
-        .v-pill.active { height: 80px; width: 34px; border-radius: 17px; background: var(--on-s-container); color: white; transform: translateY(0); }
+        /* EXPRESSIVE RAIL */
+        .v-pill { width: 48px; height: 48px; border-radius: 24px; background: rgba(0,0,0,0.05); border: none; cursor: pointer; display: grid; place-items: center; font-weight: 900; color: inherit; transition: all 0.5s var(--spring); }
+        .v-pill:hover { height: 60px; background: var(--p); color: white; }
+        .v-pill.active { height: 80px; width: 34px; border-radius: 17px; background: var(--on-s-container); color: white; }
 
-        /* DOWNLOAD BUTTONS SQUISH */
+        /* SQUISHY BUTTONS */
         .btn-group { display: flex; gap: 12px; width: 100%; }
         .m3-btn { flex: 1; height: 64px; border-radius: 32px; background: var(--on-s-container); color: white; border: none; font-weight: 800; cursor: pointer; transition: flex 0.6s var(--spring), background 0.3s, transform 0.2s; display: flex; align-items: center; justify-content: center; }
         .m3-btn:hover { flex: 2.5; background: var(--p); }
         .m3-btn:active { transform: scale(0.95); }
         .m3-btn-secondary { background: rgba(0,0,0,0.05); color: var(--on-s-container); }
 
-        .status-bar { position: fixed; top: 30px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; z-index: 100; }
-        .weather-chip { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(20px); padding: 0 16px 0 8px; border-radius: 28px; border: 1px solid rgba(255, 255, 255, 0.3); display: flex; align-items: center; gap: 6px; height: 44px; cursor: pointer; transition: 0.2s; }
-        
         nav.nav-rail { width: 90px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 12px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(15px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; }
         main { flex: 1; display: grid; grid-template-columns: 1fr 450px; padding: 40px; gap: 40px; align-items: center; }
         .viewer-box { height: 80vh; background: white; border-radius: 48px; position: relative; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.05); }
         model-viewer { width: 100%; height: 100%; }
         h1 { font-family: 'Bebas Neue'; font-size: 8.5rem; line-height: 0.8; letter-spacing: -3px; color: var(--on-s-container); }
 
-        /* SETTINGS */
+        /* SIDE SHEET */
         .side-sheet { position: fixed; top: 0; right: -400px; width: 350px; height: 100%; background: white; z-index: 300; transition: right 0.5s var(--spring); padding: 30px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
         .side-sheet.open { right: 0; }
+        .news-card { background: rgba(0,0,0,0.05); padding: 15px; border-radius: 20px; font-size: 0.8rem; line-height: 1.4; }
         .color-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
         .color-circle { width: 100%; aspect-ratio: 1; border-radius: 50%; cursor: pointer; display: grid; place-items: center; font-size: 0.55rem; font-weight: 900; }
         
-        .custom-row { display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.04); padding: 12px; border-radius: 20px; margin-top: 10px; }
+        .custom-row { display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.04); padding: 12px; border-radius: 20px; }
         input[type="color"] { border: none; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; background: none; }
-        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
-        input[type="color"]::-webkit-color-swatch { border: none; border-radius: 50%; }
-
-        .random-btn { width: 100%; padding: 16px; border-radius: 16px; border: none; background: var(--on-s-container); color: white; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s; }
-        .random-btn:hover { background: var(--p); transform: translateY(-2px); }
+        
+        .status-bar { position: fixed; top: 30px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; z-index: 100; }
+        .weather-chip { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(20px); padding: 0 16px 0 8px; border-radius: 28px; border: 1px solid rgba(255, 255, 255, 0.3); display: flex; align-items: center; gap: 6px; height: 44px; cursor: pointer; }
     </style>
 </head>
 <body>
     <div class="aura-bg"></div>
     
     <button class="v-info-bottom" onclick="toggleSettings()" style="position:fixed; bottom:30px; left:125px; background:none; border:none; color:inherit; text-align:left; cursor:pointer;">
-        <span style="font-family:'Space Grotesk'; font-size:0.75rem; font-weight:900; display:block;">v0.3.4</span>
-        <span style="font-size:0.6rem; opacity:0.5; text-transform:uppercase;">Chaos & Calm</span>
+        <span style="font-family:'Space Grotesk'; font-size:0.75rem; font-weight:900; display:block;">v0.3.5</span>
+        <span style="font-size:0.6rem; opacity:0.5; text-transform:uppercase;">Legacy Restore</span>
     </button>
 
     <div class="status-bar">
         <div class="weather-chip" onclick="window.open('https://www.google.com/search?q=weather', '_blank')">
-            <img id="w-icon" src="https://cdn.weatherapi.com/weather/64x64/day/113.png" style="width:32px">
+            <img src="https://cdn.weatherapi.com/weather/64x64/day/113.png" style="width:32px">
             <span id="temp">--°F</span>
         </div>
         <div id="clock" style="font-weight:900; opacity:0.6; font-family:'Space Grotesk'; font-size:1.1rem;">00:00:00 AM</div>
@@ -95,6 +74,7 @@
 
     <nav class="nav-rail" id="rail">
         <div class="nav-logo-brand" style="font-family:'Michroma'; font-size:0.8rem; margin-bottom:20px; font-weight:bold;">PIX</div>
+        <div style="font-size:0.5rem; font-weight:900; opacity:0.3; text-transform:uppercase; margin-bottom:5px;">Versions</div>
     </nav>
 
     <main>
@@ -102,7 +82,7 @@
         <div class="content">
             <p id="v-tag" style="font-weight:900; opacity:0.3; letter-spacing:5px; font-size:0.8rem;"></p>
             <h1 id="v-title">ALPHA</h1>
-            <p id="v-desc" style="font-size:1.15rem; opacity:0.7; margin-bottom:25px;">The next evolution of your digital identity.</p>
+            <p id="v-desc" style="font-size:1.15rem; opacity:0.7; margin-bottom:25px;">The original PIX identity, refined for Material You.</p>
             <div class="btn-group">
                 <button class="m3-btn" onclick="forceDownload('skin')">GET SKIN</button>
                 <button class="m3-btn m3-btn-secondary" onclick="forceDownload('model')">GET MODEL</button>
@@ -117,57 +97,44 @@
     <div class="side-sheet" id="side-sheet">
         <h2 style="font-family:'Space Grotesk';">SETTINGS</h2>
         
+        <div class="news-card">
+            <strong>WHAT'S NEW</strong><br>
+            ✨ restored Version labels and side rail branding.<br>
+            🌙 auto-dark mode now follows your local time.<br>
+            🎲 randomizer improved with chaotic palettes.
+        </div>
+
         <div>
-            <label style="font-weight:800; font-size:0.7rem; opacity:0.5; letter-spacing:1px;">COLORS</label>
+            <label style="font-weight:800; font-size:0.7rem; opacity:0.5;">THEME</label>
             <div class="color-grid" id="preset-grid">
                 <div class="color-circle" style="background:#6750A4; color:white" onclick="setTheme('default')">DFT</div>
             </div>
-            
-            <div class="custom-row">
+            <div class="custom-row" style="margin-top:10px;">
                 <input type="color" id="custom-color" oninput="applyCustomHex(this.value)">
-                <span style="font-size:0.8rem; font-weight:800; opacity:0.7;">PICKER</span>
+                <span style="font-size:0.8rem; font-weight:800;">CUSTOM</span>
             </div>
-            
-            <button class="random-btn" onclick="randomTheme()" style="margin-top:10px;">
-                <span class="material-symbols-rounded">casino</span> RANDOMIZE
-            </button>
+            <button onclick="randomTheme()" style="width:100%; margin-top:10px; padding:14px; border-radius:14px; border:none; background:var(--on-s-container); color:white; font-weight:900; cursor:pointer;">RANDOMIZE</button>
         </div>
 
-        <div style="display:flex; justify-content:space-between; align-items:center; font-weight:bold; font-size:0.9rem;">
-            <span>OLED Mode</span>
-            <input type="checkbox" id="oled-toggle" onchange="updateOLED(this.checked)">
-        </div>
-        <div style="display:flex; justify-content:space-between; align-items:center; font-weight:bold; font-size:0.9rem;">
-            <span>24h Format</span>
-            <input type="checkbox" id="format-toggle" onchange="updateFormat(this.checked)">
-        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center;"><span>OLED Mode</span><input type="checkbox" id="oled-toggle" onchange="updateOLED(this.checked)"></div>
+        <div style="display:flex; justify-content:space-between; align-items:center;"><span>Auto-Dark Mode</span><input type="checkbox" id="auto-toggle" onchange="updateAuto(this.checked)"></div>
+        <div style="display:flex; justify-content:space-between; align-items:center;"><span>24h Time</span><input type="checkbox" id="format-toggle" onchange="updateFormat(this.checked)"></div>
         
         <button onclick="toggleSettings()" style="margin-top:auto; padding:16px; border-radius:16px; border:none; background:var(--on-s-container); color:white; cursor:pointer; font-weight:900;">DONE</button>
     </div>
 
     <script>
-        const PRESETS = [ ["#D1E4FF", "#A6C8FF", "#004A77"], ["#C4EED0", "#A2E0B8", "#006D3B"], ["#FDE293", "#FADB7D", "#A67100"], ["#FFD8E4", "#F9B1C8", "#880E4F"], ["#FFDAD6", "#FFB4AB", "#93000A"], ["#E0E2ED", "#C4C6D0", "#44474E"] ];
+        const PRESETS = [ ["#D1E4FF", "#A6C8FF", "#004A77"], ["#C4EED0", "#A2E0B8", "#006D3B"], ["#FDE293", "#FADB7D", "#A67100"], ["#FFD8E4", "#F9B1C8", "#880E4F"] ];
         const VERSIONS = [
-            { id: "0.1", title: "ALPHA 1", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/skin%20alpha.png", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
-            { id: "0.2", title: "ALPHA 2", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.png", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
+            { id: "0.1", title: "ALPHA", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/skin%20alpha.png", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
+            { id: "0.2", title: "ALPHA", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.png", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
         ];
 
-        let state = JSON.parse(localStorage.getItem('pix_pref')) || { oled: false, is24h: false, themeType: 'default', themeVal: 0, customHex: '#6750A4' };
+        let state = JSON.parse(localStorage.getItem('pix_pref')) || { oled: false, auto: true, is24h: false, themeType: 'default', themeVal: 0, customHex: '#6750A4' };
         let currentIdx = 1;
 
         function toggleSettings() { document.getElementById('side-sheet').classList.toggle('open'); }
         
-        function randomTheme() {
-            const r = () => '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
-            const c1 = r(), c2 = r(), c3 = r();
-            setTheme('random', [c1, c2, c3]);
-        }
-
-        function applyCustomHex(hex) {
-            state.customHex = hex;
-            setTheme('custom', [hex + '55', hex + 'aa', hex]);
-        }
-
         function setTheme(type, val) {
             state.themeType = type; state.themeVal = val;
             let c = (type === 'default') ? VERSIONS[currentIdx].colors : (type === 'custom' || type === 'random') ? val : PRESETS[val];
@@ -177,15 +144,30 @@
             localStorage.setItem('pix_pref', JSON.stringify(state));
         }
 
-        function updateOLED(v) { state.oled = v; document.body.classList.toggle('oled', v); localStorage.setItem('pix_pref', JSON.stringify(state)); }
+        function randomTheme() {
+            const r = () => '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+            setTheme('random', [r(), r(), r()]);
+        }
+
+        function applyCustomHex(hex) {
+            state.customHex = hex;
+            setTheme('custom', [hex + '44', hex + '88', hex]);
+        }
+
+        function updateOLED(v) { state.oled = v; checkMode(); localStorage.setItem('pix_pref', JSON.stringify(state)); }
+        function updateAuto(v) { state.auto = v; checkMode(); localStorage.setItem('pix_pref', JSON.stringify(state)); }
         function updateFormat(v) { state.is24h = v; localStorage.setItem('pix_pref', JSON.stringify(state)); }
+
+        function checkMode() {
+            const h = new Date().getHours();
+            const isNight = state.auto ? (h >= 19 || h < 7) : state.oled;
+            document.body.classList.toggle('oled', isNight);
+        }
 
         function switchVersion(idx) {
             currentIdx = idx;
-            const v = VERSIONS[idx];
-            document.getElementById('v-tag').innerText = `VERSION // ${v.id}`;
-            document.getElementById('v-title').innerText = v.title;
-            document.getElementById('mv').setAttribute('src', v.model);
+            document.getElementById('v-tag').innerText = `VERSION // ${VERSIONS[idx].id}`;
+            document.getElementById('mv').setAttribute('src', VERSIONS[idx].model);
             document.querySelectorAll('.v-pill').forEach((p, i) => p.classList.toggle('active', i === idx));
             setTheme(state.themeType, state.themeVal);
         }
@@ -203,33 +185,28 @@
                 const blob = await fetch(url).then(r => r.blob());
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(blob);
-                link.download = url.split('/').pop().replace(/%20/g, "_");
+                link.download = url.split('/').pop();
                 link.click();
             } catch (e) { window.open(url, '_blank'); }
         }
 
         window.onload = () => {
-            const grid = document.getElementById('preset-grid');
             PRESETS.forEach((p, i) => {
                 const d = document.createElement('div'); d.className = 'color-circle';
                 d.style.background = p[2]; d.onclick = () => setTheme('preset', i);
-                grid.appendChild(d);
+                document.getElementById('preset-grid').appendChild(d);
             });
-            const rail = document.getElementById('rail');
             VERSIONS.forEach((_, i) => {
                 const b = document.createElement('button'); b.className = 'v-pill';
                 b.innerHTML = i+1; b.onclick = () => switchVersion(i);
-                rail.appendChild(b);
+                document.getElementById('rail').appendChild(b);
             });
-
             document.getElementById('oled-toggle').checked = state.oled;
+            document.getElementById('auto-toggle').checked = state.auto;
             document.getElementById('format-toggle').checked = state.is24h;
-            document.getElementById('custom-color').value = state.customHex;
-            
-            document.body.classList.toggle('oled', state.oled);
-            switchVersion(currentIdx);
-            updateWeather();
+            checkMode(); switchVersion(currentIdx); updateWeather();
             setInterval(() => {
+                checkMode();
                 document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-US', { hour12: !state.is24h });
             }, 1000);
         };
