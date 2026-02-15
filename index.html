@@ -24,6 +24,9 @@
         
         .aura-bg { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); pointer-events: none; }
         
+        /* VERSION STAMP */
+        .hub-version { position: fixed; bottom: 30px; left: 120px; font-family: 'Space Grotesk'; font-size: 0.7rem; font-weight: 900; opacity: 0.3; letter-spacing: 2px; z-index: 10; pointer-events: none; }
+
         .status-bar { position: fixed; top: 30px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; z-index: 100; }
         .weather-chip { background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(20px); padding: 2px 18px 2px 6px; border-radius: 40px; border: 1px solid rgba(255, 255, 255, 0.4); display: flex; align-items: center; gap: 6px; }
         .weather-chip svg { width: 44px; height: 44px; }
@@ -57,6 +60,9 @@
 </head>
 <body>
     <div class="aura-bg"></div>
+    
+    <div class="hub-version">HUB_CORE // v0.1.7</div>
+
     <div class="status-bar">
         <div class="weather-chip" id="weather-chip">
             <div id="icon-target"></div>
@@ -88,10 +94,10 @@
     <div class="side-sheet" id="side-sheet">
         <h2 style="font-family: 'Space Grotesk';">PREFERENCES</h2>
         <div class="news-card">
-            <strong>THE "BEST OF BOTH WORLDS" UPDATE (v0.1.7)</strong><br><br>
-            ✅ <strong>Feedback Loop:</strong> Put the "READY!" animation back because let's be real—it looked cool.<br><br>
-            ⚡ <strong>Instant Start:</strong> The download starts the second you click. No waiting, just winning.<br><br>
-            🪄 <strong>Magic Canvas:</strong> Kept the behind-the-scenes skin fix so your PC stays happy.
+            <strong>STAMP OF APPROVAL (v0.1.7)</strong><br><br>
+            🏷️ <strong>Version HUD:</strong> Added the core version number to the home screen for easy tracking.<br><br>
+            ✅ <strong>Feedback Loop:</strong> Kept the "READY!" animation because it's high-key satisfying.<br><br>
+            🪄 <strong>Canvas Mode:</strong> All skins still use the "Screenshot" tech to bypass Windows errors.
         </div>
         <div>
             <label style="font-weight: 800; font-size: 0.7rem; opacity: 0.5;">COLOR PRESETS</label>
@@ -144,7 +150,6 @@
                         link.href = canvas.toDataURL("image/png");
                         link.download = cleanFileName;
                         link.click();
-                        // COOL FEEDBACK ANIMATION BACK
                         btn.innerHTML = `READY! <span class="material-symbols-rounded">check_circle</span>`;
                     };
                 } else {
@@ -152,7 +157,6 @@
                     link.href = window.URL.createObjectURL(blob);
                     link.download = cleanFileName;
                     link.click();
-                    // COOL FEEDBACK ANIMATION BACK
                     btn.innerHTML = `READY! <span class="material-symbols-rounded">check_circle</span>`;
                 }
             } catch (e) { 
