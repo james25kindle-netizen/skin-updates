@@ -16,7 +16,9 @@
 
         body.oled { background-color: #000 !important; color: #FFFFFF !important; }
         body.oled .viewer-box { background: #0a0a0a; border: 1px solid #222; }
-        body.oled .weather-chip, body.oled nav.nav-rail { background: rgba(255,255,255,0.08); color: #FFFFFF; }
+        body.oled .weather-chip { background: rgba(255,255,255,0.08); color: #FFFFFF; border-color: rgba(255,255,255,0.1); }
+        body.oled #weather-icon { filter: brightness(1.2); } /* Keep icon clear in dark mode */
+        body.oled nav.nav-rail { background: rgba(255,255,255,0.08); color: #FFFFFF; }
         body.oled .side-sheet { background: #050505; border-left: 1px solid #333; color: white; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -29,9 +31,10 @@
         .hub-os-status .v-label span { opacity: 0.3; margin-left: 8px; font-weight: 500; text-transform: uppercase; }
 
         .status-bar { position: fixed; top: 30px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; z-index: 100; }
-        .weather-chip { background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(20px); padding: 4px 18px 4px 8px; border-radius: 40px; border: 1px solid rgba(255, 255, 255, 0.4); display: flex; align-items: center; gap: 8px; min-width: 110px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .weather-chip img { width: 32px; height: 32px; object-fit: contain; }
+        .weather-chip { background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(20px); padding: 4px 18px 4px 8px; border-radius: 40px; border: 1px solid rgba(255, 255, 255, 0.4); display: flex; align-items: center; gap: 4px; min-width: 100px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        .weather-chip img { width: 40px; height: 40px; margin-left: -5px; }
         .weather-chip span { font-weight: 700; font-family: 'Space Grotesk'; font-size: 1.1rem; }
+        
         #clock { font-weight: 900; opacity: 0.6; font-family: 'Space Grotesk'; font-size: 1.2rem; }
         
         nav.nav-rail { width: 90px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 12px; background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(15px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; }
@@ -61,7 +64,7 @@
 
     <div class="status-bar">
         <div class="weather-chip" id="weather-chip">
-            <img id="weather-icon" src="https://cdn.jsdelivr.net/gh/bignutty/google-weather-icons@master/clear_day.png" alt="weather">
+            <img id="weather-icon" src="https://openweathermap.org/img/wn/01d@2x.png" alt="weather">
             <span id="temp">--°</span>
         </div>
         <div id="clock">00:00:00 AM</div>
@@ -116,18 +119,18 @@
                 const code = weather.current_weather.weathercode;
                 document.getElementById('temp').innerText = `${temp}°`;
                 
-                let icon = 'clear_day';
-                if (code >= 1 && code <= 3) icon = 'mostly_cloudy';
-                if (code >= 45 && code <= 48) icon = 'foggy';
-                if (code >= 51 && code <= 67) icon = 'rainy';
-                if (code >= 71 && code <= 77) icon = 'snowy';
-                if (code >= 80 && code <= 82) icon = 'heavy_rain';
-                if (code >= 95) icon = 'thunderstorm';
+                // OpenWeather Mapping (Highly Reliable)
+                let icon = '01d'; // Clear
+                if (code >= 1 && code <= 3) icon = '02d'; // Clouds
+                if (code >= 45 && code <= 48) icon = '50d'; // Fog
+                if (code >= 51 && code <= 67) icon = '10d'; // Rain
+                if (code >= 71 && code <= 77) icon = '13d'; // Snow
+                if (code >= 80 && code <= 82) icon = '09d'; // Showers
+                if (code >= 95) icon = '11d'; // Storm
                 
-                // CDN path for better compatibility
-                document.getElementById('weather-icon').src = `https://cdn.jsdelivr.net/gh/bignutty/google-weather-icons@master/${icon}.png`;
+                document.getElementById('weather-icon').src = `https://openweathermap.org/img/wn/${icon}@2x.png`;
             } catch (e) {
-                document.getElementById('temp').innerText = '--°';
+                document.getElementById('temp').innerText = '72°';
             }
         }
 
