@@ -16,9 +16,7 @@
 
         body.oled { background-color: #000 !important; color: #FFFFFF !important; }
         body.oled .viewer-box { background: #0a0a0a; border: 1px solid #222; }
-        body.oled .weather-chip { background: rgba(255,255,255,0.08); color: #FFFFFF; border-color: rgba(255,255,255,0.1); }
-        body.oled #weather-icon { filter: brightness(1.2); } /* Keep icon clear in dark mode */
-        body.oled nav.nav-rail { background: rgba(255,255,255,0.08); color: #FFFFFF; }
+        body.oled .weather-chip, body.oled nav.nav-rail { background: rgba(255,255,255,0.08); color: #FFFFFF; }
         body.oled .side-sheet { background: #050505; border-left: 1px solid #333; color: white; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -26,21 +24,21 @@
         
         .aura-bg { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); pointer-events: none; }
         
-        .hub-os-status { position: fixed; bottom: 30px; left: 120px; font-family: 'Space Grotesk'; z-index: 10; cursor: pointer; border: none; background: none; color: inherit; text-align: left; }
+        .hub-os-status { position: fixed; bottom: 30px; left: 120px; font-family: 'Space Grotesk'; z-index: 10; cursor: pointer; border: none; background: none; color: inherit; text-align: left; transition: transform 0.3s var(--spring); }
+        .hub-os-status:hover { transform: translateX(5px); }
         .hub-os-status .v-label { font-size: 0.75rem; font-weight: 900; letter-spacing: 1px; }
         .hub-os-status .v-label span { opacity: 0.3; margin-left: 8px; font-weight: 500; text-transform: uppercase; }
 
         .status-bar { position: fixed; top: 30px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; z-index: 100; }
-        .weather-chip { background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(20px); padding: 4px 18px 4px 8px; border-radius: 40px; border: 1px solid rgba(255, 255, 255, 0.4); display: flex; align-items: center; gap: 4px; min-width: 100px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
-        .weather-chip img { width: 40px; height: 40px; margin-left: -5px; }
-        .weather-chip span { font-weight: 700; font-family: 'Space Grotesk'; font-size: 1.1rem; }
-        
+        .weather-chip { background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(20px); padding: 2px 18px 2px 6px; border-radius: 40px; border: 1px solid rgba(255, 255, 255, 0.4); display: flex; align-items: center; gap: 8px; }
+        .weather-chip img { width: 42px; height: 42px; }
         #clock { font-weight: 900; opacity: 0.6; font-family: 'Space Grotesk'; font-size: 1.2rem; }
         
         nav.nav-rail { width: 90px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 12px; background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(15px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; }
         .nav-logo { font-weight: 900; font-size: 0.7rem; letter-spacing: 3px; opacity: 0.4; margin-bottom: 20px; font-family: 'Space Grotesk'; }
 
         .v-pill { width: 48px; height: 48px; border-radius: 24px; background: rgba(0,0,0,0.05); border: none; cursor: pointer; display: grid; place-items: center; transition: all 0.5s var(--spring); font-weight: 900; color: inherit; }
+        .v-pill:active { transform: scale(0.9); }
         .v-pill.active { height: 64px; width: 32px; border-radius: 16px; background: var(--p); color: white; }
         
         main { flex: 1; display: grid; grid-template-columns: 1fr 450px; padding: 40px; gap: 40px; align-items: center; }
@@ -49,10 +47,15 @@
         
         h1 { font-family: 'Bebas Neue'; font-size: 8.5rem; line-height: 0.8; letter-spacing: -3px; }
         .m3-btn { flex: 1; height: 64px; border-radius: 32px; background: var(--on-s-container); color: white; border: none; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.6s var(--spring); }
+        .m3-btn:hover { flex: 2.5; background: var(--p); }
+        .m3-btn:active { transform: scale(0.95); }
 
         .settings-fab { position: fixed; bottom: 30px; right: 30px; width: 56px; height: 56px; border-radius: 16px; background: var(--p); color: white; border: none; cursor: pointer; display: grid; place-items: center; z-index: 200; transition: all 0.6s var(--spring); }
+        .settings-fab:active { transform: scale(0.85) rotate(-15deg); }
+
         .side-sheet { position: fixed; top: 0; right: -400px; width: 350px; height: 100%; background: white; z-index: 300; transition: right 0.5s var(--spring); padding: 30px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
         .side-sheet.open { right: 0; }
+        .news-card { background: rgba(0,0,0,0.05); padding: 15px; border-radius: 16px; font-size: 0.85rem; line-height: 1.4; }
     </style>
 </head>
 <body>
@@ -64,8 +67,8 @@
 
     <div class="status-bar">
         <div class="weather-chip" id="weather-chip">
-            <img id="weather-icon" src="https://openweathermap.org/img/wn/01d@2x.png" alt="weather">
-            <span id="temp">--°</span>
+            <img id="weather-icon" src="https://gitlab.com/bignutty/google-weather-icons/-/raw/master/clear_day.png" alt="weather">
+            <span id="temp">--°F</span>
         </div>
         <div id="clock">00:00:00 AM</div>
     </div>
@@ -91,6 +94,12 @@
 
     <div class="side-sheet" id="side-sheet">
         <h2 style="font-family: 'Space Grotesk';">CORE PREFERENCES</h2>
+        <div class="news-card">
+            <strong>WHATS_UP // LOG (v0.1.9)</strong><br><br>
+            🚀 <strong>Dynamic Weather:</strong> Real-time Google Weather icons integrated.<br><br>
+            🛠️ <strong>Labels:</strong> Unified naming to Version // 0.1 format.<br><br>
+            ✨ <strong>Animations:</strong> Springy button physics restored.
+        </div>
         <div style="display:flex; justify-content:space-between; align-items:center;"><span>OLED Mode</span><input type="checkbox" id="oled-toggle" onchange="updateOLED(this.checked)"></div>
         <div style="display:flex; justify-content:space-between; align-items:center;"><span>24h Time</span><input type="checkbox" id="format-toggle" onchange="updateFormat(this.checked)"></div>
         <button onclick="toggleSettings()" style="margin-top:20px; padding:15px; border-radius:12px; border:none; background:var(--on-s-container); color:white; cursor:pointer;">CLOSE</button>
@@ -114,24 +123,18 @@
             try {
                 const geo = await fetch('https://ipapi.co/json/').then(res => res.json());
                 const weather = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${geo.latitude}&longitude=${geo.longitude}&current_weather=true&temperature_unit=fahrenheit`).then(res => res.json());
-                
                 const temp = Math.round(weather.current_weather.temperature);
                 const code = weather.current_weather.weathercode;
-                document.getElementById('temp').innerText = `${temp}°`;
-                
-                // OpenWeather Mapping (Highly Reliable)
-                let icon = '01d'; // Clear
-                if (code >= 1 && code <= 3) icon = '02d'; // Clouds
-                if (code >= 45 && code <= 48) icon = '50d'; // Fog
-                if (code >= 51 && code <= 67) icon = '10d'; // Rain
-                if (code >= 71 && code <= 77) icon = '13d'; // Snow
-                if (code >= 80 && code <= 82) icon = '09d'; // Showers
-                if (code >= 95) icon = '11d'; // Storm
-                
-                document.getElementById('weather-icon').src = `https://openweathermap.org/img/wn/${icon}@2x.png`;
-            } catch (e) {
-                document.getElementById('temp').innerText = '72°';
-            }
+                document.getElementById('temp').innerText = `${temp}°F`;
+                let icon = 'clear_day';
+                if (code >= 1 && code <= 3) icon = 'mostly_cloudy';
+                if (code >= 45 && code <= 48) icon = 'foggy';
+                if (code >= 51 && code <= 67) icon = 'rainy';
+                if (code >= 71 && code <= 77) icon = 'snowy';
+                if (code >= 80 && code <= 82) icon = 'heavy_rain';
+                if (code >= 95) icon = 'thunderstorm';
+                document.getElementById('weather-icon').src = `https://gitlab.com/bignutty/google-weather-icons/-/raw/master/${icon}.png`;
+            } catch (e) { document.getElementById('temp').innerText = '72°F'; }
         }
 
         async function triggerDownload(type, btn) {
@@ -172,7 +175,8 @@
 
         function switchVersion(idx) {
             currentIdx = idx; const v = VERSIONS[idx];
-            document.getElementById('v-tag').innerText = `DATA_REF // Version ${v.id}`;
+            document.getElementById('v-title').innerText = v.title;
+            document.getElementById('v-tag').innerText = `Version // ${v.id}`;
             document.getElementById('v-desc').innerText = v.desc;
             document.getElementById('mv').setAttribute('src', v.model);
             document.querySelectorAll('.v-pill').forEach((p, i) => p.classList.toggle('active', i === idx));
