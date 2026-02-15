@@ -21,58 +21,71 @@
         body.oled .side-sheet { background: #000; border-left: 1px solid #222; color: #fff; }
         body.oled .m3-btn { background: #FFFFFF !important; color: #000000 !important; }
         body.oled .m3-btn-secondary { background: rgba(255,255,255,0.1) !important; color: #FFFFFF !important; }
+        body.oled .v-pill.active { background: #FFFFFF !important; color: #000 !important; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
         body { background-color: #fdf8fd; color: var(--on-s-container); font-family: 'Outfit', sans-serif; height: 100vh; display: flex; overflow: hidden; transition: background 0.8s ease; }
         
         .aura-bg { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); pointer-events: none; }
         
-        /* STATUS BAR RESTORED */
+        /* STATUS BAR */
         .status-bar { position: fixed; top: 30px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; z-index: 100; }
-        .weather-chip { background: rgba(255, 255, 255, 0.3); backdrop-filter: blur(20px); padding: 0 16px 0 8px; border-radius: 28px; border: 1px solid rgba(255, 255, 255, 0.2); display: flex; align-items: center; gap: 6px; height: 44px; }
-        #clock { font-weight: 900; opacity: 0.6; font-family: 'Space Grotesk'; font-size: 1.1rem; }
+        .weather-chip { background: rgba(255, 255, 255, 0.3); backdrop-filter: blur(20px); padding: 0 16px 0 8px; border-radius: 28px; border: 1px solid rgba(255, 255, 255, 0.2); display: flex; align-items: center; gap: 6px; height: 44px; cursor: pointer; }
 
-        /* RAIL */
+        /* NAV RAIL & PUSH EFFECT */
         nav.nav-rail { width: 90px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 12px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(15px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; }
         .v-pill { width: 48px; height: 48px; border-radius: 24px; background: rgba(0,0,0,0.05); border: none; cursor: pointer; display: grid; place-items: center; font-weight: 900; color: inherit; transition: all 0.5s var(--spring); }
+        
+        /* Restore Push Logic */
+        .nav-rail:has(.v-pill:hover) .v-pill:not(:hover) { transform: scale(0.8); opacity: 0.5; }
+        .v-pill:hover { transform: scale(1.2); background: var(--p); color: white; }
         .v-pill.active { height: 80px; width: 34px; border-radius: 17px; background: var(--p); color: white; }
 
-        /* BUTTONS & READY STATE */
+        /* DOWNLOAD BUTTONS & HOVER PUSH */
         .btn-group { display: flex; gap: 12px; width: 100%; margin-top: 20px; }
         .m3-btn { flex: 1; height: 64px; border-radius: 32px; background: var(--p); color: white; border: none; font-weight: 800; cursor: pointer; transition: flex 0.6s var(--spring), background 0.3s; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+        .m3-btn:hover { flex: 2; filter: brightness(1.1); }
         .m3-btn-secondary { background: rgba(0,0,0,0.05); color: var(--on-s-container); }
         
-        .btn-content-wrapper { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 100%; z-index: 2; }
-        .progress-bar { position: absolute; bottom: 0; left: 0; height: 100%; background: rgba(255,255,255,0.15); width: 0%; transition: width 0.3s ease; z-index: 1; }
+        .progress-bar { position: absolute; bottom: 0; left: 0; height: 100%; background: rgba(255,255,255,0.15); width: 0%; transition: width 0.3s ease; }
+        .btn-content { display: flex; align-items: center; gap: 8px; z-index: 2; }
 
-        @keyframes checkPop {
-            0% { transform: scale(0); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        .check-icon { animation: checkPop 0.4s var(--spring) forwards; font-size: 22px; margin-top: -2px; }
-
-        /* LAYOUT */
+        /* LAYOUT & BOTTOM INFO */
         main { flex: 1; display: grid; grid-template-columns: 1fr 450px; padding: 40px; gap: 40px; align-items: center; }
         .viewer-box { height: 80vh; background: white; border-radius: 48px; position: relative; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.03); }
         model-viewer { width: 100%; height: 100%; }
         h1 { font-family: 'Bebas Neue'; font-size: 8.5rem; line-height: 0.8; letter-spacing: -3px; }
-        .side-sheet { position: fixed; top: 0; right: -400px; width: 350px; height: 100%; background: white; z-index: 300; transition: right 0.5s var(--spring); padding: 30px; display: flex; flex-direction: column; gap: 20px; }
+        
+        .v-info-bottom { position: fixed; bottom: 30px; left: 125px; background: none; border: none; color: inherit; text-align: left; cursor: pointer; z-index: 100; }
+
+        /* SIDE SHEET */
+        .side-sheet { position: fixed; top: 0; right: -400px; width: 350px; height: 100%; background: white; z-index: 300; transition: right 0.5s var(--spring); padding: 30px; display: flex; flex-direction: column; gap: 18px; overflow-y: auto; }
         .side-sheet.open { right: 0; }
+        .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; }
+        
+        .check-icon { font-size: 22px; animation: pop 0.3s var(--spring); }
+        @keyframes pop { from { transform: scale(0); } to { transform: scale(1); } }
     </style>
 </head>
 <body>
     <div class="aura-bg"></div>
 
+    <button class="v-info-bottom" onclick="toggleSettings()">
+        <span style="font-family:'Space Grotesk'; font-size:0.75rem; font-weight:900; display:block;">v0.4.5</span>
+        <span style="font-size:0.6rem; opacity:0.5; text-transform:uppercase;">Hub Restored</span>
+    </button>
+
     <div class="status-bar">
-        <div class="weather-chip">
+        <div class="weather-chip" onclick="window.open('https://google.com/search?q=weather')">
             <img id="w-icon" src="https://cdn.weatherapi.com/weather/64x64/day/113.png" style="width:30px">
-            <span id="temp">72°F</span>
+            <span id="temp">--°F</span>
         </div>
-        <div id="clock">00:00:00 AM</div>
+        <div id="clock" style="font-weight:900; opacity:0.6; font-family:'Space Grotesk'; font-size:1.1rem;">00:00:00 AM</div>
     </div>
     
     <nav class="nav-rail" id="rail">
         <div class="nav-logo-brand" style="font-family:'Michroma'; font-size:0.8rem; margin-bottom:20px; font-weight:bold;">PIX</div>
+        <div style="font-size:0.5rem; font-weight:900; opacity:0.3; text-transform:uppercase; margin-bottom:5px;">Versions</div>
     </nav>
 
     <main>
@@ -80,27 +93,31 @@
         <div class="content">
             <p id="v-tag" style="font-weight:900; opacity:0.3; letter-spacing:5px; font-size:0.8rem;"></p>
             <h1 id="v-title">ALPHA</h1>
-            <p id="v-desc" style="font-size:1.15rem; opacity:0.7;">UI restored and aligned.</p>
+            <p id="v-desc" style="font-size:1.15rem; opacity:0.7;">The adaptive digital identity.</p>
             <div class="btn-group">
                 <button id="btn-skin" class="m3-btn" onclick="forceDownload('skin')">
                     <div class="progress-bar"></div>
-                    <div class="btn-content-wrapper"><span>GET SKIN</span></div>
+                    <div class="btn-content"><span>GET SKIN</span></div>
                 </button>
                 <button id="btn-model" class="m3-btn m3-btn-secondary" onclick="forceDownload('model')">
                     <div class="progress-bar"></div>
-                    <div class="btn-content-wrapper"><span>GET MODEL</span></div>
+                    <div class="btn-content"><span>GET MODEL</span></div>
                 </button>
             </div>
         </div>
     </main>
 
-    <button id="settings-fab" onclick="toggleSettings()" style="position:fixed; bottom:30px; right:30px; width:56px; height:56px; border-radius:16px; background:var(--p); color:white; border:none; cursor:pointer; z-index:200; display:grid; place-items:center;">
+    <button id="settings-fab" onclick="toggleSettings()" style="position:fixed; bottom:30px; right:30px; width:56px; height:56px; border-radius:16px; background:var(--p); color:white; border:none; cursor:pointer; z-index:200; display:grid; place-items:center; transition: 0.3s;">
         <span class="material-symbols-rounded">settings</span>
     </button>
 
     <div class="side-sheet" id="side-sheet">
         <h2 style="font-family:'Space Grotesk';">SETTINGS</h2>
-        <div style="display:flex; justify-content:space-between; align-items:center;"><span>OLED Mode</span><input type="checkbox" id="oled-toggle" onchange="updateOLED(this.checked)"></div>
+        
+        <div class="setting-item"><span>OLED Mode</span><input type="checkbox" id="oled-toggle" onchange="updateOLED(this.checked)"></div>
+        <div class="setting-item"><span>Auto-Dark Mode</span><input type="checkbox" id="auto-toggle" onchange="updateAuto(this.checked)"></div>
+        <div class="setting-item"><span>24h Time</span><input type="checkbox" id="format-toggle" onchange="updateFormat(this.checked)"></div>
+        
         <button onclick="toggleSettings()" style="margin-top:auto; padding:16px; border-radius:16px; border:none; background:var(--on-s-container); color:white; cursor:pointer; font-weight:900;">DONE</button>
     </div>
 
@@ -110,7 +127,7 @@
             { id: "0.2", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.png", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
         ];
 
-        let state = JSON.parse(localStorage.getItem('pix_pref')) || { oled: false };
+        let state = JSON.parse(localStorage.getItem('pix_pref')) || { oled: false, auto: true, is24h: false };
         let currentIdx = 1;
 
         function toggleSettings() { document.getElementById('side-sheet').classList.toggle('open'); }
@@ -118,34 +135,40 @@
         async function forceDownload(type) {
             const btn = type === 'skin' ? document.getElementById('btn-skin') : document.getElementById('btn-model');
             const bar = btn.querySelector('.progress-bar');
-            const wrapper = btn.querySelector('.btn-content-wrapper');
+            const content = btn.querySelector('.btn-content');
             const url = type === 'skin' ? VERSIONS[currentIdx].skin : VERSIONS[currentIdx].model;
             
-            wrapper.innerHTML = `<span>FETCHING</span>`;
-            bar.style.width = "50%";
+            content.innerHTML = `<span>FETCHING</span>`;
+            bar.style.width = "40%";
 
             try {
                 const response = await fetch(url);
-                bar.style.width = "90%";
+                bar.style.width = "100%";
                 const blob = await response.blob();
                 const a = document.createElement('a');
                 a.href = window.URL.createObjectURL(blob);
                 a.download = url.split('/').pop();
                 a.click();
-                
-                bar.style.width = "100%";
-                wrapper.innerHTML = `<span>READY</span> <span class="material-symbols-rounded check-icon">check_circle</span>`;
-            } catch (e) { wrapper.innerHTML = `<span>RETRYING...</span>`; window.open(url, '_blank'); }
+                content.innerHTML = `<span>READY</span> <span class="material-symbols-rounded check-icon">check_circle</span>`;
+            } catch (e) { content.innerText = "ERROR"; }
             finally {
                 setTimeout(() => { 
-                    wrapper.innerHTML = `<span>${type === 'skin' ? 'GET SKIN' : 'GET MODEL'}</span>`;
+                    content.innerHTML = `<span>${type === 'skin' ? 'GET SKIN' : 'GET MODEL'}</span>`;
                     bar.style.width = "0%";
                 }, 3000);
             }
         }
 
-        function updateOLED(v) { state.oled = v; checkMode(); localStorage.setItem('pix_pref', JSON.stringify(state)); }
-        function checkMode() { document.body.classList.toggle('oled', state.oled); }
+        function updateOLED(v) { state.oled = v; checkMode(); save(); }
+        function updateAuto(v) { state.auto = v; checkMode(); save(); }
+        function updateFormat(v) { state.is24h = v; save(); }
+        function save() { localStorage.setItem('pix_pref', JSON.stringify(state)); }
+
+        function checkMode() {
+            const h = new Date().getHours();
+            const isNight = state.auto ? (h >= 19 || h < 7) : state.oled;
+            document.body.classList.toggle('oled', isNight);
+        }
 
         function switchVersion(idx) {
             currentIdx = idx;
@@ -158,8 +181,11 @@
             document.documentElement.style.setProperty('--p', c[2]);
         }
 
-        function updateClock() {
-            document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-US');
+        async function updateWeather() {
+            try {
+                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=37.5&longitude=-121.9&current_weather=true&temperature_unit=fahrenheit`).then(r => r.json());
+                document.getElementById('temp').innerText = `${Math.round(res.current_weather.temperature)}°F`;
+            } catch (e) { document.getElementById('temp').innerText = '72°F'; }
         }
 
         window.onload = () => {
@@ -170,9 +196,12 @@
                 rail.appendChild(b);
             });
             document.getElementById('oled-toggle').checked = state.oled;
-            checkMode(); switchVersion(currentIdx);
-            setInterval(updateClock, 1000);
-            updateClock();
+            document.getElementById('auto-toggle').checked = state.auto;
+            document.getElementById('format-toggle').checked = state.is24h;
+            checkMode(); switchVersion(currentIdx); updateWeather();
+            setInterval(() => {
+                document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-US', { hour12: !state.is24h });
+            }, 1000);
         };
     </script>
 </body>
