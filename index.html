@@ -59,7 +59,8 @@
 
         .news-card { background: rgba(0,0,0,0.05); padding: 15px; border-radius: 16px; font-size: 0.85rem; line-height: 1.4; }
         .color-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 10px 0; }
-        .color-circle { width: 100%; aspect-ratio: 1; border-radius: 50%; cursor: pointer; display: grid; place-items: center; font-size: 0.55rem; font-weight: 900; }
+        .color-circle { width: 100%; aspect-ratio: 1; border-radius: 50%; cursor: pointer; display: grid; place-items: center; font-size: 0.55rem; font-weight: 900; transition: transform 0.2s; }
+        .color-circle:hover { transform: scale(1.15); }
         .custom-picker { width: 100%; height: 40px; border-radius: 12px; border: 2px solid rgba(0,0,0,0.1); cursor: pointer; padding: 2px; background: white; }
     </style>
 </head>
@@ -67,7 +68,7 @@
     <div class="aura-bg"></div>
     
     <button class="hub-os-status" onclick="toggleSettings()">
-        <div class="v-label">v0.2.2 <span>ULTRA_VIOLET</span></div>
+        <div class="v-label">v0.2.3 <span>ULTRA_VIOLET</span></div>
     </button>
 
     <div class="status-bar">
@@ -102,9 +103,9 @@
         <h2 style="font-family: 'Space Grotesk';">PREFERENCES</h2>
         
         <div class="news-card">
-            <strong>SAVE STATE (v0.2.2)</strong><br><br>
-            💾 <strong>Persistence:</strong> Custom colors and OLED settings now survive page refreshes.<br><br>
-            🔄 <strong>Sync:</strong> Version switching honors your stored preference.
+            <strong>SPECTRUM PACK (v0.2.3)</strong><br><br>
+            🎨 <strong>Expanded Presets:</strong> Added Earth, Solar, Neon, and Ocean colorways.<br><br>
+            💾 <strong>Memory:</strong> All color selections now persist through refreshes.
         </div>
 
         <div>
@@ -126,14 +127,23 @@
     </div>
 
     <script>
-        const PRESETS = [ ["#C4EED0", "#A2E0B8", "#006D3B"], ["#D1E4FF", "#A6C8FF", "#004A77"], ["#FFD8E4", "#F9B1C8", "#880E4F"] ];
+        // Expanded Preset Library
+        const PRESETS = [ 
+            ["#C4EED0", "#A2E0B8", "#006D3B"], // Green
+            ["#D1E4FF", "#A6C8FF", "#004A77"], // Blue
+            ["#FFD8E4", "#F9B1C8", "#880E4F"], // Pink
+            ["#FDE293", "#FADB7D", "#A67100"], // Solar (Gold)
+            ["#D7E8CD", "#B8D1A9", "#386641"], // Earth (Forest)
+            ["#E2F1FF", "#B3D7FF", "#005EB8"], // Ocean
+            ["#FFEBEE", "#FF8A80", "#B71C1C"]  // Neon (Red)
+        ];
+
         const VERSIONS = [
             { id: "0.1", title: "ALPHA", desc: "Original build.", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/skin%20alpha.png", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
             { id: "0.2", title: "ALPHA", desc: "Advanced build.", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.png", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
         ];
 
         let currentIdx = 1;
-        // Default State Structure
         let state = JSON.parse(localStorage.getItem('pix_settings')) || { 
             oled: false, 
             is24h: false,
@@ -143,21 +153,9 @@
         };
 
         function toggleSettings() { document.getElementById('side-sheet').classList.toggle('open'); }
-        
-        function updateOLED(v) { 
-            state.oled = v; 
-            document.body.classList.toggle('oled', v); 
-            save(); 
-        }
-
-        function updateFormat(v) { 
-            state.is24h = v; 
-            save(); 
-        }
-
-        function save() { 
-            localStorage.setItem('pix_settings', JSON.stringify(state)); 
-        }
+        function updateOLED(v) { state.oled = v; document.body.classList.toggle('oled', v); save(); }
+        function updateFormat(v) { state.is24h = v; save(); }
+        function save() { localStorage.setItem('pix_settings', JSON.stringify(state)); }
 
         async function updateWeather() {
             try {
@@ -212,7 +210,6 @@
             document.getElementById('mv').setAttribute('src', v.model);
             document.querySelectorAll('.v-pill').forEach((p, i) => p.classList.toggle('active', i === idx));
             
-            // Re-apply current saved theme
             if (state.activeTheme === 'default') setTheme('default');
             else if (state.activeTheme === 'preset') setTheme('preset', state.presetIdx);
             else if (state.activeTheme === 'custom') setTheme('custom', state.customVal);
@@ -232,7 +229,6 @@
                 rail.appendChild(b);
             });
             
-            // Restore Settings
             if(state.oled) { 
                 document.body.classList.add('oled');
                 document.getElementById('oled-toggle').checked = true;
