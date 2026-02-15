@@ -29,58 +29,49 @@
         
         .aura-bg { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); pointer-events: none; }
         
+        /* RAIL */
         nav.nav-rail { width: 90px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 12px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(15px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; }
-        
-        .v-pill { 
-            width: 48px; height: 48px; border-radius: 24px; 
-            background: rgba(0,0,0,0.05); border: none; cursor: pointer; 
-            display: grid; place-items: center; font-weight: 900; color: inherit; 
-            transition: all 0.5s var(--spring); 
-        }
-
+        .v-pill { width: 48px; height: 48px; border-radius: 24px; background: rgba(0,0,0,0.05); border: none; cursor: pointer; display: grid; place-items: center; font-weight: 900; color: inherit; transition: all 0.5s var(--spring); }
         .nav-rail:has(.v-pill:hover) .v-pill:not(:hover) { transform: scale(0.85); opacity: 0.6; }
         .v-pill:hover { height: 60px; width: 54px; transform: scale(1.15) !important; background: var(--p); color: white; opacity: 1 !important; }
         .v-pill.active { height: 80px; width: 34px; border-radius: 17px; background: var(--p); color: white; }
 
-        .btn-group { display: flex; gap: 12px; width: 100%; }
-        .m3-btn { flex: 1; height: 64px; border-radius: 32px; background: var(--p); color: white; border: none; font-weight: 800; cursor: pointer; transition: flex 0.6s var(--spring), background 0.3s; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+        /* BUTTONS & ANIMATION */
+        .m3-btn { flex: 1; height: 64px; border-radius: 32px; background: var(--p); color: white; border: none; font-weight: 800; cursor: pointer; transition: all 0.5s var(--spring); display: flex; align-items: center; justify-content: center; gap: 8px; position: relative; }
         .m3-btn:hover { flex: 2.5; filter: brightness(1.1); }
         .m3-btn-secondary { background: rgba(0,0,0,0.05); color: var(--on-s-container); }
 
+        @keyframes checkPop {
+            0% { transform: scale(0) rotate(-20deg); opacity: 0; }
+            70% { transform: scale(1.2) rotate(10deg); }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+        .check-icon { animation: checkPop 0.4s var(--spring) forwards; font-size: 24px; }
+
+        /* LAYOUT */
         main { flex: 1; display: grid; grid-template-columns: 1fr 450px; padding: 40px; gap: 40px; align-items: center; }
         .viewer-box { height: 80vh; background: white; border-radius: 48px; position: relative; overflow: hidden; transition: background 0.5s ease; box-shadow: 0 20px 50px rgba(0,0,0,0.03); }
         model-viewer { width: 100%; height: 100%; }
         h1 { font-family: 'Bebas Neue'; font-size: 8.5rem; line-height: 0.8; letter-spacing: -3px; }
-
         .side-sheet { position: fixed; top: 0; right: -400px; width: 350px; height: 100%; background: white; z-index: 300; transition: right 0.5s var(--spring); padding: 30px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
         .side-sheet.open { right: 0; }
-        
-        .color-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px; }
-        .color-circle { width: 100%; aspect-ratio: 1; border-radius: 50%; cursor: pointer; display: grid; place-items: center; font-size: 0.55rem; font-weight: 900; }
-
         .status-bar { position: fixed; top: 30px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; z-index: 100; }
-        .weather-chip { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(20px); padding: 0 16px 0 8px; border-radius: 28px; border: 1px solid rgba(255, 255, 255, 0.3); display: flex; align-items: center; gap: 6px; height: 44px; }
     </style>
 </head>
 <body>
     <div class="aura-bg"></div>
     
     <button class="v-info-bottom" onclick="toggleSettings()" style="position:fixed; bottom:30px; left:125px; background:none; border:none; color:inherit; text-align:left; cursor:pointer;">
-        <span style="font-family:'Space Grotesk'; font-size:0.75rem; font-weight:900; display:block;">v0.4.1</span>
-        <span style="font-size:0.6rem; opacity:0.5; text-transform:uppercase;">Direct Save Fix</span>
+        <span style="font-family:'Space Grotesk'; font-size:0.75rem; font-weight:900; display:block;">v0.4.2</span>
+        <span style="font-size:0.6rem; opacity:0.5; text-transform:uppercase;">Animated Ready State</span>
     </button>
 
     <div class="status-bar">
-        <div class="weather-chip">
-            <img src="https://cdn.weatherapi.com/weather/64x64/day/113.png" style="width:32px">
-            <span id="temp">--°F</span>
-        </div>
         <div id="clock" style="font-weight:900; opacity:0.6; font-family:'Space Grotesk'; font-size:1.1rem;">00:00:00 AM</div>
     </div>
 
     <nav class="nav-rail" id="rail">
         <div class="nav-logo-brand" style="font-family:'Michroma'; font-size:0.8rem; margin-bottom:20px; font-weight:bold;">PIX</div>
-        <div style="font-size:0.5rem; font-weight:900; opacity:0.3; text-transform:uppercase; margin-bottom:5px;">Versions</div>
     </nav>
 
     <main>
@@ -88,7 +79,7 @@
         <div class="content">
             <p id="v-tag" style="font-weight:900; opacity:0.3; letter-spacing:5px; font-size:0.8rem;"></p>
             <h1 id="v-title">ALPHA</h1>
-            <p id="v-desc" style="font-size:1.15rem; opacity:0.7; margin-bottom:25px;">Stable downloads for every build.</p>
+            <p id="v-desc" style="font-size:1.15rem; opacity:0.7; margin-bottom:25px;">Tactile, adaptive, responsive.</p>
             <div class="btn-group">
                 <button id="btn-skin" class="m3-btn" onclick="forceDownload('skin')">GET SKIN</button>
                 <button id="btn-model" class="m3-btn m3-btn-secondary" onclick="forceDownload('model')">GET MODEL</button>
@@ -96,26 +87,20 @@
         </div>
     </main>
 
-    <button id="settings-fab" onclick="toggleSettings()" style="position:fixed; bottom:30px; right:30px; width:56px; height:56px; border-radius:16px; background:var(--p); color:white; border:none; cursor:pointer; z-index:200; display:grid; place-items:center; transition: 0.3s;">
+    <button id="settings-fab" onclick="toggleSettings()" style="position:fixed; bottom:30px; right:30px; width:56px; height:56px; border-radius:16px; background:var(--p); color:white; border:none; cursor:pointer; z-index:200; display:grid; place-items:center;">
         <span class="material-symbols-rounded">settings</span>
     </button>
 
     <div class="side-sheet" id="side-sheet">
         <h2 style="font-family:'Space Grotesk';">SETTINGS</h2>
         <div style="background:rgba(0,0,0,0.05); padding:15px; border-radius:20px; font-size:0.8rem;">
-            <strong>UPDATE (v0.4.1)</strong><br>
-            📥 <strong>Direct Save:</strong> Fixed the bug where download buttons opened a new tab instead of saving the file.
+            <strong>UPDATE (v0.4.2)</strong><br>
+            ✔️ <strong>Ready Check:</strong> Download buttons now show an animated checkmark when a file is ready.
         </div>
-        <div>
-            <label style="font-weight:800; font-size:0.7rem; opacity:0.5;">THEME PRESETS</label>
-            <div class="color-grid" id="preset-grid">
-                <div class="color-circle" style="background:#6750A4; color:white" onclick="setTheme('default')">DFT</div>
-            </div>
-            <button class="random-btn" onclick="randomTheme()" style="width:100%; margin-top:15px; padding:14px; border-radius:14px; border:none; background:var(--p); color:white; font-weight:900; cursor:pointer; transition: background 0.3s;">RANDOMIZE</button>
+        <div id="preset-grid" style="display:grid; grid-template-columns: repeat(4,1fr); gap:10px;">
+            <div class="color-circle" style="background:#6750A4; color:white" onclick="setTheme('default')">DFT</div>
         </div>
         <div style="display:flex; justify-content:space-between; align-items:center;"><span>OLED Mode</span><input type="checkbox" id="oled-toggle" onchange="updateOLED(this.checked)"></div>
-        <div style="display:flex; justify-content:space-between; align-items:center;"><span>Auto-Dark Mode</span><input type="checkbox" id="auto-toggle" onchange="updateAuto(this.checked)"></div>
-        <div style="display:flex; justify-content:space-between; align-items:center;"><span>24h Time</span><input type="checkbox" id="format-toggle" onchange="updateFormat(this.checked)"></div>
         <button onclick="toggleSettings()" style="margin-top:auto; padding:16px; border-radius:16px; border:none; background:var(--on-s-container); color:white; cursor:pointer; font-weight:900;">DONE</button>
     </div>
 
@@ -133,24 +118,19 @@
         
         function setTheme(type, val) {
             state.themeType = type; state.themeVal = val;
-            let c = (type === 'default') ? VERSIONS[currentIdx].colors : (type === 'random') ? val : PRESETS[val];
+            let c = (type === 'default') ? VERSIONS[currentIdx].colors : PRESETS[val];
             document.documentElement.style.setProperty('--bg-1', c[0]);
             document.documentElement.style.setProperty('--bg-2', c[1]);
             document.documentElement.style.setProperty('--p', c[2]);
             localStorage.setItem('pix_pref', JSON.stringify(state));
         }
 
-        function randomTheme() {
-            const r = () => '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
-            setTheme('random', [r(), r(), r()]);
-        }
-
         async function forceDownload(type) {
             const btn = type === 'skin' ? document.getElementById('btn-skin') : document.getElementById('btn-model');
-            const originalText = btn.innerText;
+            const originalHTML = btn.innerHTML;
             const url = type === 'skin' ? VERSIONS[currentIdx].skin : VERSIONS[currentIdx].model;
             
-            btn.innerText = "WAIT...";
+            btn.innerHTML = "FETCHING...";
             btn.style.opacity = "0.7";
 
             try {
@@ -158,33 +138,26 @@
                 const blob = await response.blob();
                 const blobUrl = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
-                a.style.display = 'none';
                 a.href = blobUrl;
-                a.download = url.split('/').pop() || (type === 'skin' ? 'skin.png' : 'model.gltf');
+                a.download = url.split('/').pop();
                 document.body.appendChild(a);
                 a.click();
-                window.URL.revokeObjectURL(blobUrl);
                 document.body.removeChild(a);
-                btn.innerText = "DONE!";
+                
+                // Success State
+                btn.innerHTML = `READY <span class="material-symbols-rounded check-icon">check_circle</span>`;
+                btn.style.opacity = "1";
             } catch (error) {
-                console.error("Download failed", error);
+                btn.innerHTML = "ERROR";
                 window.open(url, '_blank');
-                btn.innerText = "ERROR";
             } finally {
-                setTimeout(() => {
-                    btn.innerText = originalText;
-                    btn.style.opacity = "1";
-                }, 2000);
+                setTimeout(() => { btn.innerHTML = originalHTML; btn.style.opacity = "1"; }, 3000);
             }
         }
 
         function updateOLED(v) { state.oled = v; checkMode(); localStorage.setItem('pix_pref', JSON.stringify(state)); }
-        function updateAuto(v) { state.auto = v; checkMode(); localStorage.setItem('pix_pref', JSON.stringify(state)); }
-        function updateFormat(v) { state.is24h = v; localStorage.setItem('pix_pref', JSON.stringify(state)); }
-
         function checkMode() {
-            const h = new Date().getHours();
-            const isNight = state.auto ? (h >= 19 || h < 7) : state.oled;
+            const isNight = state.oled;
             document.body.classList.toggle('oled', isNight);
         }
 
@@ -194,13 +167,6 @@
             document.getElementById('mv').setAttribute('src', VERSIONS[idx].model);
             document.querySelectorAll('.v-pill').forEach((p, i) => p.classList.toggle('active', i === idx));
             setTheme(state.themeType, state.themeVal);
-        }
-
-        async function updateWeather() {
-            try {
-                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=37.5&longitude=-121.9&current_weather=true&temperature_unit=fahrenheit`).then(r => r.json());
-                document.getElementById('temp').innerText = `${Math.round(res.current_weather.temperature)}°F`;
-            } catch (e) { document.getElementById('temp').innerText = '72°F'; }
         }
 
         window.onload = () => {
@@ -217,12 +183,9 @@
                 rail.appendChild(b);
             });
             document.getElementById('oled-toggle').checked = state.oled;
-            document.getElementById('auto-toggle').checked = state.auto;
-            document.getElementById('format-toggle').checked = state.is24h;
-            checkMode(); switchVersion(currentIdx); updateWeather();
+            checkMode(); switchVersion(currentIdx);
             setInterval(() => {
-                checkMode();
-                document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-US', { hour12: !state.is24h });
+                document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-US');
             }, 1000);
         };
     </script>
