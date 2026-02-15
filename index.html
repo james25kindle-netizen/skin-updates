@@ -24,13 +24,11 @@
         
         .aura-bg { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); pointer-events: none; }
         
-        /* STATUS BAR */
         .status-bar { position: fixed; top: 30px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; z-index: 100; }
         .weather-chip { background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(20px); padding: 2px 18px 2px 6px; border-radius: 40px; border: 1px solid rgba(255, 255, 255, 0.4); display: flex; align-items: center; gap: 6px; }
         .weather-chip svg { width: 44px; height: 44px; }
         #clock { font-weight: 900; opacity: 0.6; font-family: 'Space Grotesk'; font-size: 1.2rem; }
         
-        /* NAV RAIL */
         nav.nav-rail { width: 90px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 12px; background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(15px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; }
         .nav-logo { font-weight: 900; font-size: 0.7rem; letter-spacing: 3px; opacity: 0.4; margin-bottom: 20px; font-family: 'Space Grotesk'; }
         .rail-label { font-size: 0.5rem; font-weight: 900; opacity: 0.3; letter-spacing: 1px; margin-bottom: 5px; text-transform: uppercase; }
@@ -38,7 +36,6 @@
         .v-pill { width: 48px; height: 48px; border-radius: 24px; background: rgba(0,0,0,0.05); border: none; cursor: pointer; display: grid; place-items: center; transition: all 0.5s var(--spring); font-weight: 900; color: inherit; }
         .v-pill.active { height: 64px; width: 32px; border-radius: 16px; background: var(--p); color: white; }
         
-        /* MAIN */
         main { flex: 1; display: grid; grid-template-columns: 1fr 450px; padding: 40px; gap: 40px; align-items: center; }
         .viewer-box { height: 80vh; background: white; border-radius: 48px; position: relative; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.05); }
         model-viewer { width: 100%; height: 100%; }
@@ -47,7 +44,6 @@
         .m3-btn { flex: 1; height: 64px; border-radius: 32px; background: var(--on-s-container); color: white; border: none; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.6s var(--spring); }
         .m3-btn:hover { flex: 2.5; background: var(--p); transform: translateY(-3px); }
 
-        /* SETTINGS FAB */
         .settings-fab { position: fixed; bottom: 30px; right: 30px; width: 56px; height: 56px; border-radius: 16px; background: var(--p); color: white; border: none; cursor: pointer; display: grid; place-items: center; z-index: 200; transition: all 0.6s var(--spring); }
         .settings-fab:hover { border-radius: 28px; transform: scale(1.1) rotate(15deg); }
 
@@ -81,8 +77,8 @@
             <h1 id="v-title">PIX_LABS</h1>
             <p id="v-desc" style="font-size:1.15rem; opacity:0.7; margin-bottom:25px;"></p>
             <div class="btn-group" style="display:flex; gap:12px;">
-                <button class="m3-btn" onclick="triggerDownload('skin', this)">GET SKIN</button>
-                <button class="m3-btn" style="background:rgba(0,0,0,0.05); color:var(--on-s-container);" onclick="triggerDownload('model', this)">GET MODEL</button>
+                <button class="m3-btn" onclick="triggerDownload('skin')">GET SKIN</button>
+                <button class="m3-btn" style="background:rgba(0,0,0,0.05); color:var(--on-s-container);" onclick="triggerDownload('model')">GET MODEL</button>
             </div>
         </div>
     </main>
@@ -92,8 +88,10 @@
     <div class="side-sheet" id="side-sheet">
         <h2 style="font-family: 'Space Grotesk';">PREFERENCES</h2>
         <div class="news-card">
-            <strong>THE "SPACE" FIX (v0.1.5)</strong><br><br>
-            🌌 <strong>Name Repair:</strong> I fixed the issue where files with spaces in their name (like "skin alpha.png") wouldn't download. Now it's bulletproof!
+            <strong>THE "SILENT BUT DEADLY" UPDATE (v0.1.6)</strong><br><br>
+            🤫 <strong>Quiet Mode:</strong> Removed the "Scanning" text because you're a pro and don't need the play-by-play.<br><br>
+            🏃 <strong>Speedy Boarding:</strong> Downloads are now instant and invisible. If they were any faster, they'd arrive before you clicked.<br><br>
+            🛠️ <strong>Maintenance:</strong> Cleaned up the pipes. Everything is shiny.
         </div>
         <div>
             <label style="font-weight: 800; font-size: 0.7rem; opacity: 0.5;">COLOR PRESETS</label>
@@ -108,8 +106,6 @@
 
     <script>
         const PRESETS = [ ["#C4EED0", "#A2E0B8", "#006D3B"], ["#D1E4FF", "#A6C8FF", "#004A77"], ["#FFD8E4", "#F9B1C8", "#880E4F"] ];
-        
-        // I UPDATED THE FILENAME HERE TO INCLUDE THE SPACE
         const VERSIONS = [
             { id: "0.0.1", title: "ALPHA", desc: "Foundation build.", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/skin%20alpha.png", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
             { id: "0.0.2", title: "ALPHA", desc: "Enhanced build.", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.png", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
@@ -123,11 +119,7 @@
         function updateFormat(v) { state.is24h = v; save(); }
         function save() { localStorage.setItem('pix_settings', JSON.stringify(state)); }
 
-        async function triggerDownload(type, btn) {
-            const originalText = btn.innerHTML;
-            btn.innerHTML = `SYNCING...`;
-            btn.style.pointerEvents = 'none';
-
+        async function triggerDownload(type) {
             const v = VERSIONS[currentIdx];
             const url = type === 'skin' ? v.skin : v.model;
             const cleanFileName = `PIX_${v.id}_${type}.${type === 'skin' ? 'png' : 'gltf'}`;
@@ -137,7 +129,6 @@
                 const blob = await response.blob();
                 
                 if (type === 'skin') {
-                    // Re-draw on canvas to ensure a "clean" file save
                     const img = new Image();
                     img.crossOrigin = "anonymous";
                     img.src = URL.createObjectURL(blob);
@@ -146,25 +137,18 @@
                         canvas.width = img.width; canvas.height = img.height;
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0);
-                        const dataUrl = canvas.toDataURL("image/png");
                         const link = document.createElement('a');
-                        link.href = dataUrl;
+                        link.href = canvas.toDataURL("image/png");
                         link.download = cleanFileName;
                         link.click();
-                        btn.innerHTML = `READY!`;
                     };
                 } else {
-                    const blobUrl = window.URL.createObjectURL(blob);
                     const link = document.createElement('a');
-                    link.href = blobUrl; link.download = cleanFileName;
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = cleanFileName;
                     link.click();
-                    btn.innerHTML = `READY!`;
                 }
-            } catch (e) { 
-                window.open(url, '_blank'); 
-            } finally {
-                setTimeout(() => { btn.innerHTML = originalText; btn.style.pointerEvents = 'auto'; }, 2000);
-            }
+            } catch (e) { window.open(url, '_blank'); }
         }
 
         function setMode(mode, val) {
