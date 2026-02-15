@@ -25,16 +25,16 @@
         .aura-bg { position: fixed; inset: -10%; background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); animation: auraPulse 10s infinite ease-in-out; }
         @keyframes auraPulse { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } }
         
-        /* NAV RAIL */
         nav.nav-rail { width: 90px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 15px; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; }
         .v-pill { width: 48px; height: 48px; border-radius: 24px; background: rgba(0,0,0,0.05); border: none; cursor: pointer; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: 0.5s var(--spring); color: inherit; }
-        .v-pill span { font-size: 0.6rem; font-weight: 900; opacity: 0.4; margin-top: 2px; }
+        .v-pill span { font-size: 0.55rem; font-weight: 900; opacity: 0.4; margin-top: 2px; }
         .v-pill:hover { transform: scale(1.1); background: var(--p); color: white; }
         .v-pill.active { height: 90px; width: 38px; border-radius: 19px; background: var(--p); color: white; }
         .v-pill.active span { opacity: 1; color: white; }
 
         main { flex: 1; display: grid; grid-template-columns: 1fr 450px; padding: 40px; gap: 40px; align-items: center; height: 100%; }
         .viewer-box { height: 90%; width: 100%; background: white; border-radius: 48px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.03); display: flex; align-items: center; justify-content: center; position: relative; }
+        model-viewer { width: 100%; height: 100%; }
         
         h1 { font-family: 'Bebas Neue'; font-size: 8.5rem; line-height: 0.8; letter-spacing: -3px; margin: 10px 0; }
 
@@ -76,12 +76,12 @@
 
     <main>
         <div class="viewer-box">
-            <model-viewer id="mv" auto-rotate camera-controls shadow-intensity="1" environment-image="neutral" camera-orbit="0deg 75deg 105%" bounds="tight" loading="eager"></model-viewer>
+            <model-viewer id="mv" auto-rotate camera-controls shadow-intensity="1" environment-image="neutral" camera-orbit="0deg 75deg 105%" bounds="tight"></model-viewer>
         </div>
         <div class="content">
-            <p id="v-tag" style="font-weight:900; opacity:0.3; letter-spacing:5px; font-size:0.8rem;"></p>
+            <p id="v-tag" style="font-weight:900; opacity:0.3; letter-spacing:5px; font-size:0.8rem;">ALPHA CHANNEL</p>
             <h1 id="v-title">ALPHA</h1>
-            <p id="v-desc" style="font-size:1.2rem; opacity:0.7; font-weight:500;">Default colors restored.</p>
+            <p id="v-desc" style="font-size:1.2rem; opacity:0.7; font-weight:500;">Dynamic push active.</p>
             <div class="btn-group">
                 <button id="dl-skin" class="m3-btn" onclick="forceDownload('skin')">
                     <div class="progress-overlay"></div>
@@ -118,14 +118,14 @@
         <div style="display:flex; gap:10px;">
             <button onclick="setTheme('default')" style="flex:1; padding:16px; border-radius:16px; border:2px solid var(--p); background:transparent; color:var(--p); font-weight:900; cursor:pointer;">DEF</button>
             <button onclick="randomTheme()" style="flex:2; padding:16px; border-radius:16px; border:none; background:var(--p); color:white; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
-                <span class="material-symbols-rounded">casino</span> RANDOMIZER
+                <span class="material-symbols-rounded">casino</span> RANDOM
             </button>
         </div>
 
-        <h3 style="font-size:0.7rem; opacity:0.4; letter-spacing:1px;">WHAT'S NEW</h3>
+        <h3 style="font-size:0.7rem; opacity:0.4; letter-spacing:1px;">VERSION LOG</h3>
         <div style="background:white; padding:20px; border-radius:28px; border:1px solid rgba(0,0,0,0.05);">
-            <h4 style="font-family:'Space Grotesk'; color:var(--p);">v0.6.0 RESET</h4>
-            <p style="font-size:0.85rem; margin-top:8px;">Default (DEF) button restored. Version rail buttons now properly push updates.</p>
+            <h4 style="font-family:'Space Grotesk'; color:var(--p);">SYNCED PUSH</h4>
+            <p style="font-size:0.85rem; margin-top:8px;">Buttons now correctly sync to the active Alpha version selected in the rail.</p>
         </div>
 
         <button onclick="toggleSettings()" style="margin-top:auto; padding:20px; border-radius:24px; border:none; background:var(--on-s-container); color:white; cursor:pointer; font-weight:900;">CLOSE</button>
@@ -138,28 +138,26 @@
             { id: "0.2", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.png", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
         ];
         let state = { oled: false, is24h: false, mode: 'default' };
-        let currentIdx = 1;
+        let currentIdx = 0; // Starts at V1
 
         function toggleSettings() { document.getElementById('side-sheet').classList.toggle('open'); }
 
         function setTheme(type, val) {
             state.mode = type;
-            let c;
-            if (type === 'default') c = VERSIONS[currentIdx].colors;
-            else if (type === 'preset') c = PRESETS[val];
-            else if (type === 'custom') c = [val + '44', val + '88', val];
-
+            let c = (type === 'default') ? VERSIONS[currentIdx].colors : (type === 'preset' ? PRESETS[val] : [val + '44', val + '88', val]);
             document.documentElement.style.setProperty('--bg-1', c[0]);
             document.documentElement.style.setProperty('--bg-2', c[1]);
             document.documentElement.style.setProperty('--p', c[2]);
         }
 
         async function forceDownload(type) {
-            const btn = type === 'skin' ? document.getElementById('dl-skin') : document.getElementById('dl-model');
+            const btn = document.getElementById(type === 'skin' ? 'dl-skin' : 'dl-model');
             const overlay = btn.querySelector('.progress-overlay');
             const text = btn.querySelector('.btn-text');
+            // DYNAMIC PUSH: Always pulls from currentIdx
             const url = type === 'skin' ? VERSIONS[currentIdx].skin : VERSIONS[currentIdx].model;
-            text.innerText = "FETCHING..."; overlay.style.width = "40%";
+            
+            text.innerText = "PUSHING..."; overlay.style.width = "40%";
             try {
                 const response = await fetch(url);
                 overlay.style.width = "100%";
@@ -168,7 +166,7 @@
                 link.href = window.URL.createObjectURL(blob);
                 link.download = url.split('/').pop();
                 link.click();
-                text.innerText = "DONE!";
+                text.innerText = "SYNCED!";
             } catch (e) { text.innerText = "ERR"; }
             finally { setTimeout(() => { text.innerText = type === 'skin' ? "GET SKIN" : "GET MODEL"; overlay.style.width = "0%"; }, 2000); }
         }
@@ -179,10 +177,11 @@
         function switchVersion(idx) {
             currentIdx = idx;
             const v = VERSIONS[idx];
-            document.getElementById('v-tag').innerText = `VERSION // ${v.id}`;
-            document.getElementById('v-title').innerText = idx === 0 ? "ALPHA" : "STABLE";
+            // Push UI Updates
+            document.getElementById('v-tag').innerText = `ALPHA CHANNEL // ${v.id}`;
             document.getElementById('mv').setAttribute('src', v.model);
             document.querySelectorAll('.v-pill').forEach((p, i) => p.classList.toggle('active', i === idx));
+            // Push Color Updates if in Default mode
             if (state.mode === 'default') setTheme('default');
         }
 
@@ -214,7 +213,7 @@
             fetch(`https://api.open-meteo.com/v1/forecast?latitude=37.5&longitude=-121.9&current_weather=true&temperature_unit=fahrenheit`)
                 .then(r => r.json()).then(data => { document.getElementById('temp').innerText = `${Math.round(data.current_weather.temperature)}°F`; });
 
-            switchVersion(currentIdx);
+            switchVersion(0); // Initialize with V1
         };
     </script>
 </body>
