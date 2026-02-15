@@ -50,7 +50,7 @@
         .side-sheet { position: fixed; top: 0; right: -400px; width: 350px; height: 100%; background: white; z-index: 300; transition: right 0.5s var(--spring); padding: 30px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
         .side-sheet.open { right: 0; }
 
-        .news-card { background: rgba(0,0,0,0.05); padding: 15px; border-radius: 16px; font-size: 0.85rem; border: 1px solid rgba(0,0,0,0.05); }
+        .news-card { background: rgba(0,0,0,0.05); padding: 15px; border-radius: 16px; font-size: 0.85rem; border: 1px solid rgba(0,0,0,0.05); line-height: 1.4; }
         .color-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 10px 0; }
         .color-circle { width: 100%; aspect-ratio: 1; border-radius: 50%; cursor: pointer; display: grid; place-items: center; font-size: 0.55rem; font-weight: 900; transition: transform 0.2s; }
     </style>
@@ -77,8 +77,8 @@
             <h1 id="v-title">PIX_LABS</h1>
             <p id="v-desc" style="font-size:1.15rem; opacity:0.7; margin-bottom:25px;"></p>
             <div class="btn-group" style="display:flex; gap:12px;">
-                <button class="m3-btn" onclick="triggerDownload('skin')">GET SKIN</button>
-                <button class="m3-btn" style="background:rgba(0,0,0,0.05); color:var(--on-s-container);" onclick="triggerDownload('model')">GET MODEL</button>
+                <button class="m3-btn" onclick="triggerDownload('skin', this)">GET SKIN</button>
+                <button class="m3-btn" style="background:rgba(0,0,0,0.05); color:var(--on-s-container);" onclick="triggerDownload('model', this)">GET MODEL</button>
             </div>
         </div>
     </main>
@@ -88,10 +88,10 @@
     <div class="side-sheet" id="side-sheet">
         <h2 style="font-family: 'Space Grotesk';">PREFERENCES</h2>
         <div class="news-card">
-            <strong>THE "SILENT BUT DEADLY" UPDATE (v0.1.6)</strong><br><br>
-            🤫 <strong>Quiet Mode:</strong> Removed the "Scanning" text because you're a pro and don't need the play-by-play.<br><br>
-            🏃 <strong>Speedy Boarding:</strong> Downloads are now instant and invisible. If they were any faster, they'd arrive before you clicked.<br><br>
-            🛠️ <strong>Maintenance:</strong> Cleaned up the pipes. Everything is shiny.
+            <strong>THE "BEST OF BOTH WORLDS" UPDATE (v0.1.7)</strong><br><br>
+            ✅ <strong>Feedback Loop:</strong> Put the "READY!" animation back because let's be real—it looked cool.<br><br>
+            ⚡ <strong>Instant Start:</strong> The download starts the second you click. No waiting, just winning.<br><br>
+            🪄 <strong>Magic Canvas:</strong> Kept the behind-the-scenes skin fix so your PC stays happy.
         </div>
         <div>
             <label style="font-weight: 800; font-size: 0.7rem; opacity: 0.5;">COLOR PRESETS</label>
@@ -119,7 +119,10 @@
         function updateFormat(v) { state.is24h = v; save(); }
         function save() { localStorage.setItem('pix_settings', JSON.stringify(state)); }
 
-        async function triggerDownload(type) {
+        async function triggerDownload(type, btn) {
+            const originalText = btn.innerHTML;
+            btn.style.pointerEvents = 'none';
+
             const v = VERSIONS[currentIdx];
             const url = type === 'skin' ? v.skin : v.model;
             const cleanFileName = `PIX_${v.id}_${type}.${type === 'skin' ? 'png' : 'gltf'}`;
@@ -141,14 +144,25 @@
                         link.href = canvas.toDataURL("image/png");
                         link.download = cleanFileName;
                         link.click();
+                        // COOL FEEDBACK ANIMATION BACK
+                        btn.innerHTML = `READY! <span class="material-symbols-rounded">check_circle</span>`;
                     };
                 } else {
                     const link = document.createElement('a');
                     link.href = window.URL.createObjectURL(blob);
                     link.download = cleanFileName;
                     link.click();
+                    // COOL FEEDBACK ANIMATION BACK
+                    btn.innerHTML = `READY! <span class="material-symbols-rounded">check_circle</span>`;
                 }
-            } catch (e) { window.open(url, '_blank'); }
+            } catch (e) { 
+                window.open(url, '_blank'); 
+            } finally {
+                setTimeout(() => { 
+                    btn.innerHTML = originalText; 
+                    btn.style.pointerEvents = 'auto'; 
+                }, 2000);
+            }
         }
 
         function setMode(mode, val) {
