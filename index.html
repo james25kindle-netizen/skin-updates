@@ -15,7 +15,6 @@
             --mouse-x: 50%; --mouse-y: 50%;
         }
 
-        /* OLED & TEXT FIXES */
         body.oled { background-color: #000 !important; color: #FFFFFF !important; }
         body.oled .viewer-box { background: #0a0a0a; border: 1px solid #222; }
         body.oled .weather-chip, body.oled nav.nav-rail { background: rgba(255,255,255,0.08); color: #FFFFFF; }
@@ -85,7 +84,7 @@
 
     <div class="modal-overlay" id="update-modal">
         <div class="modal">
-            <h2 style="font-family: 'Space Grotesk'; padding:40px;">WHAT'S NEW // v0.0.4<br><br><span style="font-size:0.9rem; opacity:0.7;">Added 'Skin Dynamic' color mode and mouse-tracking aura.</span><br><br><button class="m3-btn" onclick="closeUpdate()">GOT IT</button></h2>
+            <h2 style="font-family: 'Space Grotesk'; padding:20px;">FIXED DOWNLOADS // v0.0.5<br><br><span style="font-size:0.9rem; opacity:0.7;">Restored 3D viewing and direct asset downloading logic.</span><br><br><button class="m3-btn" onclick="closeUpdate()">CONTINUE</button></h2>
         </div>
     </div>
 
@@ -120,15 +119,13 @@
     </div>
 
     <script>
-        const CURRENT_VERSION = "0.0.4";
+        const CURRENT_VERSION = "0.0.5";
         const VERSIONS = [
-            { id: "0.0.1", title: "ALPHA", desc: "Foundation build.", model: "https://raw.githubusercontent.com/james25kind-netizen/skin-updates/refs/heads/main/alpha.gltf", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
-            { id: "0.0.2", title: "ALPHA", desc: "Enhanced build.", model: "https://raw.githubusercontent.com/james25kind-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
+            { id: "0.0.1", title: "ALPHA", desc: "Foundation build.", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.png", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
+            { id: "0.0.2", title: "ALPHA", desc: "Enhanced build.", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.png", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
         ];
 
-        const PRESETS = [
-            ["#C4EED0", "#A2E0B8", "#006D3B"], ["#D1E4FF", "#A6C8FF", "#004A77"], ["#FFD8E4", "#F9B1C8", "#880E4F"]
-        ];
+        const PRESETS = [ ["#C4EED0", "#A2E0B8", "#006D3B"], ["#D1E4FF", "#A6C8FF", "#004A77"], ["#FFD8E4", "#F9B1C8", "#880E4F"] ];
 
         let currentIdx = 1;
         let state = JSON.parse(localStorage.getItem('pix_settings')) || { oled: false, is24h: false, unit: 'F', speed: 2, mode: 'skin', val: null, lastSeenVersion: "" };
@@ -147,16 +144,9 @@
         function updateUnit(v) { state.unit = v ? 'C' : 'F'; updateWeather(); save(); }
         function updateRotateSpeed(v) { state.speed = v; const mv = document.getElementById('mv'); mv.rotationSpeed = v; mv.autoRotate = v > 0; save(); }
 
-        function updateCSSVars(bg1, bg2, p) {
-            document.documentElement.style.setProperty('--bg-1', bg1);
-            document.documentElement.style.setProperty('--bg-2', bg2);
-            document.documentElement.style.setProperty('--p', p);
-        }
-
         function setMode(mode, val = null) {
             state.mode = mode; state.val = val;
             document.querySelectorAll('.color-circle').forEach(c => c.classList.remove('active'));
-            
             if(mode === 'skin') {
                 const c = VERSIONS[currentIdx].colors;
                 updateCSSVars(c[0], c[1], c[2]);
@@ -171,14 +161,32 @@
             save();
         }
 
+        function updateCSSVars(bg1, bg2, p) {
+            document.documentElement.style.setProperty('--bg-1', bg1);
+            document.documentElement.style.setProperty('--bg-2', bg2);
+            document.documentElement.style.setProperty('--p', p);
+        }
+
         function switchVersion(idx) {
-            currentIdx = idx; const v = VERSIONS[idx];
+            currentIdx = idx; 
+            const v = VERSIONS[idx];
             document.getElementById('v-title').innerText = v.title;
             document.getElementById('v-tag').innerText = `VERSION // ${v.id}`;
             document.getElementById('v-desc').innerText = v.desc;
-            document.getElementById('mv').src = v.model;
+            document.getElementById('mv').setAttribute('src', v.model);
             document.querySelectorAll('.v-pill-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
             if(state.mode === 'skin') setMode('skin');
+        }
+
+        async function handleDownload(type) {
+            const v = VERSIONS[currentIdx];
+            const url = type === 'skin' ? v.skin : v.model;
+            const res = await fetch(url);
+            const blob = await res.blob();
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `PIX_${v.id}_${type}.${type === 'skin' ? 'png' : 'gltf'}`;
+            link.click();
         }
 
         async function updateWeather() {
