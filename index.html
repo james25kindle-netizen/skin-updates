@@ -12,25 +12,23 @@
             --p: #6750A4; --on-s-container: #1D192B; --bg-1: #EADDFF; --bg-2: #D0BCFF; 
             --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
             --blur: 60px;
-            --mouse-x: 50%; --mouse-y: 50%;
         }
 
         body.oled { background-color: #000 !important; color: #FFFFFF !important; }
         body.oled .viewer-box { background: #0a0a0a; border: 1px solid #222; }
         body.oled .weather-chip, body.oled nav.nav-rail { background: rgba(255,255,255,0.08); color: #FFFFFF; }
-        body.oled .side-sheet { background: #050505; color: #FFFFFF; border: 1px solid #333; }
+        body.oled .side-sheet { background: #050505; border-left: 1px solid #333; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background-color: #fdf8fd; color: var(--on-s-container); font-family: 'Outfit', sans-serif; height: 100vh; display: flex; overflow: hidden; transition: background 0.5s ease; }
+        body { background-color: #fdf8fd; color: var(--on-s-container); font-family: 'Outfit', sans-serif; height: 100vh; display: flex; overflow: hidden; }
         
-        .aura-bg { position: fixed; inset: 0; background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); transition: filter 0.3s ease; pointer-events: none; }
+        .aura-bg { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); }
         
-        /* WEATHER CHIP FIX */
+        /* WEATHER CHIP */
         .status-bar { position: fixed; top: 30px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; z-index: 100; }
-        .weather-chip { background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(20px); padding: 4px 18px 4px 6px; border-radius: 40px; border: 1px solid rgba(255, 255, 255, 0.4); display: flex; align-items: center; gap: 4px; box-shadow: 0 8px 32px rgba(0,0,0,0.05); }
-        
-        #weather-img { width: 42px; height: 42px; object-fit: contain; }
-        #temp { font-weight: 800; font-size: 1.2rem; letter-spacing: -0.5px; }
+        .weather-chip { background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(20px); padding: 2px 18px 2px 6px; border-radius: 40px; border: 1px solid rgba(255, 255, 255, 0.4); display: flex; align-items: center; gap: 6px; box-shadow: 0 8px 32px rgba(0,0,0,0.05); }
+        .weather-chip svg { width: 44px; height: 44px; }
+        #temp { font-weight: 800; font-size: 1.25rem; letter-spacing: -0.5px; }
 
         #clock { font-weight: 900; opacity: 0.6; font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; }
         
@@ -47,15 +45,15 @@
         .m3-btn:hover { flex: 2.5; background: var(--p); }
 
         .settings-fab { position: fixed; bottom: 30px; right: 30px; width: 56px; height: 56px; border-radius: 16px; background: var(--p); color: white; border: none; cursor: pointer; display: grid; place-items: center; z-index: 200; }
-        .side-sheet { position: fixed; top: 0; right: -400px; width: 350px; height: 100%; background: white; z-index: 300; box-shadow: -10px 0 30px rgba(0,0,0,0.05); transition: right 0.5s var(--spring); padding: 40px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
+        .side-sheet { position: fixed; top: 0; right: -400px; width: 350px; height: 100%; background: white; z-index: 300; transition: right 0.5s var(--spring); padding: 40px; display: flex; flex-direction: column; gap: 20px; }
         .side-sheet.open { right: 0; }
     </style>
 </head>
-<body onmousemove="moveAura(event)">
+<body>
     <div class="aura-bg"></div>
     <div class="status-bar">
-        <div class="weather-chip">
-            <img id="weather-img" src="https://raw.githubusercontent.com/ClémentMondon/Google-Weather-Icons/master/final/animated/sunny.svg" alt="">
+        <div class="weather-chip" id="weather-chip">
+            <div id="icon-target"></div>
             <span id="temp">--°F</span>
         </div>
         <div id="clock">00:00:00 AM</div>
@@ -81,98 +79,72 @@
     <button class="settings-fab" onclick="toggleSettings()"><span class="material-symbols-rounded">settings</span></button>
 
     <div class="side-sheet" id="side-sheet">
-        <button onclick="toggleSettings()" style="background:none; border:none; cursor:pointer; color:inherit;"><span class="material-symbols-rounded">close</span></button>
+        <button onclick="toggleSettings()" style="background:none; border:none; cursor:pointer;"><span class="material-symbols-rounded">close</span></button>
         <h2 style="font-family: 'Space Grotesk';">PREFERENCES</h2>
         <div style="display:flex; justify-content:space-between;"><span>OLED Mode</span><input type="checkbox" id="oled-toggle" onchange="updateOLED(this.checked)"></div>
         <div style="display:flex; justify-content:space-between;"><span>24h Clock</span><input type="checkbox" id="format-toggle" onchange="updateFormat(this.checked)"></div>
-        <div style="display:flex; justify-content:space-between;"><span>Celsius</span><input type="checkbox" id="unit-toggle" onchange="updateUnit(this.checked)"></div>
     </div>
 
     <script>
-        // NEW STABLE GITHUB SOURCE
-        const BASE_ICON_URL = "https://raw.githubusercontent.com/ClémentMondon/Google-Weather-Icons/master/final/animated/";
-        
+        // GOOGLE-STYLE ANIMATED SVG DATA
+        const ICONS = {
+            sunny: `<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="12" fill="#fbbf24"><animateTransform attributeName="transform" type="rotate" from="0 32 32" to="360 32 32" dur="10s" repeatCount="indefinite"/></circle><path d="M32 12V6m0 52v-6m14.1-34.1l4.3-4.3m-36.8 36.8l4.3-4.3m0-28.2l-4.3-4.3m36.8 36.8l-4.3-4.3M12 32H6m52 0h-6" stroke="#fbbf24" stroke-width="3" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" from="0 32 32" to="360 32 32" dur="20s" repeatCount="indefinite"/></path></svg>`,
+            cloudy: `<svg viewBox="0 0 64 64"><path d="M46 31.5h-.3a10.5 10.5 0 00-19-8 7 7 0 00-10.6 6 7.2 7.2 0 00.1 1.1A7.5 7.5 0 0018 45.5h28a7 7 0 000-14z" fill="#e5e7eb"><animateTransform attributeName="transform" type="translate" values="-1 0; 1 0; -1 0" dur="4s" repeatCount="indefinite"/></path></svg>`,
+            rain: `<svg viewBox="0 0 64 64"><path d="M46 31.5h-.3a10.5 10.5 0 00-19-8 7 7 0 00-10.6 6 7.2 7.2 0 00.1 1.1A7.5 7.5 0 0018 45.5h28a7 7 0 000-14z" fill="#94a3b8"/><path d="M24 50v4m8-4v4m8-4v4" stroke="#60a5fa" stroke-width="3" stroke-linecap="round"><animate attributeName="stroke-dashoffset" values="8;0" dur="1s" repeatCount="indefinite"/></path></svg>`,
+            storm: `<svg viewBox="0 0 64 64"><path d="M46 31.5h-.3a10.5 10.5 0 00-19-8 7 7 0 00-10.6 6 7.2 7.2 0 00.1 1.1A7.5 7.5 0 0018 45.5h28a7 7 0 000-14z" fill="#475569"/><path d="M30 46l-2 6h4l-2 6" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linejoin="round"><animate attributeName="opacity" values="1;0.2;1" dur="0.5s" repeatCount="indefinite"/></path></svg>`
+        };
+
         const VERSIONS = [
-            { id: "0.0.1", title: "ALPHA", desc: "Foundation build.", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.png", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
-            { id: "0.0.2", title: "ALPHA", desc: "Enhanced build.", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.png", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
+            { id: "0.0.1", title: "ALPHA", desc: "Foundation build.", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
+            { id: "0.0.2", title: "ALPHA", desc: "Enhanced build.", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
         ];
 
-        let currentIdx = 1;
-        let state = JSON.parse(localStorage.getItem('pix_settings')) || { oled: false, is24h: false, unit: 'F' };
-
-        function moveAura(e) {
-            document.documentElement.style.setProperty('--mouse-x', (e.clientX / window.innerWidth) * 100 + '%');
-            document.documentElement.style.setProperty('--mouse-y', (e.clientY / window.innerHeight) * 100 + '%');
-        }
+        let state = JSON.parse(localStorage.getItem('pix_settings')) || { oled: false, is24h: false };
 
         function toggleSettings() { document.getElementById('side-sheet').classList.toggle('open'); }
-        function updateOLED(v) { state.oled = v; document.body.classList.toggle('oled', v); save(); }
-        function updateFormat(v) { state.is24h = v; save(); }
-        function updateUnit(v) { state.unit = v ? 'C' : 'F'; updateWeather(); save(); }
-        function save() { localStorage.setItem('pix_settings', JSON.stringify(state)); }
+        function updateOLED(v) { state.oled = v; document.body.classList.toggle('oled', v); localStorage.setItem('pix_settings', JSON.stringify(state)); }
+        function updateFormat(v) { state.is24h = v; }
 
         function switchVersion(idx) {
-            currentIdx = idx; const v = VERSIONS[idx];
+            const v = VERSIONS[idx];
             document.getElementById('v-title').innerText = v.title;
             document.getElementById('v-tag').innerText = `VERSION // ${v.id}`;
             document.getElementById('v-desc').innerText = v.desc;
             document.getElementById('mv').setAttribute('src', v.model);
-            document.querySelectorAll('.v-pill-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
-            
             document.documentElement.style.setProperty('--bg-1', v.colors[0]);
             document.documentElement.style.setProperty('--bg-2', v.colors[1]);
             document.documentElement.style.setProperty('--p', v.colors[2]);
-        }
-
-        async function handleDownload(type) {
-            const v = VERSIONS[currentIdx];
-            const res = await fetch(type === 'skin' ? v.skin : v.model);
-            const blob = await res.blob();
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `PIX_${v.id}_${type}.${type === 'skin' ? 'png' : 'gltf'}`;
-            link.click();
+            document.querySelectorAll('.v-pill').forEach((p, i) => p.classList.toggle('active', i === idx));
         }
 
         async function updateWeather() {
             navigator.geolocation.getCurrentPosition(async (pos) => {
-                const u = state.unit === 'C' ? 'celsius' : 'fahrenheit';
-                const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&current_weather=true&temperature_unit=${u}`);
+                const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&current_weather=true&temperature_unit=fahrenheit`);
                 const d = await r.json();
-                document.getElementById('temp').innerText = `${Math.round(d.current_weather.temperature)}°${state.unit}`;
+                document.getElementById('temp').innerText = `${Math.round(d.current_weather.temperature)}°F`;
                 
                 const code = d.current_weather.weathercode;
-                let fileName = "sunny"; 
-                if (code === 0) fileName = "sunny";
-                else if (code < 3) fileName = "partly_cloudy";
-                else if (code === 3) fileName = "cloudy";
-                else if (code < 50) fileName = "fog";
-                else if (code < 70) fileName = "rain";
-                else if (code < 80) fileName = "snow";
-                else fileName = "thunderstorms";
+                let icon = ICONS.sunny;
+                if (code > 0 && code < 4) icon = ICONS.cloudy;
+                else if (code >= 51 && code < 80) icon = ICONS.rain;
+                else if (code >= 80) icon = ICONS.storm;
                 
-                document.getElementById('weather-img').src = `${BASE_ICON_URL}${fileName}.svg`;
-            }, () => {
-                document.getElementById('temp').innerText = "Loc. Off";
-            });
+                document.getElementById('icon-target').innerHTML = icon;
+            }, () => { document.getElementById('temp').innerText = "Loc. Off"; });
         }
 
         window.onload = () => {
             const rail = document.getElementById('rail');
-            VERSIONS.forEach((v, i) => {
-                const b = document.createElement('button'); b.className = 'v-pill v-pill-btn';
-                b.innerHTML = `<span>${i+1}</span>`; b.onclick = () => switchVersion(i);
+            VERSIONS.forEach((_, i) => {
+                const b = document.createElement('button'); b.className = 'v-pill';
+                b.innerHTML = i+1; b.onclick = () => switchVersion(i);
                 rail.appendChild(b);
             });
-
-            document.getElementById('oled-toggle').checked = state.oled;
-            document.getElementById('format-toggle').checked = state.is24h;
-            document.getElementById('unit-toggle').checked = state.unit === 'C';
-            if(state.oled) document.body.classList.add('oled');
-
-            switchVersion(currentIdx);
-            setInterval(() => document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-US', { hour12: !state.is24h, hour: '2-digit', minute: '2-digit', second: '2-digit' }), 1000);
+            switchVersion(1);
             updateWeather();
+            setInterval(() => {
+                document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-US', { hour12: !state.is24h, hour: '2-digit', minute: '2-digit' });
+            }, 1000);
         };
     </script>
 </body>
