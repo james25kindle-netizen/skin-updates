@@ -20,7 +20,6 @@
         body.oled .weather-chip, body.oled nav.nav-rail { background: rgba(255,255,255,0.08); color: #FFFFFF; }
         body.oled .side-sheet, body.oled .modal { background: #050505; color: #FFFFFF; border: 1px solid #333; }
         body.oled .m3-btn-secondary { background: rgba(255,255,255,0.1) !important; color: #FFFFFF !important; }
-        body.oled #v-title { color: #fff; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background-color: #fdf8fd; color: var(--on-s-container); font-family: 'Outfit', sans-serif; height: 100vh; display: flex; overflow: hidden; transition: background 0.5s ease; }
@@ -28,8 +27,11 @@
         .aura-bg { position: fixed; inset: 0; background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); transition: filter 0.3s ease; pointer-events: none; }
         
         .status-bar { position: fixed; top: 30px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; z-index: 100; }
-        .weather-chip { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(12px); padding: 5px 20px 5px 10px; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.3); display: flex; align-items: center; gap: 8px; font-weight: 700; }
-        #weather-img { width: 48px; height: 48px; object-fit: contain; }
+        .weather-chip { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(12px); padding: 5px 22px 5px 8px; border-radius: 32px; border: 1px solid rgba(255, 255, 255, 0.3); display: flex; align-items: center; gap: 4px; font-weight: 800; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        
+        #weather-img { width: 44px; height: 44px; object-fit: contain; opacity: 0; transition: opacity 0.5s ease; }
+        #weather-img.loaded { opacity: 1; }
+
         #clock { font-weight: 900; opacity: 0.6; font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; }
         
         nav.nav-rail { width: 90px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 12px; background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(15px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; }
@@ -53,7 +55,7 @@
     <div class="aura-bg"></div>
     <div class="status-bar">
         <div class="weather-chip">
-            <img id="weather-img" src="" alt="Weather">
+            <img id="weather-img" src="" alt="Weather" onload="this.classList.add('loaded')">
             <span id="temp">--°F</span>
         </div>
         <div id="clock">00:00:00 AM</div>
@@ -87,8 +89,8 @@
     </div>
 
     <script>
-        // Updated to animated icons folder
-        const BASE_ICON_URL = "https://gitlab.com/bignutty/google-weather-icons/-/raw/main/icons/weather/v0-animated/";
+        // Use JSDelivr to bypass GitLab raw file restrictions
+        const BASE_ICON_URL = "https://cdn.jsdelivr.net/gl/bignutty/google-weather-icons@main/icons/weather/v0-animated/";
         
         const VERSIONS = [
             { id: "0.0.1", title: "ALPHA", desc: "Foundation build.", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.png", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
@@ -117,7 +119,6 @@
             document.getElementById('mv').setAttribute('src', v.model);
             document.querySelectorAll('.v-pill-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
             
-            // Auto-apply skin colors
             document.documentElement.style.setProperty('--bg-1', v.colors[0]);
             document.documentElement.style.setProperty('--bg-2', v.colors[1]);
             document.documentElement.style.setProperty('--p', v.colors[2]);
@@ -150,8 +151,12 @@
                 else if (code < 80) fileName = "snow";
                 else fileName = "thunderstorms";
                 
-                // Set the animated SVG
-                document.getElementById('weather-img').src = `${BASE_ICON_URL}${fileName}.svg`;
+                const img = document.getElementById('weather-img');
+                img.classList.remove('loaded'); // Reset fade for new icon
+                img.src = `${BASE_ICON_URL}${fileName}.svg`;
+            }, () => {
+                // Fallback for blocked location
+                document.getElementById('temp').innerText = "Loc. Off";
             });
         }
 
