@@ -14,7 +14,7 @@
             --blur: 60px;
         }
 
-        /* OLED & ACCESSIBILITY */
+        /* OLED & VISIBILITY FIXES */
         body.oled { background-color: #000 !important; color: #FFFFFF !important; }
         body.oled .viewer-box { background: #0a0a0a; border: 1px solid #222; }
         body.oled .weather-chip, body.oled nav.nav-rail { background: rgba(255,255,255,0.08); color: #FFFFFF; }
@@ -26,7 +26,7 @@
         
         .aura-bg { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); pointer-events: none; }
         
-        /* WEATHER & CLOCK */
+        /* STATUS BAR */
         .status-bar { position: fixed; top: 30px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; z-index: 100; }
         .weather-link { text-decoration: none; color: inherit; cursor: pointer; }
         .weather-chip { background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(20px); padding: 2px 18px 2px 6px; border-radius: 40px; border: 1px solid rgba(255, 255, 255, 0.4); display: flex; align-items: center; gap: 6px; transition: transform 0.2s var(--spring); }
@@ -42,20 +42,20 @@
         .v-pill { width: 48px; height: 48px; border-radius: 24px; background: rgba(0,0,0,0.05); border: none; cursor: pointer; display: grid; place-items: center; transition: all 0.5s var(--spring); font-weight: 900; color: inherit; }
         .v-pill.active { height: 64px; width: 32px; border-radius: 16px; background: var(--p); color: white; }
         
-        /* MAIN CONTENT */
+        /* MAIN LAYOUT */
         main { flex: 1; display: grid; grid-template-columns: 1fr 450px; padding: 40px; gap: 40px; align-items: center; }
         .viewer-box { height: 80vh; background: white; border-radius: 48px; position: relative; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.05); }
         model-viewer { width: 100%; height: 100%; }
         
         h1 { font-family: 'Bebas Neue'; font-size: 8.5rem; line-height: 0.8; letter-spacing: -3px; }
         .m3-btn { flex: 1; height: 64px; border-radius: 32px; background: var(--on-s-container); color: white; border: none; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.6s var(--spring); }
-        .m3-btn:hover { flex: 2.5; background: var(--p); transform: translateY(-2px); }
+        .m3-btn:hover { flex: 2.5; background: var(--p); transform: translateY(-3px); }
 
         /* EXPRESSIVE FAB */
         .settings-fab { position: fixed; bottom: 30px; right: 30px; width: 56px; height: 56px; border-radius: 16px; background: var(--p); color: white; border: none; cursor: pointer; display: grid; place-items: center; z-index: 200; transition: all 0.6s var(--spring); }
         .settings-fab:hover { border-radius: 28px; transform: scale(1.1) rotate(15deg); box-shadow: 0 15px 30px rgba(0,0,0,0.2); }
 
-        /* SIDE SHEET */
+        /* SETTINGS SHEET */
         .side-sheet { position: fixed; top: 0; right: -400px; width: 350px; height: 100%; background: white; z-index: 300; transition: right 0.5s var(--spring); padding: 30px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
         .side-sheet.open { right: 0; }
 
@@ -63,7 +63,7 @@
         .color-circle { width: 100%; aspect-ratio: 1; border-radius: 50%; border: 3px solid transparent; cursor: pointer; transition: transform 0.2s ease; display: grid; place-items: center; font-size: 0.55rem; font-weight: 900; }
         
         .news-card { background: rgba(0,0,0,0.05); padding: 15px; border-radius: 16px; font-size: 0.85rem; border: 1px solid rgba(0,0,0,0.05); line-height: 1.4; }
-        .help-card { background: rgba(103, 80, 164, 0.1); border: 1px dashed var(--p); padding: 12px; border-radius: 12px; font-size: 0.8rem; }
+        .help-card { background: rgba(103, 80, 164, 0.1); border: 1px dashed var(--p); padding: 12px; border-radius: 12px; font-size: 0.8rem; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -105,15 +105,15 @@
         </div>
         
         <div class="news-card">
-            <strong>THE "OOH SHINY" UPDATE (v0.1.3)</strong><br><br>
-            🚀 <strong>Teleporting Assets:</strong> Download buttons fixed via "The Force." No more ghost files.<br><br>
-            ✨ <strong>Squish Factor:</strong> The settings button now has "Main Character Energy."<br><br>
-            🌈 <strong>Color Therapy:</strong> DFT = Default OG Purple.
+            <strong>THE "BULLETPROOF" UPDATE (v0.1.4)</strong><br><br>
+            📸 <strong>Canvas Mode:</strong> Skins are now re-rendered locally to bypass Windows errors. Take that, Microsoft!<br><br>
+            🛠️ <strong>The Force:</strong> Download logic rewritten to be un-stoppable.<br><br>
+            🏷️ <strong>DFT:</strong> Default Purple is labeled and ready.
         </div>
 
         <div class="help-card">
             <strong>🆘 DOWNLOAD HELP</strong><br>
-            Windows might call the Skin "unsupported." It's lying! It's just a tiny Minecraft image. It works!
+            If a skin still won't open, it's just because it's tiny (64x64). It is a real image and will work in-game!
         </div>
 
         <div>
@@ -151,10 +151,10 @@
         function updateFormat(v) { state.is24h = v; save(); }
         function save() { localStorage.setItem('pix_settings', JSON.stringify(state)); }
 
-        // THE FORCE DOWNLOAD LOGIC
+        // THE ULTIMATE CANVAS DOWNLOAD HACK
         async function triggerDownload(type, btn) {
             const originalText = btn.innerHTML;
-            btn.innerHTML = `PREPARING... <span class="material-symbols-rounded">auto_awesome</span>`;
+            btn.innerHTML = `SCANNING... <span class="material-symbols-rounded">qr_code_scanner</span>`;
             btn.style.pointerEvents = 'none';
 
             const v = VERSIONS[currentIdx];
@@ -164,22 +164,35 @@
             try {
                 const response = await fetch(url);
                 const blob = await response.blob();
-                // Force explicit Mime-Type
-                const forcedBlob = new Blob([blob], { type: type === 'skin' ? 'image/png' : 'model/gltf+json' });
-                const blobUrl = window.URL.createObjectURL(forcedBlob);
-                const link = document.createElement('a');
-                link.href = blobUrl;
-                link.download = fileName;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                window.URL.revokeObjectURL(blobUrl);
                 
-                btn.innerHTML = `READY! <span class="material-symbols-rounded">done_all</span>`;
-                setTimeout(() => { btn.innerHTML = originalText; btn.style.pointerEvents = 'auto'; }, 2000);
+                if (type === 'skin') {
+                    const img = new Image();
+                    img.crossOrigin = "anonymous";
+                    img.src = URL.createObjectURL(blob);
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width; canvas.height = img.height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+                        const dataUrl = canvas.toDataURL("image/png");
+                        const link = document.createElement('a');
+                        link.href = dataUrl;
+                        link.download = fileName;
+                        link.click();
+                        btn.innerHTML = `READY! <span class="material-symbols-rounded">done_all</span>`;
+                    };
+                } else {
+                    const blobUrl = window.URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = blobUrl; link.download = fileName;
+                    link.click();
+                    btn.innerHTML = `READY! <span class="material-symbols-rounded">done_all</span>`;
+                }
             } catch (e) { 
-                window.open(url, '_blank');
-                btn.innerHTML = originalText; btn.style.pointerEvents = 'auto';
+                window.open(url, '_blank'); 
+                btn.innerHTML = originalText;
+            } finally {
+                setTimeout(() => { btn.innerHTML = originalText; btn.style.pointerEvents = 'auto'; }, 2500);
             }
         }
 
