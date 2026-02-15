@@ -25,26 +25,33 @@
         .aura-bg { position: fixed; inset: -10%; background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); animation: auraPulse 10s infinite ease-in-out; }
         @keyframes auraPulse { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } }
         
+        /* NAV RAIL */
         nav.nav-rail { width: 90px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 15px; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; }
-        .v-pill { width: 48px; height: 48px; border-radius: 24px; background: rgba(0,0,0,0.05); border: none; cursor: pointer; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: 0.5s var(--spring); color: inherit; }
-        .v-pill span { font-size: 0.55rem; font-weight: 900; opacity: 0.4; margin-top: 2px; }
+        .rail-header { font-family: 'Michroma'; font-size: 0.7rem; font-weight: bold; margin-bottom: 5px; }
+        .rail-label { font-size: 0.5rem; font-weight: 900; opacity: 0.3; margin-bottom: 15px; letter-spacing: 1px; }
+        .v-pill { width: 48px; height: 48px; border-radius: 24px; background: rgba(0,0,0,0.05); border: none; cursor: pointer; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: 0.5s var(--spring); color: inherit; position: relative; }
+        .v-pill span { font-size: 0.5rem; font-weight: 900; opacity: 0.4; position: absolute; bottom: -18px; }
         .v-pill:hover { transform: scale(1.1); background: var(--p); color: white; }
-        .v-pill.active { height: 90px; width: 38px; border-radius: 19px; background: var(--p); color: white; }
-        .v-pill.active span { opacity: 1; color: white; }
+        .v-pill.active { height: 80px; width: 38px; border-radius: 19px; background: var(--p); color: white; margin-bottom: 15px; }
+        .v-pill.active span { opacity: 1; color: var(--p); bottom: -22px; }
 
         main { flex: 1; display: grid; grid-template-columns: 1fr 450px; padding: 40px; gap: 40px; align-items: center; height: 100%; }
-        .viewer-box { height: 90%; width: 100%; background: white; border-radius: 48px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.03); display: flex; align-items: center; justify-content: center; position: relative; }
+        .viewer-box { height: 90%; width: 100%; background: white; border-radius: 48px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.03); display: flex; align-items: center; justify-content: center; }
         model-viewer { width: 100%; height: 100%; }
         
         h1 { font-family: 'Bebas Neue'; font-size: 8.5rem; line-height: 0.8; letter-spacing: -3px; margin: 10px 0; }
 
         .btn-group { display: flex; gap: 12px; margin-top: 20px; }
         .m3-btn { flex: 1; height: 64px; border-radius: 32px; background: var(--p); color: white; border: none; font-weight: 800; cursor: pointer; transition: 0.5s var(--spring); position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-        .m3-btn:active { transform: scale(0.95); }
         .progress-overlay { position: absolute; bottom: 0; left: 0; height: 100%; background: rgba(255,255,255,0.2); width: 0%; transition: width 0.3s ease; }
 
         .status-bar { position: fixed; top: 30px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; z-index: 100; }
         .weather-chip { background: rgba(255,255,255,0.4); backdrop-filter: blur(20px); padding: 4px 16px 4px 8px; border-radius: 28px; display: flex; align-items: center; gap: 6px; cursor: pointer; border: 1px solid rgba(255,255,255,0.3); }
+
+        /* FOOTER RESTORED */
+        .site-footer { position: fixed; bottom: 30px; left: 125px; color: inherit; cursor: pointer; z-index: 100; }
+        .site-footer b { font-family: 'Space Grotesk'; font-size: 0.8rem; display: block; }
+        .site-footer i { font-style: normal; font-size: 0.6rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.5; }
 
         #settings-fab { position: fixed; bottom: 30px; right: 30px; width: 64px; height: 64px; border-radius: 20px; background: var(--p); color: white; border: none; cursor: pointer; z-index: 200; display: grid; place-items: center; transition: 0.6s var(--spring); }
         #settings-fab:hover { transform: rotate(180deg) scale(1.1); border-radius: 32px; }
@@ -52,7 +59,6 @@
         .side-sheet { position: fixed; top: 0; right: -420px; width: 400px; height: 100%; background: #fdf8fd; z-index: 300; transition: right 0.6s var(--spring); padding: 30px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
         .side-sheet.open { right: 0; }
         
-        .preset-dot { aspect-ratio: 1; border-radius: 14px; cursor: pointer; transition: 0.3s var(--spring); }
         .m3-switch { position: relative; width: 52px; height: 32px; appearance: none; background: rgba(0,0,0,0.1); border-radius: 16px; cursor: pointer; transition: 0.3s; }
         .m3-switch:checked { background: var(--p); }
         .m3-switch::before { content: ""; position: absolute; top: 4px; left: 4px; width: 24px; height: 24px; background: white; border-radius: 50%; transition: 0.3s var(--spring); }
@@ -71,17 +77,18 @@
     </div>
     
     <nav class="nav-rail" id="rail">
-        <div style="font-family:'Michroma'; font-size:0.8rem; margin-bottom:20px; font-weight:bold;">PIX</div>
+        <div class="rail-header">PIX</div>
+        <div class="rail-label">VERSIONS</div>
     </nav>
 
     <main>
         <div class="viewer-box">
-            <model-viewer id="mv" auto-rotate camera-controls shadow-intensity="1" environment-image="neutral" camera-orbit="0deg 75deg 105%" bounds="tight"></model-viewer>
+            <model-viewer id="mv" auto-rotate camera-controls shadow-intensity="1" environment-image="neutral" camera-orbit="0deg 75deg 105%" bounds="tight" loading="eager"></model-viewer>
         </div>
         <div class="content">
             <p id="v-tag" style="font-weight:900; opacity:0.3; letter-spacing:5px; font-size:0.8rem;">ALPHA CHANNEL</p>
             <h1 id="v-title">ALPHA</h1>
-            <p id="v-desc" style="font-size:1.2rem; opacity:0.7; font-weight:500;">Dynamic push active.</p>
+            <p id="v-desc" style="font-size:1.2rem; opacity:0.7; font-weight:500;">Latest release auto-loaded.</p>
             <div class="btn-group">
                 <button id="dl-skin" class="m3-btn" onclick="forceDownload('skin')">
                     <div class="progress-overlay"></div>
@@ -95,37 +102,25 @@
         </div>
     </main>
 
+    <div class="site-footer">
+        <b id="f-version">v0.2</b>
+        <i id="f-name">ALPHA CHANNEL</i>
+    </div>
+
     <button id="settings-fab" onclick="toggleSettings()">
         <span class="material-symbols-rounded" style="font-size:32px;">settings</span>
     </button>
 
     <div class="side-sheet" id="side-sheet">
         <h2 style="font-family:'Space Grotesk'; font-size:1.8rem;">HUB SETTINGS</h2>
+        <div style="display:flex; justify-content:space-between; align-items:center;"><span>24h Clock</span><input type="checkbox" class="m3-switch" id="clock-toggle" onchange="state.is24h = this.checked"></div>
+        <div style="display:flex; justify-content:space-between; align-items:center;"><span>OLED Black</span><input type="checkbox" class="m3-switch" id="oled-toggle" onchange="updateOLED(this.checked)"></div>
         
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span>24h Clock</span>
-            <input type="checkbox" class="m3-switch" id="clock-toggle" onchange="state.is24h = this.checked">
-        </div>
-
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span>OLED Black</span>
-            <input type="checkbox" class="m3-switch" id="oled-toggle" onchange="updateOLED(this.checked)">
-        </div>
-
         <h3 style="font-size:0.7rem; opacity:0.4; letter-spacing:1px; margin-top:10px;">COLOR ENGINE</h3>
         <div id="preset-grid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px;"></div>
-        
         <div style="display:flex; gap:10px;">
             <button onclick="setTheme('default')" style="flex:1; padding:16px; border-radius:16px; border:2px solid var(--p); background:transparent; color:var(--p); font-weight:900; cursor:pointer;">DEF</button>
-            <button onclick="randomTheme()" style="flex:2; padding:16px; border-radius:16px; border:none; background:var(--p); color:white; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
-                <span class="material-symbols-rounded">casino</span> RANDOM
-            </button>
-        </div>
-
-        <h3 style="font-size:0.7rem; opacity:0.4; letter-spacing:1px;">VERSION LOG</h3>
-        <div style="background:white; padding:20px; border-radius:28px; border:1px solid rgba(0,0,0,0.05);">
-            <h4 style="font-family:'Space Grotesk'; color:var(--p);">SYNCED PUSH</h4>
-            <p style="font-size:0.85rem; margin-top:8px;">Buttons now correctly sync to the active Alpha version selected in the rail.</p>
+            <button onclick="randomTheme()" style="flex:2; padding:16px; border-radius:16px; border:none; background:var(--p); color:white; font-weight:900; cursor:pointer;">RANDOM</button>
         </div>
 
         <button onclick="toggleSettings()" style="margin-top:auto; padding:20px; border-radius:24px; border:none; background:var(--on-s-container); color:white; cursor:pointer; font-weight:900;">CLOSE</button>
@@ -134,11 +129,11 @@
     <script>
         const PRESETS = [ ["#D1E4FF", "#A6C8FF", "#004A77"], ["#C4EED0", "#A2E0B8", "#006D3B"], ["#FDE293", "#FADB7D", "#A67100"], ["#FFD8E4", "#F9B1C8", "#880E4F"], ["#E2E2E6", "#C6C6CA", "#44474E"], ["#FFDBCB", "#FFB68F", "#8B4100"], ["#D0BCFF", "#B69DF8", "#4F378B"], ["#B2F0FF", "#82DFFF", "#004F58"] ];
         const VERSIONS = [
-            { id: "0.1", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/skin%20alpha.png", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
-            { id: "0.2", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.png", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
+            { id: "0.1", name: "ALPHA 0.1", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/skin%20alpha.png", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
+            { id: "0.2", name: "ALPHA 0.2", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.png", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
         ];
         let state = { oled: false, is24h: false, mode: 'default' };
-        let currentIdx = 0; // Starts at V1
+        let currentIdx = VERSIONS.length - 1; // START ON NEWEST
 
         function toggleSettings() { document.getElementById('side-sheet').classList.toggle('open'); }
 
@@ -154,9 +149,7 @@
             const btn = document.getElementById(type === 'skin' ? 'dl-skin' : 'dl-model');
             const overlay = btn.querySelector('.progress-overlay');
             const text = btn.querySelector('.btn-text');
-            // DYNAMIC PUSH: Always pulls from currentIdx
             const url = type === 'skin' ? VERSIONS[currentIdx].skin : VERSIONS[currentIdx].model;
-            
             text.innerText = "PUSHING..."; overlay.style.width = "40%";
             try {
                 const response = await fetch(url);
@@ -166,7 +159,7 @@
                 link.href = window.URL.createObjectURL(blob);
                 link.download = url.split('/').pop();
                 link.click();
-                text.innerText = "SYNCED!";
+                text.innerText = "SUCCESS";
             } catch (e) { text.innerText = "ERR"; }
             finally { setTimeout(() => { text.innerText = type === 'skin' ? "GET SKIN" : "GET MODEL"; overlay.style.width = "0%"; }, 2000); }
         }
@@ -177,11 +170,11 @@
         function switchVersion(idx) {
             currentIdx = idx;
             const v = VERSIONS[idx];
-            // Push UI Updates
             document.getElementById('v-tag').innerText = `ALPHA CHANNEL // ${v.id}`;
             document.getElementById('mv').setAttribute('src', v.model);
+            document.getElementById('f-version').innerText = `v${v.id}`;
+            document.getElementById('f-name').innerText = v.name;
             document.querySelectorAll('.v-pill').forEach((p, i) => p.classList.toggle('active', i === idx));
-            // Push Color Updates if in Default mode
             if (state.mode === 'default') setTheme('default');
         }
 
@@ -190,7 +183,7 @@
             VERSIONS.forEach((v, i) => {
                 const b = document.createElement('button');
                 b.className = 'v-pill';
-                b.innerHTML = `V${i+1}<span>${v.id}</span>`;
+                b.innerHTML = `V${i+1}<span>v${v.id}</span>`;
                 b.onclick = () => switchVersion(i);
                 rail.appendChild(b);
             });
@@ -213,7 +206,7 @@
             fetch(`https://api.open-meteo.com/v1/forecast?latitude=37.5&longitude=-121.9&current_weather=true&temperature_unit=fahrenheit`)
                 .then(r => r.json()).then(data => { document.getElementById('temp').innerText = `${Math.round(data.current_weather.temperature)}°F`; });
 
-            switchVersion(0); // Initialize with V1
+            switchVersion(currentIdx);
         };
     </script>
 </body>
