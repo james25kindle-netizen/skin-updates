@@ -22,24 +22,35 @@
         body.oled .m3-btn { background: #FFFFFF !important; color: #000000 !important; }
         body.oled .m3-btn-secondary { background: rgba(255,255,255,0.1) !important; color: #FFFFFF !important; }
         body.oled .v-pill.active { background: #FFFFFF !important; color: #000 !important; }
-        body.oled #settings-fab { background: #fff !important; color: #000 !important; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
         body { background-color: #fdf8fd; color: var(--on-s-container); font-family: 'Outfit', sans-serif; height: 100vh; display: flex; overflow: hidden; transition: background 0.8s ease; }
         
         .aura-bg { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); pointer-events: none; }
         
-        /* RAIL */
         nav.nav-rail { width: 90px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 12px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(15px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; }
         .v-pill { width: 48px; height: 48px; border-radius: 24px; background: rgba(0,0,0,0.05); border: none; cursor: pointer; display: grid; place-items: center; font-weight: 900; color: inherit; transition: all 0.5s var(--spring); }
-        .nav-rail:has(.v-pill:hover) .v-pill:not(:hover) { transform: scale(0.85); opacity: 0.6; }
-        .v-pill:hover { height: 60px; width: 54px; transform: scale(1.15) !important; background: var(--p); color: white; opacity: 1 !important; }
         .v-pill.active { height: 80px; width: 34px; border-radius: 17px; background: var(--p); color: white; }
 
-        /* BUTTONS & ANIMATION */
-        .m3-btn { flex: 1; height: 64px; border-radius: 32px; background: var(--p); color: white; border: none; font-weight: 800; cursor: pointer; transition: all 0.5s var(--spring); display: flex; align-items: center; justify-content: center; gap: 8px; position: relative; }
-        .m3-btn:hover { flex: 2.5; filter: brightness(1.1); }
+        /* BUTTON ALIGNMENT FIX */
+        .btn-group { display: flex; gap: 12px; width: 100%; margin-top: 10px; }
+        .m3-btn { 
+            flex: 1; height: 64px; border-radius: 32px; 
+            background: var(--p); color: white; border: none; 
+            font-weight: 800; cursor: pointer; 
+            transition: flex 0.6s var(--spring), background 0.3s; 
+            display: flex; align-items: center; justify-content: center; 
+            gap: 8px; position: relative; overflow: hidden; 
+        }
+        .m3-btn:hover { flex: 1.5; filter: brightness(1.1); }
         .m3-btn-secondary { background: rgba(0,0,0,0.05); color: var(--on-s-container); }
+
+        /* PROGRESS BAR */
+        .progress-bar { 
+            position: absolute; bottom: 0; left: 0; height: 4px; 
+            background: rgba(255,255,255,0.4); width: 0%; 
+            transition: width 0.3s ease; 
+        }
 
         @keyframes checkPop {
             0% { transform: scale(0) rotate(-20deg); opacity: 0; }
@@ -50,26 +61,16 @@
 
         /* LAYOUT */
         main { flex: 1; display: grid; grid-template-columns: 1fr 450px; padding: 40px; gap: 40px; align-items: center; }
-        .viewer-box { height: 80vh; background: white; border-radius: 48px; position: relative; overflow: hidden; transition: background 0.5s ease; box-shadow: 0 20px 50px rgba(0,0,0,0.03); }
+        .viewer-box { height: 80vh; background: white; border-radius: 48px; position: relative; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.03); }
         model-viewer { width: 100%; height: 100%; }
         h1 { font-family: 'Bebas Neue'; font-size: 8.5rem; line-height: 0.8; letter-spacing: -3px; }
-        .side-sheet { position: fixed; top: 0; right: -400px; width: 350px; height: 100%; background: white; z-index: 300; transition: right 0.5s var(--spring); padding: 30px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
+        .side-sheet { position: fixed; top: 0; right: -400px; width: 350px; height: 100%; background: white; z-index: 300; transition: right 0.5s var(--spring); padding: 30px; display: flex; flex-direction: column; gap: 20px; }
         .side-sheet.open { right: 0; }
-        .status-bar { position: fixed; top: 30px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; z-index: 100; }
     </style>
 </head>
 <body>
     <div class="aura-bg"></div>
     
-    <button class="v-info-bottom" onclick="toggleSettings()" style="position:fixed; bottom:30px; left:125px; background:none; border:none; color:inherit; text-align:left; cursor:pointer;">
-        <span style="font-family:'Space Grotesk'; font-size:0.75rem; font-weight:900; display:block;">v0.4.2</span>
-        <span style="font-size:0.6rem; opacity:0.5; text-transform:uppercase;">Animated Ready State</span>
-    </button>
-
-    <div class="status-bar">
-        <div id="clock" style="font-weight:900; opacity:0.6; font-family:'Space Grotesk'; font-size:1.1rem;">00:00:00 AM</div>
-    </div>
-
     <nav class="nav-rail" id="rail">
         <div class="nav-logo-brand" style="font-family:'Michroma'; font-size:0.8rem; margin-bottom:20px; font-weight:bold;">PIX</div>
     </nav>
@@ -79,10 +80,16 @@
         <div class="content">
             <p id="v-tag" style="font-weight:900; opacity:0.3; letter-spacing:5px; font-size:0.8rem;"></p>
             <h1 id="v-title">ALPHA</h1>
-            <p id="v-desc" style="font-size:1.15rem; opacity:0.7; margin-bottom:25px;">Tactile, adaptive, responsive.</p>
+            <p id="v-desc" style="font-size:1.15rem; opacity:0.7; margin-bottom:15px;">Version assets ready for deployment.</p>
             <div class="btn-group">
-                <button id="btn-skin" class="m3-btn" onclick="forceDownload('skin')">GET SKIN</button>
-                <button id="btn-model" class="m3-btn m3-btn-secondary" onclick="forceDownload('model')">GET MODEL</button>
+                <button id="btn-skin" class="m3-btn" onclick="forceDownload('skin')">
+                    <span class="btn-text">GET SKIN</span>
+                    <div class="progress-bar"></div>
+                </button>
+                <button id="btn-model" class="m3-btn m3-btn-secondary" onclick="forceDownload('model')">
+                    <span class="btn-text">GET MODEL</span>
+                    <div class="progress-bar"></div>
+                </button>
             </div>
         </div>
     </main>
@@ -93,89 +100,68 @@
 
     <div class="side-sheet" id="side-sheet">
         <h2 style="font-family:'Space Grotesk';">SETTINGS</h2>
-        <div style="background:rgba(0,0,0,0.05); padding:15px; border-radius:20px; font-size:0.8rem;">
-            <strong>UPDATE (v0.4.2)</strong><br>
-            ✔️ <strong>Ready Check:</strong> Download buttons now show an animated checkmark when a file is ready.
-        </div>
-        <div id="preset-grid" style="display:grid; grid-template-columns: repeat(4,1fr); gap:10px;">
-            <div class="color-circle" style="background:#6750A4; color:white" onclick="setTheme('default')">DFT</div>
-        </div>
         <div style="display:flex; justify-content:space-between; align-items:center;"><span>OLED Mode</span><input type="checkbox" id="oled-toggle" onchange="updateOLED(this.checked)"></div>
         <button onclick="toggleSettings()" style="margin-top:auto; padding:16px; border-radius:16px; border:none; background:var(--on-s-container); color:white; cursor:pointer; font-weight:900;">DONE</button>
     </div>
 
     <script>
-        const PRESETS = [ ["#D1E4FF", "#A6C8FF", "#004A77"], ["#C4EED0", "#A2E0B8", "#006D3B"], ["#FDE293", "#FADB7D", "#A67100"], ["#FFD8E4", "#F9B1C8", "#880E4F"] ];
+        const PRESETS = [ ["#D1E4FF", "#A6C8FF", "#004A77"], ["#C4EED0", "#A2E0B8", "#006D3B"] ];
         const VERSIONS = [
-            { id: "0.1", title: "ALPHA", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/skin%20alpha.png", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
-            { id: "0.2", title: "ALPHA", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.png", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
+            { id: "0.1", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/skin%20alpha.png", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
+            { id: "0.2", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.png", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
         ];
 
-        let state = JSON.parse(localStorage.getItem('pix_pref')) || { oled: false, auto: true, is24h: false, themeType: 'default', themeVal: 0 };
+        let state = JSON.parse(localStorage.getItem('pix_pref')) || { oled: false };
         let currentIdx = 1;
 
         function toggleSettings() { document.getElementById('side-sheet').classList.toggle('open'); }
         
-        function setTheme(type, val) {
-            state.themeType = type; state.themeVal = val;
-            let c = (type === 'default') ? VERSIONS[currentIdx].colors : PRESETS[val];
-            document.documentElement.style.setProperty('--bg-1', c[0]);
-            document.documentElement.style.setProperty('--bg-2', c[1]);
-            document.documentElement.style.setProperty('--p', c[2]);
-            localStorage.setItem('pix_pref', JSON.stringify(state));
-        }
-
         async function forceDownload(type) {
             const btn = type === 'skin' ? document.getElementById('btn-skin') : document.getElementById('btn-model');
-            const originalHTML = btn.innerHTML;
+            const bar = btn.querySelector('.progress-bar');
+            const text = btn.querySelector('.btn-text');
             const url = type === 'skin' ? VERSIONS[currentIdx].skin : VERSIONS[currentIdx].model;
             
-            btn.innerHTML = "FETCHING...";
-            btn.style.opacity = "0.7";
+            text.innerText = "FETCHING";
+            bar.style.width = "40%";
 
             try {
                 const response = await fetch(url);
+                bar.style.width = "80%";
                 const blob = await response.blob();
                 const blobUrl = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = blobUrl;
                 a.download = url.split('/').pop();
-                document.body.appendChild(a);
                 a.click();
-                document.body.removeChild(a);
                 
-                // Success State
-                btn.innerHTML = `READY <span class="material-symbols-rounded check-icon">check_circle</span>`;
-                btn.style.opacity = "1";
+                bar.style.width = "100%";
+                text.innerHTML = `READY <span class="material-symbols-rounded check-icon">check_circle</span>`;
             } catch (error) {
-                btn.innerHTML = "ERROR";
-                window.open(url, '_blank');
+                text.innerText = "ERROR";
             } finally {
-                setTimeout(() => { btn.innerHTML = originalHTML; btn.style.opacity = "1"; }, 3000);
+                setTimeout(() => { 
+                    text.innerText = type === 'skin' ? "GET SKIN" : "GET MODEL"; 
+                    bar.style.width = "0%";
+                }, 3000);
             }
         }
 
         function updateOLED(v) { state.oled = v; checkMode(); localStorage.setItem('pix_pref', JSON.stringify(state)); }
-        function checkMode() {
-            const isNight = state.oled;
-            document.body.classList.toggle('oled', isNight);
-        }
+        function checkMode() { document.body.classList.toggle('oled', state.oled); }
 
         function switchVersion(idx) {
             currentIdx = idx;
             document.getElementById('v-tag').innerText = `VERSION // ${VERSIONS[idx].id}`;
             document.getElementById('mv').setAttribute('src', VERSIONS[idx].model);
             document.querySelectorAll('.v-pill').forEach((p, i) => p.classList.toggle('active', i === idx));
-            setTheme(state.themeType, state.themeVal);
+            const c = VERSIONS[idx].colors;
+            document.documentElement.style.setProperty('--bg-1', c[0]);
+            document.documentElement.style.setProperty('--bg-2', c[1]);
+            document.documentElement.style.setProperty('--p', c[2]);
         }
 
         window.onload = () => {
-            const grid = document.getElementById('preset-grid');
-            PRESETS.forEach((p, i) => {
-                const d = document.createElement('div'); d.className = 'color-circle';
-                d.style.background = p[2]; d.onclick = () => setTheme('preset', i);
-                grid.appendChild(d);
-            });
             const rail = document.getElementById('rail');
             VERSIONS.forEach((_, i) => {
                 const b = document.createElement('button'); b.className = 'v-pill';
@@ -184,9 +170,6 @@
             });
             document.getElementById('oled-toggle').checked = state.oled;
             checkMode(); switchVersion(currentIdx);
-            setInterval(() => {
-                document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-US');
-            }, 1000);
         };
     </script>
 </body>
