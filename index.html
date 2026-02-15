@@ -24,14 +24,13 @@
         
         .aura-bg { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); pointer-events: none; }
         
-        .hub-os-status { position: fixed; bottom: 30px; left: 120px; font-family: 'Space Grotesk'; z-index: 10; cursor: pointer; border: none; background: none; color: inherit; text-align: left; transition: transform 0.3s var(--spring); }
-        .hub-os-status:hover { transform: translateX(5px); }
+        .hub-os-status { position: fixed; bottom: 30px; left: 120px; font-family: 'Space Grotesk'; z-index: 10; cursor: pointer; border: none; background: none; color: inherit; text-align: left; }
         .hub-os-status .v-label { font-size: 0.75rem; font-weight: 900; letter-spacing: 1px; }
         .hub-os-status .v-label span { opacity: 0.3; margin-left: 8px; font-weight: 500; text-transform: uppercase; }
 
         .status-bar { position: fixed; top: 30px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; z-index: 100; }
-        .weather-chip { background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(20px); padding: 2px 18px 2px 6px; border-radius: 40px; border: 1px solid rgba(255, 255, 255, 0.4); display: flex; align-items: center; gap: 6px; }
-        .weather-chip svg { width: 44px; height: 44px; }
+        .weather-chip { background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(20px); padding: 2px 18px 2px 6px; border-radius: 40px; border: 1px solid rgba(255, 255, 255, 0.4); display: flex; align-items: center; gap: 8px; min-width: 100px; }
+        .weather-chip img { width: 42px; height: 42px; }
         #clock { font-weight: 900; opacity: 0.6; font-family: 'Space Grotesk'; font-size: 1.2rem; }
         
         nav.nav-rail { width: 90px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 12px; background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(15px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; }
@@ -61,9 +60,9 @@
     </button>
 
     <div class="status-bar">
-        <div class="weather-chip">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.76,4.84L5,3.08L3.76,4.32L5.53,6.08L6.76,4.84M2,11H5V13H2V11M7,19L5.23,20.76L4,19.5L5.76,17.74L7,19M19,19L17.24,17.24L18.5,16L20.26,17.76L19,19M17.24,6.76L19,5L20.24,6.24L18.5,8L17.24,6.76M11,2H13V5H11V2M11,19H13V22H11V19M12,7C9.24,7 7,9.24 7,12C7,14.76 9.24,17 12,17C14.76,17 17,14.76 17,12C17,9.24 14.76,7 12,7Z" /></svg>
-            <span id="temp">72°F</span>
+        <div class="weather-chip" id="weather-chip">
+            <img id="weather-icon" src="https://gitlab.com/bignutty/google-weather-icons/-/raw/master/clear_day.png" alt="weather">
+            <span id="temp">--°F</span>
         </div>
         <div id="clock">00:00:00 AM</div>
     </div>
@@ -96,8 +95,8 @@
 
     <script>
         const VERSIONS = [
-            { id: "0.1", title: "ALPHA", desc: "Foundation iteration.", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/skin%20alpha.png", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
-            { id: "0.2", title: "ALPHA", desc: "Refined model and textures.", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.png", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
+            { id: "0.1", title: "ALPHA", desc: "Original build.", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/skin%20alpha.png", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
+            { id: "0.2", title: "ALPHA", desc: "Advanced build.", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.png", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
         ];
 
         let currentIdx = 1;
@@ -108,12 +107,36 @@
         function updateFormat(v) { state.is24h = v; save(); }
         function save() { localStorage.setItem('pix_settings', JSON.stringify(state)); }
 
+        // DYNAMIC WEATHER FETCH
+        async function updateWeather() {
+            try {
+                const geo = await fetch('https://ipapi.co/json/').then(res => res.json());
+                const weather = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${geo.latitude}&longitude=${geo.longitude}&current_weather=true&temperature_unit=fahrenheit`).then(res => res.json());
+                
+                const temp = Math.round(weather.current_weather.temperature);
+                const code = weather.current_weather.weathercode;
+                document.getElementById('temp').innerText = `${temp}°F`;
+                
+                // Icon mapping for Google Weather Icons
+                let icon = 'clear_day';
+                if (code >= 1 && code <= 3) icon = 'mostly_cloudy';
+                if (code >= 45 && code <= 48) icon = 'foggy';
+                if (code >= 51 && code <= 67) icon = 'rainy';
+                if (code >= 71 && code <= 77) icon = 'snowy';
+                if (code >= 80 && code <= 82) icon = 'heavy_rain';
+                if (code >= 95) icon = 'thunderstorm';
+                
+                document.getElementById('weather-icon').src = `https://gitlab.com/bignutty/google-weather-icons/-/raw/master/${icon}.png`;
+            } catch (e) {
+                document.getElementById('temp').innerText = '72°F'; // Fallback
+            }
+        }
+
         async function triggerDownload(type, btn) {
             const originalText = btn.innerHTML;
             btn.style.pointerEvents = 'none';
             const v = VERSIONS[currentIdx];
             const url = type === 'skin' ? v.skin : v.model;
-            // FILENAME FIX: Version 0.1 / Version 0.2
             const cleanFileName = `PIX_Version_${v.id}_${type}.${type === 'skin' ? 'png' : 'gltf'}`;
             
             try {
@@ -166,6 +189,7 @@
             });
             if(state.oled) document.body.classList.add('oled');
             switchVersion(currentIdx);
+            updateWeather();
             setInterval(() => {
                 document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-US', { hour12: !state.is24h, hour: '2-digit', minute: '2-digit', second: '2-digit' });
             }, 1000);
