@@ -14,9 +14,8 @@
             --blur: 60px;
         }
 
-        /* OLED MODE OVERRIDE */
         body.oled { background-color: #000 !important; color: #fff !important; }
-        body.oled .viewer-box { background: #111; }
+        body.oled .viewer-box { background: #111; border: 1px solid #222; }
         body.oled .weather-chip, body.oled nav.nav-rail { background: rgba(255,255,255,0.05); color: #fff; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -41,18 +40,14 @@
         .m3-btn { flex: 1; height: 64px; border-radius: 32px; background: var(--on-s-container); color: white; border: none; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: flex 0.6s var(--spring), background 0.3s ease; }
         .m3-btn:hover { flex: 2.5; background: var(--p); }
 
-        /* SETTINGS SIDE SHEET */
+        /* SETTINGS PANEL */
         .settings-fab { position: fixed; bottom: 30px; right: 30px; width: 56px; height: 56px; border-radius: 16px; background: var(--p); color: white; border: none; cursor: pointer; display: grid; place-items: center; z-index: 200; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: transform 0.3s var(--spring); }
-        .settings-fab:hover { transform: rotate(90deg) scale(1.1); }
-
-        .side-sheet { position: fixed; top: 0; right: -400px; width: 350px; height: 100%; background: white; z-index: 300; box-shadow: -10px 0 30px rgba(0,0,0,0.05); transition: right 0.5s var(--spring); padding: 40px; display: flex; flex-direction: column; gap: 25px; }
+        .side-sheet { position: fixed; top: 0; right: -400px; width: 350px; height: 100%; background: white; z-index: 300; box-shadow: -10px 0 30px rgba(0,0,0,0.05); transition: right 0.5s var(--spring); padding: 40px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
         .side-sheet.open { right: 0; }
-        body.oled .side-sheet { background: #111; border-left: 1px solid #333; }
 
-        .setting-item { display: flex; flex-direction: column; gap: 8px; }
-        .setting-row { display: flex; justify-content: space-between; align-items: center; }
-        input[type="range"] { accent-color: var(--p); width: 100%; }
-        .close-settings { background: none; border: none; cursor: pointer; align-self: flex-start; margin-bottom: 20px; color: inherit; }
+        .color-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px; }
+        .color-circle { width: 100%; aspect-ratio: 1; border-radius: 50%; border: 3px solid transparent; cursor: pointer; transition: transform 0.2s; }
+        .color-circle.active { border-color: var(--on-s-container); transform: scale(1.1); }
     </style>
 </head>
 <body>
@@ -82,52 +77,63 @@
     <button class="settings-fab" onclick="toggleSettings()"><span class="material-symbols-rounded">settings</span></button>
 
     <div class="side-sheet" id="side-sheet">
-        <button class="close-settings" onclick="toggleSettings()"><span class="material-symbols-rounded">arrow_forward_ios</span></button>
-        <h2 style="font-family: 'Space Grotesk';">SETTINGS</h2>
+        <button onclick="toggleSettings()" style="background:none; border:none; cursor:pointer;"><span class="material-symbols-rounded">close</span></button>
+        <h2 style="font-family: 'Space Grotesk';">PREFERENCES</h2>
         
         <div class="setting-item">
-            <label>Auto-Rotate Speed</label>
-            <input type="range" min="0" max="20" value="2" oninput="updateRotateSpeed(this.value)">
+            <label>Color Preset (Material You)</label>
+            <div class="color-grid" id="color-grid"></div>
         </div>
 
+        <div style="display:flex; justify-content:space-between;"><span>OLED Mode</span><input type="checkbox" id="oled-toggle" onchange="updateOLED(this.checked)"></div>
+        <div style="display:flex; justify-content:space-between;"><span>24h Clock</span><input type="checkbox" id="format-toggle" onchange="updateFormat(this.checked)"></div>
+        <div style="display:flex; justify-content:space-between;"><span>Celsius</span><input type="checkbox" id="unit-toggle" onchange="updateUnit(this.checked)"></div>
+        
         <div class="setting-item">
-            <label>Aura Intensity (Blur)</label>
-            <input type="range" min="10" max="150" value="60" oninput="updateAura(this.value)">
-        </div>
-
-        <div class="setting-row">
-            <span>OLED Mode</span>
-            <input type="checkbox" onchange="document.body.classList.toggle('oled')">
-        </div>
-
-        <div class="setting-row">
-            <span>24h Format</span>
-            <input type="checkbox" onchange="settings.is24h = this.checked">
-        </div>
-
-        <div class="setting-row">
-            <span>Celsius</span>
-            <input type="checkbox" onchange="settings.unit = this.checked ? 'C' : 'F'; updateWeather();">
+            <label>Rotation Speed</label>
+            <input type="range" id="speed-slider" min="0" max="20" oninput="updateRotateSpeed(this.value)">
         </div>
     </div>
 
     <script>
         const VERSIONS = [
-            { id: "0.0.1", title: "ALPHA", desc: "Original foundation.", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.png", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
-            { id: "0.0.2", title: "ALPHA", desc: "Enhanced geometry.", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.png", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
+            { id: "0.0.1", title: "ALPHA", desc: "Foundation build.", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.png", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
+            { id: "0.0.2", title: "ALPHA", desc: "Enhanced build.", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.png", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
         ];
 
-        let currentIdx = 0;
-        let settings = { is24h: false, unit: 'F' };
+        const COLOR_PRESETS = [
+            { name: "Default", colors: null },
+            { name: "Lavender", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
+            { name: "Mint", colors: ["#C4EED0", "#A2E0B8", "#006D3B"] },
+            { name: "Ocean", colors: ["#D1E4FF", "#A6C8FF", "#004A77"] },
+            { name: "Rose", colors: ["#FFD8E4", "#F9B1C8", "#880E4F"] },
+            { name: "Citrus", colors: ["#F5EBC1", "#E7D791", "#6A5E00"] }
+        ];
+
+        let state = JSON.parse(localStorage.getItem('pix_settings')) || { oled: false, is24h: false, unit: 'F', speed: 2, colorIdx: 0 };
+
+        function save() { localStorage.setItem('pix_settings', JSON.stringify(state)); }
 
         function toggleSettings() { document.getElementById('side-sheet').classList.toggle('open'); }
-        function updateRotateSpeed(v) { document.getElementById('mv').autoRotateDelay = 0; document.getElementById('mv').rotationSpeed = v; document.getElementById('mv').autoRotate = v > 0; }
-        function updateAura(v) { document.documentElement.style.setProperty('--blur', v + 'px'); }
+        function updateOLED(v) { state.oled = v; document.body.classList.toggle('oled', v); save(); }
+        function updateFormat(v) { state.is24h = v; save(); }
+        function updateUnit(v) { state.unit = v ? 'C' : 'F'; updateWeather(); save(); }
+        function updateRotateSpeed(v) { state.speed = v; const mv = document.getElementById('mv'); mv.rotationSpeed = v; mv.autoRotate = v > 0; save(); }
+
+        function applyColor(idx) {
+            state.colorIdx = idx;
+            const preset = COLOR_PRESETS[idx];
+            const colors = preset.colors || VERSIONS[currentIdx].colors;
+            document.documentElement.style.setProperty('--bg-1', colors[0]);
+            document.documentElement.style.setProperty('--bg-2', colors[1]);
+            document.documentElement.style.setProperty('--p', colors[2]);
+            document.querySelectorAll('.color-circle').forEach((c, i) => c.classList.toggle('active', i === idx));
+            save();
+        }
 
         async function handleDownload(type) {
             const v = VERSIONS[currentIdx];
-            const url = type === 'skin' ? v.skin : v.model;
-            const res = await fetch(url);
+            const res = await fetch(type === 'skin' ? v.skin : v.model);
             const blob = await res.blob();
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
@@ -135,41 +141,53 @@
             link.click();
         }
 
-        function updateClock() { 
-            document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-US', { 
-                hour12: !settings.is24h, hour: '2-digit', minute: '2-digit', second: '2-digit' 
-            }); 
-        }
+        function updateClock() { document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-US', { hour12: !state.is24h, hour: '2-digit', minute: '2-digit', second: '2-digit' }); }
         
         async function updateWeather() {
             navigator.geolocation.getCurrentPosition(async (pos) => {
-                const u = settings.unit === 'C' ? 'celsius' : 'fahrenheit';
+                const u = state.unit === 'C' ? 'celsius' : 'fahrenheit';
                 const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&current_weather=true&temperature_unit=${u}`);
                 const d = await r.json();
-                document.getElementById('temp').innerText = `${Math.round(d.current_weather.temperature)}°${settings.unit}`;
+                document.getElementById('temp').innerText = `${Math.round(d.current_weather.temperature)}°${state.unit}`;
             });
         }
 
         function switchVersion(idx) {
-            currentIdx = idx; const v = VERSIONS[idx]; const mv = document.getElementById('mv');
+            currentIdx = idx; const v = VERSIONS[idx];
             document.getElementById('v-title').innerText = v.title;
             document.getElementById('v-tag').innerText = `VERSION // ${v.id}`;
             document.getElementById('v-desc').innerText = v.desc;
-            document.documentElement.style.setProperty('--bg-1', v.colors[0]);
-            document.documentElement.style.setProperty('--bg-2', v.colors[1]);
-            document.documentElement.style.setProperty('--p', v.colors[2]);
-            mv.src = v.model; mv.cameraOrbit = "180deg 75deg 105%"; mv.jumpCameraToGoal();
+            document.getElementById('mv').src = v.model;
+            document.getElementById('mv').cameraOrbit = "180deg 75deg 105%";
+            applyColor(state.colorIdx);
             document.querySelectorAll('.v-pill-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
         }
 
         window.onload = () => {
+            const grid = document.getElementById('color-grid');
+            COLOR_PRESETS.forEach((p, i) => {
+                const div = document.createElement('div');
+                div.className = 'color-circle';
+                div.style.background = p.colors ? p.colors[2] : '#ccc';
+                div.onclick = () => applyColor(i);
+                grid.appendChild(div);
+            });
+
+            // Restore UI from state
+            document.getElementById('oled-toggle').checked = state.oled;
+            document.getElementById('format-toggle').checked = state.is24h;
+            document.getElementById('unit-toggle').checked = state.unit === 'C';
+            document.getElementById('speed-slider').value = state.speed;
+            if(state.oled) document.body.classList.add('oled');
+            
             const rail = document.getElementById('rail');
             VERSIONS.forEach((v, i) => {
                 const b = document.createElement('button'); b.className = 'v-pill v-pill-btn';
                 b.innerHTML = `<span>${i+1}</span>`; b.onclick = () => switchVersion(i);
                 rail.appendChild(b);
             });
-            setInterval(updateClock, 1000); updateClock(); updateWeather(); switchVersion(1);
+
+            setInterval(updateClock, 1000); updateWeather(); switchVersion(1);
         };
     </script>
 </body>
