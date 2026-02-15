@@ -14,23 +14,31 @@
             --blur: 60px;
         }
 
+        /* OLED FIXES */
         body.oled { background-color: #000 !important; color: #FFFFFF !important; }
         body.oled .viewer-box { background: #0a0a0a; border: 1px solid #222; }
         body.oled .weather-chip, body.oled nav.nav-rail { background: rgba(255,255,255,0.08); color: #FFFFFF; }
         body.oled .side-sheet { background: #050505; border-left: 1px solid #333; color: white; }
+        body.oled .close-btn { color: white !important; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background-color: #fdf8fd; color: var(--on-s-container); font-family: 'Outfit', sans-serif; height: 100vh; display: flex; overflow: hidden; transition: background 0.5s ease; }
         
         .aura-bg { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); }
         
+        /* WEATHER CHIP LINK */
         .status-bar { position: fixed; top: 30px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; z-index: 100; }
-        .weather-chip { background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(20px); padding: 2px 18px 2px 6px; border-radius: 40px; border: 1px solid rgba(255, 255, 255, 0.4); display: flex; align-items: center; gap: 6px; box-shadow: 0 8px 32px rgba(0,0,0,0.05); }
+        .weather-link { text-decoration: none; color: inherit; cursor: pointer; }
+        .weather-chip { background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(20px); padding: 2px 18px 2px 6px; border-radius: 40px; border: 1px solid rgba(255, 255, 255, 0.4); display: flex; align-items: center; gap: 6px; transition: transform 0.2s ease; }
+        .weather-chip:hover { transform: scale(1.05); background: rgba(255, 255, 255, 0.7); }
         .weather-chip svg { width: 44px; height: 44px; }
-        #temp { font-weight: 800; font-size: 1.25rem; letter-spacing: -0.5px; }
+        
         #clock { font-weight: 900; opacity: 0.6; font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; }
         
+        /* NAV RAIL PIX TEXT */
         nav.nav-rail { width: 90px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 12px; background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(15px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; }
+        .nav-logo { font-weight: 900; font-size: 0.7rem; letter-spacing: 3px; opacity: 0.4; margin-bottom: 20px; font-family: 'Space Grotesk'; }
+
         .v-pill { width: 48px; height: 48px; border-radius: 24px; background: rgba(0,0,0,0.05); border: none; cursor: pointer; display: grid; place-items: center; transition: all 0.5s var(--spring); font-weight: 900; color: inherit; }
         .v-pill.active { height: 64px; width: 32px; border-radius: 16px; background: var(--p); color: white; }
         
@@ -42,28 +50,30 @@
         .m3-btn { flex: 1; height: 64px; border-radius: 32px; background: var(--on-s-container); color: white; border: none; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: flex 0.6s var(--spring), background 0.3s ease; }
         .m3-btn:hover { flex: 2.5; background: var(--p); }
 
-        .settings-fab { position: fixed; bottom: 30px; right: 30px; width: 56px; height: 56px; border-radius: 16px; background: var(--p); color: white; border: none; cursor: pointer; display: grid; place-items: center; z-index: 200; box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+        .settings-fab { position: fixed; bottom: 30px; right: 30px; width: 56px; height: 56px; border-radius: 16px; background: var(--p); color: white; border: none; cursor: pointer; display: grid; place-items: center; z-index: 200; }
         .side-sheet { position: fixed; top: 0; right: -400px; width: 350px; height: 100%; background: white; z-index: 300; transition: right 0.5s var(--spring); padding: 30px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
         .side-sheet.open { right: 0; }
 
         .color-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 10px 0; }
         .color-circle { width: 100%; aspect-ratio: 1; border-radius: 50%; border: 3px solid transparent; cursor: pointer; }
-        .color-circle.active { border-color: var(--on-s-container); transform: scale(1.1); }
-        
-        .news-card { background: rgba(0,0,0,0.05); padding: 15px; border-radius: 16px; font-size: 0.9rem; }
+        .news-card { background: rgba(0,0,0,0.05); padding: 15px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
     <div class="aura-bg"></div>
     <div class="status-bar">
-        <div class="weather-chip" id="weather-chip">
-            <div id="icon-target"></div>
-            <span id="temp">--°F</span>
-        </div>
+        <a href="https://www.google.com/search?q=weather" target="_blank" class="weather-link">
+            <div class="weather-chip" id="weather-chip">
+                <div id="icon-target"></div>
+                <span id="temp">--°F</span>
+            </div>
+        </a>
         <div id="clock">00:00:00 AM</div>
     </div>
 
-    <nav class="nav-rail" id="rail"></nav>
+    <nav class="nav-rail" id="rail">
+        <div class="nav-logo">PIX</div>
+    </nav>
 
     <main>
         <div class="viewer-box"><model-viewer id="mv" auto-rotate camera-controls shadow-intensity="1" environment-image="neutral" camera-orbit="180deg 75deg 105%" field-of-view="30deg"></model-viewer></div>
@@ -83,15 +93,15 @@
     <div class="side-sheet" id="side-sheet">
         <div style="display:flex; justify-content:space-between; align-items:center;">
             <h2 style="font-family: 'Space Grotesk';">PREFERENCES</h2>
-            <button onclick="toggleSettings()" style="background:none; border:none; cursor:pointer;"><span class="material-symbols-rounded">close</span></button>
+            <button onclick="toggleSettings()" class="close-btn" style="background:none; border:none; cursor:pointer;"><span class="material-symbols-rounded">close</span></button>
         </div>
         
         <div class="news-card">
-            <strong>WHAT'S NEW (v0.0.9)</strong><br>
-            • Inlined Animated Weather Icons<br>
-            • Restored Seconds to Clock<br>
-            • Color Preset Library<br>
-            • Logic for Rain/Storm codes
+            <strong>WHAT'S NEW (v0.1.0)</strong><br>
+            • Click weather for Google Chrome<br>
+            • Restored PIX rail branding<br>
+            • Default Color Preset (Purple)<br>
+            • OLED Close Button Visibility Fix
         </div>
 
         <div>
@@ -100,7 +110,7 @@
                 <div class="color-circle" style="background:#6750A4" onclick="setMode('skin')"></div>
             </div>
             <label>Custom Hex</label>
-            <input type="color" oninput="setMode('custom', this.value)" style="width:100%; height:40px; border:none; border-radius:8px; margin-top:5px;">
+            <input type="color" oninput="setMode('custom', this.value)" style="width:100%; height:40px; border:none; border-radius:8px; margin-top:5px; cursor:pointer;">
         </div>
 
         <div style="display:flex; justify-content:space-between;"><span>OLED Mode</span><input type="checkbox" id="oled-toggle" onchange="updateOLED(this.checked)"></div>
@@ -173,7 +183,10 @@
                 b.innerHTML = i+1; b.onclick = () => switchVersion(i);
                 rail.appendChild(b);
             });
-            switchVersion(1);
+            if(state.oled) document.body.classList.add('oled');
+            document.getElementById('oled-toggle').checked = state.oled;
+            document.getElementById('format-toggle').checked = state.is24h;
+            switchVersion(currentIdx);
             updateWeather();
             setInterval(() => {
                 document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-US', { hour12: !state.is24h, hour: '2-digit', minute: '2-digit', second: '2-digit' });
