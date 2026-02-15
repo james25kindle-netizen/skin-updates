@@ -21,43 +21,35 @@
         body.oled .side-sheet { background: #000; border-left: 1px solid #222; color: #fff; }
         body.oled .m3-btn { background: #FFFFFF !important; color: #000000 !important; }
         body.oled .m3-btn-secondary { background: rgba(255,255,255,0.1) !important; color: #FFFFFF !important; }
-        body.oled .v-pill.active { background: #FFFFFF !important; color: #000 !important; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
         body { background-color: #fdf8fd; color: var(--on-s-container); font-family: 'Outfit', sans-serif; height: 100vh; display: flex; overflow: hidden; transition: background 0.8s ease; }
         
         .aura-bg { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); pointer-events: none; }
         
+        /* STATUS BAR RESTORED */
+        .status-bar { position: fixed; top: 30px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; z-index: 100; }
+        .weather-chip { background: rgba(255, 255, 255, 0.3); backdrop-filter: blur(20px); padding: 0 16px 0 8px; border-radius: 28px; border: 1px solid rgba(255, 255, 255, 0.2); display: flex; align-items: center; gap: 6px; height: 44px; }
+        #clock { font-weight: 900; opacity: 0.6; font-family: 'Space Grotesk'; font-size: 1.1rem; }
+
+        /* RAIL */
         nav.nav-rail { width: 90px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 12px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(15px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; }
         .v-pill { width: 48px; height: 48px; border-radius: 24px; background: rgba(0,0,0,0.05); border: none; cursor: pointer; display: grid; place-items: center; font-weight: 900; color: inherit; transition: all 0.5s var(--spring); }
         .v-pill.active { height: 80px; width: 34px; border-radius: 17px; background: var(--p); color: white; }
 
-        /* BUTTON ALIGNMENT FIX */
-        .btn-group { display: flex; gap: 12px; width: 100%; margin-top: 10px; }
-        .m3-btn { 
-            flex: 1; height: 64px; border-radius: 32px; 
-            background: var(--p); color: white; border: none; 
-            font-weight: 800; cursor: pointer; 
-            transition: flex 0.6s var(--spring), background 0.3s; 
-            display: flex; align-items: center; justify-content: center; 
-            gap: 8px; position: relative; overflow: hidden; 
-        }
-        .m3-btn:hover { flex: 1.5; filter: brightness(1.1); }
+        /* BUTTONS & READY STATE */
+        .btn-group { display: flex; gap: 12px; width: 100%; margin-top: 20px; }
+        .m3-btn { flex: 1; height: 64px; border-radius: 32px; background: var(--p); color: white; border: none; font-weight: 800; cursor: pointer; transition: flex 0.6s var(--spring), background 0.3s; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
         .m3-btn-secondary { background: rgba(0,0,0,0.05); color: var(--on-s-container); }
-
-        /* PROGRESS BAR */
-        .progress-bar { 
-            position: absolute; bottom: 0; left: 0; height: 4px; 
-            background: rgba(255,255,255,0.4); width: 0%; 
-            transition: width 0.3s ease; 
-        }
+        
+        .btn-content-wrapper { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 100%; z-index: 2; }
+        .progress-bar { position: absolute; bottom: 0; left: 0; height: 100%; background: rgba(255,255,255,0.15); width: 0%; transition: width 0.3s ease; z-index: 1; }
 
         @keyframes checkPop {
-            0% { transform: scale(0) rotate(-20deg); opacity: 0; }
-            70% { transform: scale(1.2) rotate(10deg); }
-            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
         }
-        .check-icon { animation: checkPop 0.4s var(--spring) forwards; font-size: 24px; }
+        .check-icon { animation: checkPop 0.4s var(--spring) forwards; font-size: 22px; margin-top: -2px; }
 
         /* LAYOUT */
         main { flex: 1; display: grid; grid-template-columns: 1fr 450px; padding: 40px; gap: 40px; align-items: center; }
@@ -70,6 +62,14 @@
 </head>
 <body>
     <div class="aura-bg"></div>
+
+    <div class="status-bar">
+        <div class="weather-chip">
+            <img id="w-icon" src="https://cdn.weatherapi.com/weather/64x64/day/113.png" style="width:30px">
+            <span id="temp">72°F</span>
+        </div>
+        <div id="clock">00:00:00 AM</div>
+    </div>
     
     <nav class="nav-rail" id="rail">
         <div class="nav-logo-brand" style="font-family:'Michroma'; font-size:0.8rem; margin-bottom:20px; font-weight:bold;">PIX</div>
@@ -80,15 +80,15 @@
         <div class="content">
             <p id="v-tag" style="font-weight:900; opacity:0.3; letter-spacing:5px; font-size:0.8rem;"></p>
             <h1 id="v-title">ALPHA</h1>
-            <p id="v-desc" style="font-size:1.15rem; opacity:0.7; margin-bottom:15px;">Version assets ready for deployment.</p>
+            <p id="v-desc" style="font-size:1.15rem; opacity:0.7;">UI restored and aligned.</p>
             <div class="btn-group">
                 <button id="btn-skin" class="m3-btn" onclick="forceDownload('skin')">
-                    <span class="btn-text">GET SKIN</span>
                     <div class="progress-bar"></div>
+                    <div class="btn-content-wrapper"><span>GET SKIN</span></div>
                 </button>
                 <button id="btn-model" class="m3-btn m3-btn-secondary" onclick="forceDownload('model')">
-                    <span class="btn-text">GET MODEL</span>
                     <div class="progress-bar"></div>
+                    <div class="btn-content-wrapper"><span>GET MODEL</span></div>
                 </button>
             </div>
         </div>
@@ -105,7 +105,6 @@
     </div>
 
     <script>
-        const PRESETS = [ ["#D1E4FF", "#A6C8FF", "#004A77"], ["#C4EED0", "#A2E0B8", "#006D3B"] ];
         const VERSIONS = [
             { id: "0.1", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/skin%20alpha.png", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
             { id: "0.2", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.png", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
@@ -119,29 +118,27 @@
         async function forceDownload(type) {
             const btn = type === 'skin' ? document.getElementById('btn-skin') : document.getElementById('btn-model');
             const bar = btn.querySelector('.progress-bar');
-            const text = btn.querySelector('.btn-text');
+            const wrapper = btn.querySelector('.btn-content-wrapper');
             const url = type === 'skin' ? VERSIONS[currentIdx].skin : VERSIONS[currentIdx].model;
             
-            text.innerText = "FETCHING";
-            bar.style.width = "40%";
+            wrapper.innerHTML = `<span>FETCHING</span>`;
+            bar.style.width = "50%";
 
             try {
                 const response = await fetch(url);
-                bar.style.width = "80%";
+                bar.style.width = "90%";
                 const blob = await response.blob();
-                const blobUrl = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
-                a.href = blobUrl;
+                a.href = window.URL.createObjectURL(blob);
                 a.download = url.split('/').pop();
                 a.click();
                 
                 bar.style.width = "100%";
-                text.innerHTML = `READY <span class="material-symbols-rounded check-icon">check_circle</span>`;
-            } catch (error) {
-                text.innerText = "ERROR";
-            } finally {
+                wrapper.innerHTML = `<span>READY</span> <span class="material-symbols-rounded check-icon">check_circle</span>`;
+            } catch (e) { wrapper.innerHTML = `<span>RETRYING...</span>`; window.open(url, '_blank'); }
+            finally {
                 setTimeout(() => { 
-                    text.innerText = type === 'skin' ? "GET SKIN" : "GET MODEL"; 
+                    wrapper.innerHTML = `<span>${type === 'skin' ? 'GET SKIN' : 'GET MODEL'}</span>`;
                     bar.style.width = "0%";
                 }, 3000);
             }
@@ -161,6 +158,10 @@
             document.documentElement.style.setProperty('--p', c[2]);
         }
 
+        function updateClock() {
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-US');
+        }
+
         window.onload = () => {
             const rail = document.getElementById('rail');
             VERSIONS.forEach((_, i) => {
@@ -170,6 +171,8 @@
             });
             document.getElementById('oled-toggle').checked = state.oled;
             checkMode(); switchVersion(currentIdx);
+            setInterval(updateClock, 1000);
+            updateClock();
         };
     </script>
 </body>
