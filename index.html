@@ -60,15 +60,15 @@
 
         .news-card { background: rgba(0,0,0,0.05); padding: 15px; border-radius: 16px; font-size: 0.85rem; line-height: 1.4; }
         .color-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 10px 0; }
-        .color-circle { width: 100%; aspect-ratio: 1; border-radius: 50%; cursor: pointer; display: grid; place-items: center; font-size: 0.55rem; font-weight: 900; }
-        .custom-picker { width: 100%; height: 40px; border-radius: 12px; border: 2px solid rgba(0,0,0,0.1); cursor: pointer; padding: 2px; }
+        .color-circle { width: 100%; aspect-ratio: 1; border-radius: 50%; cursor: pointer; display: grid; place-items: center; font-size: 0.55rem; font-weight: 900; border: 2px solid transparent; }
+        .custom-picker { width: 100%; height: 40px; border-radius: 12px; border: 2px solid rgba(0,0,0,0.1); cursor: pointer; padding: 2px; background: white; }
     </style>
 </head>
 <body>
     <div class="aura-bg"></div>
     
     <button class="hub-os-status" onclick="toggleSettings()">
-        <div class="v-label">v0.2.0 <span>ULTRA_VIOLET</span></div>
+        <div class="v-label">v0.2.1 <span>ULTRA_VIOLET</span></div>
     </button>
 
     <div class="status-bar">
@@ -103,10 +103,9 @@
         <h2 style="font-family: 'Space Grotesk';">PREFERENCES</h2>
         
         <div class="news-card">
-            <strong>WHATS NEW (v0.2.0)</strong><br><br>
-            🔗 <strong>Weather Link:</strong> Click the chip to open Google Weather.<br><br>
-            🎨 <strong>Custom Colors:</strong> Full color picker now available.<br><br>
-            🌘 <strong>OLED Visibility:</strong> Secondary buttons now pop in dark mode.
+            <strong>COLOR LOCK (v0.2.1)</strong><br><br>
+            🔒 <strong>Persistent Colors:</strong> Custom themes now stay active when switching versions.<br><br>
+            🎨 <strong>DFT Mode:</strong> Use the "DFT" button to return to version-specific colors.
         </div>
 
         <div>
@@ -135,6 +134,10 @@
         ];
 
         let currentIdx = 1;
+        let activeTheme = 'default';
+        let customVal = '#6750A4';
+        let presetIdx = null;
+
         let state = JSON.parse(localStorage.getItem('pix_settings')) || { oled: false, is24h: false };
 
         function toggleSettings() { document.getElementById('side-sheet').classList.toggle('open'); }
@@ -161,10 +164,21 @@
         }
 
         function setTheme(type, val) {
+            activeTheme = type;
             let c;
-            if (type === 'default') c = VERSIONS[currentIdx].colors;
-            else if (type === 'preset') c = PRESETS[val];
-            else if (type === 'custom') c = [val + '44', val + '88', val]; // Simple generator for bg shades
+            
+            if (type === 'default') {
+                c = VERSIONS[currentIdx].colors;
+                presetIdx = null;
+            } else if (type === 'preset') {
+                presetIdx = val;
+                c = PRESETS[val];
+            } else if (type === 'custom') {
+                customVal = val;
+                presetIdx = null;
+                // Generate light/dark shades based on custom hex
+                c = [val + '33', val + '77', val]; 
+            }
 
             document.documentElement.style.setProperty('--bg-1', c[0]);
             document.documentElement.style.setProperty('--bg-2', c[1]);
@@ -177,12 +191,18 @@
         }
 
         function switchVersion(idx) {
-            currentIdx = idx; const v = VERSIONS[idx];
+            currentIdx = idx; 
+            const v = VERSIONS[idx];
             document.getElementById('v-tag').innerText = `Version // ${v.id}`;
             document.getElementById('v-desc').innerText = v.desc;
             document.getElementById('mv').setAttribute('src', v.model);
+            
             document.querySelectorAll('.v-pill').forEach((p, i) => p.classList.toggle('active', i === idx));
-            setTheme('default');
+            
+            // Re-apply current active theme logic
+            if (activeTheme === 'default') setTheme('default');
+            else if (activeTheme === 'preset') setTheme('preset', presetIdx);
+            else if (activeTheme === 'custom') setTheme('custom', customVal);
         }
 
         window.onload = () => {
