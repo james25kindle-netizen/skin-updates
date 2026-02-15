@@ -27,7 +27,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; user-select: none; }
         body { background-color: #fdf8fd; color: var(--on-s-container); font-family: 'Outfit', sans-serif; height: 100vh; width: 100vw; display: flex; overflow: hidden; transition: background 0.8s ease; }
         
-        .aura-bg { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); pointer-events: none; }
+        .aura-bg { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); pointer-events: none; transition: --bg-1 0.5s, --bg-2 0.5s; }
         
         /* 1. NAV RAIL */
         nav.nav-rail { width: 90px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 12px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(15px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; flex-shrink: 0; }
@@ -40,6 +40,7 @@
         main { flex: 1; display: grid; grid-template-columns: 1fr 450px; padding: 40px; gap: 40px; align-items: center; height: 100%; }
         
         .viewer-box { height: 90%; width: 100%; background: white; border-radius: 48px; position: relative; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.03); }
+        /* ZOOM ADJUSTED: camera-orbit="45deg 55deg 140%" */
         model-viewer { width: 100%; height: 100%; }
         
         .content { display: flex; flex-direction: column; justify-content: center; }
@@ -94,7 +95,7 @@
 
     <main>
         <div class="viewer-box">
-            <model-viewer id="mv" auto-rotate camera-controls shadow-intensity="1" environment-image="neutral" camera-orbit="45deg 55deg 2.5m" field-of-view="30deg"></model-viewer>
+            <model-viewer id="mv" auto-rotate camera-controls shadow-intensity="1" environment-image="neutral" camera-orbit="45deg 55deg 140%" field-of-view="30deg"></model-viewer>
         </div>
         <div class="content">
             <p id="v-tag" style="font-weight:900; opacity:0.3; letter-spacing:5px; font-size:0.8rem;">VERSION // 0.2</p>
@@ -115,8 +116,8 @@
     </main>
 
     <button class="v-info-bottom" onclick="toggleSettings()">
-        <span style="font-family:'Space Grotesk'; font-size:0.75rem; font-weight:900; display:block;">v0.4.8</span>
-        <span style="font-size:0.6rem; opacity:0.5; text-transform:uppercase;">System Restore</span>
+        <span style="font-family:'Space Grotesk'; font-size:0.75rem; font-weight:900; display:block;">v0.4.9</span>
+        <span style="font-size:0.6rem; opacity:0.5; text-transform:uppercase;">System Polish</span>
     </button>
 
     <button id="settings-fab" onclick="toggleSettings()">
@@ -126,10 +127,10 @@
     <div class="side-sheet" id="side-sheet">
         <h2 style="font-family:'Space Grotesk';">SETTINGS</h2>
         <div class="news-card">
-            <strong>System Restore</strong><br>
-            • Layout Grid Fixed<br>
-            • Dual Buttons Restored<br>
-            • Weather & Clock Online
+            <strong>Polish Update</strong><br>
+            • Night Cycle Restored<br>
+            • Camera Zoom Adjusted<br>
+            • 3-Color Randomizer
         </div>
 
         <h3 style="font-size:0.7rem; opacity:0.5; margin-top:10px;">PRESET THEMES</h3>
@@ -139,11 +140,12 @@
         <div class="custom-picker-row">
             <input type="color" id="picker-swatch" oninput="applyHex(this.value)">
             <span id="hex-label" style="font-family:'Space Grotesk'; font-weight:900; opacity:0.6;">#6750A4</span>
-            <button onclick="randomTheme()" title="Randomize" style="margin-left:auto; background:none; border:none; cursor:pointer; opacity:0.5;"><span class="material-symbols-rounded">casino</span></button>
+            <button onclick="randomTheme()" title="Randomize Palette" style="margin-left:auto; background:none; border:none; cursor:pointer; opacity:0.5;"><span class="material-symbols-rounded">casino</span></button>
         </div>
 
         <hr style="opacity:0.1; margin:10px 0;">
         <div style="display:flex; justify-content:space-between; align-items:center;"><span>OLED Mode</span><input type="checkbox" id="oled-toggle" onchange="updateOLED(this.checked)"></div>
+        <div style="display:flex; justify-content:space-between; align-items:center;"><span>Night Cycle</span><input type="checkbox" id="auto-toggle" onchange="updateAuto(this.checked)"></div>
         <div style="display:flex; justify-content:space-between; align-items:center;"><span>24h Clock</span><input type="checkbox" id="format-toggle" onchange="updateFormat(this.checked)"></div>
         
         <button onclick="toggleSettings()" style="margin-top:auto; padding:16px; border-radius:16px; border:none; background:var(--on-s-container); color:white; cursor:pointer; font-weight:900;">DONE</button>
@@ -161,7 +163,7 @@
             { id: "0.2", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.png", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
         ];
 
-        let state = JSON.parse(localStorage.getItem('pix_pref')) || { oled: false, is24h: false, themeType: 'default', themeVal: 0 };
+        let state = JSON.parse(localStorage.getItem('pix_pref')) || { oled: false, auto: true, is24h: false, themeType: 'default', themeVal: 0 };
         let currentIdx = 1;
 
         function toggleSettings() { document.getElementById('side-sheet').classList.toggle('open'); }
@@ -173,34 +175,42 @@
             if (type === 'default') {
                 c = VERSIONS[currentIdx].colors;
             } else if (type === 'custom') {
-                c = val; 
-                document.getElementById('picker-swatch').value = val;
+                c = val; // Should be array [bg1, bg2, p] or single hex
             } else {
                 c = PRESETS[val];
             }
 
-            // Handle logic if c is array (preset) or string (hex)
-            const bg1 = Array.isArray(c) ? c[0] : c; 
-            const bg2 = Array.isArray(c) ? c[1] : c; 
-            const p = Array.isArray(c) ? c[2] : c; 
-
-            document.documentElement.style.setProperty('--bg-1', bg1);
-            document.documentElement.style.setProperty('--bg-2', bg2);
-            document.documentElement.style.setProperty('--p', p);
-            
-            if(type === 'custom') {
-                 document.getElementById('hex-label').innerText = p.toUpperCase();
+            // Handle logic if c is array (preset/random) or string (single hex)
+            if (Array.isArray(c)) {
+                document.documentElement.style.setProperty('--bg-1', c[0]);
+                document.documentElement.style.setProperty('--bg-2', c[1]);
+                document.documentElement.style.setProperty('--p', c[2]);
+                document.getElementById('picker-swatch').value = c[2]; // Set picker to accent
+                document.getElementById('hex-label').innerText = "CUSTOM";
             } else {
-                 document.getElementById('hex-label').innerText = "PRESET";
+                // Single Hex fallback
+                document.documentElement.style.setProperty('--bg-1', c);
+                document.documentElement.style.setProperty('--bg-2', c);
+                document.documentElement.style.setProperty('--p', c);
+                document.getElementById('hex-label').innerText = c.toUpperCase();
             }
+            
+            if(type === 'default') document.getElementById('hex-label').innerText = "DEFAULT";
+            if(type === 'preset') document.getElementById('hex-label').innerText = "PRESET";
+
             localStorage.setItem('pix_pref', JSON.stringify(state));
         }
 
-        function applyHex(hex) { setTheme('custom', hex); }
+        function applyHex(hex) { 
+            // When user picks manually, we just use that one color for everything to be safe
+            setTheme('custom', [hex, hex, hex]); 
+        }
 
         function randomTheme() {
+            // Generate 3 random colors for a full theme
             const r = () => '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
-            applyHex(r());
+            const palette = [r(), r(), r()];
+            setTheme('custom', palette);
         }
 
         async function forceDownload(type) {
@@ -232,8 +242,14 @@
         }
 
         function updateOLED(v) { state.oled = v; checkMode(); localStorage.setItem('pix_pref', JSON.stringify(state)); }
+        function updateAuto(v) { state.auto = v; checkMode(); localStorage.setItem('pix_pref', JSON.stringify(state)); }
         function updateFormat(v) { state.is24h = v; localStorage.setItem('pix_pref', JSON.stringify(state)); }
-        function checkMode() { document.body.classList.toggle('oled', state.oled); }
+        
+        function checkMode() { 
+            const h = new Date().getHours();
+            const isNight = state.auto ? (h >= 19 || h < 7) : state.oled;
+            document.body.classList.toggle('oled', isNight);
+        }
 
         function switchVersion(idx) {
             currentIdx = idx;
@@ -244,29 +260,22 @@
         }
 
         window.onload = () => {
-            // Render Presets
             const grid = document.getElementById('preset-grid');
             PRESETS.forEach((p, i) => {
                 const d = document.createElement('div'); d.className = 'color-circle';
                 d.style.backgroundColor = p[2]; d.onclick = () => setTheme('preset', i);
                 grid.appendChild(d);
             });
-
-            // Render Rail
             const rail = document.getElementById('rail');
             VERSIONS.forEach((_, i) => {
                 const b = document.createElement('button'); b.className = 'v-pill';
                 b.innerHTML = i+1; b.onclick = () => switchVersion(i);
                 rail.appendChild(b);
             });
-
-            // Init State
             document.getElementById('oled-toggle').checked = state.oled;
+            document.getElementById('auto-toggle').checked = state.auto;
             document.getElementById('format-toggle').checked = state.is24h;
-            checkMode(); 
-            switchVersion(currentIdx);
-            
-            // Clock
+            checkMode(); switchVersion(currentIdx);
             setInterval(() => {
                 document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-US', { hour12: !state.is24h });
             }, 1000);
