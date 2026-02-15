@@ -14,7 +14,7 @@
             --blur: 60px;
         }
 
-        /* OLED / NIGHT MODE FIXES */
+        /* OLED FIXES */
         body.oled { background-color: #000 !important; color: #FFFFFF !important; }
         body.oled .aura-bg { opacity: 0.3; filter: blur(80px) saturate(0.4); }
         body.oled .viewer-box { background: #0a0a0a !important; border: 1px solid #1a1a1a; }
@@ -22,54 +22,53 @@
         body.oled .m3-btn { background: #FFFFFF !important; color: #000000 !important; }
         body.oled .m3-btn-secondary { background: rgba(255,255,255,0.1) !important; color: #FFFFFF !important; }
         body.oled .v-pill.active { background: #FFFFFF !important; color: #000 !important; }
-        body.oled .material-symbols-rounded { color: white !important; } /* Fix for hidden icons */
-        body.oled .news-card { background: rgba(255,255,255,0.05) !important; color: white; border: 1px solid #333; }
-        body.oled input[type="checkbox"] { filter: invert(1); }
+        
+        /* THE CHECKMARK FIX */
+        body.oled .material-symbols-rounded { color: white !important; filter: drop-shadow(0 0 2px rgba(255,255,255,0.5)); }
+        
+        body.oled .news-card { background: linear-gradient(145deg, #111, #000) !important; border: 1px solid #333; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; user-select: none; }
         body { background-color: #fdf8fd; color: var(--on-s-container); font-family: 'Outfit', sans-serif; height: 100vh; width: 100vw; display: flex; overflow: hidden; transition: background 0.8s ease; }
         
         .aura-bg { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); pointer-events: none; }
         
-        /* NAV RAIL */
         nav.nav-rail { width: 90px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 12px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(15px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; flex-shrink: 0; }
         .v-pill { width: 48px; height: 48px; border-radius: 24px; background: rgba(0,0,0,0.05); border: none; cursor: pointer; display: grid; place-items: center; font-weight: 900; color: inherit; transition: all 0.5s var(--spring); }
-        .nav-rail:has(.v-pill:hover) .v-pill:not(:hover) { transform: scale(0.8); opacity: 0.5; }
-        .v-pill:hover { transform: scale(1.2); background: var(--p); color: white; }
         .v-pill.active { height: 80px; width: 34px; border-radius: 17px; background: var(--p); color: white; }
 
-        /* MAIN LAYOUT */
         main { flex: 1; display: grid; grid-template-columns: 1fr 450px; padding: 40px; gap: 40px; align-items: center; height: 100%; }
         .viewer-box { height: 90%; width: 100%; background: white; border-radius: 48px; position: relative; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.03); }
         model-viewer { width: 100%; height: 100%; }
         
-        .content { display: flex; flex-direction: column; justify-content: center; }
         h1 { font-family: 'Bebas Neue'; font-size: 8.5rem; line-height: 0.8; letter-spacing: -3px; margin: 10px 0; }
 
-        /* BUTTONS */
         .btn-group { display: flex; gap: 12px; width: 100%; margin-top: 20px; }
         .m3-btn { flex: 1; height: 64px; border-radius: 32px; background: var(--p); color: white; border: none; font-weight: 800; cursor: pointer; transition: flex 0.6s var(--spring), background 0.3s; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
-        .m3-btn:hover { flex: 2; filter: brightness(1.1); }
         .m3-btn-secondary { background: rgba(0,0,0,0.05); color: var(--on-s-container); }
-        .progress-bar { position: absolute; bottom: 0; left: 0; height: 100%; background: rgba(255,255,255,0.15); width: 0%; transition: width 0.3s ease; }
+        .progress-bar { position: absolute; bottom: 0; left: 0; height: 100%; background: rgba(255,255,255,0.2); width: 0%; transition: width 0.3s ease; }
         .btn-content { display: flex; align-items: center; gap: 8px; z-index: 2; pointer-events: none; }
 
-        /* STATUS & UTILS */
         .status-bar { position: fixed; top: 30px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; z-index: 100; pointer-events: none; }
         .weather-chip { pointer-events: auto; background: rgba(255,255,255,0.3); backdrop-filter: blur(20px); padding: 0 16px 0 8px; border-radius: 28px; display: flex; align-items: center; gap: 6px; height: 44px; cursor: pointer; border: 1px solid rgba(255,255,255,0.2); }
-        .v-info-bottom { position: fixed; bottom: 30px; left: 125px; background: none; border: none; color: inherit; text-align: left; cursor: pointer; z-index: 100; }
-
-        /* SIDE SHEET */
-        #settings-fab { position: fixed; bottom: 30px; right: 30px; width: 64px; height: 64px; border-radius: 20px; background: var(--p); color: white; border: none; cursor: pointer; z-index: 200; display: grid; place-items: center; box-shadow: 0 10px 20px rgba(0,0,0,0.1); transition: transform 0.2s; }
-        .side-sheet { position: fixed; top: 0; right: -400px; width: 360px; height: 100%; background: white; z-index: 300; transition: right 0.5s var(--spring); padding: 30px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; box-shadow: -10px 0 40px rgba(0,0,0,0.05); }
-        .side-sheet.open { right: 0; }
-        .news-card { background: rgba(0,0,0,0.04); padding: 18px; border-radius: 24px; font-size: 0.85rem; border: 1px solid rgba(0,0,0,0.05); line-height: 1.5; }
         
-        /* THEME CONTROLS */
+        /* FUN NEWS CARD */
+        .news-card { 
+            background: #fff; padding: 20px; border-radius: 28px; border: 1px solid rgba(0,0,0,0.05); 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.02); position: relative; overflow: hidden;
+        }
+        .news-tag { 
+            position: absolute; top: 0; right: 0; background: var(--p); color: white; 
+            padding: 4px 12px; font-size: 0.6rem; font-weight: 900; border-bottom-left-radius: 12px;
+        }
+
+        .side-sheet { position: fixed; top: 0; right: -400px; width: 360px; height: 100%; background: white; z-index: 300; transition: right 0.5s var(--spring); padding: 30px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
+        .side-sheet.open { right: 0; }
+        
         .color-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 10px 0; }
         .color-circle { width: 100%; aspect-ratio: 1; border-radius: 50%; cursor: pointer; display: grid; place-items: center; font-size: 0.55rem; font-weight: 900; transition: 0.3s var(--spring); border: 2px solid rgba(0,0,0,0.05); }
-        .custom-picker-row { display: flex; align-items: center; gap: 15px; background: rgba(0,0,0,0.04); padding: 12px; border-radius: 16px; margin-top: 5px; }
-        #picker-swatch { width: 44px; height: 44px; border-radius: 12px; border: none; cursor: pointer; background: var(--p); padding: 0; }
+        .custom-picker-row { display: flex; align-items: center; gap: 15px; background: rgba(0,0,0,0.04); padding: 12px; border-radius: 16px; }
+        #picker-swatch { width: 44px; height: 44px; border-radius: 12px; border: none; cursor: pointer; background: var(--p); }
     </style>
 </head>
 <body>
@@ -80,12 +79,11 @@
             <img id="w-icon" src="https://cdn.weatherapi.com/weather/64x64/day/113.png" style="width:30px">
             <span id="temp" style="font-weight:700;">--°F</span>
         </div>
-        <div id="clock" style="font-weight:900; opacity:0.6; font-family:'Space Grotesk'; font-size:1.1rem;">00:00:00 AM</div>
+        <div id="clock" style="font-weight:900; opacity:0.6; font-family:'Space Grotesk'; font-size:1.1rem;">00:00 AM</div>
     </div>
     
     <nav class="nav-rail" id="rail">
         <div class="nav-logo-brand" style="font-family:'Michroma'; font-size:0.8rem; margin-bottom:20px; font-weight:bold;">PIX</div>
-        <div style="font-size:0.65rem; font-weight:900; opacity:0.4; text-transform:uppercase; margin-bottom:5px; letter-spacing:1px;">VER</div>
     </nav>
 
     <main>
@@ -95,7 +93,7 @@
         <div class="content">
             <p id="v-tag" style="font-weight:900; opacity:0.3; letter-spacing:5px; font-size:0.8rem;"></p>
             <h1 id="v-title">ALPHA</h1>
-            <p id="v-desc" style="font-size:1.15rem; opacity:0.7;">Adaptive design. Unmatched stability.</p>
+            <p id="v-desc" style="font-size:1.15rem; opacity:0.7;">Designing the next dimension.</p>
             <div class="btn-group">
                 <button id="btn-skin" class="m3-btn" onclick="forceDownload('skin')">
                     <div class="progress-bar"></div>
@@ -109,32 +107,30 @@
         </div>
     </main>
 
-    <button class="v-info-bottom" onclick="toggleSettings()">
-        <span style="font-family:'Space Grotesk'; font-size:0.75rem; font-weight:900; display:block;">v0.5.0</span>
-        <span style="font-size:0.6rem; opacity:0.5; text-transform:uppercase;">Bug Fix Patch</span>
-    </button>
-
-    <button id="settings-fab" onclick="toggleSettings()">
+    <button id="settings-fab" onclick="toggleSettings()" style="position:fixed; bottom:30px; right:30px; width:64px; height:64px; border-radius:20px; background:var(--p); color:white; border:none; cursor:pointer; z-index:200; display:grid; place-items:center;">
         <span class="material-symbols-rounded" style="font-size:28px;">settings</span>
     </button>
 
     <div class="side-sheet" id="side-sheet">
-        <h2 style="font-family:'Space Grotesk';">SETTINGS</h2>
+        <h2 style="font-family:'Space Grotesk'; letter-spacing:-1px;">WHAT'S NEW</h2>
         <div class="news-card">
-            <strong>v0.5.0 Patch</strong><br>
-            • Live Weather Engine Online<br>
-            • OLED Icon Visibility Fixed<br>
-            • 3-Color Palette Randomizer
+            <div class="news-tag">LATEST</div>
+            <h4 style="font-family:'Space Grotesk'; color:var(--p);">HYPERVISIBILITY</h4>
+            <p style="font-size:0.8rem; margin-top:5px; opacity:0.8;">We fixed the "Ghost Checkmark" in OLED mode. Now your downloads feel as satisfying as they look.</p>
+            <div style="margin-top:10px; display:flex; gap:5px;">
+                <span class="material-symbols-rounded" style="font-size:14px; color:var(--p);">bolt</span>
+                <span style="font-size:0.65rem; font-weight:900; text-transform:uppercase; letter-spacing:1px;">Visual Engine 0.5.1</span>
+            </div>
         </div>
 
-        <h3 style="font-size:0.7rem; opacity:0.5; margin-top:10px;">PRESET THEMES</h3>
+        <h3 style="font-size:0.7rem; opacity:0.5; margin-top:10px; letter-spacing:1px;">THEME PRESETS</h3>
         <div class="color-grid" id="preset-grid"></div>
 
-        <h3 style="font-size:0.7rem; opacity:0.5;">CUSTOM COLOR</h3>
+        <h3 style="font-size:0.7rem; opacity:0.5; letter-spacing:1px;">CUSTOM VIBE</h3>
         <div class="custom-picker-row">
             <input type="color" id="picker-swatch" oninput="applyHex(this.value)">
-            <span id="hex-label" style="font-family:'Space Grotesk'; font-weight:900; opacity:0.6;">#6750A4</span>
-            <button onclick="randomTheme()" title="Randomize Palette" style="margin-left:auto; background:none; border:none; cursor:pointer;"><span class="material-symbols-rounded">casino</span></button>
+            <span id="hex-label" style="font-family:'Space Grotesk'; font-weight:900; opacity:0.6;">#COLOR</span>
+            <button onclick="randomTheme()" title="Randomize" style="margin-left:auto; background:none; border:none; cursor:pointer;"><span class="material-symbols-rounded">casino</span></button>
         </div>
 
         <hr style="opacity:0.1; margin:10px 0;">
@@ -142,21 +138,12 @@
         <div style="display:flex; justify-content:space-between; align-items:center;"><span>Night Cycle</span><input type="checkbox" id="auto-toggle" onchange="updateAuto(this.checked)"></div>
         <div style="display:flex; justify-content:space-between; align-items:center;"><span>24h Clock</span><input type="checkbox" id="format-toggle" onchange="updateFormat(this.checked)"></div>
         
-        <button onclick="toggleSettings()" style="margin-top:auto; padding:16px; border-radius:16px; border:none; background:var(--on-s-container); color:white; cursor:pointer; font-weight:900;">DONE</button>
+        <button onclick="toggleSettings()" style="margin-top:auto; padding:18px; border-radius:20px; border:none; background:var(--on-s-container); color:white; cursor:pointer; font-weight:900;">CLOSE</button>
     </div>
 
     <script>
-        const PRESETS = [ 
-            ["#D1E4FF", "#A6C8FF", "#004A77"], ["#C4EED0", "#A2E0B8", "#006D3B"], 
-            ["#FDE293", "#FADB7D", "#A67100"], ["#FFD8E4", "#F9B1C8", "#880E4F"],
-            ["#E2E2E6", "#C6C6CA", "#44474E"], ["#FFDBCB", "#FFB68F", "#8B4100"],
-            ["#D0BCFF", "#B69DF8", "#4F378B"], ["#B2F0FF", "#82DFFF", "#004F58"]
-        ];
-        const VERSIONS = [
-            { id: "0.1", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/skin%20alpha.png", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
-            { id: "0.2", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.png", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
-        ];
-
+        const PRESETS = [ ["#D1E4FF", "#A6C8FF", "#004A77"], ["#C4EED0", "#A2E0B8", "#006D3B"], ["#FDE293", "#FADB7D", "#A67100"], ["#FFD8E4", "#F9B1C8", "#880E4F"], ["#E2E2E6", "#C6C6CA", "#44474E"], ["#FFDBCB", "#FFB68F", "#8B4100"], ["#D0BCFF", "#B69DF8", "#4F378B"], ["#B2F0FF", "#82DFFF", "#004F58"] ];
+        const VERSIONS = [{ id: "0.1", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/skin%20alpha.png", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] }, { id: "0.2", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.png", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }];
         let state = JSON.parse(localStorage.getItem('pix_pref')) || { oled: false, auto: true, is24h: false, themeType: 'default', themeVal: 0 };
         let currentIdx = 1;
 
@@ -166,26 +153,19 @@
             state.themeType = type; state.themeVal = val;
             let c = (type === 'default') ? VERSIONS[currentIdx].colors : (Array.isArray(val) ? val : [val, val, val]);
             if(type === 'preset') c = PRESETS[val];
-
             document.documentElement.style.setProperty('--bg-1', c[0]);
             document.documentElement.style.setProperty('--bg-2', c[1]);
             document.documentElement.style.setProperty('--p', c[2]);
             document.getElementById('picker-swatch').style.background = c[2];
-            document.getElementById('hex-label').innerText = type.toUpperCase();
+            document.getElementById('hex-label').innerText = c[2].toUpperCase();
             localStorage.setItem('pix_pref', JSON.stringify(state));
         }
 
         function applyHex(hex) { setTheme('custom', [hex, hex, hex]); }
-        function randomTheme() {
-            const r = () => '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
-            setTheme('custom', [r(), r(), r()]);
-        }
+        function randomTheme() { const r = () => '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0'); setTheme('custom', [r(), r(), r()]); }
 
         async function updateWeather() {
-            try {
-                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=37.5&longitude=-121.9&current_weather=true&temperature_unit=fahrenheit`).then(r => r.json());
-                document.getElementById('temp').innerText = `${Math.round(res.current_weather.temperature)}°F`;
-            } catch (e) { document.getElementById('temp').innerText = '72°F'; }
+            try { const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=37.5&longitude=-121.9&current_weather=true&temperature_unit=fahrenheit`).then(r => r.json()); document.getElementById('temp').innerText = `${Math.round(res.current_weather.temperature)}°F`; } catch (e) { document.getElementById('temp').innerText = '72°F'; }
         }
 
         async function forceDownload(type) {
@@ -196,8 +176,7 @@
             content.innerHTML = `<span>FETCHING</span>`; bar.style.width = "40%";
             try {
                 const response = await fetch(url); bar.style.width = "100%";
-                const blob = await response.blob(); const a = document.createElement('a'); 
-                a.href = window.URL.createObjectURL(blob); a.download = url.split('/').pop(); a.click();
+                const blob = await response.blob(); const a = document.createElement('a'); a.href = window.URL.createObjectURL(blob); a.download = url.split('/').pop(); a.click();
                 content.innerHTML = `<span>READY</span> <span class="material-symbols-rounded">check_circle</span>`;
             } catch (e) { content.innerText = "ERROR"; }
             finally { setTimeout(() => { content.innerHTML = `<span>${type === 'skin' ? 'GET SKIN' : 'GET MODEL'}</span>`; bar.style.width = "0%"; }, 3000); }
@@ -206,40 +185,25 @@
         function updateOLED(v) { state.oled = v; checkMode(); localStorage.setItem('pix_pref', JSON.stringify(state)); }
         function updateAuto(v) { state.auto = v; checkMode(); localStorage.setItem('pix_pref', JSON.stringify(state)); }
         function updateFormat(v) { state.is24h = v; localStorage.setItem('pix_pref', JSON.stringify(state)); }
-        function checkMode() { 
-            const h = new Date().getHours();
-            const isNight = state.auto ? (h >= 19 || h < 7) : state.oled;
-            document.body.classList.toggle('oled', isNight);
-        }
+        function checkMode() { const h = new Date().getHours(); const isNight = state.auto ? (h >= 19 || h < 7) : state.oled; document.body.classList.toggle('oled', isNight); }
 
         function switchVersion(idx) {
             currentIdx = idx;
             document.getElementById('v-tag').innerText = `VERSION // ${VERSIONS[idx].id}`;
             document.getElementById('mv').setAttribute('src', VERSIONS[idx].model);
-            document.querySelectorAll('.v-pill').forEach((p, i) => p.classList.toggle('active', i === idx));
             setTheme(state.themeType, state.themeVal);
         }
 
         window.onload = () => {
             const grid = document.getElementById('preset-grid');
-            PRESETS.forEach((p, i) => {
-                const d = document.createElement('div'); d.className = 'color-circle';
-                d.style.backgroundColor = p[2]; d.onclick = () => setTheme('preset', i);
-                grid.appendChild(d);
-            });
+            PRESETS.forEach((p, i) => { const d = document.createElement('div'); d.className = 'color-circle'; d.style.backgroundColor = p[2]; d.onclick = () => setTheme('preset', i); grid.appendChild(d); });
             const rail = document.getElementById('rail');
-            VERSIONS.forEach((_, i) => {
-                const b = document.createElement('button'); b.className = 'v-pill';
-                b.innerHTML = i+1; b.onclick = () => switchVersion(i);
-                rail.appendChild(b);
-            });
+            VERSIONS.forEach((_, i) => { const b = document.createElement('button'); b.className = 'v-pill'; b.innerHTML = i+1; b.onclick = () => switchVersion(i); rail.appendChild(b); });
             document.getElementById('oled-toggle').checked = state.oled;
             document.getElementById('auto-toggle').checked = state.auto;
             document.getElementById('format-toggle').checked = state.is24h;
             checkMode(); switchVersion(currentIdx); updateWeather();
-            setInterval(() => {
-                document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-US', { hour12: !state.is24h });
-            }, 1000);
+            setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: !state.is24h }); }, 1000);
         };
     </script>
 </body>
