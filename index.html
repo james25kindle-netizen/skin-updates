@@ -29,8 +29,9 @@
         .hub-os-status .v-label span { opacity: 0.3; margin-left: 8px; font-weight: 500; text-transform: uppercase; }
 
         .status-bar { position: fixed; top: 30px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; z-index: 100; }
-        .weather-chip { background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(20px); padding: 2px 18px 2px 6px; border-radius: 40px; border: 1px solid rgba(255, 255, 255, 0.4); display: flex; align-items: center; gap: 8px; min-width: 100px; }
-        .weather-chip img { width: 42px; height: 42px; }
+        .weather-chip { background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(20px); padding: 4px 18px 4px 8px; border-radius: 40px; border: 1px solid rgba(255, 255, 255, 0.4); display: flex; align-items: center; gap: 8px; min-width: 110px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .weather-chip img { width: 32px; height: 32px; object-fit: contain; }
+        .weather-chip span { font-weight: 700; font-family: 'Space Grotesk'; font-size: 1.1rem; }
         #clock { font-weight: 900; opacity: 0.6; font-family: 'Space Grotesk'; font-size: 1.2rem; }
         
         nav.nav-rail { width: 90px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 12px; background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(15px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; }
@@ -45,7 +46,6 @@
         
         h1 { font-family: 'Bebas Neue'; font-size: 8.5rem; line-height: 0.8; letter-spacing: -3px; }
         .m3-btn { flex: 1; height: 64px; border-radius: 32px; background: var(--on-s-container); color: white; border: none; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.6s var(--spring); }
-        .m3-btn:hover { flex: 2.5; background: var(--p); transform: translateY(-3px); }
 
         .settings-fab { position: fixed; bottom: 30px; right: 30px; width: 56px; height: 56px; border-radius: 16px; background: var(--p); color: white; border: none; cursor: pointer; display: grid; place-items: center; z-index: 200; transition: all 0.6s var(--spring); }
         .side-sheet { position: fixed; top: 0; right: -400px; width: 350px; height: 100%; background: white; z-index: 300; transition: right 0.5s var(--spring); padding: 30px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
@@ -61,8 +61,8 @@
 
     <div class="status-bar">
         <div class="weather-chip" id="weather-chip">
-            <img id="weather-icon" src="https://gitlab.com/bignutty/google-weather-icons/-/raw/master/clear_day.png" alt="weather">
-            <span id="temp">--°F</span>
+            <img id="weather-icon" src="https://cdn.jsdelivr.net/gh/bignutty/google-weather-icons@master/clear_day.png" alt="weather">
+            <span id="temp">--°</span>
         </div>
         <div id="clock">00:00:00 AM</div>
     </div>
@@ -107,7 +107,6 @@
         function updateFormat(v) { state.is24h = v; save(); }
         function save() { localStorage.setItem('pix_settings', JSON.stringify(state)); }
 
-        // DYNAMIC WEATHER FETCH
         async function updateWeather() {
             try {
                 const geo = await fetch('https://ipapi.co/json/').then(res => res.json());
@@ -115,9 +114,8 @@
                 
                 const temp = Math.round(weather.current_weather.temperature);
                 const code = weather.current_weather.weathercode;
-                document.getElementById('temp').innerText = `${temp}°F`;
+                document.getElementById('temp').innerText = `${temp}°`;
                 
-                // Icon mapping for Google Weather Icons
                 let icon = 'clear_day';
                 if (code >= 1 && code <= 3) icon = 'mostly_cloudy';
                 if (code >= 45 && code <= 48) icon = 'foggy';
@@ -126,9 +124,10 @@
                 if (code >= 80 && code <= 82) icon = 'heavy_rain';
                 if (code >= 95) icon = 'thunderstorm';
                 
-                document.getElementById('weather-icon').src = `https://gitlab.com/bignutty/google-weather-icons/-/raw/master/${icon}.png`;
+                // CDN path for better compatibility
+                document.getElementById('weather-icon').src = `https://cdn.jsdelivr.net/gh/bignutty/google-weather-icons@master/${icon}.png`;
             } catch (e) {
-                document.getElementById('temp').innerText = '72°F'; // Fallback
+                document.getElementById('temp').innerText = '--°';
             }
         }
 
@@ -170,7 +169,6 @@
 
         function switchVersion(idx) {
             currentIdx = idx; const v = VERSIONS[idx];
-            document.getElementById('v-title').innerText = v.title;
             document.getElementById('v-tag').innerText = `DATA_REF // Version ${v.id}`;
             document.getElementById('v-desc').innerText = v.desc;
             document.getElementById('mv').setAttribute('src', v.model);
