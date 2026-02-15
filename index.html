@@ -14,7 +14,6 @@
             --blur: 60px;
         }
 
-        /* OLED FIXES */
         body.oled { background-color: #000 !important; color: #FFFFFF !important; }
         body.oled .viewer-box { background: #0a0a0a; border: 1px solid #222; }
         body.oled .weather-chip, body.oled nav.nav-rail { background: rgba(255,255,255,0.08); color: #FFFFFF; }
@@ -24,20 +23,17 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background-color: #fdf8fd; color: var(--on-s-container); font-family: 'Outfit', sans-serif; height: 100vh; display: flex; overflow: hidden; transition: background 0.5s ease; }
         
-        .aura-bg { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); }
+        .aura-bg { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); pointer-events: none; }
         
-        /* WEATHER CHIP LINK */
         .status-bar { position: fixed; top: 30px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; z-index: 100; }
         .weather-link { text-decoration: none; color: inherit; cursor: pointer; }
         .weather-chip { background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(20px); padding: 2px 18px 2px 6px; border-radius: 40px; border: 1px solid rgba(255, 255, 255, 0.4); display: flex; align-items: center; gap: 6px; transition: transform 0.2s ease; }
-        .weather-chip:hover { transform: scale(1.05); background: rgba(255, 255, 255, 0.7); }
         .weather-chip svg { width: 44px; height: 44px; }
-        
         #clock { font-weight: 900; opacity: 0.6; font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; }
         
-        /* NAV RAIL PIX TEXT */
         nav.nav-rail { width: 90px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 12px; background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(15px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; }
         .nav-logo { font-weight: 900; font-size: 0.7rem; letter-spacing: 3px; opacity: 0.4; margin-bottom: 20px; font-family: 'Space Grotesk'; }
+        .rail-label { font-size: 0.55rem; font-weight: 900; opacity: 0.3; letter-spacing: 1px; margin-top: 10px; text-transform: uppercase; }
 
         .v-pill { width: 48px; height: 48px; border-radius: 24px; background: rgba(0,0,0,0.05); border: none; cursor: pointer; display: grid; place-items: center; transition: all 0.5s var(--spring); font-weight: 900; color: inherit; }
         .v-pill.active { height: 64px; width: 32px; border-radius: 16px; background: var(--p); color: white; }
@@ -50,12 +46,17 @@
         .m3-btn { flex: 1; height: 64px; border-radius: 32px; background: var(--on-s-container); color: white; border: none; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: flex 0.6s var(--spring), background 0.3s ease; }
         .m3-btn:hover { flex: 2.5; background: var(--p); }
 
-        .settings-fab { position: fixed; bottom: 30px; right: 30px; width: 56px; height: 56px; border-radius: 16px; background: var(--p); color: white; border: none; cursor: pointer; display: grid; place-items: center; z-index: 200; }
+        /* EXPRESSIVE M3 FAB */
+        .settings-fab { position: fixed; bottom: 30px; right: 30px; width: 56px; height: 56px; border-radius: 16px; background: var(--p); color: white; border: none; cursor: pointer; display: grid; place-items: center; z-index: 200; transition: all 0.6s var(--spring); }
+        .settings-fab:hover { border-radius: 28px; transform: scale(1.1) rotate(15deg); box-shadow: 0 15px 30px rgba(0,0,0,0.2); }
+        .settings-fab:active { transform: scale(0.95) rotate(-10deg); border-radius: 12px; }
+
         .side-sheet { position: fixed; top: 0; right: -400px; width: 350px; height: 100%; background: white; z-index: 300; transition: right 0.5s var(--spring); padding: 30px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
         .side-sheet.open { right: 0; }
 
         .color-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 10px 0; }
-        .color-circle { width: 100%; aspect-ratio: 1; border-radius: 50%; border: 3px solid transparent; cursor: pointer; }
+        .color-circle { width: 100%; aspect-ratio: 1; border-radius: 50%; border: 3px solid transparent; cursor: pointer; transition: transform 0.2s ease; }
+        .color-circle:hover { transform: scale(1.1); }
         .news-card { background: rgba(0,0,0,0.05); padding: 15px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(0,0,0,0.1); }
     </style>
 </head>
@@ -73,6 +74,7 @@
 
     <nav class="nav-rail" id="rail">
         <div class="nav-logo">PIX</div>
+        <div class="rail-label">VERSIONS</div>
     </nav>
 
     <main>
@@ -82,8 +84,8 @@
             <h1 id="v-title">PIX_LABS</h1>
             <p id="v-desc" style="font-size:1.15rem; opacity:0.7; margin-bottom:25px;"></p>
             <div class="btn-group" style="display:flex; gap:12px;">
-                <button class="m3-btn" onclick="handleDownload('skin')">GET SKIN</button>
-                <button class="m3-btn" style="background:rgba(0,0,0,0.05); color:var(--on-s-container);" onclick="handleDownload('model')">GET MODEL</button>
+                <button class="m3-btn" onclick="triggerDownload('skin')">GET SKIN</button>
+                <button class="m3-btn" style="background:rgba(0,0,0,0.05); color:var(--on-s-container);" onclick="triggerDownload('model')">GET MODEL</button>
             </div>
         </div>
     </main>
@@ -97,11 +99,11 @@
         </div>
         
         <div class="news-card">
-            <strong>WHAT'S NEW (v0.1.0)</strong><br>
-            • Click weather for Google Chrome<br>
-            • Restored PIX rail branding<br>
-            • Default Color Preset (Purple)<br>
-            • OLED Close Button Visibility Fix
+            <strong>WHAT'S NEW (v0.1.1)</strong><br>
+            • Expressive FAB Animations<br>
+            • Fixed Download Logic<br>
+            • Navigation "Versions" Label<br>
+            • Color Picker Stability
         </div>
 
         <div>
@@ -127,8 +129,8 @@
 
         const PRESETS = [ ["#C4EED0", "#A2E0B8", "#006D3B"], ["#D1E4FF", "#A6C8FF", "#004A77"], ["#FFD8E4", "#F9B1C8", "#880E4F"], ["#FEEFC3", "#FDE293", "#EA8600"] ];
         const VERSIONS = [
-            { id: "0.0.1", title: "ALPHA", desc: "Foundation build.", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
-            { id: "0.0.2", title: "ALPHA", desc: "Enhanced build.", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
+            { id: "0.0.1", title: "ALPHA", desc: "Foundation build.", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.png", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
+            { id: "0.0.2", title: "ALPHA", desc: "Enhanced build.", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.png", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
         ];
 
         let currentIdx = 1;
@@ -138,6 +140,29 @@
         function updateOLED(v) { state.oled = v; document.body.classList.toggle('oled', v); save(); }
         function updateFormat(v) { state.is24h = v; save(); }
         function save() { localStorage.setItem('pix_settings', JSON.stringify(state)); }
+
+        // DOWNLOAD FIX
+        async function triggerDownload(type) {
+            const v = VERSIONS[currentIdx];
+            const url = type === 'skin' ? v.skin : v.model;
+            const fileName = `PIX_ALPHA_${v.id}_${type}.${type === 'skin' ? 'png' : 'gltf'}`;
+            
+            try {
+                const response = await fetch(url);
+                const blob = await response.blob();
+                const blobUrl = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = blobUrl;
+                link.download = fileName;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(blobUrl);
+            } catch (e) {
+                console.error("Download failed", e);
+                window.open(url, '_blank'); // Fallback
+            }
+        }
 
         function setMode(mode, val) {
             let c = (mode === 'skin') ? VERSIONS[currentIdx].colors : (mode === 'preset') ? PRESETS[val] : [val+'44', val+'88', val];
