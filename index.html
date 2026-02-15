@@ -14,199 +14,271 @@
             --blur: 60px;
         }
 
+        /* OLED / NIGHT MODE */
         body.oled { background-color: #000 !important; color: #FFFFFF !important; }
-        body.oled .aura-bg { opacity: 0.2; }
+        body.oled .aura-bg { opacity: 0.3; filter: blur(80px) saturate(0.4); }
         body.oled .viewer-box { background: #0a0a0a !important; border: 1px solid #1a1a1a; }
-        body.oled .side-sheet { background: #111; border-left: 1px solid #333; color: #fff; }
+        body.oled .side-sheet { background: #000; border-left: 1px solid #222; color: #fff; }
+        body.oled .m3-btn { background: #FFFFFF !important; color: #000000 !important; }
+        body.oled .m3-btn-secondary { background: rgba(255,255,255,0.1) !important; color: #FFFFFF !important; }
+        body.oled .v-pill.active { background: #FFFFFF !important; color: #000 !important; }
+        body.oled .news-card { background: rgba(255,255,255,0.1) !important; color: white; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; user-select: none; }
         body { background-color: #fdf8fd; color: var(--on-s-container); font-family: 'Outfit', sans-serif; height: 100vh; width: 100vw; display: flex; overflow: hidden; transition: background 0.8s ease; }
         
-        .aura-bg { position: fixed; inset: -10%; background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); animation: auraPulse 10s infinite ease-in-out; }
-        @keyframes auraPulse { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } }
+        .aura-bg { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); pointer-events: none; transition: --bg-1 0.5s, --bg-2 0.5s; }
         
-        /* NAV RAIL */
-        nav.nav-rail { width: 90px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 15px; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; }
-        .rail-header { font-family: 'Michroma'; font-size: 0.7rem; font-weight: bold; margin-bottom: 5px; }
-        .rail-label { font-size: 0.5rem; font-weight: 900; opacity: 0.3; margin-bottom: 15px; letter-spacing: 1px; }
-        .v-pill { width: 48px; height: 48px; border-radius: 24px; background: rgba(0,0,0,0.05); border: none; cursor: pointer; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: 0.5s var(--spring); color: inherit; position: relative; }
-        .v-pill span { font-size: 0.5rem; font-weight: 900; opacity: 0.4; position: absolute; bottom: -18px; }
-        .v-pill:hover { transform: scale(1.1); background: var(--p); color: white; }
-        .v-pill.active { height: 80px; width: 38px; border-radius: 19px; background: var(--p); color: white; margin-bottom: 15px; }
-        .v-pill.active span { opacity: 1; color: var(--p); bottom: -22px; }
+        /* 1. NAV RAIL */
+        nav.nav-rail { width: 90px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 12px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(15px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; flex-shrink: 0; }
+        .v-pill { width: 48px; height: 48px; border-radius: 24px; background: rgba(0,0,0,0.05); border: none; cursor: pointer; display: grid; place-items: center; font-weight: 900; color: inherit; transition: all 0.5s var(--spring); }
+        .nav-rail:has(.v-pill:hover) .v-pill:not(:hover) { transform: scale(0.8); opacity: 0.5; }
+        .v-pill:hover { transform: scale(1.2); background: var(--p); color: white; }
+        .v-pill.active { height: 80px; width: 34px; border-radius: 17px; background: var(--p); color: white; }
 
+        /* 2. MAIN LAYOUT */
         main { flex: 1; display: grid; grid-template-columns: 1fr 450px; padding: 40px; gap: 40px; align-items: center; height: 100%; }
-        .viewer-box { height: 90%; width: 100%; background: white; border-radius: 48px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.03); display: flex; align-items: center; justify-content: center; }
+        
+        .viewer-box { height: 90%; width: 100%; background: white; border-radius: 48px; position: relative; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.03); }
+        /* ZOOM ADJUSTED: camera-orbit="45deg 55deg 140%" */
         model-viewer { width: 100%; height: 100%; }
         
+        .content { display: flex; flex-direction: column; justify-content: center; }
         h1 { font-family: 'Bebas Neue'; font-size: 8.5rem; line-height: 0.8; letter-spacing: -3px; margin: 10px 0; }
 
-        .btn-group { display: flex; gap: 12px; margin-top: 20px; }
-        .m3-btn { flex: 1; height: 64px; border-radius: 32px; background: var(--p); color: white; border: none; font-weight: 800; cursor: pointer; transition: 0.5s var(--spring); position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-        .progress-overlay { position: absolute; bottom: 0; left: 0; height: 100%; background: rgba(255,255,255,0.2); width: 0%; transition: width 0.3s ease; }
+        /* 3. BUTTONS */
+        .btn-group { display: flex; gap: 12px; width: 100%; margin-top: 20px; }
+        .m3-btn { flex: 1; height: 64px; border-radius: 32px; background: var(--p); color: white; border: none; font-weight: 800; cursor: pointer; transition: flex 0.6s var(--spring), background 0.3s; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+        .m3-btn:hover { flex: 2; filter: brightness(1.1); }
+        .m3-btn-secondary { background: rgba(0,0,0,0.05); color: var(--on-s-container); }
+        .progress-bar { position: absolute; bottom: 0; left: 0; height: 100%; background: rgba(255,255,255,0.15); width: 0%; transition: width 0.3s ease; }
+        .btn-content { display: flex; align-items: center; gap: 8px; z-index: 2; pointer-events: none; }
 
-        .status-bar { position: fixed; top: 30px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; z-index: 100; }
-        .weather-chip { background: rgba(255,255,255,0.4); backdrop-filter: blur(20px); padding: 4px 16px 4px 8px; border-radius: 28px; display: flex; align-items: center; gap: 6px; cursor: pointer; border: 1px solid rgba(255,255,255,0.3); }
+        /* 4. UTILS & STATUS */
+        .status-bar { position: fixed; top: 30px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; z-index: 100; pointer-events: none; }
+        .weather-chip { pointer-events: auto; background: rgba(255,255,255,0.3); backdrop-filter: blur(20px); padding: 0 16px 0 8px; border-radius: 28px; display: flex; align-items: center; gap: 6px; height: 44px; cursor: pointer; border: 1px solid rgba(255,255,255,0.2); }
+        .v-info-bottom { position: fixed; bottom: 30px; left: 125px; background: none; border: none; color: inherit; text-align: left; cursor: pointer; z-index: 100; }
 
-        /* FOOTER RESTORED */
-        .site-footer { position: fixed; bottom: 30px; left: 125px; color: inherit; cursor: pointer; z-index: 100; }
-        .site-footer b { font-family: 'Space Grotesk'; font-size: 0.8rem; display: block; }
-        .site-footer i { font-style: normal; font-size: 0.6rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.5; }
-
-        #settings-fab { position: fixed; bottom: 30px; right: 30px; width: 64px; height: 64px; border-radius: 20px; background: var(--p); color: white; border: none; cursor: pointer; z-index: 200; display: grid; place-items: center; transition: 0.6s var(--spring); }
-        #settings-fab:hover { transform: rotate(180deg) scale(1.1); border-radius: 32px; }
-
-        .side-sheet { position: fixed; top: 0; right: -420px; width: 400px; height: 100%; background: #fdf8fd; z-index: 300; transition: right 0.6s var(--spring); padding: 30px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
-        .side-sheet.open { right: 0; }
+        /* 5. SETTINGS SHEET */
+        #settings-fab { position: fixed; bottom: 30px; right: 30px; width: 64px; height: 64px; border-radius: 20px; background: var(--p); color: white; border: none; cursor: pointer; z-index: 200; display: grid; place-items: center; box-shadow: 0 10px 20px rgba(0,0,0,0.1); transition: transform 0.2s; }
+        #settings-fab:active { transform: scale(0.9); }
         
-        .m3-switch { position: relative; width: 52px; height: 32px; appearance: none; background: rgba(0,0,0,0.1); border-radius: 16px; cursor: pointer; transition: 0.3s; }
-        .m3-switch:checked { background: var(--p); }
-        .m3-switch::before { content: ""; position: absolute; top: 4px; left: 4px; width: 24px; height: 24px; background: white; border-radius: 50%; transition: 0.3s var(--spring); }
-        .m3-switch:checked::before { left: 24px; }
+        .side-sheet { position: fixed; top: 0; right: -400px; width: 360px; height: 100%; background: white; z-index: 300; transition: right 0.5s var(--spring); padding: 30px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; box-shadow: -10px 0 40px rgba(0,0,0,0.05); }
+        .side-sheet.open { right: 0; }
+        .news-card { background: rgba(0,0,0,0.04); padding: 18px; border-radius: 24px; font-size: 0.85rem; border: 1px solid rgba(0,0,0,0.05); line-height: 1.5; }
+        
+        /* Theme Controls */
+        .color-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 10px 0; }
+        .color-circle { width: 100%; aspect-ratio: 1; border-radius: 50%; cursor: pointer; display: grid; place-items: center; font-size: 0.55rem; font-weight: 900; transition: 0.3s var(--spring); border: 2px solid rgba(0,0,0,0.05); }
+        .color-circle:hover { transform: scale(1.15); }
+        .custom-picker-row { display: flex; align-items: center; gap: 15px; background: rgba(0,0,0,0.04); padding: 12px; border-radius: 16px; margin-top: 5px; }
+        #picker-swatch { width: 44px; height: 44px; border-radius: 12px; border: none; cursor: pointer; background: var(--p); padding: 0; -webkit-appearance: none; }
+        #picker-swatch::-webkit-color-swatch-wrapper { padding: 0; }
+        #picker-swatch::-webkit-color-swatch { border: none; border-radius: 12px; }
     </style>
 </head>
 <body>
     <div class="aura-bg"></div>
 
     <div class="status-bar">
-        <div class="weather-chip" onclick="window.open('https://www.google.com/search?q=weather', '_blank')">
-            <img id="w-icon" src="https://cdn.weatherapi.com/weather/64x64/day/113.png" style="width:32px">
-            <span id="temp" style="font-weight:900;">--°F</span>
+        <div class="weather-chip" onclick="window.open('https://google.com/search?q=weather')">
+            <img id="w-icon" src="https://cdn.weatherapi.com/weather/64x64/day/113.png" style="width:30px">
+            <span id="temp" style="font-weight:700;">72°F</span>
         </div>
         <div id="clock" style="font-weight:900; opacity:0.6; font-family:'Space Grotesk'; font-size:1.1rem;">00:00:00 AM</div>
     </div>
     
     <nav class="nav-rail" id="rail">
-        <div class="rail-header">PIX</div>
-        <div class="rail-label">VERSIONS</div>
-    </nav>
+        <div class="nav-logo-brand" style="font-family:'Michroma'; font-size:0.8rem; margin-bottom:20px; font-weight:bold;">PIX</div>
+        <div style="font-size:0.65rem; font-weight:900; opacity:0.4; text-transform:uppercase; margin-bottom:5px; letter-spacing:1px;">VER</div>
+        </nav>
 
     <main>
         <div class="viewer-box">
-            <model-viewer id="mv" auto-rotate camera-controls shadow-intensity="1" environment-image="neutral" camera-orbit="0deg 75deg 105%" bounds="tight" loading="eager"></model-viewer>
+            <model-viewer id="mv" auto-rotate camera-controls shadow-intensity="1" environment-image="neutral" camera-orbit="45deg 55deg 140%" field-of-view="30deg"></model-viewer>
         </div>
         <div class="content">
-            <p id="v-tag" style="font-weight:900; opacity:0.3; letter-spacing:5px; font-size:0.8rem;">ALPHA CHANNEL</p>
+            <p id="v-tag" style="font-weight:900; opacity:0.3; letter-spacing:5px; font-size:0.8rem;">VERSION // 0.2</p>
             <h1 id="v-title">ALPHA</h1>
-            <p id="v-desc" style="font-size:1.2rem; opacity:0.7; font-weight:500;">Latest release auto-loaded.</p>
+            <p id="v-desc" style="font-size:1.15rem; opacity:0.7;">Restored stability and visual systems.</p>
+            
             <div class="btn-group">
-                <button id="dl-skin" class="m3-btn" onclick="forceDownload('skin')">
-                    <div class="progress-overlay"></div>
-                    <span class="btn-text">GET SKIN</span>
+                <button id="btn-skin" class="m3-btn" onclick="forceDownload('skin')">
+                    <div class="progress-bar"></div>
+                    <div class="btn-content"><span>GET SKIN</span></div>
                 </button>
-                <button id="dl-model" class="m3-btn" style="background:rgba(0,0,0,0.05); color:inherit;" onclick="forceDownload('model')">
-                    <div class="progress-overlay"></div>
-                    <span class="btn-text">GET MODEL</span>
+                <button id="btn-model" class="m3-btn m3-btn-secondary" onclick="forceDownload('model')">
+                    <div class="progress-bar"></div>
+                    <div class="btn-content"><span>GET MODEL</span></div>
                 </button>
             </div>
         </div>
     </main>
 
-    <div class="site-footer">
-        <b id="f-version">v0.2</b>
-        <i id="f-name">ALPHA CHANNEL</i>
-    </div>
+    <button class="v-info-bottom" onclick="toggleSettings()">
+        <span style="font-family:'Space Grotesk'; font-size:0.75rem; font-weight:900; display:block;">v0.4.9</span>
+        <span style="font-size:0.6rem; opacity:0.5; text-transform:uppercase;">System Polish</span>
+    </button>
 
     <button id="settings-fab" onclick="toggleSettings()">
-        <span class="material-symbols-rounded" style="font-size:32px;">settings</span>
+        <span class="material-symbols-rounded" style="font-size:28px;">settings</span>
     </button>
 
     <div class="side-sheet" id="side-sheet">
-        <h2 style="font-family:'Space Grotesk'; font-size:1.8rem;">HUB SETTINGS</h2>
-        <div style="display:flex; justify-content:space-between; align-items:center;"><span>24h Clock</span><input type="checkbox" class="m3-switch" id="clock-toggle" onchange="state.is24h = this.checked"></div>
-        <div style="display:flex; justify-content:space-between; align-items:center;"><span>OLED Black</span><input type="checkbox" class="m3-switch" id="oled-toggle" onchange="updateOLED(this.checked)"></div>
-        
-        <h3 style="font-size:0.7rem; opacity:0.4; letter-spacing:1px; margin-top:10px;">COLOR ENGINE</h3>
-        <div id="preset-grid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px;"></div>
-        <div style="display:flex; gap:10px;">
-            <button onclick="setTheme('default')" style="flex:1; padding:16px; border-radius:16px; border:2px solid var(--p); background:transparent; color:var(--p); font-weight:900; cursor:pointer;">DEF</button>
-            <button onclick="randomTheme()" style="flex:2; padding:16px; border-radius:16px; border:none; background:var(--p); color:white; font-weight:900; cursor:pointer;">RANDOM</button>
+        <h2 style="font-family:'Space Grotesk';">SETTINGS</h2>
+        <div class="news-card">
+            <strong>Polish Update</strong><br>
+            • Night Cycle Restored<br>
+            • Camera Zoom Adjusted<br>
+            • 3-Color Randomizer
         </div>
 
-        <button onclick="toggleSettings()" style="margin-top:auto; padding:20px; border-radius:24px; border:none; background:var(--on-s-container); color:white; cursor:pointer; font-weight:900;">CLOSE</button>
+        <h3 style="font-size:0.7rem; opacity:0.5; margin-top:10px;">PRESET THEMES</h3>
+        <div class="color-grid" id="preset-grid"></div>
+
+        <h3 style="font-size:0.7rem; opacity:0.5;">CUSTOM COLOR</h3>
+        <div class="custom-picker-row">
+            <input type="color" id="picker-swatch" oninput="applyHex(this.value)">
+            <span id="hex-label" style="font-family:'Space Grotesk'; font-weight:900; opacity:0.6;">#6750A4</span>
+            <button onclick="randomTheme()" title="Randomize Palette" style="margin-left:auto; background:none; border:none; cursor:pointer; opacity:0.5;"><span class="material-symbols-rounded">casino</span></button>
+        </div>
+
+        <hr style="opacity:0.1; margin:10px 0;">
+        <div style="display:flex; justify-content:space-between; align-items:center;"><span>OLED Mode</span><input type="checkbox" id="oled-toggle" onchange="updateOLED(this.checked)"></div>
+        <div style="display:flex; justify-content:space-between; align-items:center;"><span>Night Cycle</span><input type="checkbox" id="auto-toggle" onchange="updateAuto(this.checked)"></div>
+        <div style="display:flex; justify-content:space-between; align-items:center;"><span>24h Clock</span><input type="checkbox" id="format-toggle" onchange="updateFormat(this.checked)"></div>
+        
+        <button onclick="toggleSettings()" style="margin-top:auto; padding:16px; border-radius:16px; border:none; background:var(--on-s-container); color:white; cursor:pointer; font-weight:900;">DONE</button>
     </div>
 
     <script>
-        const PRESETS = [ ["#D1E4FF", "#A6C8FF", "#004A77"], ["#C4EED0", "#A2E0B8", "#006D3B"], ["#FDE293", "#FADB7D", "#A67100"], ["#FFD8E4", "#F9B1C8", "#880E4F"], ["#E2E2E6", "#C6C6CA", "#44474E"], ["#FFDBCB", "#FFB68F", "#8B4100"], ["#D0BCFF", "#B69DF8", "#4F378B"], ["#B2F0FF", "#82DFFF", "#004F58"] ];
-        const VERSIONS = [
-            { id: "0.1", name: "ALPHA 0.1", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/skin%20alpha.png", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
-            { id: "0.2", name: "ALPHA 0.2", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.png", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
+        const PRESETS = [ 
+            ["#D1E4FF", "#A6C8FF", "#004A77"], ["#C4EED0", "#A2E0B8", "#006D3B"], 
+            ["#FDE293", "#FADB7D", "#A67100"], ["#FFD8E4", "#F9B1C8", "#880E4F"],
+            ["#E2E2E6", "#C6C6CA", "#44474E"], ["#FFDBCB", "#FFB68F", "#8B4100"],
+            ["#D0BCFF", "#B69DF8", "#4F378B"], ["#B2F0FF", "#82DFFF", "#004F58"]
         ];
-        let state = { oled: false, is24h: false, mode: 'default' };
-        let currentIdx = VERSIONS.length - 1; // START ON NEWEST
+        const VERSIONS = [
+            { id: "0.1", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/skin%20alpha.png", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
+            { id: "0.2", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.png", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
+        ];
+
+        let state = JSON.parse(localStorage.getItem('pix_pref')) || { oled: false, auto: true, is24h: false, themeType: 'default', themeVal: 0 };
+        let currentIdx = 1;
 
         function toggleSettings() { document.getElementById('side-sheet').classList.toggle('open'); }
 
         function setTheme(type, val) {
-            state.mode = type;
-            let c = (type === 'default') ? VERSIONS[currentIdx].colors : (type === 'preset' ? PRESETS[val] : [val + '44', val + '88', val]);
-            document.documentElement.style.setProperty('--bg-1', c[0]);
-            document.documentElement.style.setProperty('--bg-2', c[1]);
-            document.documentElement.style.setProperty('--p', c[2]);
+            state.themeType = type; state.themeVal = val;
+            let c;
+            
+            if (type === 'default') {
+                c = VERSIONS[currentIdx].colors;
+            } else if (type === 'custom') {
+                c = val; // Should be array [bg1, bg2, p] or single hex
+            } else {
+                c = PRESETS[val];
+            }
+
+            // Handle logic if c is array (preset/random) or string (single hex)
+            if (Array.isArray(c)) {
+                document.documentElement.style.setProperty('--bg-1', c[0]);
+                document.documentElement.style.setProperty('--bg-2', c[1]);
+                document.documentElement.style.setProperty('--p', c[2]);
+                document.getElementById('picker-swatch').value = c[2]; // Set picker to accent
+                document.getElementById('hex-label').innerText = "CUSTOM";
+            } else {
+                // Single Hex fallback
+                document.documentElement.style.setProperty('--bg-1', c);
+                document.documentElement.style.setProperty('--bg-2', c);
+                document.documentElement.style.setProperty('--p', c);
+                document.getElementById('hex-label').innerText = c.toUpperCase();
+            }
+            
+            if(type === 'default') document.getElementById('hex-label').innerText = "DEFAULT";
+            if(type === 'preset') document.getElementById('hex-label').innerText = "PRESET";
+
+            localStorage.setItem('pix_pref', JSON.stringify(state));
+        }
+
+        function applyHex(hex) { 
+            // When user picks manually, we just use that one color for everything to be safe
+            setTheme('custom', [hex, hex, hex]); 
+        }
+
+        function randomTheme() {
+            // Generate 3 random colors for a full theme
+            const r = () => '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+            const palette = [r(), r(), r()];
+            setTheme('custom', palette);
         }
 
         async function forceDownload(type) {
-            const btn = document.getElementById(type === 'skin' ? 'dl-skin' : 'dl-model');
-            const overlay = btn.querySelector('.progress-overlay');
-            const text = btn.querySelector('.btn-text');
+            const btn = type === 'skin' ? document.getElementById('btn-skin') : document.getElementById('btn-model');
+            const bar = btn.querySelector('.progress-bar');
+            const content = btn.querySelector('.btn-content');
             const url = type === 'skin' ? VERSIONS[currentIdx].skin : VERSIONS[currentIdx].model;
-            text.innerText = "PUSHING..."; overlay.style.width = "40%";
+            
+            content.innerHTML = `<span>FETCHING</span>`; 
+            bar.style.width = "40%";
+
             try {
                 const response = await fetch(url);
-                overlay.style.width = "100%";
+                bar.style.width = "100%";
                 const blob = await response.blob();
-                const link = document.createElement('a');
-                link.href = window.URL.createObjectURL(blob);
-                link.download = url.split('/').pop();
-                link.click();
-                text.innerText = "SUCCESS";
-            } catch (e) { text.innerText = "ERR"; }
-            finally { setTimeout(() => { text.innerText = type === 'skin' ? "GET SKIN" : "GET MODEL"; overlay.style.width = "0%"; }, 2000); }
+                const a = document.createElement('a'); 
+                a.href = window.URL.createObjectURL(blob);
+                a.download = url.split('/').pop(); 
+                a.click();
+                content.innerHTML = `<span>READY</span> <span class="material-symbols-rounded" style="font-size:20px;">check_circle</span>`;
+            } catch (e) { 
+                content.innerText = "ERROR"; 
+            } finally { 
+                setTimeout(() => { 
+                    content.innerHTML = `<span>${type === 'skin' ? 'GET SKIN' : 'GET MODEL'}</span>`; 
+                    bar.style.width = "0%"; 
+                }, 3000); 
+            }
         }
 
-        function randomTheme() { setTheme('custom', '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0')); }
-        function updateOLED(v) { document.body.classList.toggle('oled', v); }
+        function updateOLED(v) { state.oled = v; checkMode(); localStorage.setItem('pix_pref', JSON.stringify(state)); }
+        function updateAuto(v) { state.auto = v; checkMode(); localStorage.setItem('pix_pref', JSON.stringify(state)); }
+        function updateFormat(v) { state.is24h = v; localStorage.setItem('pix_pref', JSON.stringify(state)); }
+        
+        function checkMode() { 
+            const h = new Date().getHours();
+            const isNight = state.auto ? (h >= 19 || h < 7) : state.oled;
+            document.body.classList.toggle('oled', isNight);
+        }
 
         function switchVersion(idx) {
             currentIdx = idx;
-            const v = VERSIONS[idx];
-            document.getElementById('v-tag').innerText = `ALPHA CHANNEL // ${v.id}`;
-            document.getElementById('mv').setAttribute('src', v.model);
-            document.getElementById('f-version').innerText = `v${v.id}`;
-            document.getElementById('f-name').innerText = v.name;
+            document.getElementById('v-tag').innerText = `VERSION // ${VERSIONS[idx].id}`;
+            document.getElementById('mv').setAttribute('src', VERSIONS[idx].model);
             document.querySelectorAll('.v-pill').forEach((p, i) => p.classList.toggle('active', i === idx));
-            if (state.mode === 'default') setTheme('default');
+            setTheme(state.themeType, state.themeVal);
         }
 
         window.onload = () => {
-            const rail = document.getElementById('rail');
-            VERSIONS.forEach((v, i) => {
-                const b = document.createElement('button');
-                b.className = 'v-pill';
-                b.innerHTML = `V${i+1}<span>v${v.id}</span>`;
-                b.onclick = () => switchVersion(i);
-                rail.appendChild(b);
-            });
-            
             const grid = document.getElementById('preset-grid');
             PRESETS.forEach((p, i) => {
-                const d = document.createElement('div');
-                d.className = 'preset-dot';
-                d.style.background = p[2];
-                d.onclick = () => setTheme('preset', i);
+                const d = document.createElement('div'); d.className = 'color-circle';
+                d.style.backgroundColor = p[2]; d.onclick = () => setTheme('preset', i);
                 grid.appendChild(d);
             });
-
+            const rail = document.getElementById('rail');
+            VERSIONS.forEach((_, i) => {
+                const b = document.createElement('button'); b.className = 'v-pill';
+                b.innerHTML = i+1; b.onclick = () => switchVersion(i);
+                rail.appendChild(b);
+            });
+            document.getElementById('oled-toggle').checked = state.oled;
+            document.getElementById('auto-toggle').checked = state.auto;
+            document.getElementById('format-toggle').checked = state.is24h;
+            checkMode(); switchVersion(currentIdx);
             setInterval(() => {
-                document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-US', { 
-                    hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: !state.is24h 
-                });
+                document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-US', { hour12: !state.is24h });
             }, 1000);
-
-            fetch(`https://api.open-meteo.com/v1/forecast?latitude=37.5&longitude=-121.9&current_weather=true&temperature_unit=fahrenheit`)
-                .then(r => r.json()).then(data => { document.getElementById('temp').innerText = `${Math.round(data.current_weather.temperature)}°F`; });
-
-            switchVersion(currentIdx);
         };
     </script>
 </body>
