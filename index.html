@@ -29,7 +29,8 @@
         .aura-bg { position: fixed; inset: 0; background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); transition: filter 0.3s ease; pointer-events: none; }
         
         .status-bar { position: fixed; top: 30px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; z-index: 100; }
-        .weather-chip { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(12px); padding: 10px 20px; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.3); display: flex; align-items: center; gap: 10px; font-weight: 700; }
+        .weather-chip { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(12px); padding: 10px 20px; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.3); display: flex; align-items: center; gap: 12px; font-weight: 700; transition: all 0.3s ease; }
+        .weather-chip span.material-symbols-rounded { font-size: 28px; color: var(--p); transition: color 0.3s ease; }
         #clock { font-weight: 900; opacity: 0.6; font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; }
         
         nav.nav-rail { width: 90px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 12px; background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(15px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; }
@@ -45,13 +46,9 @@
         .m3-btn { flex: 1; height: 64px; border-radius: 32px; background: var(--on-s-container); color: white; border: none; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: flex 0.6s var(--spring), background 0.3s ease; }
         .m3-btn:hover { flex: 2.5; background: var(--p); }
 
-        .settings-fab { position: fixed; bottom: 30px; right: 30px; width: 56px; height: 56px; border-radius: 16px; background: var(--p); color: white; border: none; cursor: pointer; display: grid; place-items: center; z-index: 200; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: transform 0.3s var(--spring); }
+        .settings-fab { position: fixed; bottom: 30px; right: 30px; width: 56px; height: 56px; border-radius: 16px; background: var(--p); color: white; border: none; cursor: pointer; display: grid; place-items: center; z-index: 200; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
         .side-sheet { position: fixed; top: 0; right: -400px; width: 350px; height: 100%; background: white; z-index: 300; box-shadow: -10px 0 30px rgba(0,0,0,0.05); transition: right 0.5s var(--spring); padding: 40px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
         .side-sheet.open { right: 0; }
-
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(5px); z-index: 1000; display: none; place-items: center; }
-        .modal { background: white; padding: 40px; border-radius: 32px; width: 90%; max-width: 500px; }
-        .modal-overlay.open { display: grid; }
 
         .color-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px; }
         .color-circle { width: 100%; aspect-ratio: 1; border-radius: 50%; border: 3px solid transparent; cursor: pointer; display: grid; place-items: center; }
@@ -61,7 +58,10 @@
 <body onmousemove="moveAura(event)">
     <div class="aura-bg"></div>
     <div class="status-bar">
-        <div class="weather-chip"><span class="material-symbols-rounded">thermostat</span><span id="temp">--°F</span></div>
+        <div class="weather-chip">
+            <span id="w-icon" class="material-symbols-rounded">cloud</span>
+            <span id="temp">--°F</span>
+        </div>
         <div id="clock">00:00:00 AM</div>
     </div>
 
@@ -82,53 +82,36 @@
         </div>
     </main>
 
-    <div class="modal-overlay" id="update-modal">
-        <div class="modal">
-            <h2 style="font-family: 'Space Grotesk'; padding:20px;">FIXED DOWNLOADS // v0.0.5<br><br><span style="font-size:0.9rem; opacity:0.7;">Restored 3D viewing and direct asset downloading logic.</span><br><br><button class="m3-btn" onclick="closeUpdate()">CONTINUE</button></h2>
-        </div>
-    </div>
-
     <button class="settings-fab" onclick="toggleSettings()"><span class="material-symbols-rounded">settings</span></button>
 
     <div class="side-sheet" id="side-sheet">
         <button onclick="toggleSettings()" style="background:none; border:none; cursor:pointer; color:inherit;"><span class="material-symbols-rounded">close</span></button>
         <h2 style="font-family: 'Space Grotesk';">PREFERENCES</h2>
-        
         <div class="setting-item">
             <label>Color Mode</label>
             <div class="color-grid" id="color-grid">
-                <div class="color-circle" id="skin-pill" onclick="setMode('skin')" title="Use Skin Colors">
-                    <span class="material-symbols-rounded" style="font-size:20px;">auto_awesome</span>
-                </div>
+                <div class="color-circle" id="skin-pill" onclick="setMode('skin')" title="Use Skin Colors"><span class="material-symbols-rounded">auto_awesome</span></div>
             </div>
         </div>
-
         <div class="setting-item">
             <label>Custom Hex</label>
             <input type="color" id="custom-color" style="width:100%; height:40px; border:none; border-radius:8px; cursor:pointer;" oninput="setMode('custom', this.value)">
         </div>
-
         <div style="display:flex; justify-content:space-between;"><span>OLED Mode</span><input type="checkbox" id="oled-toggle" onchange="updateOLED(this.checked)"></div>
         <div style="display:flex; justify-content:space-between;"><span>24h Clock</span><input type="checkbox" id="format-toggle" onchange="updateFormat(this.checked)"></div>
         <div style="display:flex; justify-content:space-between;"><span>Celsius</span><input type="checkbox" id="unit-toggle" onchange="updateUnit(this.checked)"></div>
-        
-        <div class="setting-item">
-            <label>Rotation Speed</label>
-            <input type="range" id="speed-slider" min="0" max="20" oninput="updateRotateSpeed(this.value)">
-        </div>
     </div>
 
     <script>
-        const CURRENT_VERSION = "0.0.5";
+        const CURRENT_VERSION = "0.0.6";
         const VERSIONS = [
             { id: "0.0.1", title: "ALPHA", desc: "Foundation build.", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.png", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
             { id: "0.0.2", title: "ALPHA", desc: "Enhanced build.", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.png", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
         ];
-
         const PRESETS = [ ["#C4EED0", "#A2E0B8", "#006D3B"], ["#D1E4FF", "#A6C8FF", "#004A77"], ["#FFD8E4", "#F9B1C8", "#880E4F"] ];
 
         let currentIdx = 1;
-        let state = JSON.parse(localStorage.getItem('pix_settings')) || { oled: false, is24h: false, unit: 'F', speed: 2, mode: 'skin', val: null, lastSeenVersion: "" };
+        let state = JSON.parse(localStorage.getItem('pix_settings')) || { oled: false, is24h: false, unit: 'F', mode: 'skin', val: null, lastSeenVersion: "" };
 
         function moveAura(e) {
             document.documentElement.style.setProperty('--mouse-x', (e.clientX / window.innerWidth) * 100 + '%');
@@ -136,40 +119,26 @@
         }
 
         function toggleSettings() { document.getElementById('side-sheet').classList.toggle('open'); }
-        function closeUpdate() { state.lastSeenVersion = CURRENT_VERSION; document.getElementById('update-modal').classList.remove('open'); save(); }
         function save() { localStorage.setItem('pix_settings', JSON.stringify(state)); }
 
         function updateOLED(v) { state.oled = v; document.body.classList.toggle('oled', v); save(); }
         function updateFormat(v) { state.is24h = v; save(); }
         function updateUnit(v) { state.unit = v ? 'C' : 'F'; updateWeather(); save(); }
-        function updateRotateSpeed(v) { state.speed = v; const mv = document.getElementById('mv'); mv.rotationSpeed = v; mv.autoRotate = v > 0; save(); }
 
         function setMode(mode, val = null) {
             state.mode = mode; state.val = val;
             document.querySelectorAll('.color-circle').forEach(c => c.classList.remove('active'));
-            if(mode === 'skin') {
-                const c = VERSIONS[currentIdx].colors;
-                updateCSSVars(c[0], c[1], c[2]);
-                document.getElementById('skin-pill').classList.add('active');
-            } else if (mode === 'preset') {
-                const c = PRESETS[val];
-                updateCSSVars(c[0], c[1], c[2]);
-                document.querySelectorAll('.color-circle')[val + 1].classList.add('active');
-            } else if (mode === 'custom') {
-                updateCSSVars(val + '44', val + '88', val);
-            }
+            const c = (mode === 'skin') ? VERSIONS[currentIdx].colors : (mode === 'preset') ? PRESETS[val] : [val+'44', val+'88', val];
+            document.documentElement.style.setProperty('--bg-1', c[0]);
+            document.documentElement.style.setProperty('--bg-2', c[1]);
+            document.documentElement.style.setProperty('--p', c[2]);
+            if(mode === 'skin') document.getElementById('skin-pill').classList.add('active');
+            if(mode === 'preset') document.querySelectorAll('.color-circle')[val + 1].classList.add('active');
             save();
         }
 
-        function updateCSSVars(bg1, bg2, p) {
-            document.documentElement.style.setProperty('--bg-1', bg1);
-            document.documentElement.style.setProperty('--bg-2', bg2);
-            document.documentElement.style.setProperty('--p', p);
-        }
-
         function switchVersion(idx) {
-            currentIdx = idx; 
-            const v = VERSIONS[idx];
+            currentIdx = idx; const v = VERSIONS[idx];
             document.getElementById('v-title').innerText = v.title;
             document.getElementById('v-tag').innerText = `VERSION // ${v.id}`;
             document.getElementById('v-desc').innerText = v.desc;
@@ -180,8 +149,7 @@
 
         async function handleDownload(type) {
             const v = VERSIONS[currentIdx];
-            const url = type === 'skin' ? v.skin : v.model;
-            const res = await fetch(url);
+            const res = await fetch(type === 'skin' ? v.skin : v.model);
             const blob = await res.blob();
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
@@ -195,6 +163,14 @@
                 const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&current_weather=true&temperature_unit=${u}`);
                 const d = await r.json();
                 document.getElementById('temp').innerText = `${Math.round(d.current_weather.temperature)}°${state.unit}`;
+                
+                // ICON LOGIC
+                const code = d.current_weather.weathercode;
+                const icon = document.getElementById('w-icon');
+                if (code === 0) icon.innerText = "sunny";
+                else if (code < 4) icon.innerText = "cloud";
+                else if (code < 70) icon.innerText = "rainy";
+                else icon.innerText = "ac_unit";
             });
         }
 
@@ -208,12 +184,6 @@
                 grid.appendChild(div);
             });
 
-            document.getElementById('oled-toggle').checked = state.oled;
-            document.getElementById('format-toggle').checked = state.is24h;
-            document.getElementById('unit-toggle').checked = state.unit === 'C';
-            document.getElementById('speed-slider').value = state.speed;
-            if(state.oled) document.body.classList.add('oled');
-
             const rail = document.getElementById('rail');
             VERSIONS.forEach((v, i) => {
                 const b = document.createElement('button'); b.className = 'v-pill v-pill-btn';
@@ -221,10 +191,14 @@
                 rail.appendChild(b);
             });
 
+            document.getElementById('oled-toggle').checked = state.oled;
+            document.getElementById('format-toggle').checked = state.is24h;
+            document.getElementById('unit-toggle').checked = state.unit === 'C';
+            if(state.oled) document.body.classList.add('oled');
+
             switchVersion(currentIdx);
             setInterval(() => document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-US', { hour12: !state.is24h, hour: '2-digit', minute: '2-digit', second: '2-digit' }), 1000);
             updateWeather();
-            if (state.lastSeenVersion !== CURRENT_VERSION) document.getElementById('update-modal').classList.add('open');
             setMode(state.mode, state.val);
         };
     </script>
