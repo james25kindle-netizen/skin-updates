@@ -14,63 +14,61 @@
             --blur: 60px;
         }
 
-        /* OLED OVERRIDES - SUBTLE GRADIENT RESTORED */
+        /* OLED OVERRIDES - KILLING ALL PURPLE IN SETTINGS */
         body.oled { background-color: #000 !important; color: #FFFFFF !important; }
-        body.oled .aura-bg { 
-            opacity: 0.4; 
-            filter: blur(80px) saturate(0.5); /* Desaturated and softer for OLED */
-            background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 60%), 
-                        radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 50%);
-        }
-        body.oled .viewer-box { background: #050505; border: 1px solid #1a1a1a; }
-        body.oled .weather-chip, body.oled nav.nav-rail { background: rgba(255,255,255,0.05); color: #FFFFFF; border-color: rgba(255,255,255,0.1); }
-        body.oled .side-sheet { background: #000; border-left: 1px solid #222; color: white; }
-        body.oled h1 { color: #FFFFFF !important; }
+        body.oled .aura-bg { opacity: 0.3; filter: blur(80px) saturate(0.4); }
+        body.oled .side-sheet { background: #000; border-left: 1px solid #222; color: #fff; }
+        body.oled .side-sheet button, body.oled .random-btn { background: #fff !important; color: #000 !important; }
+        body.oled .news-card { background: #111; border: 1px solid #222; }
+        body.oled input[type="checkbox"] { accent-color: #fff; }
         body.oled .m3-btn { background: #FFFFFF !important; color: #000000 !important; }
         body.oled .m3-btn-secondary { background: rgba(255,255,255,0.1) !important; color: #FFFFFF !important; }
-        body.oled .v-pill { background: rgba(255,255,255,0.08); color: #fff; }
-        body.oled .v-pill.active { background: #FFFFFF; color: #000; }
-        body.oled .nav-logo-brand { background: none; -webkit-text-fill-color: #FFFFFF; color: #FFFFFF; }
+        body.oled .v-pill.active { background: #FFFFFF !important; color: #000 !important; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
         body { background-color: #fdf8fd; color: var(--on-s-container); font-family: 'Outfit', sans-serif; height: 100vh; display: flex; overflow: hidden; transition: background 0.8s ease; }
         
-        .aura-bg { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); pointer-events: none; transition: opacity 0.8s ease; }
+        .aura-bg { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); pointer-events: none; }
         
         /* RAIL */
         .v-pill { width: 48px; height: 48px; border-radius: 24px; background: rgba(0,0,0,0.05); border: none; cursor: pointer; display: grid; place-items: center; font-weight: 900; color: inherit; transition: all 0.5s var(--spring); }
-        .v-pill:hover { height: 60px; transform: scale(1.1); background: var(--p); color: white; }
         .v-pill.active { height: 80px; width: 34px; border-radius: 17px; background: var(--on-s-container); color: white; }
 
         /* BUTTONS */
         .btn-group { display: flex; gap: 12px; width: 100%; }
-        .m3-btn { flex: 1; height: 64px; border-radius: 32px; background: var(--on-s-container); color: white; border: none; font-weight: 800; cursor: pointer; transition: flex 0.6s var(--spring), background 0.3s, transform 0.2s; display: flex; align-items: center; justify-content: center; }
-        .m3-btn:hover { flex: 2.5; }
+        .m3-btn { flex: 1; height: 64px; border-radius: 32px; background: var(--on-s-container); color: white; border: none; font-weight: 800; cursor: pointer; transition: flex 0.6s var(--spring); display: flex; align-items: center; justify-content: center; }
+        .m3-btn:hover { flex: 2.5; background: var(--p); }
 
         nav.nav-rail { width: 90px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 12px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(15px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; }
         main { flex: 1; display: grid; grid-template-columns: 1fr 450px; padding: 40px; gap: 40px; align-items: center; }
-        .viewer-box { height: 80vh; background: white; border-radius: 48px; position: relative; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.05); }
+        .viewer-box { height: 80vh; background: white; border-radius: 48px; position: relative; overflow: hidden; }
         model-viewer { width: 100%; height: 100%; }
-        h1 { font-family: 'Bebas Neue'; font-size: 8.5rem; line-height: 0.8; letter-spacing: -3px; color: var(--on-s-container); }
+        h1 { font-family: 'Bebas Neue'; font-size: 8.5rem; line-height: 0.8; letter-spacing: -3px; }
 
-        .side-sheet { position: fixed; top: 0; right: -400px; width: 350px; height: 100%; background: white; z-index: 300; transition: right 0.5s var(--spring); padding: 30px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
+        .side-sheet { position: fixed; top: 0; right: -400px; width: 350px; height: 100%; background: white; z-index: 300; transition: right 0.5s var(--spring); padding: 30px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; box-shadow: -10px 0 30px rgba(0,0,0,0.05); }
         .side-sheet.open { right: 0; }
+        .news-card { background: rgba(0,0,0,0.05); padding: 15px; border-radius: 20px; font-size: 0.8rem; }
         
+        /* PRESET GRID FIX */
+        .color-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px; }
+        .color-circle { width: 100%; aspect-ratio: 1; border-radius: 50%; cursor: pointer; display: grid; place-items: center; font-size: 0.55rem; font-weight: 900; border: 2px solid transparent; transition: transform 0.2s; }
+        .color-circle:active { transform: scale(0.9); }
+
         .status-bar { position: fixed; top: 30px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; z-index: 100; }
-        .weather-chip { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(20px); padding: 0 16px 0 8px; border-radius: 28px; border: 1px solid rgba(255, 255, 255, 0.3); display: flex; align-items: center; gap: 6px; height: 44px; cursor: pointer; }
+        .weather-chip { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(20px); padding: 0 16px 0 8px; border-radius: 28px; border: 1px solid rgba(255, 255, 255, 0.3); display: flex; align-items: center; gap: 6px; height: 44px; }
     </style>
 </head>
 <body>
     <div class="aura-bg"></div>
     
     <button class="v-info-bottom" onclick="toggleSettings()" style="position:fixed; bottom:30px; left:125px; background:none; border:none; color:inherit; text-align:left; cursor:pointer;">
-        <span style="font-family:'Space Grotesk'; font-size:0.75rem; font-weight:900; display:block;">v0.3.7</span>
-        <span style="font-size:0.6rem; opacity:0.5; text-transform:uppercase;">Eclipse Gradient</span>
+        <span style="font-family:'Space Grotesk'; font-size:0.75rem; font-weight:900; display:block;">v0.3.8</span>
+        <span style="font-size:0.6rem; opacity:0.5; text-transform:uppercase;">Monochrome OLED Patch</span>
     </button>
 
     <div class="status-bar">
         <div class="weather-chip" onclick="window.open('https://www.google.com/search?q=weather', '_blank')">
-            <img src="https://cdn.weatherapi.com/weather/64x64/day/113.png" style="width:32px">
+            <img id="w-icon" src="https://cdn.weatherapi.com/weather/64x64/day/113.png" style="width:32px">
             <span id="temp">--°F</span>
         </div>
         <div id="clock" style="font-weight:900; opacity:0.6; font-family:'Space Grotesk'; font-size:1.1rem;">00:00:00 AM</div>
@@ -86,7 +84,7 @@
         <div class="content">
             <p id="v-tag" style="font-weight:900; opacity:0.3; letter-spacing:5px; font-size:0.8rem;"></p>
             <h1 id="v-title">ALPHA</h1>
-            <p id="v-desc" style="font-size:1.15rem; opacity:0.7; margin-bottom:25px;">The PIX identity, refined.</p>
+            <p id="v-desc" style="font-size:1.15rem; opacity:0.7; margin-bottom:25px;">Original PIX identity.</p>
             <div class="btn-group">
                 <button class="m3-btn" onclick="forceDownload('skin')">GET SKIN</button>
                 <button class="m3-btn m3-btn-secondary" onclick="forceDownload('model')">GET MODEL</button>
@@ -101,21 +99,19 @@
     <div class="side-sheet" id="side-sheet">
         <h2 style="font-family:'Space Grotesk';">SETTINGS</h2>
         
-        <div style="background:rgba(0,0,0,0.05); padding:15px; border-radius:20px; font-size:0.8rem;">
-            <strong>UPDATE (v0.3.7)</strong><br>
-            🌘 <strong>Eclipse Mode:</strong> Gradients now remain visible in OLED mode but with reduced intensity and deeper tones.
+        <div class="news-card">
+            <strong>WHAT'S NEW</strong><br>
+            🎨 Fixed missing color presets grid.<br>
+            ⚪ Forced monochrome UI in OLED mode.<br>
+            🕒 24h/Auto-Dark logic synchronization.
         </div>
 
         <div>
-            <label style="font-weight:800; font-size:0.7rem; opacity:0.5;">THEME</label>
+            <label style="font-weight:800; font-size:0.7rem; opacity:0.5;">THEME PRESETS</label>
             <div class="color-grid" id="preset-grid">
                 <div class="color-circle" style="background:#6750A4; color:white" onclick="setTheme('default')">DFT</div>
             </div>
-            <div style="display:flex; align-items:center; gap:12px; background:rgba(0,0,0,0.04); padding:12px; border-radius:20px; margin-top:10px;">
-                <input type="color" id="custom-color" oninput="applyCustomHex(this.value)">
-                <span style="font-size:0.8rem; font-weight:800;">CUSTOM</span>
-            </div>
-            <button onclick="randomTheme()" style="width:100%; margin-top:10px; padding:14px; border-radius:14px; border:none; background:var(--on-s-container); color:white; font-weight:900; cursor:pointer;">RANDOMIZE</button>
+            <button class="random-btn" onclick="randomTheme()" style="width:100%; margin-top:15px; padding:14px; border-radius:14px; border:none; background:var(--on-s-container); color:white; font-weight:900; cursor:pointer;">RANDOMIZE</button>
         </div>
 
         <div style="display:flex; justify-content:space-between; align-items:center;"><span>OLED Mode</span><input type="checkbox" id="oled-toggle" onchange="updateOLED(this.checked)"></div>
@@ -126,20 +122,20 @@
     </div>
 
     <script>
-        const PRESETS = [ ["#D1E4FF", "#A6C8FF", "#004A77"], ["#C4EED0", "#A2E0B8", "#006D3B"], ["#FDE293", "#FADB7D", "#A67100"], ["#FFD8E4", "#F9B1C8", "#880E4F"] ];
+        const PRESETS = [ ["#D1E4FF", "#A6C8FF", "#004A77"], ["#C4EED0", "#A2E0B8", "#006D3B"], ["#FDE293", "#FADB7D", "#A67100"], ["#FFD8E4", "#F9B1C8", "#880E4F"], ["#FFDAD6", "#FFB4AB", "#93000A"], ["#E0E2ED", "#C4C6D0", "#44474E"] ];
         const VERSIONS = [
             { id: "0.1", title: "ALPHA", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/skin%20alpha.png", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
             { id: "0.2", title: "ALPHA", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.png", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
         ];
 
-        let state = JSON.parse(localStorage.getItem('pix_pref')) || { oled: false, auto: true, is24h: false, themeType: 'default', themeVal: 0, customHex: '#6750A4' };
+        let state = JSON.parse(localStorage.getItem('pix_pref')) || { oled: false, auto: true, is24h: false, themeType: 'default', themeVal: 0 };
         let currentIdx = 1;
 
         function toggleSettings() { document.getElementById('side-sheet').classList.toggle('open'); }
         
         function setTheme(type, val) {
             state.themeType = type; state.themeVal = val;
-            let c = (type === 'default') ? VERSIONS[currentIdx].colors : (type === 'custom' || type === 'random') ? val : PRESETS[val];
+            let c = (type === 'default') ? VERSIONS[currentIdx].colors : (type === 'random') ? val : PRESETS[val];
             document.documentElement.style.setProperty('--bg-1', c[0]);
             document.documentElement.style.setProperty('--bg-2', c[1]);
             document.documentElement.style.setProperty('--p', c[2]);
@@ -149,11 +145,6 @@
         function randomTheme() {
             const r = () => '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
             setTheme('random', [r(), r(), r()]);
-        }
-
-        function applyCustomHex(hex) {
-            state.customHex = hex;
-            setTheme('custom', [hex + '44', hex + '88', hex]);
         }
 
         function updateOLED(v) { state.oled = v; checkMode(); localStorage.setItem('pix_pref', JSON.stringify(state)); }
@@ -183,13 +174,7 @@
 
         async function forceDownload(type) {
             const url = type === 'skin' ? VERSIONS[currentIdx].skin : VERSIONS[currentIdx].model;
-            try {
-                const blob = await fetch(url).then(r => r.blob());
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = url.split('/').pop();
-                link.click();
-            } catch (e) { window.open(url, '_blank'); }
+            window.open(url, '_blank');
         }
 
         window.onload = () => {
