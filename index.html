@@ -14,7 +14,6 @@
             --blur: 60px;
         }
 
-        /* OLED ADJUSTMENTS */
         body.oled { background-color: #000 !important; color: #FFFFFF !important; }
         body.oled .viewer-box { background: #0a0a0a; border: 1px solid #222; }
         body.oled .weather-chip, body.oled nav.nav-rail { background: rgba(255,255,255,0.08); color: #FFFFFF; }
@@ -59,8 +58,8 @@
 
         .news-card { background: rgba(0,0,0,0.05); padding: 15px; border-radius: 16px; font-size: 0.85rem; line-height: 1.4; }
         .color-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 10px 0; }
-        .color-circle { width: 100%; aspect-ratio: 1; border-radius: 50%; cursor: pointer; display: grid; place-items: center; font-size: 0.55rem; font-weight: 900; transition: transform 0.2s; }
-        .color-circle:hover { transform: scale(1.15); }
+        .color-circle { width: 100%; aspect-ratio: 1; border-radius: 50%; cursor: pointer; display: grid; place-items: center; font-size: 0.55rem; font-weight: 900; transition: transform 0.2s; border: 2px solid transparent; }
+        .color-circle:hover { transform: scale(1.1); }
         .custom-picker { width: 100%; height: 40px; border-radius: 12px; border: 2px solid rgba(0,0,0,0.1); cursor: pointer; padding: 2px; background: white; }
     </style>
 </head>
@@ -68,7 +67,7 @@
     <div class="aura-bg"></div>
     
     <button class="hub-os-status" onclick="toggleSettings()">
-        <div class="v-label">v0.2.3 <span>ULTRA_VIOLET</span></div>
+        <div class="v-label">v0.2.4 <span>TRUE_SPECTRUM</span></div>
     </button>
 
     <div class="status-bar">
@@ -103,13 +102,13 @@
         <h2 style="font-family: 'Space Grotesk';">PREFERENCES</h2>
         
         <div class="news-card">
-            <strong>SPECTRUM PACK (v0.2.3)</strong><br><br>
-            🎨 <strong>Expanded Presets:</strong> Added Earth, Solar, Neon, and Ocean colorways.<br><br>
-            💾 <strong>Memory:</strong> All color selections now persist through refreshes.
+            <strong>COLOR OVERHAUL (v0.2.4)</strong><br><br>
+            🌈 <strong>Unique Presets:</strong> Removed duplicates. Added Gold, Crimson, Emerald, and Midnight.<br><br>
+            🎲 <strong>Randomizer:</strong> Can't decide? Let the Hub roll the dice.
         </div>
 
         <div>
-            <label style="font-weight: 800; font-size: 0.7rem; opacity: 0.5;">COLOR PRESETS</label>
+            <label style="font-weight: 800; font-size: 0.7rem; opacity: 0.5; display:flex; justify-content: space-between;">COLOR PRESETS <span style="cursor:pointer; color:var(--p)" onclick="randomTheme()">RANDOMIZE</span></label>
             <div class="color-grid" id="preset-grid">
                 <div class="color-circle" style="background:#6750A4; color: white;" onclick="setTheme('default')">DFT</div>
             </div>
@@ -127,15 +126,15 @@
     </div>
 
     <script>
-        // Expanded Preset Library
+        // Diversified Palette
         const PRESETS = [ 
-            ["#C4EED0", "#A2E0B8", "#006D3B"], // Green
-            ["#D1E4FF", "#A6C8FF", "#004A77"], // Blue
-            ["#FFD8E4", "#F9B1C8", "#880E4F"], // Pink
-            ["#FDE293", "#FADB7D", "#A67100"], // Solar (Gold)
-            ["#D7E8CD", "#B8D1A9", "#386641"], // Earth (Forest)
-            ["#E2F1FF", "#B3D7FF", "#005EB8"], // Ocean
-            ["#FFEBEE", "#FF8A80", "#B71C1C"]  // Neon (Red)
+            ["#D1E4FF", "#A6C8FF", "#004A77"], // Blue (Azure)
+            ["#C4EED0", "#A2E0B8", "#006D3B"], // Green (Emerald)
+            ["#FDE293", "#FADB7D", "#A67100"], // Gold (Solar)
+            ["#FFD8E4", "#F9B1C8", "#880E4F"], // Pink (Sakura)
+            ["#FFDAD6", "#FFB4AB", "#93000A"], // Red (Crimson)
+            ["#E0E2ED", "#C4C6D0", "#44474E"], // Gray (Midnight)
+            ["#FFDCC0", "#FFB785", "#8B5000"]  // Orange (Amber)
         ];
 
         const VERSIONS = [
@@ -145,11 +144,7 @@
 
         let currentIdx = 1;
         let state = JSON.parse(localStorage.getItem('pix_settings')) || { 
-            oled: false, 
-            is24h: false,
-            activeTheme: 'default',
-            customVal: '#6750A4',
-            presetIdx: null
+            oled: false, is24h: false, activeTheme: 'default', customVal: '#6750A4', presetIdx: null
         };
 
         function toggleSettings() { document.getElementById('side-sheet').classList.toggle('open'); }
@@ -178,23 +173,18 @@
         function setTheme(type, val) {
             state.activeTheme = type;
             let c;
-            
-            if (type === 'default') {
-                c = VERSIONS[currentIdx].colors;
-                state.presetIdx = null;
-            } else if (type === 'preset') {
-                state.presetIdx = val;
-                c = PRESETS[val];
-            } else if (type === 'custom') {
-                state.customVal = val;
-                state.presetIdx = null;
-                c = [val + '33', val + '77', val]; 
-            }
-
+            if (type === 'default') { c = VERSIONS[currentIdx].colors; state.presetIdx = null; }
+            else if (type === 'preset') { state.presetIdx = val; c = PRESETS[val]; }
+            else if (type === 'custom') { state.customVal = val; state.presetIdx = null; c = [val + '33', val + '77', val]; }
             document.documentElement.style.setProperty('--bg-1', c[0]);
             document.documentElement.style.setProperty('--bg-2', c[1]);
             document.documentElement.style.setProperty('--p', c[2]);
             save();
+        }
+
+        function randomTheme() {
+            const rand = Math.floor(Math.random() * PRESETS.length);
+            setTheme('preset', rand);
         }
 
         function triggerDownload(type) {
@@ -203,13 +193,11 @@
         }
 
         function switchVersion(idx) {
-            currentIdx = idx; 
-            const v = VERSIONS[idx];
+            currentIdx = idx; const v = VERSIONS[idx];
             document.getElementById('v-tag').innerText = `Version // ${v.id}`;
             document.getElementById('v-desc').innerText = v.desc;
             document.getElementById('mv').setAttribute('src', v.model);
             document.querySelectorAll('.v-pill').forEach((p, i) => p.classList.toggle('active', i === idx));
-            
             if (state.activeTheme === 'default') setTheme('default');
             else if (state.activeTheme === 'preset') setTheme('preset', state.presetIdx);
             else if (state.activeTheme === 'custom') setTheme('custom', state.customVal);
@@ -228,23 +216,13 @@
                 b.innerHTML = i+1; b.onclick = () => switchVersion(i);
                 rail.appendChild(b);
             });
-            
-            if(state.oled) { 
-                document.body.classList.add('oled');
-                document.getElementById('oled-toggle').checked = true;
-            }
+            if(state.oled) { document.body.classList.add('oled'); document.getElementById('oled-toggle').checked = true; }
             if(state.is24h) document.getElementById('format-toggle').checked = true;
             if(state.customVal) document.getElementById('custom-color').value = state.customVal;
-
             switchVersion(currentIdx);
             updateWeather();
             setInterval(() => {
-                document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-US', { 
-                    hour12: !state.is24h, 
-                    hour: '2-digit', 
-                    minute: '2-digit', 
-                    second: '2-digit' 
-                });
+                document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-US', { hour12: !state.is24h, hour: '2-digit', minute: '2-digit', second: '2-digit' });
             }, 1000);
         };
     </script>
