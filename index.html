@@ -14,7 +14,6 @@
             --blur: 60px;
         }
 
-        /* OLED MODE */
         body.oled { background-color: #000 !important; color: #FFFFFF !important; }
         body.oled .aura-bg { opacity: 0.2; }
         body.oled .viewer-box { background: #0a0a0a !important; border: 1px solid #1a1a1a; }
@@ -28,61 +27,45 @@
         @keyframes auraPulse { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } }
         .aura-bg { position: fixed; inset: -10%; background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); animation: auraPulse 10s infinite ease-in-out; }
         
-        /* NAV RAIL */
         nav.nav-rail { width: 90px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 12px; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; }
         .v-pill { width: 48px; height: 48px; border-radius: 24px; background: rgba(0,0,0,0.05); border: none; cursor: pointer; display: flex; flex-direction: column; justify-content: center; align-items: center; font-weight: 900; transition: 0.5s var(--spring); color: inherit; }
         .v-pill:hover { transform: scale(1.15); background: var(--p); color: white; }
         .v-pill.active { height: 80px; width: 34px; border-radius: 17px; background: var(--p); color: white; }
 
-        /* MAIN LAYOUT - CENTERED FIX */
         main { flex: 1; display: grid; grid-template-columns: 1fr 450px; padding: 40px; gap: 40px; align-items: center; height: 100%; }
-        .viewer-box { 
-            height: 90%; 
-            width: 100%; 
-            background: white; 
-            border-radius: 48px; 
-            overflow: hidden; 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.03); 
-            transition: 0.5s var(--spring);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-        
-        /* MODEL VIEWER - CENTERED ANCHOR */
-        model-viewer { 
-            width: 100%; 
-            height: 100%; 
-            --poster-color: transparent;
-        }
+        .viewer-box { height: 90%; width: 100%; background: white; border-radius: 48px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.03); transition: 0.5s var(--spring); display: flex; align-items: center; justify-content: center; position: relative; }
+        model-viewer { width: 100%; height: 100%; }
         
         h1 { font-family: 'Bebas Neue'; font-size: 8.5rem; line-height: 0.8; letter-spacing: -3px; margin: 10px 0; }
 
-        /* BUTTONS */
         .btn-group { display: flex; gap: 12px; margin-top: 20px; }
         .m3-btn { flex: 1; height: 64px; border-radius: 32px; background: var(--p); color: white; border: none; font-weight: 800; cursor: pointer; transition: 0.5s var(--spring); position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-        .m3-btn:hover { flex: 1.5; filter: brightness(1.1); transform: scale(1.02); }
+        .m3-btn:hover { flex: 1.5; filter: brightness(1.1); }
         .m3-btn-secondary { background: rgba(0,0,0,0.05); color: var(--on-s-container); }
         .progress-bar { position: absolute; bottom: 0; left: 0; height: 100%; background: rgba(255,255,255,0.2); width: 0%; transition: width 0.3s ease; }
 
-        /* STATUS & WEATHER */
         .status-bar { position: fixed; top: 30px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; z-index: 100; }
         .weather-chip { background: rgba(255,255,255,0.4); backdrop-filter: blur(20px); padding: 4px 16px 4px 8px; border-radius: 28px; display: flex; align-items: center; gap: 6px; cursor: pointer; border: 1px solid rgba(255,255,255,0.3); transition: 0.3s var(--spring); }
-        .weather-chip:hover { transform: scale(1.05); background: white; }
 
-        /* SITE INFO FOOTER */
         .site-footer { position: fixed; bottom: 30px; left: 125px; color: inherit; cursor: pointer; transition: 0.3s; z-index: 100; }
         .site-footer b { font-family: 'Space Grotesk'; font-size: 0.8rem; display: block; }
         .site-footer i { font-style: normal; font-size: 0.6rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.5; }
 
-        /* SETTINGS FAB */
         #settings-fab { position: fixed; bottom: 30px; right: 30px; width: 64px; height: 64px; border-radius: 20px; background: var(--p); color: white; border: none; cursor: pointer; z-index: 200; display: grid; place-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.15); transition: 0.6s var(--spring); }
         #settings-fab:hover { transform: rotate(180deg) scale(1.1); border-radius: 32px; }
 
-        /* SIDE SHEET */
         .side-sheet { position: fixed; top: 0; right: -400px; width: 380px; height: 100%; background: #fdf8fd; z-index: 300; transition: right 0.6s var(--spring); padding: 30px; display: flex; flex-direction: column; gap: 24px; overflow-y: auto; }
         .side-sheet.open { right: 0; }
+        
+        .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; }
+        .setting-row span { font-weight: 500; }
+        
+        /* M3 SWITCH */
+        .m3-switch { position: relative; width: 52px; height: 32px; appearance: none; background: rgba(0,0,0,0.1); border-radius: 16px; cursor: pointer; transition: 0.3s; }
+        .m3-switch:checked { background: var(--p); }
+        .m3-switch::before { content: ""; position: absolute; top: 4px; left: 4px; width: 24px; height: 24px; background: white; border-radius: 50%; transition: 0.3s var(--spring); }
+        .m3-switch:checked::before { left: 24px; }
+        
         .news-card { background: white; padding: 24px; border-radius: 32px; border: 1px solid rgba(0,0,0,0.05); position: relative; }
         .news-tag { position: absolute; top: -10px; right: 20px; background: var(--p); color: white; padding: 4px 12px; font-size: 0.6rem; font-weight: 900; border-radius: 10px; }
     </style>
@@ -105,12 +88,12 @@
 
     <main>
         <div class="viewer-box">
-            <model-viewer id="mv" auto-rotate camera-controls shadow-intensity="1" environment-image="neutral" camera-orbit="0deg 75deg 105%" min-camera-orbit="auto auto auto" max-camera-orbit="auto auto auto" bounds="tight"></model-viewer>
+            <model-viewer id="mv" auto-rotate camera-controls shadow-intensity="1" environment-image="neutral" camera-orbit="0deg 75deg 105%" bounds="tight"></model-viewer>
         </div>
         <div class="content">
             <p id="v-tag" style="font-weight:900; opacity:0.3; letter-spacing:5px; font-size:0.8rem;"></p>
             <h1 id="v-title">ALPHA</h1>
-            <p id="v-desc" style="font-size:1.2rem; opacity:0.7; font-weight:500;">Centered on the future.</p>
+            <p id="v-desc" style="font-size:1.2rem; opacity:0.7; font-weight:500;">Now with full time customization.</p>
             <div class="btn-group">
                 <button class="m3-btn" onclick="forceDownload('skin')">
                     <div class="progress-bar"></div>
@@ -125,8 +108,8 @@
     </main>
 
     <div class="site-footer" onclick="toggleSettings()">
-        <b>v0.5.5</b>
-        <i>Center-Focus Update</i>
+        <b>v0.5.6</b>
+        <i>Precision Update</i>
     </div>
 
     <button id="settings-fab" onclick="toggleSettings()">
@@ -134,65 +117,39 @@
     </button>
 
     <div class="side-sheet" id="side-sheet">
-        <h2 style="font-family:'Space Grotesk'; font-size:1.8rem;">WHAT'S NEW</h2>
+        <h2 style="font-family:'Space Grotesk'; font-size:1.8rem;">SETTINGS</h2>
         
-        <div class="news-card">
-            <div class="news-tag">STABILITY</div>
-            <h4 style="font-family:'Space Grotesk'; color:var(--p); font-size:1.1rem;">3D FRAME ALIGNMENT</h4>
-            <p style="font-size:0.85rem; margin-top:8px; line-height:1.4;">The viewport has been recalibrated to ensure the model stays perfectly centered within its frame at all times.</p>
-        </div>
-
-        <h3 style="font-size:0.7rem; opacity:0.4; letter-spacing:1px; margin-top:10px;">PRESET THEMES</h3>
-        <div id="preset-grid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px;"></div>
-
-        <h3 style="font-size:0.7rem; opacity:0.4; letter-spacing:1px;">RANDOMIZER</h3>
-        <button onclick="randomTheme()" style="width:100%; height:56px; border-radius:16px; border:none; background:rgba(0,0,0,0.05); cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; font-weight:900;">
-            <span class="material-symbols-rounded">casino</span> RANDOM PALETTE
-        </button>
+        <div class="setting-row"><span>24-Hour Clock</span><input type="checkbox" class="m3-switch" id="clock-toggle" onchange="updateClockMode(this.checked)"></div>
+        <div class="setting-row"><span>OLED Black</span><input type="checkbox" class="m3-switch" id="oled-toggle" onchange="updateOLED(this.checked)"></div>
+        <div class="setting-row"><span>Auto Night</span><input type="checkbox" class="m3-switch" id="auto-toggle" onchange="updateAuto(this.checked)"></div>
 
         <hr style="opacity:0.1;">
-        <div style="display:flex; justify-content:space-between; align-items:center;"><span>OLED Black</span><input type="checkbox" id="oled-toggle" onchange="updateOLED(this.checked)"></div>
-        <div style="display:flex; justify-content:space-between; align-items:center;"><span>Auto Night</span><input type="checkbox" id="auto-toggle" onchange="updateAuto(this.checked)"></div>
         
+        <h3 style="font-size:0.7rem; opacity:0.4; letter-spacing:1px;">WHAT'S NEW</h3>
+        <div class="news-card">
+            <div class="news-tag">RESTORED</div>
+            <h4 style="font-family:'Space Grotesk'; color:var(--p); font-size:1.1rem;">TIME FORMATS</h4>
+            <p style="font-size:0.85rem; margin-top:8px;">Switch between 12h and 24h formats instantly. Your preference is now saved to your browser.</p>
+        </div>
+
         <button onclick="toggleSettings()" style="margin-top:auto; padding:20px; border-radius:24px; border:none; background:var(--on-s-container); color:white; cursor:pointer; font-weight:900;">CLOSE HUB</button>
     </div>
 
     <script>
-        const PRESETS = [ ["#D1E4FF", "#A6C8FF", "#004A77"], ["#C4EED0", "#A2E0B8", "#006D3B"], ["#FDE293", "#FADB7D", "#A67100"], ["#FFD8E4", "#F9B1C8", "#880E4F"], ["#E2E2E6", "#C6C6CA", "#44474E"], ["#FFDBCB", "#FFB68F", "#8B4100"], ["#D0BCFF", "#B69DF8", "#4F378B"], ["#B2F0FF", "#82DFFF", "#004F58"] ];
         const VERSIONS = [{ id: "0.1", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/skin%20alpha.png", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] }, { id: "0.2", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.png", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }];
-        let state = JSON.parse(localStorage.getItem('pix_pref')) || { oled: false, auto: true, themeType: 'default', themeVal: 0 };
+        let state = JSON.parse(localStorage.getItem('pix_pref')) || { oled: false, auto: true, is24h: false };
         let currentIdx = 1;
 
         function toggleSettings() { document.getElementById('side-sheet').classList.toggle('open'); }
 
-        function setTheme(type, val) {
-            state.themeType = type; state.themeVal = val;
-            let c = (type === 'default') ? VERSIONS[currentIdx].colors : (Array.isArray(val) ? val : [val, val, val]);
-            if(type === 'preset') c = PRESETS[val];
+        function setTheme() {
+            let c = VERSIONS[currentIdx].colors;
             document.documentElement.style.setProperty('--bg-1', c[0]);
             document.documentElement.style.setProperty('--bg-2', c[1]);
             document.documentElement.style.setProperty('--p', c[2]);
-            localStorage.setItem('pix_pref', JSON.stringify(state));
         }
 
-        function randomTheme() { const r = () => '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0'); setTheme('custom', [r(), r(), r()]); }
-
-        async function updateWeather() {
-            try { const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=37.5&longitude=-121.9&current_weather=true&temperature_unit=fahrenheit`).then(r => r.json()); document.getElementById('temp').innerText = `${Math.round(res.current_weather.temperature)}°F`; } catch (e) { document.getElementById('temp').innerText = '72°F'; }
-        }
-
-        async function forceDownload(type) {
-            const btn = event.currentTarget; const bar = btn.querySelector('.progress-bar'); const content = btn.querySelector('.btn-content');
-            const url = type === 'skin' ? VERSIONS[currentIdx].skin : VERSIONS[currentIdx].model;
-            content.innerText = "FETCHING"; bar.style.width = "40%";
-            try {
-                const response = await fetch(url); bar.style.width = "100%";
-                const blob = await response.blob(); const a = document.createElement('a'); a.href = window.URL.createObjectURL(blob); a.download = url.split('/').pop(); a.click();
-                content.innerText = "READY";
-            } catch (e) { content.innerText = "ERROR"; }
-            finally { setTimeout(() => { content.innerText = type === 'skin' ? 'GET SKIN' : 'GET MODEL'; bar.style.width = "0%"; }, 3000); }
-        }
-
+        function updateClockMode(v) { state.is24h = v; localStorage.setItem('pix_pref', JSON.stringify(state)); }
         function updateOLED(v) { state.oled = v; checkMode(); localStorage.setItem('pix_pref', JSON.stringify(state)); }
         function updateAuto(v) { state.auto = v; checkMode(); localStorage.setItem('pix_pref', JSON.stringify(state)); }
         function checkMode() { const h = new Date().getHours(); const isNight = state.auto ? (h >= 19 || h < 7) : state.oled; document.body.classList.toggle('oled', isNight); }
@@ -202,18 +159,27 @@
             document.getElementById('v-tag').innerText = `VERSION // ${VERSIONS[idx].id}`;
             document.getElementById('mv').setAttribute('src', VERSIONS[idx].model);
             document.querySelectorAll('.v-pill').forEach((p, i) => p.classList.toggle('active', i === idx));
-            setTheme(state.themeType, state.themeVal);
+            setTheme();
         }
 
         window.onload = () => {
-            const grid = document.getElementById('preset-grid');
-            PRESETS.forEach((p, i) => { const d = document.createElement('div'); d.style.background = p[2]; d.style.aspectRatio = '1'; d.style.borderRadius = '16px'; d.style.cursor = 'pointer'; d.onclick = () => setTheme('preset', i); grid.appendChild(d); });
             const rail = document.getElementById('rail');
             VERSIONS.forEach((_, i) => { const b = document.createElement('button'); b.className = 'v-pill'; b.innerHTML = `<span>${i+1}</span>`; b.onclick = () => switchVersion(i); rail.appendChild(b); });
+            
+            document.getElementById('clock-toggle').checked = state.is24h;
             document.getElementById('oled-toggle').checked = state.oled;
             document.getElementById('auto-toggle').checked = state.auto;
-            checkMode(); switchVersion(currentIdx); updateWeather();
-            setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }); }, 1000);
+            
+            checkMode(); switchVersion(currentIdx);
+            
+            setInterval(() => {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('en-US', { 
+                    hour: '2-digit', minute: '2-digit', second: '2-digit', 
+                    hour12: !state.is24h 
+                });
+                document.getElementById('clock').innerText = timeString;
+            }, 1000);
         };
     </script>
 </body>
