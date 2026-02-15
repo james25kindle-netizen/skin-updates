@@ -14,12 +14,17 @@
             --blur: 60px;
         }
 
-        body.oled { background-color: #000 !important; color: #fff !important; }
-        body.oled .viewer-box { background: #111; border: 1px solid #222; }
-        body.oled .weather-chip, body.oled nav.nav-rail { background: rgba(255,255,255,0.05); color: #fff; }
+        /* FIX: Text Visibility in OLED Mode */
+        body.oled { background-color: #000 !important; color: #FFFFFF !important; }
+        body.oled .viewer-box { background: #0a0a0a; border: 1px solid #222; }
+        body.oled .weather-chip, body.oled nav.nav-rail { background: rgba(255,255,255,0.08); color: #FFFFFF; }
+        body.oled #v-title { color: #FFFFFF; }
+        body.oled #v-desc, body.oled #v-tag { color: rgba(255,255,255,0.8); }
+        body.oled .side-sheet { background: #050505; color: #FFFFFF; border-left: 1px solid #333; }
+        body.oled .m3-btn-secondary { background: rgba(255,255,255,0.1) !important; color: #FFFFFF !important; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background-color: #fdf8fd; color: var(--on-s-container); font-family: 'Outfit', sans-serif; height: 100vh; display: flex; overflow: hidden; transition: background 0.5s ease; }
+        body { background-color: #fdf8fd; color: var(--on-s-container); font-family: 'Outfit', sans-serif; height: 100vh; display: flex; overflow: hidden; transition: background 0.5s ease, color 0.3s ease; }
         
         .aura-bg { position: fixed; inset: 0; background: radial-gradient(circle at 80% 20%, var(--bg-1) 0%, transparent 40%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); transition: filter 0.3s ease; }
         
@@ -47,7 +52,10 @@
 
         .color-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px; }
         .color-circle { width: 100%; aspect-ratio: 1; border-radius: 50%; border: 3px solid transparent; cursor: pointer; transition: transform 0.2s; }
-        .color-circle.active { border-color: var(--on-s-container); transform: scale(1.1); }
+        .color-circle.active { border-color: currentColor; transform: scale(1.1); }
+        
+        .custom-picker-row { display: flex; align-items: center; gap: 15px; margin-top: 10px; background: rgba(0,0,0,0.05); padding: 10px; border-radius: 12px; }
+        #custom-color { border: none; width: 40px; height: 40px; background: none; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -69,7 +77,7 @@
             <p id="v-desc" style="font-size:1.15rem; line-height:1.6; opacity:0.7; margin-bottom:25px;"></p>
             <div class="btn-group">
                 <button class="m3-btn" onclick="handleDownload('skin')">GET SKIN <span class="material-symbols-rounded">checkroom</span></button>
-                <button class="m3-btn" style="background:rgba(0,0,0,0.05); color:var(--on-s-container);" onclick="handleDownload('model')">GET MODEL <span class="material-symbols-rounded">3d_rotation</span></button>
+                <button class="m3-btn m3-btn-secondary" onclick="handleDownload('model')">GET MODEL <span class="material-symbols-rounded">3d_rotation</span></button>
             </div>
         </div>
     </main>
@@ -77,12 +85,20 @@
     <button class="settings-fab" onclick="toggleSettings()"><span class="material-symbols-rounded">settings</span></button>
 
     <div class="side-sheet" id="side-sheet">
-        <button onclick="toggleSettings()" style="background:none; border:none; cursor:pointer;"><span class="material-symbols-rounded">close</span></button>
+        <button onclick="toggleSettings()" style="background:none; border:none; cursor:pointer; color:inherit;"><span class="material-symbols-rounded">close</span></button>
         <h2 style="font-family: 'Space Grotesk';">PREFERENCES</h2>
         
         <div class="setting-item">
-            <label>Color Preset (Material You)</label>
+            <label>Color Presets</label>
             <div class="color-grid" id="color-grid"></div>
+        </div>
+
+        <div class="setting-item">
+            <label>Custom Theme Color</label>
+            <div class="custom-picker-row">
+                <input type="color" id="custom-color" value="#6750A4" oninput="applyCustomColor(this.value)">
+                <span id="hex-label" style="font-family: monospace; font-size: 0.8rem;">#6750A4</span>
+            </div>
         </div>
 
         <div style="display:flex; justify-content:space-between;"><span>OLED Mode</span><input type="checkbox" id="oled-toggle" onchange="updateOLED(this.checked)"></div>
@@ -105,30 +121,53 @@
             { name: "Default", colors: null },
             { name: "Lavender", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
             { name: "Mint", colors: ["#C4EED0", "#A2E0B8", "#006D3B"] },
-            { name: "Ocean", colors: ["#D1E4FF", "#A6C8FF", "#004A77"] },
-            { name: "Rose", colors: ["#FFD8E4", "#F9B1C8", "#880E4F"] },
-            { name: "Citrus", colors: ["#F5EBC1", "#E7D791", "#6A5E00"] }
+            { name: "Ocean", colors: ["#D1E4FF", "#A6C8FF", "#004A77"] }
         ];
 
-        let state = JSON.parse(localStorage.getItem('pix_settings')) || { oled: false, is24h: false, unit: 'F', speed: 2, colorIdx: 0 };
+        let state = JSON.parse(localStorage.getItem('pix_settings')) || { oled: false, is24h: false, unit: 'F', speed: 2, colorIdx: 0, customColor: null };
 
         function save() { localStorage.setItem('pix_settings', JSON.stringify(state)); }
 
         function toggleSettings() { document.getElementById('side-sheet').classList.toggle('open'); }
-        function updateOLED(v) { state.oled = v; document.body.classList.toggle('oled', v); save(); }
+        
+        function updateOLED(v) { 
+            state.oled = v; 
+            document.body.classList.toggle('oled', v); 
+            // Update button styles if needed
+            document.querySelector('.m3-btn').style.background = v ? '#FFFFFF' : 'var(--on-s-container)';
+            document.querySelector('.m3-btn').style.color = v ? '#000000' : '#FFFFFF';
+            save(); 
+        }
+
         function updateFormat(v) { state.is24h = v; save(); }
         function updateUnit(v) { state.unit = v ? 'C' : 'F'; updateWeather(); save(); }
         function updateRotateSpeed(v) { state.speed = v; const mv = document.getElementById('mv'); mv.rotationSpeed = v; mv.autoRotate = v > 0; save(); }
 
         function applyColor(idx) {
             state.colorIdx = idx;
+            state.customColor = null; // Reset custom if choosing preset
             const preset = COLOR_PRESETS[idx];
             const colors = preset.colors || VERSIONS[currentIdx].colors;
-            document.documentElement.style.setProperty('--bg-1', colors[0]);
-            document.documentElement.style.setProperty('--bg-2', colors[1]);
-            document.documentElement.style.setProperty('--p', colors[2]);
+            updateCSSVars(colors[0], colors[1], colors[2]);
             document.querySelectorAll('.color-circle').forEach((c, i) => c.classList.toggle('active', i === idx));
             save();
+        }
+
+        function applyCustomColor(hex) {
+            state.colorIdx = -1;
+            state.customColor = hex;
+            // Generate a lighter version for the aura
+            const light = hex + '44'; // Add transparency
+            updateCSSVars(light, hex + '88', hex);
+            document.getElementById('hex-label').innerText = hex.toUpperCase();
+            document.querySelectorAll('.color-circle').forEach(c => c.classList.remove('active'));
+            save();
+        }
+
+        function updateCSSVars(bg1, bg2, p) {
+            document.documentElement.style.setProperty('--bg-1', bg1);
+            document.documentElement.style.setProperty('--bg-2', bg2);
+            document.documentElement.style.setProperty('--p', p);
         }
 
         async function handleDownload(type) {
@@ -159,7 +198,10 @@
             document.getElementById('v-desc').innerText = v.desc;
             document.getElementById('mv').src = v.model;
             document.getElementById('mv').cameraOrbit = "180deg 75deg 105%";
-            applyColor(state.colorIdx);
+            
+            if (state.customColor) applyCustomColor(state.customColor);
+            else applyColor(state.colorIdx);
+
             document.querySelectorAll('.v-pill-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
         }
 
@@ -173,12 +215,11 @@
                 grid.appendChild(div);
             });
 
-            // Restore UI from state
             document.getElementById('oled-toggle').checked = state.oled;
             document.getElementById('format-toggle').checked = state.is24h;
             document.getElementById('unit-toggle').checked = state.unit === 'C';
             document.getElementById('speed-slider').value = state.speed;
-            if(state.oled) document.body.classList.add('oled');
+            if(state.oled) updateOLED(true);
             
             const rail = document.getElementById('rail');
             VERSIONS.forEach((v, i) => {
