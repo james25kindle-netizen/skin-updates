@@ -11,9 +11,11 @@
         :root { --p: #6750A4; --on-s-container: #1D192B; --bg-1: #EADDFF; --bg-2: #D0BCFF; --spring: cubic-bezier(0.34, 1.56, 0.64, 1); }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background-color: #fdf8fd; color: var(--on-s-container); font-family: 'Outfit', sans-serif; height: 100vh; display: flex; overflow: hidden; }
+        
         .aura-bg { position: fixed; inset: 0; background: radial-gradient(circle at 80% 20%, var(--bg-1) 0%, transparent 40%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(60px); animation: move-aura 15s infinite alternate linear; }
+        
         .status-bar { position: fixed; top: 30px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; z-index: 100; }
-        .weather-chip { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(12px); padding: 10px 20px; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.3); display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 0.95rem; }
+        .weather-chip { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(12px); padding: 10px 20px; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.3); display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 0.95rem; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
         #clock { font-weight: 900; opacity: 0.6; font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; }
         
         nav.nav-rail { width: 90px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 12px; background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(15px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; }
@@ -23,8 +25,8 @@
         main { flex: 1; display: grid; grid-template-columns: 1fr 450px; padding: 40px; gap: 40px; align-items: center; }
         .viewer-box { height: 80vh; background: white; border-radius: 48px; position: relative; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.05); }
         model-viewer { width: 100%; height: 100%; }
+        
         h1 { font-family: 'Bebas Neue'; font-size: 8.5rem; line-height: 0.8; letter-spacing: -3px; }
-
         .btn-group { display: flex; gap: 12px; margin-top: 30px; width: 100%; }
         .m3-btn { flex: 1; height: 64px; border-radius: 32px; background: var(--on-s-container); color: white; border: none; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: flex 0.6s var(--spring), background 0.3s ease, border-radius 0.6s var(--spring), transform 0.2s ease; overflow: hidden; }
         .m3-btn:hover { flex: 2.5; background: var(--p); border-radius: 20px; }
@@ -35,7 +37,10 @@
 <body>
     <div class="aura-bg"></div>
     <div class="status-bar">
-        <div class="weather-chip"><span class="material-symbols-rounded">thermostat</span><span id="temp">...</span></div>
+        <div class="weather-chip">
+            <span class="material-symbols-rounded">thermostat</span>
+            <span id="temp">--°F</span>
+        </div>
         <div id="clock">00:00:00 AM</div>
     </div>
     <nav class="nav-rail" id="rail"><div style="font-weight:900; opacity:0.2; font-size:0.6rem; margin-bottom:10px;">PIX</div></nav>
@@ -62,7 +67,6 @@
 
         let currentIdx = 0;
 
-        // --- IMPROVED AUTO-DOWNLOAD LOGIC ---
         async function handleDownload(type) {
             const v = VERSIONS[currentIdx];
             const url = type === 'skin' ? v.skin : v.model;
@@ -81,12 +85,15 @@
                 document.body.removeChild(link);
                 window.URL.revokeObjectURL(blobUrl);
             } catch (err) {
-                console.error("Download failed, opening in new tab instead.", err);
                 window.open(url, '_blank');
             }
         }
 
-        function updateClock() { document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-US', { hour12: true }); }
+        function updateClock() { 
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-US', { 
+                hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true 
+            }); 
+        }
         
         async function updateWeather() {
             if (navigator.geolocation) {
@@ -94,7 +101,8 @@
                     try {
                         const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&current_weather=true&temperature_unit=fahrenheit`);
                         const d = await r.json();
-                        document.getElementById('temp').innerText = `${Math.round(d.current_weather.temperature)}°F // LOCAL`;
+                        // Removed "// LOCAL" text here
+                        document.getElementById('temp').innerText = `${Math.round(d.current_weather.temperature)}°F`;
                     } catch(e) { document.getElementById('temp').innerText = "OFFLINE"; }
                 });
             }
