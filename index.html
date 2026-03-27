@@ -3,427 +3,232 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PIX_LABS // HUB</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Michroma&display=swap" rel="stylesheet">
+    <title>PIX_LABS // LUCE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <style>
         :root { 
-            --p: #E4002B; /* Ferrari Red */
-            --on-s-container: #1A1A1A; /* Dark Gray */
-            --bg-1: #222222; /* Slightly Lighter Dark Gray */
-            --bg-2: #111111; /* Even Darker Gray */
-            --spring: cubic-bezier(0.0, 0.0, 0.2, 1); /* More subtle, controlled animation */
-            --blur: 40px;
+            --giallo: #FFD400; /* Ferrari Yellow */
+            --charcoal: #0D0D0D; 
+            --silver: #E0E0E0;
+            --anodized: #2A2A2A;
+            --spring: cubic-bezier(0.2, 0.8, 0.2, 1);
         }
-
-        body { 
-            background-color: #1A1A1A; 
-            color: #E0E0E0; /* Light Gray for text */
-            font-family: 'Roboto', sans-serif; 
-            height: 100vh; width: 100vw; display: flex; overflow: hidden; 
-            transition: background 0.4s ease; 
-        }
-
-        body.oled { background-color: #000 !important; color: #FFFFFF !important; }
-        body.oled .aura-bg { opacity: 0.1; }
-        body.oled .viewer-box { background: #000 !important; border: 1px solid #111; }
-        body.oled .side-sheet { background: #080808; border-left: 1px solid #222; color: #fff; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; user-select: none; }
         
-        .aura-bg { 
-            position: fixed; inset: -10%; 
-            background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 50%), 
-                        radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); 
-            z-index: -1; 
-            filter: blur(var(--blur)); 
-            opacity: 0.3; /* More subtle aura */
-            animation: none; /* No pulsing for static look */
+        body { 
+            background-color: var(--charcoal); 
+            color: var(--silver); 
+            font-family: 'Inter', sans-serif; 
+            height: 100vh; width: 100vw; 
+            display: flex; overflow: hidden; 
+            letter-spacing: -0.02em;
         }
-        
-        /* NAV RAIL - Hidden by default, exposed by FAB */
+
+        /* TACTILE BACKGROUND */
+        .glass-grain {
+            position: fixed; inset: 0;
+            background: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #0d0d0d 100%);
+            z-index: -1;
+        }
+        .glass-grain::after {
+            content: ""; position: absolute; inset: 0;
+            background-image: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+            opacity: 0.03; pointer-events: none;
+        }
+
+        /* LUCE BINNACLE (Depth Layers) */
+        .binnacle-layer {
+            position: absolute; border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.05);
+            pointer-events: none;
+        }
+        .layer-1 { width: 800px; height: 800px; top: -100px; left: -200px; background: radial-gradient(circle, rgba(255,212,0,0.03) 0%, transparent 70%); }
+
+        /* NAV RAIL - Precision Machined */
         nav.nav-rail { 
-            position: fixed; left: -90px; top: 0; 
-            width: 90px; height: 100%; 
+            width: 80px; height: 100%; 
             display: flex; flex-direction: column; align-items: center; 
-            padding: 40px 0; gap: 10px; 
-            background: rgba(0,0,0,0.6); 
-            backdrop-filter: blur(15px); 
+            padding: 40px 0; gap: 20px; 
+            background: rgba(13,13,13,0.8); 
             border-right: 1px solid rgba(255,255,255,0.05); 
-            z-index: 50; 
-            transition: left 0.4s var(--spring);
+            z-index: 100;
         }
-        nav.nav-rail.open { left: 0; }
-
-        .rail-header { font-family: 'Michroma'; font-size: 0.7rem; font-weight: bold; margin-bottom: 5px; color: var(--p); }
-        .rail-label { font-size: 0.5rem; font-weight: 700; opacity: 0.5; margin-bottom: 15px; letter-spacing: 1px; text-transform: uppercase; }
+        .rail-brand { font-family: 'Space Grotesk'; font-weight: 700; font-size: 0.8rem; color: var(--giallo); letter-spacing: 2px; }
+        
         .v-pill { 
-            width: 55px; height: 55px; 
-            border-radius: 5px; /* Squared off for modern look */
-            background: rgba(255,255,255,0.08); 
-            border: none; cursor: pointer; 
-            display: flex; flex-direction: column; justify-content: center; align-items: center; 
-            transition: 0.2s var(--spring); 
-            color: inherit; 
-            position: relative; 
-            font-size: 1.2rem; font-weight: 700;
+            width: 44px; height: 44px; border-radius: 4px;
+            background: var(--anodized); border: 1px solid rgba(255,255,255,0.1);
+            color: var(--silver); cursor: pointer;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: 0.3s var(--spring);
+            font-size: 0.7rem; font-weight: 900;
         }
-        .v-pill span { font-size: 0.6rem; font-weight: 500; opacity: 0.6; position: absolute; bottom: 5px; }
-        .v-pill:hover { transform: scale(1.05); background: rgba(255,255,255,0.15); }
+        .v-pill span { font-size: 0.5rem; opacity: 0.4; margin-top: 2px; }
         .v-pill.active { 
-            background: var(--p); 
-            color: white; 
-            box-shadow: 0 0 15px rgba(228,0,43,0.4); 
-            transform: scale(1.05);
-        }
-        .v-pill.active span { opacity: 1; color: white; }
-
-        main { flex: 1; display: grid; grid-template-columns: 1fr 480px; padding: 40px; gap: 60px; align-items: center; height: 100%; }
-        .viewer-box { 
-            height: 90%; width: 100%; 
-            background: rgba(0,0,0,0.4); 
-            border-radius: 12px; /* Sharper corners */
-            overflow: hidden; 
-            box-shadow: 0 5px 20px rgba(0,0,0,0.3); 
-            display: flex; align-items: center; justify-content: center; 
-        }
-        model-viewer { width: 100%; height: 100%; }
-        
-        .content { text-align: center; }
-        .engine-status { 
-            font-size: 0.8rem; font-weight: 700; opacity: 0.6; 
-            letter-spacing: 3px; text-transform: uppercase; 
-            color: var(--p); /* Red highlight */
-        }
-        .car-title { 
-            font-family: 'Michroma', sans-serif; 
-            font-size: 3.5rem; line-height: 1; letter-spacing: 0px; 
-            margin: 10px 0 20px 0; 
-            color: #FFFFFF; /* Bright white */
-            text-shadow: 0 0 10px rgba(255,255,255,0.2);
-        }
-        .car-desc { font-size: 1rem; opacity: 0.7; font-weight: 400; max-width: 350px; margin: 0 auto 30px auto; }
-
-        .btn-group { display: flex; gap: 15px; margin-top: 20px; }
-        .m3-btn { 
-            flex: 1; height: 50px; 
-            border-radius: 8px; /* Sharper corners */
-            background: var(--p); color: white; border: none; 
-            font-weight: 700; font-size: 0.9rem;
-            cursor: pointer; 
-            transition: background 0.2s ease, transform 0.1s ease; 
-            position: relative; overflow: hidden; 
-            display: flex; align-items: center; justify-content: center; 
-        }
-        .m3-btn:hover { background: #FF3B5F; }
-        .m3-btn:active { transform: scale(0.98); }
-        .progress-overlay { 
-            position: absolute; bottom: 0; left: 0; height: 100%; 
-            background: rgba(255,255,255,0.1); 
-            width: 0%; 
-            transition: width 0.2s linear; 
+            background: var(--silver); color: var(--charcoal); 
+            box-shadow: 0 0 20px rgba(255,255,255,0.1);
+            transform: scale(1.1);
         }
 
-        .status-bar { 
-            position: fixed; top: 30px; right: 40px; 
-            display: flex; flex-direction: column; align-items: flex-end; gap: 8px; 
-            z-index: 100; 
-        }
-        .weather-chip { 
-            background: rgba(0,0,0,0.6); 
-            backdrop-filter: blur(15px); 
-            padding: 4px 12px 4px 6px; 
-            border-radius: 20px; 
-            display: flex; align-items: center; gap: 5px; 
-            cursor: pointer; 
-            border: 1px solid rgba(255,255,255,0.1); 
-            color: #E0E0E0; font-size: 0.8rem;
-        }
-        .status-bar #clock { font-weight: 500; opacity: 0.7; font-family:'Roboto'; font-size:0.9rem; color: #FFFFFF; }
+        main { flex: 1; display: grid; grid-template-columns: 1fr 400px; padding: 60px; gap: 80px; align-items: center; }
 
-        .site-footer { 
-            position: fixed; bottom: 25px; left: 40px; 
-            color: #E0E0E0; cursor: pointer; z-index: 100; 
-            font-family: 'Roboto', sans-serif;
-            font-size: 0.7rem; opacity: 0.7;
-            text-transform: uppercase; letter-spacing: 0.5px;
-        }
-        .site-footer b { display: inline; margin-right: 5px; font-weight: 700; }
-        .site-footer i { font-style: normal; opacity: 0.5; }
-
-        #settings-fab { 
-            position: fixed; bottom: 30px; right: 30px; 
-            width: 56px; height: 56px; 
-            border-radius: 50%; /* Circular for modern FAB */
-            background: var(--p); color: white; border: none; 
-            cursor: pointer; z-index: 200; 
-            display: grid; place-items: center; 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3); 
-            transition: transform 0.3s var(--spring), background 0.2s ease; 
-        }
-        #settings-fab:hover { transform: scale(1.1); background: #FF3B5F; }
-        #settings-fab.active { transform: rotate(45deg); } /* Close icon transformation */
-
-        .side-sheet { 
-            position: fixed; top: 0; right: -420px; 
-            width: 400px; height: 100%; 
-            background: #111111; /* Dark background */
-            z-index: 300; 
-            transition: right 0.4s var(--spring); 
-            padding: 30px; 
-            display: flex; flex-direction: column; gap: 20px; 
-            overflow-y: auto; 
-            border-left: 1px solid rgba(255,255,255,0.08);
-            box-shadow: -5px 0 20px rgba(0,0,0,0.4);
-        }
-        .side-sheet.open { right: 0; }
-        .side-sheet h2 { 
-            font-family:'Roboto', sans-serif; font-size:1.6rem; 
-            color: #FFFFFF; margin-bottom: 20px; 
-            font-weight: 700;
-        }
-        
-        .section-label { 
-            font-size: 0.7rem; font-weight: 700; opacity: 0.5; 
-            letter-spacing: 1px; text-transform: uppercase; margin-top: 15px; 
-            color: #E0E0E0;
-        }
-        .setting-row { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); 
-            color: #E0E0E0; font-weight: 400;
-        }
-        .setting-row:last-of-type { border-bottom: none; }
-
-
-        .preset-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top: 10px; }
-        .preset-dot { 
-            aspect-ratio: 1; border-radius: 4px; /* Sharper corners */
-            cursor: pointer; 
-            transition: transform 0.2s var(--spring), box-shadow 0.2s ease; 
+        /* VIEWER - "Lens" Effect */
+        .viewer-wrap {
+            position: relative; height: 85%; width: 100%;
+            background: #000; border-radius: 20px;
+            overflow: hidden; box-shadow: inset 0 0 100px rgba(0,0,0,0.8), 0 40px 100px rgba(0,0,0,0.5);
             border: 1px solid rgba(255,255,255,0.05);
         }
-        .preset-dot:hover { transform: scale(1.05); box-shadow: 0 0 8px rgba(255,255,255,0.2); }
-        .preset-dot.active { border: 2px solid var(--p); transform: scale(1.05); box-shadow: 0 0 10px rgba(228,0,43,0.6); }
+        model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
 
-        .m3-switch { 
-            position: relative; width: 40px; height: 24px; 
-            appearance: none; background: rgba(255,255,255,0.15); border-radius: 12px; 
-            cursor: pointer; transition: background 0.2s ease; 
-        }
-        .m3-switch:checked { background: var(--p); }
-        .m3-switch::before { 
-            content: ""; position: absolute; top: 2px; left: 2px; 
-            width: 20px; height: 20px; 
-            background: white; border-radius: 50%; 
-            transition: transform 0.2s ease; 
-        }
-        .m3-switch:checked::before { transform: translateX(16px); }
+        /* TYPOGRAPHY & CONTENT */
+        .content { display: flex; flex-direction: column; gap: 10px; }
+        .engine-tag { font-size: 0.65rem; font-weight: 700; color: var(--giallo); letter-spacing: 4px; text-transform: uppercase; opacity: 0.8; }
+        h1 { font-family: 'Space Grotesk'; font-size: 3.8rem; font-weight: 300; line-height: 0.9; color: #fff; }
+        .desc { font-size: 0.9rem; opacity: 0.5; line-height: 1.6; max-width: 320px; margin-top: 10px; }
 
-        .action-button-group { display: flex; gap: 10px; margin-top: 20px; }
-        .action-button { 
-            flex: 1; padding: 12px; border-radius: 8px; 
-            border: none; font-weight: 700; cursor: pointer; 
-            font-size: 0.9rem;
-            transition: background 0.2s ease, transform 0.1s ease;
+        /* MULTIGRAPH BUTTONS */
+        .btn-stack { display: flex; flex-direction: column; gap: 12px; margin-top: 40px; }
+        .luce-btn {
+            height: 56px; width: 100%;
+            background: var(--anodized); border: 1px solid rgba(255,255,255,0.1);
+            color: #fff; font-weight: 700; font-size: 0.75rem; letter-spacing: 1px;
+            cursor: pointer; display: flex; align-items: center; justify-content: space-between;
+            padding: 0 24px; border-radius: 2px; transition: 0.3s var(--spring);
         }
-        .action-button.default { 
-            background: rgba(255,255,255,0.1); color: #E0E0E0; 
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .action-button.default:hover { background: rgba(255,255,255,0.2); }
-        .action-button.random { 
-            background: var(--p); color: white; 
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-        }
-        .action-button.random:hover { background: #FF3B5F; }
-        .action-button.close { 
-            background: #2A2A2A; color: #E0E0E0; 
-            margin-top: auto; 
-        }
-        .action-button.close:hover { background: #3A3A3A; }
+        .luce-btn:hover { background: #333; border-color: var(--giallo); }
+        .luce-btn.primary { background: var(--giallo); color: #000; border: none; }
+        .luce-btn.primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(255,212,0,0.2); }
 
-        .version-log { 
-            background: rgba(0,0,0,0.4); padding: 20px; border-radius: 12px; 
-            border: 1px solid rgba(255,255,255,0.08); 
-            color: #E0E0E0;
-        }
-        .version-log h4 { 
-            font-family:'Roboto', sans-serif; color: var(--p); 
-            font-size: 1rem; margin-bottom: 5px; font-weight: 700;
-        }
-        .version-log p { font-size: 0.8rem; opacity: 0.7; font-weight: 300; }
+        /* STATUS READOUTS */
+        .status-panel { position: fixed; top: 40px; right: 60px; display: flex; gap: 40px; align-items: flex-start; }
+        .gauge { display: flex; flex-direction: column; }
+        .gauge-label { font-size: 0.55rem; font-weight: 700; opacity: 0.3; letter-spacing: 2px; margin-bottom: 4px; }
+        .gauge-val { font-family: 'Space Grotesk'; font-size: 1.4rem; font-weight: 500; color: #fff; }
 
+        /* FOOTER */
+        .footer { 
+            position: fixed; bottom: 40px; left: 120px; 
+            display: flex; align-items: center; gap: 15px;
+            font-size: 0.6rem; font-weight: 700; letter-spacing: 1px; opacity: 0.4;
+        }
+        .footer b { color: var(--giallo); }
+
+        #fab {
+            position: fixed; bottom: 40px; right: 60px;
+            width: 48px; height: 48px; background: transparent;
+            border: 1px solid rgba(255,255,255,0.1); color: #fff;
+            border-radius: 50%; cursor: pointer; display: grid; place-items: center;
+            transition: 0.4s var(--spring);
+        }
+        #fab:hover { border-color: var(--giallo); color: var(--giallo); transform: rotate(90deg); }
+
+        /* SETTINGS OVERLAY */
+        .overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+            z-index: 500; display: none; place-items: center;
+            backdrop-filter: blur(20px);
+        }
+        .overlay.open { display: grid; }
+        .settings-card { width: 400px; padding: 40px; background: var(--charcoal); border: 1px solid rgba(255,255,255,0.05); }
     </style>
 </head>
 <body>
-    <div class="aura-bg"></div>
+    <div class="glass-grain"></div>
+    <div class="binnacle-layer layer-1"></div>
 
-    <div class="status-bar">
-        <div class="weather-chip" onclick="window.open('https://www.google.com/search?q=weather', '_blank')">
-            <img id="w-icon" src="https://cdn.weatherapi.com/weather/64x64/day/113.png" style="width:32px">
-            <span id="temp">--°F</span>
-        </div>
-        <div id="clock">00:00:00</div>
-    </div>
-    
     <nav class="nav-rail" id="rail">
-        <div class="rail-header">PIX</div>
-        <div class="rail-label">VERSIONS</div>
-    </nav>
+        <div class="rail-brand">LUCE</div>
+        <div style="flex:1"></div>
+        </nav>
+
+    <div class="status-panel">
+        <div class="gauge">
+            <span class="gauge-label">CHRONO</span>
+            <span id="clock" class="gauge-val">00:00:00</span>
+        </div>
+        <div class="gauge">
+            <span class="gauge-label">TEMP_EXT</span>
+            <span id="temp" class="gauge-val">--°F</span>
+        </div>
+    </div>
 
     <main>
-        <div class="viewer-box">
-            <model-viewer id="mv" auto-rotate camera-controls shadow-intensity="0.8" environment-image="neutral" camera-orbit="0deg 75deg 105%" bounds="tight" loading="eager"></model-viewer>
+        <div class="viewer-wrap">
+            <model-viewer id="mv" auto-rotate camera-controls interaction-prompt="none" shadow-intensity="2" environment-image="neutral" camera-orbit="0deg 75deg 105%" bounds="tight" loading="eager"></model-viewer>
         </div>
+        
         <div class="content">
-            <p class="engine-status" id="v-tag">ENGINE STATUS // ACTIVE</p>
-            <h1 class="car-title" id="v-title">SF90 XX STRADALE</h1>
-            <p class="car-desc" id="v-desc">Jony Ive's vision, redefined. Your hub, reimagined.</p>
-            <div class="btn-group">
-                <button id="dl-skin" class="m3-btn" onclick="forceDownload('skin')">
-                    <div class="progress-overlay"></div>
-                    <span class="btn-text">DOWNLOAD SKIN</span>
+            <p class="engine-tag" id="v-tag">MARANELLO ALPHA // 0.2</p>
+            <h1 id="v-title">TECHNICAL ALPHA</h1>
+            <p class="desc" id="v-desc">A precision-engineered digital companion. Designed for clarity, optimized for the drive.</p>
+            
+            <div class="btn-stack">
+                <button class="luce-btn primary" onclick="forceDownload('skin')">
+                    <span>GENERATE SKIN MAP</span>
+                    <span class="material-symbols-rounded" style="font-size:18px;">download</span>
                 </button>
-                <button id="dl-model" class="m3-btn" style="background:rgba(255,255,255,0.1); color:#E0E0E0; border:1px solid rgba(255,255,255,0.08);" onclick="forceDownload('model')">
-                    <div class="progress-overlay"></div>
-                    <span class="btn-text">GET MODEL</span>
+                <button class="luce-btn" onclick="forceDownload('model')">
+                    <span>EXPORT GLTF 2.0</span>
+                    <span class="material-symbols-rounded" style="font-size:18px;">box</span>
                 </button>
             </div>
         </div>
     </main>
 
-    <div class="site-footer">
-        <b id="f-version">v0.7.0</b>
-        <i id="f-name">SF90 XX Mode</i>
+    <div class="footer">
+        <b>PIX_LABS</b> <span>•</span> <span id="f-version">V0.2.0</span> <span>•</span> <span id="f-name">LUCE CORE</span>
     </div>
 
-    <button id="settings-fab" onclick="toggleSideSheet()">
-        <span class="material-symbols-rounded" style="font-size:28px;">add</span>
+    <button id="fab" onclick="toggleSettings()">
+        <span class="material-symbols-rounded">settings</span>
     </button>
 
-    <div class="side-sheet" id="side-sheet">
-        <h2>HUB CONTROLS</h2>
-        
-        <div class="section-label">DISPLAY</div>
-        <div class="setting-row">
-            <span>24h Clock</span>
-            <input type="checkbox" class="m3-switch" id="clock-toggle" onchange="state.is24h = this.checked">
+    <div class="overlay" id="overlay">
+        <div class="settings-card">
+            <h2 style="font-family:'Space Grotesk'; margin-bottom:30px;">SYSTEM_CTRL</h2>
+            <div style="display:flex; justify-content:space-between; margin-bottom:20px; opacity:0.6; font-size:0.8rem;">
+                <span>24H TIME</span>
+                <input type="checkbox" onchange="state.is24h = this.checked">
+            </div>
+            <button class="luce-btn" onclick="toggleSettings()">RETURN TO COCKPIT</button>
         </div>
-        <div class="setting-row">
-            <span>OLED Black Mode</span>
-            <input type="checkbox" class="m3-switch" id="oled-toggle" onchange="updateOLED(this.checked)">
-        </div>
-        <div class="setting-row">
-            <span>Show Nav Rail</span>
-            <input type="checkbox" class="m3-switch" id="nav-rail-toggle" onchange="toggleNavRail(this.checked)">
-        </div>
-
-        <div class="section-label">THEME</div>
-        <div class="preset-grid" id="preset-grid"></div>
-        <div class="action-button-group">
-            <button class="action-button default" onclick="setTheme('default')">DEFAULT</button>
-            <button class="action-button random" onclick="randomTheme()">
-                <span class="material-symbols-rounded" style="font-size:18px;">shuffle</span> RANDOM
-            </button>
-        </div>
-
-        <div class="section-label">LOGS</div>
-        <div class="version-log">
-            <h4 id="log-title">SF90 XX Mode Activated</h4>
-            <p id="log-desc">Hub GUI re-engineered with Jony Ive's SF90 XX Stradale aesthetic. Minimal, functional, precise.</p>
-        </div>
-
-        <button class="action-button close" onclick="toggleSideSheet()">CLOSE CONTROLS</button>
     </div>
 
     <script>
-        const PRESETS = [ 
-            ["#E4002B", "#E4002B", "#E4002B"], /* Ferrari Red */
-            ["#FFFFFF", "#FFFFFF", "#FFFFFF"], /* White */
-            ["#000000", "#000000", "#000000"], /* Black */
-            ["#4CAF50", "#4CAF50", "#4CAF50"], /* Green */
-            ["#2196F3", "#2196F3", "#2196F3"], /* Blue */
-            ["#FFC107", "#FFC107", "#FFC107"], /* Amber */
-            ["#9C27B0", "#9C27B0", "#9C27B0"], /* Purple */
-            ["#795548", "#795548", "#795548"]  /* Brown */
-        ];
         const VERSIONS = [
-            { id: "0.1", name: "ALPHA 0.1", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/skin%20alpha.png", colors: ["#222222", "#111111", "#E4002B"] },
-            { id: "0.2", name: "ALPHA 0.2", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.png", colors: ["#222222", "#111111", "#E4002B"] }
+            { id: "0.1", name: "ALPHA 0.1", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/skin%20alpha.png" },
+            { id: "0.2", name: "ALPHA 0.2", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.png" }
         ];
-        let state = { oled: false, is24h: false, mode: 'default', navRailOpen: false };
-        let currentIdx = VERSIONS.length - 1; // START ON NEWEST
 
-        function toggleSideSheet() { 
-            const sheet = document.getElementById('side-sheet');
-            const fab = document.getElementById('settings-fab');
-            sheet.classList.toggle('open'); 
-            fab.classList.toggle('active');
-        }
+        let state = { is24h: false };
+        let currentIdx = VERSIONS.length - 1;
 
-        function toggleNavRail(open) {
-            state.navRailOpen = open;
-            document.getElementById('rail').classList.toggle('open', open);
-        }
+        function toggleSettings() { document.getElementById('overlay').classList.toggle('open'); }
 
-        function setTheme(type, val) {
-            state.mode = type;
-            let c;
-            if (type === 'default') c = VERSIONS[currentIdx].colors;
-            else if (type === 'preset') c = [val[0], val[1], val[2]]; // Use the actual preset colors
-            else if (type === 'custom') c = [val + '44', val + '88', val];
-
-            document.documentElement.style.setProperty('--bg-1', c[0]);
-            document.documentElement.style.setProperty('--bg-2', c[1]);
-            document.documentElement.style.setProperty('--p', c[2]);
-
-            // Update active state for preset dots
-            document.querySelectorAll('.preset-dot').forEach((dot, idx) => {
-                dot.classList.toggle('active', type === 'preset' && idx === PRESETS.findIndex(p => p[2] === c[2]));
-            });
+        function switchVersion(idx) {
+            currentIdx = idx;
+            const v = VERSIONS[idx];
+            document.getElementById('v-tag').innerText = `MARANELLO ALPHA // ${v.id}`;
+            document.getElementById('mv').setAttribute('src', v.model);
+            document.getElementById('f-version').innerText = `V${v.id}.0`;
+            document.getElementById('f-name').innerText = v.name;
+            document.querySelectorAll('.v-pill').forEach((p, i) => p.classList.toggle('active', i === idx));
         }
 
         async function forceDownload(type) {
-            const btn = document.getElementById(type === 'skin' ? 'dl-skin' : 'dl-model');
-            const overlay = btn.querySelector('.progress-overlay');
-            const text = btn.querySelector('.btn-text');
             const url = type === 'skin' ? VERSIONS[currentIdx].skin : VERSIONS[currentIdx].model;
-            
-            text.innerText = "TRANSFERRING"; overlay.style.width = "40%";
             try {
                 const response = await fetch(url);
-                overlay.style.width = "100%";
                 const blob = await response.blob();
                 const link = document.createElement('a');
                 link.href = window.URL.createObjectURL(blob);
                 link.download = url.split('/').pop();
                 link.click();
-                text.innerText = "COMPLETE";
-            } catch (e) { text.innerText = "ERROR"; }
-            finally { setTimeout(() => { text.innerText = type === 'skin' ? "DOWNLOAD SKIN" : "GET MODEL"; overlay.style.width = "0%"; }, 2000); }
-        }
-
-        function randomTheme() { 
-            const r = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
-            setTheme('custom', r); 
-        }
-        function updateOLED(v) { document.body.classList.toggle('oled', v); }
-
-        function switchVersion(idx) {
-            currentIdx = idx;
-            const v = VERSIONS[idx];
-            document.getElementById('v-tag').innerText = `ENGINE STATUS // ${v.id}`;
-            document.getElementById('mv').setAttribute('src', v.model);
-            document.getElementById('f-version').innerText = `v${v.id}`;
-            document.getElementById('f-name').innerText = v.name;
-            document.querySelectorAll('.v-pill').forEach((p, i) => p.classList.toggle('active', i === idx));
-            if (state.mode === 'default') setTheme('default');
-
-            // Update log for version switch
-            document.getElementById('log-title').innerText = `${v.name} Selected`;
-            document.getElementById('log-desc').innerText = `Now viewing model and assets for ${v.name}.`;
+            } catch (e) { alert("XFER_ERROR"); }
         }
 
         window.onload = () => {
@@ -431,22 +236,13 @@
             VERSIONS.forEach((v, i) => {
                 const b = document.createElement('button');
                 b.className = 'v-pill';
-                b.innerHTML = `V${i+1}<span>${v.id}</span>`;
+                b.innerHTML = `${i+1}<span>V${v.id}</span>`;
                 b.onclick = () => switchVersion(i);
                 rail.appendChild(b);
             });
-            
-            const grid = document.getElementById('preset-grid');
-            PRESETS.forEach((p, i) => {
-                const d = document.createElement('div');
-                d.className = 'preset-dot';
-                d.style.background = p[0]; /* Use the main color for the dot */
-                d.onclick = () => setTheme('preset', PRESETS[i]); // Pass the full color array
-                grid.appendChild(d);
-            });
 
             setInterval(() => {
-                document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-US', { 
+                document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-GB', { 
                     hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: !state.is24h 
                 });
             }, 1000);
@@ -454,12 +250,7 @@
             fetch(`https://api.open-meteo.com/v1/forecast?latitude=37.5&longitude=-121.9&current_weather=true&temperature_unit=fahrenheit`)
                 .then(r => r.json()).then(data => { document.getElementById('temp').innerText = `${Math.round(data.current_weather.temperature)}°F`; });
 
-            switchVersion(currentIdx); // Initialize with the newest version
-
-            // Initialize switch states
-            document.getElementById('clock-toggle').checked = state.is24h;
-            document.getElementById('oled-toggle').checked = state.oled;
-            document.getElementById('nav-rail-toggle').checked = state.navRailOpen;
+            switchVersion(currentIdx);
         };
     </script>
 </body>
