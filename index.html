@@ -15,10 +15,13 @@
             --blur: 60px;
         }
 
+        /* OLED / NIGHT MODE */
         body.oled { background-color: #000 !important; color: #FFFFFF !important; }
+        body.oled .aura-bg { opacity: 0.3; filter: blur(80px) saturate(0.4); }
         body.oled .viewer-box { background: #0a0a0a !important; border: 1px solid #1a1a1a; }
         body.oled .side-sheet, body.oled .update-modal { background: #121212; border-left: 1px solid #333; color: #fff; }
-        body.oled .m3-btn-secondary { background: rgba(255,255,255,0.1); color: #fff; }
+        body.oled .m3-btn { background: #FFFFFF !important; color: #000 !important; }
+        body.oled .news-card { background: rgba(255,255,255,0.05) !important; color: white; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; user-select: none; }
         body { background-color: #fdf8fd; color: var(--on-s-container); font-family: 'Outfit', sans-serif; height: 100vh; width: 100vw; display: flex; overflow: hidden; transition: 0.5s ease; }
@@ -33,40 +36,65 @@
         .viewer-box { height: 90%; background: white; border-radius: 48px; position: relative; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.03); }
         model-viewer { width: 100%; height: 100%; }
         
-        h1 { font-family: 'Bebas Neue'; font-size: 8.5rem; line-height: 0.8; letter-spacing: -3px; }
+        h1 { font-family: 'Bebas Neue'; font-size: 8.5rem; line-height: 0.8; letter-spacing: -3px; margin: 10px 0; }
 
+        /* BOUNCY BUTTONS */
         .btn-group { display: flex; gap: 12px; width: 100%; margin-top: 20px; }
         .m3-btn { 
             flex: 1; height: 64px; border-radius: 32px; background: var(--p); color: white; border: none; font-weight: 800; cursor: pointer; 
-            transition: flex 0.6s var(--m3-bouncy), transform 0.4s var(--m3-bouncy); 
+            transition: flex 0.6s var(--m3-bouncy), transform 0.4s var(--m3-bouncy), background 0.3s ease; 
             position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; 
         }
         .m3-btn-secondary { background: rgba(0,0,0,0.05); color: var(--on-s-container); }
         .btn-group:has(.m3-btn:hover) .m3-btn:not(:hover) { flex: 0.7; opacity: 0.7; }
         .m3-btn:hover { flex: 1.8; transform: translateY(-4px); }
         .m3-btn:active { transform: scale(0.92); flex: 2.2; }
-
         .progress-bar { position: absolute; bottom: 0; left: 0; height: 100%; background: rgba(255,255,255,0.2); width: 0%; transition: width 1.5s ease; z-index: 1; }
 
-        /* SIDE SHEET ENHANCEMENTS */
-        .side-sheet { position: fixed; top: 0; right: -420px; width: 400px; height: 100%; background: white; z-index: 300; transition: right 0.5s var(--spring); padding: 40px; display: flex; flex-direction: column; gap: 25px; box-shadow: -20px 0 60px rgba(0,0,0,0.05); overflow-y: auto; }
+        /* SETTINGS & MODALS */
+        .side-sheet { position: fixed; top: 0; right: -420px; width: 400px; height: 100%; background: white; z-index: 300; transition: right 0.5s var(--spring); padding: 40px; display: flex; flex-direction: column; gap: 20px; box-shadow: -20px 0 60px rgba(0,0,0,0.05); overflow-y: auto; }
         .side-sheet.open { right: 0; }
-        
-        .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; }
-        .setting-label { font-weight: 600; font-size: 0.95rem; }
-
-        .custom-color-box { background: rgba(0,0,0,0.04); padding: 15px; border-radius: 20px; margin-top: 10px; }
-        .hex-input { width: 100%; background: transparent; border: 2px solid rgba(0,0,0,0.1); padding: 12px; border-radius: 12px; font-family: 'Space Grotesk'; font-weight: 700; margin-top: 10px; color: inherit; }
-
         .color-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
         .color-circle { width: 100%; aspect-ratio: 1; border-radius: 12px; cursor: pointer; border: 2px solid rgba(0,0,0,0.05); transition: 0.3s; }
+        .hex-input { width: 100%; background: rgba(0,0,0,0.04); border: 2px solid rgba(0,0,0,0.05); padding: 12px; border-radius: 12px; font-family: 'Space Grotesk'; font-weight: 700; color: inherit; margin-top: 10px; }
 
-        .v-info-bottom { position: fixed; bottom: 20px; left: 110px; background: rgba(0,0,0,0.03); padding: 10px 18px; border-radius: 18px; border: 1px solid rgba(0,0,0,0.05); cursor: pointer; z-index: 100; transition: 0.3s var(--spring); }
+        #modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(10px); z-index: 1000; display: none; place-items: center; }
+        .update-modal { background: white; width: 380px; padding: 35px; border-radius: 32px; text-align: center; }
+        #modal-overlay.show { display: grid; }
+
+        .status-bar { position: fixed; top: 30px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; z-index: 100; }
+        .weather-chip { background: rgba(255,255,255,0.3); backdrop-filter: blur(20px); padding: 0 16px 0 8px; border-radius: 28px; display: flex; align-items: center; gap: 6px; height: 40px; border: 1px solid rgba(255,255,255,0.2); }
+        .v-info-bottom { position: fixed; bottom: 20px; left: 110px; background: rgba(0,0,0,0.03); padding: 10px 18px; border-radius: 18px; cursor: pointer; z-index: 100; transition: 0.3s; }
     </style>
 </head>
 <body onmousemove="updateAuraPos(event)">
 
+    <div id="modal-overlay">
+        <div class="update-modal">
+            <div style="background: var(--bg-1); width: 54px; height: 54px; border-radius: 18px; display: grid; place-items: center; margin: 0 auto 18px;">
+                <span class="material-symbols-rounded" style="color:var(--p); font-size:28px;">auto_awesome</span>
+            </div>
+            <h2 style="font-family:'Space Grotesk';">WHAT'S NEW</h2>
+            <p style="opacity:0.6; font-size: 0.9rem; margin: 4px 0 18px;">v0.5.2 // Power Patch</p>
+            <div class="news-card" style="background: rgba(0,0,0,0.04); padding: 18px; border-radius: 24px; font-size: 0.85rem; text-align: left; margin-bottom: 25px;">
+                • <strong>Custom Hex:</strong> Set any color in Settings.<br>
+                • <strong>Rotation:</strong> Toggle model spinning.<br>
+                • <strong>Physics:</strong> Enhanced bouncy push buttons.<br>
+                • <strong>Restoration:</strong> All versioning & presets returned.
+            </div>
+            <button onclick="closeUpdateModal()" style="width:100%; padding:18px; border-radius:18px; border:none; background:var(--on-s-container); color:white; font-weight:900; cursor:pointer;">GOT IT</button>
+        </div>
+    </div>
+
     <div class="aura-bg" id="aura"></div>
+
+    <div class="status-bar">
+        <div class="weather-chip">
+            <img id="w-icon" src="https://cdn.weatherapi.com/weather/64x64/day/113.png" style="width:26px">
+            <span id="temp" style="font-weight:700; font-size:0.9rem;">--°F</span>
+        </div>
+        <div id="clock" style="font-weight:900; opacity:0.6; font-family:'Space Grotesk'; font-size:1rem;">00:00:00 AM</div>
+    </div>
 
     <nav class="nav-rail" id="rail">
         <div style="font-family:'Michroma'; font-size:0.75rem; margin-bottom:20px;">PIX</div>
@@ -74,11 +102,12 @@
 
     <main>
         <div class="viewer-box">
-            <model-viewer id="mv" auto-rotate camera-controls shadow-intensity="1" environment-image="neutral"></model-viewer>
+            <model-viewer id="mv" auto-rotate camera-controls shadow-intensity="1" environment-image="neutral" camera-orbit="45deg 55deg 140%" field-of-view="30deg"></model-viewer>
         </div>
         <div class="content">
             <p id="v-tag" style="font-weight:900; opacity:0.3; letter-spacing:5px; font-size:0.8rem;">VERSION // 0.2</p>
             <h1 id="v-title">ALPHA</h1>
+            <p style="font-size:1.1rem; opacity:0.7;">Restored stability and visual systems.</p>
             <div class="btn-group">
                 <button id="btn-skin" class="m3-btn" onclick="simulateDownload('btn-skin')" onmouseenter="shiftAura('left')" onmouseleave="resetAura()">
                     <div class="progress-bar"></div>
@@ -92,85 +121,98 @@
         </div>
     </main>
 
+    <button class="v-info-bottom" onclick="openUpdateModal()">
+        <span style="font-family:'Space Grotesk'; font-size:0.7rem; font-weight:900; display:block;">v0.5.2 <span id="new-indicator" style="background:#ff3b30; color:white; font-size:0.5rem; padding:1px 4px; border-radius:4px; display:none;">NEW</span></span>
+        <span style="font-size:0.55rem; opacity:0.5;">Click to View Updates</span>
+    </button>
+
     <div class="side-sheet" id="side-sheet">
-        <h2 style="font-family:'Space Grotesk'; font-size: 1.8rem;">Settings</h2>
+        <h2 style="font-family:'Space Grotesk';">Settings</h2>
         
-        <div class="custom-color-box">
-            <span class="setting-label">Custom Theme Color</span>
+        <div>
+            <span style="font-weight:600; font-size:0.9rem;">Custom Hex Color</span>
             <input type="text" class="hex-input" id="hex-field" placeholder="#6750A4" oninput="applyCustomHex(this.value)">
-            <p style="font-size: 0.7rem; opacity: 0.5; margin-top: 8px;">Enter any HEX code to generate a custom Material You palette.</p>
         </div>
 
-        <div class="color-grid" id="preset-grid"></div>
+        <div>
+            <span style="font-weight:600; font-size:0.9rem;">Preset Themes</span>
+            <div class="color-grid" id="preset-grid" style="margin-top:10px;"></div>
+        </div>
 
         <hr style="opacity:0.1;">
 
-        <div class="setting-row">
-            <span class="setting-label">OLED Black Mode</span>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-weight:600;">OLED Mode</span>
             <input type="checkbox" id="oled-toggle" onchange="updateOLED(this.checked)">
         </div>
 
-        <div class="setting-row">
-            <span class="setting-label">Model Auto-Rotate</span>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-weight:600;">Auto-Rotate Model</span>
             <input type="checkbox" id="rotate-toggle" checked onchange="toggleRotation(this.checked)">
         </div>
 
-        <div class="setting-row">
-            <span class="setting-label">Blur Intensity</span>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-weight:600;">Blur Intensity</span>
             <input type="range" min="20" max="120" value="60" oninput="updateBlur(this.value)">
         </div>
 
-        <button onclick="toggleSettings()" style="margin-top:auto; padding:20px; border-radius:20px; border:none; background:var(--p); color:white; cursor:pointer; font-weight:900;">SAVE & CLOSE</button>
+        <button onclick="toggleSettings()" style="margin-top:auto; padding:20px; border-radius:20px; border:none; background:var(--on-s-container); color:white; cursor:pointer; font-weight:900;">DONE</button>
     </div>
 
-    <button id="settings-fab" onclick="toggleSettings()" style="position:fixed; bottom:30px; right:30px; width:64px; height:64px; border-radius:24px; background:var(--p); color:white; border:none; cursor:pointer; z-index:200; display:grid; place-items:center; box-shadow: 0 15px 35px rgba(0,0,0,0.1);">
+    <button id="settings-fab" onclick="toggleSettings()" style="position:fixed; bottom:30px; right:30px; width:64px; height:64px; border-radius:24px; background:var(--p); color:white; border:none; cursor:pointer; z-index:200; display:grid; place-items:center;">
         <span class="material-symbols-rounded">tune</span>
     </button>
 
     <script>
+        const APP_VERSION = "0.5.2";
         const PRESETS = [ 
             ["#D1E4FF", "#A6C8FF", "#004A77"], ["#C4EED0", "#A2E0B8", "#006D3B"], 
-            ["#FDE293", "#FADB7D", "#A67100"], ["#FFD8E4", "#F9B1C8", "#880E4F"]
+            ["#FDE293", "#FADB7D", "#A67100"], ["#FFD8E4", "#F9B1C8", "#880E4F"],
+            ["#E2E2E6", "#C6C6CA", "#44474E"], ["#FFDBCB", "#FFB68F", "#8B4100"],
+            ["#D0BCFF", "#B69DF8", "#4F378B"], ["#B2F0FF", "#82DFFF", "#004F58"],
+            ["#FFDAD6", "#FFB4AB", "#930006"], ["#BCC2FF", "#5C6AFF", "#0014A8"],
+            ["#F3E0FF", "#E6BAFF", "#6E329F"], ["#D9E2FF", "#B1C5FF", "#0042A4"]
         ];
         const VERSIONS = [
             { id: "0.1", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
             { id: "0.2", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
         ];
 
-        let state = JSON.parse(localStorage.getItem('pix_pref')) || { oled: false, blur: 60, customHex: "" };
+        let state = JSON.parse(localStorage.getItem('pix_pref')) || { oled: false, lastSeen: "0.0.0", customHex: "", blur: 60 };
         let currentIdx = 1;
 
+        // Aura Logic
         function updateAuraPos(e) {
-            document.documentElement.style.setProperty('--ax', `${(e.clientX / window.innerWidth) * 100}%`);
-            document.documentElement.style.setProperty('--ay', `${(e.clientY / window.innerHeight) * 100}%`);
+            document.documentElement.style.setProperty('--ax', `${(e.clientX/window.innerWidth)*100}%`);
+            document.documentElement.style.setProperty('--ay', `${(e.clientY/window.innerHeight)*100}%`);
         }
         function shiftAura(side) { document.documentElement.style.setProperty('--ax', side === 'left' ? '20%' : '80%'); }
         function resetAura() { document.documentElement.style.setProperty('--ax', '50%'); }
 
+        // Settings Logic
         function toggleSettings() { document.getElementById('side-sheet').classList.toggle('open'); }
-        
+        function toggleRotation(v) { document.getElementById('mv').autoRotate = v; }
+        function updateBlur(v) { document.documentElement.style.setProperty('--blur', v+'px'); state.blur=v; save(); }
+        function updateOLED(v) { state.oled = v; document.body.classList.toggle('oled', v); save(); }
         function applyCustomHex(hex) {
             if (/^#[0-9A-F]{6}$/i.test(hex)) {
                 document.documentElement.style.setProperty('--p', hex);
-                document.documentElement.style.setProperty('--bg-1', hex + "44"); // Tints
-                state.customHex = hex;
-                localStorage.setItem('pix_pref', JSON.stringify(state));
+                document.documentElement.style.setProperty('--bg-1', hex + "44");
+                state.customHex = hex; save();
             }
         }
+        function save() { localStorage.setItem('pix_pref', JSON.stringify(state)); }
 
-        function updateBlur(val) {
-            document.documentElement.style.setProperty('--blur', val + 'px');
-            state.blur = val;
-            localStorage.setItem('pix_pref', JSON.stringify(state));
+        // Weather Logic
+        async function fetchWeather() {
+            try {
+                const res = await fetch('https://wttr.in/?format=j1');
+                const data = await res.json();
+                document.getElementById('temp').innerText = `${data.current_condition[0].temp_F}°F`;
+            } catch (e) { console.warn("Weather offline"); }
         }
 
-        function toggleRotation(v) { document.getElementById('mv').autoRotate = v; }
-
-        function updateOLED(v) { 
-            state.oled = v; document.body.classList.toggle('oled', v); 
-            localStorage.setItem('pix_pref', JSON.stringify(state)); 
-        }
-
+        // Versioning Logic
         function switchVersion(idx) {
             currentIdx = idx;
             document.getElementById('mv').setAttribute('src', VERSIONS[idx].model);
@@ -181,6 +223,12 @@
             document.querySelectorAll('.v-pill').forEach((p, i) => p.classList.toggle('active', i === idx));
         }
 
+        function openUpdateModal() { document.getElementById('modal-overlay').classList.add('show'); }
+        function closeUpdateModal() { 
+            document.getElementById('modal-overlay').classList.remove('show'); 
+            state.lastSeen = APP_VERSION; save();
+        }
+
         function simulateDownload(btnId) {
             const btn = document.getElementById(btnId);
             const bar = btn.querySelector('.progress-bar');
@@ -189,27 +237,31 @@
         }
 
         window.onload = () => {
+            // Build Presets
             const grid = document.getElementById('preset-grid');
             PRESETS.forEach((p, i) => {
                 const d = document.createElement('div'); d.className = 'color-circle';
-                d.style.backgroundColor = p[2]; d.onclick = () => {
-                    document.documentElement.style.setProperty('--p', p[2]);
-                    document.documentElement.style.setProperty('--bg-1', p[0]);
-                };
+                d.style.backgroundColor = p[2];
+                d.onclick = () => { document.documentElement.style.setProperty('--p', p[2]); document.documentElement.style.setProperty('--bg-1', p[0]); };
                 grid.appendChild(d);
             });
+            // Build Rail
             VERSIONS.forEach((_, i) => {
                 const b = document.createElement('button'); b.className = 'v-pill';
                 b.innerHTML = i+1; b.onclick = () => switchVersion(i);
                 document.getElementById('rail').appendChild(b);
             });
+            // Init State
+            if (state.lastSeen !== APP_VERSION) {
+                document.getElementById('new-indicator').style.display = 'inline-block';
+                setTimeout(openUpdateModal, 1500);
+            }
             updateOLED(state.oled);
             updateBlur(state.blur);
-            if(state.customHex) {
-                document.getElementById('hex-field').value = state.customHex;
-                applyCustomHex(state.customHex);
-            }
+            if(state.customHex) { document.getElementById('hex-field').value = state.customHex; applyCustomHex(state.customHex); }
             switchVersion(currentIdx);
+            fetchWeather();
+            setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
         };
     </script>
 </body>
