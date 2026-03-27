@@ -4,65 +4,257 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PIX_LABS // HUB</title>
-    <link href="https://fonts.googleapis.com/css2?family=Michroma&family=Outfit:wght@300;500;900&family=Bebas+Neue&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Michroma&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <style>
         :root { 
-            --p: #6750A4; --on-s-container: #1D192B; --bg-1: #EADDFF; --bg-2: #D0BCFF; 
-            --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-            --blur: 60px;
+            --p: #E4002B; /* Ferrari Red */
+            --on-s-container: #1A1A1A; /* Dark Gray */
+            --bg-1: #222222; /* Slightly Lighter Dark Gray */
+            --bg-2: #111111; /* Even Darker Gray */
+            --spring: cubic-bezier(0.0, 0.0, 0.2, 1); /* More subtle, controlled animation */
+            --blur: 40px;
+        }
+
+        body { 
+            background-color: #1A1A1A; 
+            color: #E0E0E0; /* Light Gray for text */
+            font-family: 'Roboto', sans-serif; 
+            height: 100vh; width: 100vw; display: flex; overflow: hidden; 
+            transition: background 0.4s ease; 
         }
 
         body.oled { background-color: #000 !important; color: #FFFFFF !important; }
-        body.oled .aura-bg { opacity: 0.2; }
-        body.oled .viewer-box { background: #0a0a0a !important; border: 1px solid #1a1a1a; }
-        body.oled .side-sheet { background: #111; border-left: 1px solid #333; color: #fff; }
+        body.oled .aura-bg { opacity: 0.1; }
+        body.oled .viewer-box { background: #000 !important; border: 1px solid #111; }
+        body.oled .side-sheet { background: #080808; border-left: 1px solid #222; color: #fff; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; user-select: none; }
-        body { background-color: #fdf8fd; color: var(--on-s-container); font-family: 'Outfit', sans-serif; height: 100vh; width: 100vw; display: flex; overflow: hidden; transition: background 0.8s ease; }
         
-        .aura-bg { position: fixed; inset: -10%; background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); animation: auraPulse 10s infinite ease-in-out; }
-        @keyframes auraPulse { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } }
+        .aura-bg { 
+            position: fixed; inset: -10%; 
+            background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 50%), 
+                        radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); 
+            z-index: -1; 
+            filter: blur(var(--blur)); 
+            opacity: 0.3; /* More subtle aura */
+            animation: none; /* No pulsing for static look */
+        }
         
-        /* NAV RAIL */
-        nav.nav-rail { width: 90px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 15px; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; }
-        .rail-header { font-family: 'Michroma'; font-size: 0.7rem; font-weight: bold; margin-bottom: 5px; }
-        .rail-label { font-size: 0.5rem; font-weight: 900; opacity: 0.3; margin-bottom: 15px; letter-spacing: 1px; }
-        .v-pill { width: 48px; height: 48px; border-radius: 24px; background: rgba(0,0,0,0.05); border: none; cursor: pointer; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: 0.5s var(--spring); color: inherit; position: relative; }
-        .v-pill span { font-size: 0.5rem; font-weight: 900; opacity: 0.4; position: absolute; bottom: -18px; }
-        .v-pill:hover { transform: scale(1.1); background: var(--p); color: white; }
-        .v-pill.active { height: 80px; width: 38px; border-radius: 19px; background: var(--p); color: white; margin-bottom: 15px; }
-        .v-pill.active span { opacity: 1; color: var(--p); bottom: -22px; }
+        /* NAV RAIL - Hidden by default, exposed by FAB */
+        nav.nav-rail { 
+            position: fixed; left: -90px; top: 0; 
+            width: 90px; height: 100%; 
+            display: flex; flex-direction: column; align-items: center; 
+            padding: 40px 0; gap: 10px; 
+            background: rgba(0,0,0,0.6); 
+            backdrop-filter: blur(15px); 
+            border-right: 1px solid rgba(255,255,255,0.05); 
+            z-index: 50; 
+            transition: left 0.4s var(--spring);
+        }
+        nav.nav-rail.open { left: 0; }
 
-        main { flex: 1; display: grid; grid-template-columns: 1fr 450px; padding: 40px; gap: 40px; align-items: center; height: 100%; }
-        .viewer-box { height: 90%; width: 100%; background: white; border-radius: 48px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.03); display: flex; align-items: center; justify-content: center; }
+        .rail-header { font-family: 'Michroma'; font-size: 0.7rem; font-weight: bold; margin-bottom: 5px; color: var(--p); }
+        .rail-label { font-size: 0.5rem; font-weight: 700; opacity: 0.5; margin-bottom: 15px; letter-spacing: 1px; text-transform: uppercase; }
+        .v-pill { 
+            width: 55px; height: 55px; 
+            border-radius: 5px; /* Squared off for modern look */
+            background: rgba(255,255,255,0.08); 
+            border: none; cursor: pointer; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            transition: 0.2s var(--spring); 
+            color: inherit; 
+            position: relative; 
+            font-size: 1.2rem; font-weight: 700;
+        }
+        .v-pill span { font-size: 0.6rem; font-weight: 500; opacity: 0.6; position: absolute; bottom: 5px; }
+        .v-pill:hover { transform: scale(1.05); background: rgba(255,255,255,0.15); }
+        .v-pill.active { 
+            background: var(--p); 
+            color: white; 
+            box-shadow: 0 0 15px rgba(228,0,43,0.4); 
+            transform: scale(1.05);
+        }
+        .v-pill.active span { opacity: 1; color: white; }
+
+        main { flex: 1; display: grid; grid-template-columns: 1fr 480px; padding: 40px; gap: 60px; align-items: center; height: 100%; }
+        .viewer-box { 
+            height: 90%; width: 100%; 
+            background: rgba(0,0,0,0.4); 
+            border-radius: 12px; /* Sharper corners */
+            overflow: hidden; 
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3); 
+            display: flex; align-items: center; justify-content: center; 
+        }
         model-viewer { width: 100%; height: 100%; }
         
-        h1 { font-family: 'Bebas Neue'; font-size: 8.5rem; line-height: 0.8; letter-spacing: -3px; margin: 10px 0; }
+        .content { text-align: center; }
+        .engine-status { 
+            font-size: 0.8rem; font-weight: 700; opacity: 0.6; 
+            letter-spacing: 3px; text-transform: uppercase; 
+            color: var(--p); /* Red highlight */
+        }
+        .car-title { 
+            font-family: 'Michroma', sans-serif; 
+            font-size: 3.5rem; line-height: 1; letter-spacing: 0px; 
+            margin: 10px 0 20px 0; 
+            color: #FFFFFF; /* Bright white */
+            text-shadow: 0 0 10px rgba(255,255,255,0.2);
+        }
+        .car-desc { font-size: 1rem; opacity: 0.7; font-weight: 400; max-width: 350px; margin: 0 auto 30px auto; }
 
-        .btn-group { display: flex; gap: 12px; margin-top: 20px; }
-        .m3-btn { flex: 1; height: 64px; border-radius: 32px; background: var(--p); color: white; border: none; font-weight: 800; cursor: pointer; transition: 0.5s var(--spring); position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-        .progress-overlay { position: absolute; bottom: 0; left: 0; height: 100%; background: rgba(255,255,255,0.2); width: 0%; transition: width 0.3s ease; }
+        .btn-group { display: flex; gap: 15px; margin-top: 20px; }
+        .m3-btn { 
+            flex: 1; height: 50px; 
+            border-radius: 8px; /* Sharper corners */
+            background: var(--p); color: white; border: none; 
+            font-weight: 700; font-size: 0.9rem;
+            cursor: pointer; 
+            transition: background 0.2s ease, transform 0.1s ease; 
+            position: relative; overflow: hidden; 
+            display: flex; align-items: center; justify-content: center; 
+        }
+        .m3-btn:hover { background: #FF3B5F; }
+        .m3-btn:active { transform: scale(0.98); }
+        .progress-overlay { 
+            position: absolute; bottom: 0; left: 0; height: 100%; 
+            background: rgba(255,255,255,0.1); 
+            width: 0%; 
+            transition: width 0.2s linear; 
+        }
 
-        .status-bar { position: fixed; top: 30px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; z-index: 100; }
-        .weather-chip { background: rgba(255,255,255,0.4); backdrop-filter: blur(20px); padding: 4px 16px 4px 8px; border-radius: 28px; display: flex; align-items: center; gap: 6px; cursor: pointer; border: 1px solid rgba(255,255,255,0.3); }
+        .status-bar { 
+            position: fixed; top: 30px; right: 40px; 
+            display: flex; flex-direction: column; align-items: flex-end; gap: 8px; 
+            z-index: 100; 
+        }
+        .weather-chip { 
+            background: rgba(0,0,0,0.6); 
+            backdrop-filter: blur(15px); 
+            padding: 4px 12px 4px 6px; 
+            border-radius: 20px; 
+            display: flex; align-items: center; gap: 5px; 
+            cursor: pointer; 
+            border: 1px solid rgba(255,255,255,0.1); 
+            color: #E0E0E0; font-size: 0.8rem;
+        }
+        .status-bar #clock { font-weight: 500; opacity: 0.7; font-family:'Roboto'; font-size:0.9rem; color: #FFFFFF; }
 
-        /* FOOTER RESTORED */
-        .site-footer { position: fixed; bottom: 30px; left: 125px; color: inherit; cursor: pointer; z-index: 100; }
-        .site-footer b { font-family: 'Space Grotesk'; font-size: 0.8rem; display: block; }
-        .site-footer i { font-style: normal; font-size: 0.6rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.5; }
+        .site-footer { 
+            position: fixed; bottom: 25px; left: 40px; 
+            color: #E0E0E0; cursor: pointer; z-index: 100; 
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.7rem; opacity: 0.7;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .site-footer b { display: inline; margin-right: 5px; font-weight: 700; }
+        .site-footer i { font-style: normal; opacity: 0.5; }
 
-        #settings-fab { position: fixed; bottom: 30px; right: 30px; width: 64px; height: 64px; border-radius: 20px; background: var(--p); color: white; border: none; cursor: pointer; z-index: 200; display: grid; place-items: center; transition: 0.6s var(--spring); }
-        #settings-fab:hover { transform: rotate(180deg) scale(1.1); border-radius: 32px; }
+        #settings-fab { 
+            position: fixed; bottom: 30px; right: 30px; 
+            width: 56px; height: 56px; 
+            border-radius: 50%; /* Circular for modern FAB */
+            background: var(--p); color: white; border: none; 
+            cursor: pointer; z-index: 200; 
+            display: grid; place-items: center; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3); 
+            transition: transform 0.3s var(--spring), background 0.2s ease; 
+        }
+        #settings-fab:hover { transform: scale(1.1); background: #FF3B5F; }
+        #settings-fab.active { transform: rotate(45deg); } /* Close icon transformation */
 
-        .side-sheet { position: fixed; top: 0; right: -420px; width: 400px; height: 100%; background: #fdf8fd; z-index: 300; transition: right 0.6s var(--spring); padding: 30px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
+        .side-sheet { 
+            position: fixed; top: 0; right: -420px; 
+            width: 400px; height: 100%; 
+            background: #111111; /* Dark background */
+            z-index: 300; 
+            transition: right 0.4s var(--spring); 
+            padding: 30px; 
+            display: flex; flex-direction: column; gap: 20px; 
+            overflow-y: auto; 
+            border-left: 1px solid rgba(255,255,255,0.08);
+            box-shadow: -5px 0 20px rgba(0,0,0,0.4);
+        }
         .side-sheet.open { right: 0; }
+        .side-sheet h2 { 
+            font-family:'Roboto', sans-serif; font-size:1.6rem; 
+            color: #FFFFFF; margin-bottom: 20px; 
+            font-weight: 700;
+        }
         
-        .m3-switch { position: relative; width: 52px; height: 32px; appearance: none; background: rgba(0,0,0,0.1); border-radius: 16px; cursor: pointer; transition: 0.3s; }
+        .section-label { 
+            font-size: 0.7rem; font-weight: 700; opacity: 0.5; 
+            letter-spacing: 1px; text-transform: uppercase; margin-top: 15px; 
+            color: #E0E0E0;
+        }
+        .setting-row { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); 
+            color: #E0E0E0; font-weight: 400;
+        }
+        .setting-row:last-of-type { border-bottom: none; }
+
+
+        .preset-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top: 10px; }
+        .preset-dot { 
+            aspect-ratio: 1; border-radius: 4px; /* Sharper corners */
+            cursor: pointer; 
+            transition: transform 0.2s var(--spring), box-shadow 0.2s ease; 
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .preset-dot:hover { transform: scale(1.05); box-shadow: 0 0 8px rgba(255,255,255,0.2); }
+        .preset-dot.active { border: 2px solid var(--p); transform: scale(1.05); box-shadow: 0 0 10px rgba(228,0,43,0.6); }
+
+        .m3-switch { 
+            position: relative; width: 40px; height: 24px; 
+            appearance: none; background: rgba(255,255,255,0.15); border-radius: 12px; 
+            cursor: pointer; transition: background 0.2s ease; 
+        }
         .m3-switch:checked { background: var(--p); }
-        .m3-switch::before { content: ""; position: absolute; top: 4px; left: 4px; width: 24px; height: 24px; background: white; border-radius: 50%; transition: 0.3s var(--spring); }
-        .m3-switch:checked::before { left: 24px; }
+        .m3-switch::before { 
+            content: ""; position: absolute; top: 2px; left: 2px; 
+            width: 20px; height: 20px; 
+            background: white; border-radius: 50%; 
+            transition: transform 0.2s ease; 
+        }
+        .m3-switch:checked::before { transform: translateX(16px); }
+
+        .action-button-group { display: flex; gap: 10px; margin-top: 20px; }
+        .action-button { 
+            flex: 1; padding: 12px; border-radius: 8px; 
+            border: none; font-weight: 700; cursor: pointer; 
+            font-size: 0.9rem;
+            transition: background 0.2s ease, transform 0.1s ease;
+        }
+        .action-button.default { 
+            background: rgba(255,255,255,0.1); color: #E0E0E0; 
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .action-button.default:hover { background: rgba(255,255,255,0.2); }
+        .action-button.random { 
+            background: var(--p); color: white; 
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .action-button.random:hover { background: #FF3B5F; }
+        .action-button.close { 
+            background: #2A2A2A; color: #E0E0E0; 
+            margin-top: auto; 
+        }
+        .action-button.close:hover { background: #3A3A3A; }
+
+        .version-log { 
+            background: rgba(0,0,0,0.4); padding: 20px; border-radius: 12px; 
+            border: 1px solid rgba(255,255,255,0.08); 
+            color: #E0E0E0;
+        }
+        .version-log h4 { 
+            font-family:'Roboto', sans-serif; color: var(--p); 
+            font-size: 1rem; margin-bottom: 5px; font-weight: 700;
+        }
+        .version-log p { font-size: 0.8rem; opacity: 0.7; font-weight: 300; }
+
     </style>
 </head>
 <body>
@@ -71,9 +263,9 @@
     <div class="status-bar">
         <div class="weather-chip" onclick="window.open('https://www.google.com/search?q=weather', '_blank')">
             <img id="w-icon" src="https://cdn.weatherapi.com/weather/64x64/day/113.png" style="width:32px">
-            <span id="temp" style="font-weight:900;">--°F</span>
+            <span id="temp">--°F</span>
         </div>
-        <div id="clock" style="font-weight:900; opacity:0.6; font-family:'Space Grotesk'; font-size:1.1rem;">00:00:00 AM</div>
+        <div id="clock">00:00:00</div>
     </div>
     
     <nav class="nav-rail" id="rail">
@@ -83,18 +275,18 @@
 
     <main>
         <div class="viewer-box">
-            <model-viewer id="mv" auto-rotate camera-controls shadow-intensity="1" environment-image="neutral" camera-orbit="0deg 75deg 105%" bounds="tight" loading="eager"></model-viewer>
+            <model-viewer id="mv" auto-rotate camera-controls shadow-intensity="0.8" environment-image="neutral" camera-orbit="0deg 75deg 105%" bounds="tight" loading="eager"></model-viewer>
         </div>
         <div class="content">
-            <p id="v-tag" style="font-weight:900; opacity:0.3; letter-spacing:5px; font-size:0.8rem;">ALPHA CHANNEL</p>
-            <h1 id="v-title">ALPHA</h1>
-            <p id="v-desc" style="font-size:1.2rem; opacity:0.7; font-weight:500;">Latest release auto-loaded.</p>
+            <p class="engine-status" id="v-tag">ENGINE STATUS // ACTIVE</p>
+            <h1 class="car-title" id="v-title">SF90 XX STRADALE</h1>
+            <p class="car-desc" id="v-desc">Jony Ive's vision, redefined. Your hub, reimagined.</p>
             <div class="btn-group">
                 <button id="dl-skin" class="m3-btn" onclick="forceDownload('skin')">
                     <div class="progress-overlay"></div>
-                    <span class="btn-text">GET SKIN</span>
+                    <span class="btn-text">DOWNLOAD SKIN</span>
                 </button>
-                <button id="dl-model" class="m3-btn" style="background:rgba(0,0,0,0.05); color:inherit;" onclick="forceDownload('model')">
+                <button id="dl-model" class="m3-btn" style="background:rgba(255,255,255,0.1); color:#E0E0E0; border:1px solid rgba(255,255,255,0.08);" onclick="forceDownload('model')">
                     <div class="progress-overlay"></div>
                     <span class="btn-text">GET MODEL</span>
                 </button>
@@ -103,46 +295,94 @@
     </main>
 
     <div class="site-footer">
-        <b id="f-version">v0.2</b>
-        <i id="f-name">ALPHA CHANNEL</i>
+        <b id="f-version">v0.7.0</b>
+        <i id="f-name">SF90 XX Mode</i>
     </div>
 
-    <button id="settings-fab" onclick="toggleSettings()">
-        <span class="material-symbols-rounded" style="font-size:32px;">settings</span>
+    <button id="settings-fab" onclick="toggleSideSheet()">
+        <span class="material-symbols-rounded" style="font-size:28px;">add</span>
     </button>
 
     <div class="side-sheet" id="side-sheet">
-        <h2 style="font-family:'Space Grotesk'; font-size:1.8rem;">HUB SETTINGS</h2>
-        <div style="display:flex; justify-content:space-between; align-items:center;"><span>24h Clock</span><input type="checkbox" class="m3-switch" id="clock-toggle" onchange="state.is24h = this.checked"></div>
-        <div style="display:flex; justify-content:space-between; align-items:center;"><span>OLED Black</span><input type="checkbox" class="m3-switch" id="oled-toggle" onchange="updateOLED(this.checked)"></div>
+        <h2>HUB CONTROLS</h2>
         
-        <h3 style="font-size:0.7rem; opacity:0.4; letter-spacing:1px; margin-top:10px;">COLOR ENGINE</h3>
-        <div id="preset-grid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px;"></div>
-        <div style="display:flex; gap:10px;">
-            <button onclick="setTheme('default')" style="flex:1; padding:16px; border-radius:16px; border:2px solid var(--p); background:transparent; color:var(--p); font-weight:900; cursor:pointer;">DEF</button>
-            <button onclick="randomTheme()" style="flex:2; padding:16px; border-radius:16px; border:none; background:var(--p); color:white; font-weight:900; cursor:pointer;">RANDOM</button>
+        <div class="section-label">DISPLAY</div>
+        <div class="setting-row">
+            <span>24h Clock</span>
+            <input type="checkbox" class="m3-switch" id="clock-toggle" onchange="state.is24h = this.checked">
+        </div>
+        <div class="setting-row">
+            <span>OLED Black Mode</span>
+            <input type="checkbox" class="m3-switch" id="oled-toggle" onchange="updateOLED(this.checked)">
+        </div>
+        <div class="setting-row">
+            <span>Show Nav Rail</span>
+            <input type="checkbox" class="m3-switch" id="nav-rail-toggle" onchange="toggleNavRail(this.checked)">
         </div>
 
-        <button onclick="toggleSettings()" style="margin-top:auto; padding:20px; border-radius:24px; border:none; background:var(--on-s-container); color:white; cursor:pointer; font-weight:900;">CLOSE</button>
+        <div class="section-label">THEME</div>
+        <div class="preset-grid" id="preset-grid"></div>
+        <div class="action-button-group">
+            <button class="action-button default" onclick="setTheme('default')">DEFAULT</button>
+            <button class="action-button random" onclick="randomTheme()">
+                <span class="material-symbols-rounded" style="font-size:18px;">shuffle</span> RANDOM
+            </button>
+        </div>
+
+        <div class="section-label">LOGS</div>
+        <div class="version-log">
+            <h4 id="log-title">SF90 XX Mode Activated</h4>
+            <p id="log-desc">Hub GUI re-engineered with Jony Ive's SF90 XX Stradale aesthetic. Minimal, functional, precise.</p>
+        </div>
+
+        <button class="action-button close" onclick="toggleSideSheet()">CLOSE CONTROLS</button>
     </div>
 
     <script>
-        const PRESETS = [ ["#D1E4FF", "#A6C8FF", "#004A77"], ["#C4EED0", "#A2E0B8", "#006D3B"], ["#FDE293", "#FADB7D", "#A67100"], ["#FFD8E4", "#F9B1C8", "#880E4F"], ["#E2E2E6", "#C6C6CA", "#44474E"], ["#FFDBCB", "#FFB68F", "#8B4100"], ["#D0BCFF", "#B69DF8", "#4F378B"], ["#B2F0FF", "#82DFFF", "#004F58"] ];
-        const VERSIONS = [
-            { id: "0.1", name: "ALPHA 0.1", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/skin%20alpha.png", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
-            { id: "0.2", name: "ALPHA 0.2", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.png", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
+        const PRESETS = [ 
+            ["#E4002B", "#E4002B", "#E4002B"], /* Ferrari Red */
+            ["#FFFFFF", "#FFFFFF", "#FFFFFF"], /* White */
+            ["#000000", "#000000", "#000000"], /* Black */
+            ["#4CAF50", "#4CAF50", "#4CAF50"], /* Green */
+            ["#2196F3", "#2196F3", "#2196F3"], /* Blue */
+            ["#FFC107", "#FFC107", "#FFC107"], /* Amber */
+            ["#9C27B0", "#9C27B0", "#9C27B0"], /* Purple */
+            ["#795548", "#795548", "#795548"]  /* Brown */
         ];
-        let state = { oled: false, is24h: false, mode: 'default' };
+        const VERSIONS = [
+            { id: "0.1", name: "ALPHA 0.1", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/skin%20alpha.png", colors: ["#222222", "#111111", "#E4002B"] },
+            { id: "0.2", name: "ALPHA 0.2", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.png", colors: ["#222222", "#111111", "#E4002B"] }
+        ];
+        let state = { oled: false, is24h: false, mode: 'default', navRailOpen: false };
         let currentIdx = VERSIONS.length - 1; // START ON NEWEST
 
-        function toggleSettings() { document.getElementById('side-sheet').classList.toggle('open'); }
+        function toggleSideSheet() { 
+            const sheet = document.getElementById('side-sheet');
+            const fab = document.getElementById('settings-fab');
+            sheet.classList.toggle('open'); 
+            fab.classList.toggle('active');
+        }
+
+        function toggleNavRail(open) {
+            state.navRailOpen = open;
+            document.getElementById('rail').classList.toggle('open', open);
+        }
 
         function setTheme(type, val) {
             state.mode = type;
-            let c = (type === 'default') ? VERSIONS[currentIdx].colors : (type === 'preset' ? PRESETS[val] : [val + '44', val + '88', val]);
+            let c;
+            if (type === 'default') c = VERSIONS[currentIdx].colors;
+            else if (type === 'preset') c = [val[0], val[1], val[2]]; // Use the actual preset colors
+            else if (type === 'custom') c = [val + '44', val + '88', val];
+
             document.documentElement.style.setProperty('--bg-1', c[0]);
             document.documentElement.style.setProperty('--bg-2', c[1]);
             document.documentElement.style.setProperty('--p', c[2]);
+
+            // Update active state for preset dots
+            document.querySelectorAll('.preset-dot').forEach((dot, idx) => {
+                dot.classList.toggle('active', type === 'preset' && idx === PRESETS.findIndex(p => p[2] === c[2]));
+            });
         }
 
         async function forceDownload(type) {
@@ -150,7 +390,8 @@
             const overlay = btn.querySelector('.progress-overlay');
             const text = btn.querySelector('.btn-text');
             const url = type === 'skin' ? VERSIONS[currentIdx].skin : VERSIONS[currentIdx].model;
-            text.innerText = "PUSHING..."; overlay.style.width = "40%";
+            
+            text.innerText = "TRANSFERRING"; overlay.style.width = "40%";
             try {
                 const response = await fetch(url);
                 overlay.style.width = "100%";
@@ -159,23 +400,30 @@
                 link.href = window.URL.createObjectURL(blob);
                 link.download = url.split('/').pop();
                 link.click();
-                text.innerText = "SUCCESS";
-            } catch (e) { text.innerText = "ERR"; }
-            finally { setTimeout(() => { text.innerText = type === 'skin' ? "GET SKIN" : "GET MODEL"; overlay.style.width = "0%"; }, 2000); }
+                text.innerText = "COMPLETE";
+            } catch (e) { text.innerText = "ERROR"; }
+            finally { setTimeout(() => { text.innerText = type === 'skin' ? "DOWNLOAD SKIN" : "GET MODEL"; overlay.style.width = "0%"; }, 2000); }
         }
 
-        function randomTheme() { setTheme('custom', '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0')); }
+        function randomTheme() { 
+            const r = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+            setTheme('custom', r); 
+        }
         function updateOLED(v) { document.body.classList.toggle('oled', v); }
 
         function switchVersion(idx) {
             currentIdx = idx;
             const v = VERSIONS[idx];
-            document.getElementById('v-tag').innerText = `ALPHA CHANNEL // ${v.id}`;
+            document.getElementById('v-tag').innerText = `ENGINE STATUS // ${v.id}`;
             document.getElementById('mv').setAttribute('src', v.model);
             document.getElementById('f-version').innerText = `v${v.id}`;
             document.getElementById('f-name').innerText = v.name;
             document.querySelectorAll('.v-pill').forEach((p, i) => p.classList.toggle('active', i === idx));
             if (state.mode === 'default') setTheme('default');
+
+            // Update log for version switch
+            document.getElementById('log-title').innerText = `${v.name} Selected`;
+            document.getElementById('log-desc').innerText = `Now viewing model and assets for ${v.name}.`;
         }
 
         window.onload = () => {
@@ -183,7 +431,7 @@
             VERSIONS.forEach((v, i) => {
                 const b = document.createElement('button');
                 b.className = 'v-pill';
-                b.innerHTML = `V${i+1}<span>v${v.id}</span>`;
+                b.innerHTML = `V${i+1}<span>${v.id}</span>`;
                 b.onclick = () => switchVersion(i);
                 rail.appendChild(b);
             });
@@ -192,8 +440,8 @@
             PRESETS.forEach((p, i) => {
                 const d = document.createElement('div');
                 d.className = 'preset-dot';
-                d.style.background = p[2];
-                d.onclick = () => setTheme('preset', i);
+                d.style.background = p[0]; /* Use the main color for the dot */
+                d.onclick = () => setTheme('preset', PRESETS[i]); // Pass the full color array
                 grid.appendChild(d);
             });
 
@@ -206,7 +454,12 @@
             fetch(`https://api.open-meteo.com/v1/forecast?latitude=37.5&longitude=-121.9&current_weather=true&temperature_unit=fahrenheit`)
                 .then(r => r.json()).then(data => { document.getElementById('temp').innerText = `${Math.round(data.current_weather.temperature)}°F`; });
 
-            switchVersion(currentIdx);
+            switchVersion(currentIdx); // Initialize with the newest version
+
+            // Initialize switch states
+            document.getElementById('clock-toggle').checked = state.is24h;
+            document.getElementById('oled-toggle').checked = state.oled;
+            document.getElementById('nav-rail-toggle').checked = state.navRailOpen;
         };
     </script>
 </body>
