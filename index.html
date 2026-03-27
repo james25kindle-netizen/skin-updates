@@ -3,241 +3,282 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PIX_LABS // LUCE_SPECTRUM</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;600;900&family=Space+Grotesk:wght@300;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
+    <title>PIX_LABS // HUB</title>
+    <link href="https://fonts.googleapis.com/css2?family=Michroma&family=Outfit:wght@300;500;900&family=Bebas+Neue&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <style>
         :root { 
-            --p: #FFD400; 
-            --on-p: #000000;
-            --p-con: rgba(255, 212, 0, 0.15);
-            --surface: #080808;
-            --outline: rgba(255, 255, 255, 0.1);
-            --m3-elastic: cubic-bezier(0.3, 1.5, 0.5, 1);
+            --p: #6750A4; --on-s-container: #1D192B; --bg-1: #EADDFF; --bg-2: #D0BCFF; 
+            --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --blur: 60px;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { 
-            background-color: #050505; color: #fff; font-family: 'Outfit', sans-serif;
-            height: 100vh; width: 100vw; display: flex; overflow: hidden;
-            transition: background 0.8s ease;
-        }
+        /* OLED / NIGHT MODE */
+        body.oled { background-color: #000 !important; color: #FFFFFF !important; }
+        body.oled .aura-bg { opacity: 0.3; filter: blur(80px) saturate(0.4); }
+        body.oled .viewer-box { background: #0a0a0a !important; border: 1px solid #1a1a1a; }
+        body.oled .side-sheet { background: #000; border-left: 1px solid #222; color: #fff; }
+        body.oled .m3-btn { background: #FFFFFF !important; color: #000000 !important; }
+        body.oled .m3-btn-secondary { background: rgba(255,255,255,0.1) !important; color: #FFFFFF !important; }
+        body.oled .v-pill.active { background: #FFFFFF !important; color: #000 !important; }
+        body.oled .news-card { background: rgba(255,255,255,0.1) !important; color: white; }
 
-        /* ATMOSPHERIC ENGINE */
-        .glow {
-            position: fixed; inset: 0; z-index: -1;
-            background: radial-gradient(circle at 70% 120%, var(--p-con) 0%, #050505 70%);
-            transition: 1s var(--m3-elastic);
-        }
-
-        /* RAIL */
-        nav { 
-            width: 100px; height: 100%; display: flex; flex-direction: column; 
-            align-items: center; padding: 40px 0; gap: 32px;
-            background: rgba(0,0,0,0.6); backdrop-filter: blur(30px);
-            border-right: 1px solid var(--outline); z-index: 100;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; user-select: none; }
+        body { background-color: #fdf8fd; color: var(--on-s-container); font-family: 'Outfit', sans-serif; height: 100vh; width: 100vw; display: flex; overflow: hidden; transition: background 0.8s ease; }
         
-        .nav-item {
-            width: 68px; height: 68px; border-radius: 22px; 
-            background: transparent; border: none; color: #fff;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: 0.5s var(--m3-elastic); position: relative; cursor: pointer;
-        }
-        .nav-item .ind {
-            position: absolute; inset: 0; background: var(--p);
-            border-radius: 30px; transform: scaleX(0.5) scaleY(0.2); opacity: 0;
-            transition: 0.5s var(--m3-elastic); z-index: -1;
-        }
-        .nav-item.active .ind { transform: scale(1); opacity: 1; border-radius: 22px; }
-        .nav-item.active { color: var(--on-p); }
-        .nav-item span { font-size: 0.55rem; font-weight: 900; opacity: 0.4; margin-top: 4px; }
-        .nav-item.active span { opacity: 0.7; color: var(--on-p); }
-
-        /* BINNACLE */
-        main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px; }
-        .binnacle {
-            width: 100%; height: 100%; max-width: 1400px; max-height: 820px;
-            background: linear-gradient(160deg, #111, #080808);
-            border-radius: 56px; border: 1px solid var(--outline);
-            display: flex; flex-direction: column; padding: 60px;
-            position: relative; overflow: hidden;
-            box-shadow: 0 50px 100px rgba(0,0,0,0.8), inset 0 0 80px var(--p-con);
-            transition: 1s var(--m3-elastic);
-        }
-
-        .dash-top { display: flex; justify-content: space-between; margin-bottom: 20px; z-index: 10; }
-        .gauges { display: flex; gap: 40px; }
-        .gauge-label { font-size: 0.6rem; font-weight: 900; color: var(--p); letter-spacing: 3px; opacity: 0.6; }
-        .gauge-val { font-family: 'Space Grotesk'; font-size: 1.8rem; font-weight: 300; display: block; }
-
-        .hero { display: grid; grid-template-columns: 1fr 1fr; align-items: center; flex: 1; }
-        h1 { font-size: 5.5rem; font-weight: 900; line-height: 0.85; letter-spacing: -5px; text-transform: uppercase; margin-bottom: 20px; }
-        .desc { font-size: 1.1rem; opacity: 0.4; line-height: 1.6; max-width: 440px; }
-
-        /* ACTION BUTTONS */
-        .actions { display: flex; gap: 16px; margin-top: 48px; }
-        .btn {
-            height: 72px; flex: 1; border-radius: 24px; font-weight: 900;
-            display: flex; align-items: center; justify-content: center; gap: 12px;
-            border: 1px solid var(--outline); background: rgba(255,255,255,0.03); color: #fff;
-            transition: 0.4s var(--m3-elastic); cursor: pointer;
-        }
-        .btn.primary { background: var(--p); color: var(--on-p); border: none; }
-        .btn:hover { transform: translateY(-5px); border-color: var(--p); background: rgba(255,255,255,0.08); }
-        .btn.primary:hover { box-shadow: 0 15px 30px var(--p-con); }
-
-        /* SETTINGS OVERLAY */
-        .overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(25px); z-index: 1000;
-            display: none; place-items: center; opacity: 0; transition: 0.4s ease;
-        }
-        .overlay.active { display: grid; opacity: 1; }
-        .card {
-            width: 450px; background: #0d0d0d; border-radius: 40px; padding: 48px;
-            border: 1px solid var(--outline); transform: scale(0.9); transition: 0.5s var(--m3-elastic);
-        }
-        .overlay.active .card { transform: scale(1); }
-        .setting-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .aura-bg { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); pointer-events: none; transition: --bg-1 0.5s, --bg-2 0.5s; }
         
-        /* TOGGLE */
-        .switch { width: 50px; height: 26px; background: #333; border-radius: 100px; position: relative; cursor: pointer; transition: 0.3s; }
-        .switch::after { content: ""; position: absolute; left: 4px; top: 4px; width: 18px; height: 18px; background: #fff; border-radius: 50%; transition: 0.3s; }
-        .switch.on { background: var(--p); }
-        .switch.on::after { left: 28px; background: var(--on-p); }
+        /* 1. NAV RAIL */
+        nav.nav-rail { width: 90px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 12px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(15px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; flex-shrink: 0; }
+        .v-pill { width: 48px; height: 48px; border-radius: 24px; background: rgba(0,0,0,0.05); border: none; cursor: pointer; display: grid; place-items: center; font-weight: 900; color: inherit; transition: all 0.5s var(--spring); }
+        .nav-rail:has(.v-pill:hover) .v-pill:not(:hover) { transform: scale(0.8); opacity: 0.5; }
+        .v-pill:hover { transform: scale(1.2); background: var(--p); color: white; }
+        .v-pill.active { height: 80px; width: 34px; border-radius: 17px; background: var(--p); color: white; }
 
-        /* FAB */
-        #fab {
-            position: fixed; bottom: 40px; right: 40px;
-            width: 80px; height: 80px; border-radius: 28px;
-            background: #111; color: var(--p); border: 1px solid var(--outline);
-            display: grid; place-items: center; cursor: pointer; transition: 0.5s var(--m3-elastic); z-index: 500;
-        }
-        #fab:hover { border-radius: 40px; background: var(--p); color: var(--on-p); transform: scale(1.1) rotate(90deg); }
+        /* 2. MAIN LAYOUT */
+        main { flex: 1; display: grid; grid-template-columns: 1fr 450px; padding: 40px; gap: 40px; align-items: center; height: 100%; }
+        
+        .viewer-box { height: 90%; width: 100%; background: white; border-radius: 48px; position: relative; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.03); }
+        /* ZOOM ADJUSTED: camera-orbit="45deg 55deg 140%" */
+        model-viewer { width: 100%; height: 100%; }
+        
+        .content { display: flex; flex-direction: column; justify-content: center; }
+        h1 { font-family: 'Bebas Neue'; font-size: 8.5rem; line-height: 0.8; letter-spacing: -3px; margin: 10px 0; }
 
-        model-viewer { width: 100%; height: 500px; --poster-color: transparent; }
+        /* 3. BUTTONS */
+        .btn-group { display: flex; gap: 12px; width: 100%; margin-top: 20px; }
+        .m3-btn { flex: 1; height: 64px; border-radius: 32px; background: var(--p); color: white; border: none; font-weight: 800; cursor: pointer; transition: flex 0.6s var(--spring), background 0.3s; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+        .m3-btn:hover { flex: 2; filter: brightness(1.1); }
+        .m3-btn-secondary { background: rgba(0,0,0,0.05); color: var(--on-s-container); }
+        .progress-bar { position: absolute; bottom: 0; left: 0; height: 100%; background: rgba(255,255,255,0.15); width: 0%; transition: width 0.3s ease; }
+        .btn-content { display: flex; align-items: center; gap: 8px; z-index: 2; pointer-events: none; }
+
+        /* 4. UTILS & STATUS */
+        .status-bar { position: fixed; top: 30px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; z-index: 100; pointer-events: none; }
+        .weather-chip { pointer-events: auto; background: rgba(255,255,255,0.3); backdrop-filter: blur(20px); padding: 0 16px 0 8px; border-radius: 28px; display: flex; align-items: center; gap: 6px; height: 44px; cursor: pointer; border: 1px solid rgba(255,255,255,0.2); }
+        .v-info-bottom { position: fixed; bottom: 30px; left: 125px; background: none; border: none; color: inherit; text-align: left; cursor: pointer; z-index: 100; }
+
+        /* 5. SETTINGS SHEET */
+        #settings-fab { position: fixed; bottom: 30px; right: 30px; width: 64px; height: 64px; border-radius: 20px; background: var(--p); color: white; border: none; cursor: pointer; z-index: 200; display: grid; place-items: center; box-shadow: 0 10px 20px rgba(0,0,0,0.1); transition: transform 0.2s; }
+        #settings-fab:active { transform: scale(0.9); }
+        
+        .side-sheet { position: fixed; top: 0; right: -400px; width: 360px; height: 100%; background: white; z-index: 300; transition: right 0.5s var(--spring); padding: 30px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; box-shadow: -10px 0 40px rgba(0,0,0,0.05); }
+        .side-sheet.open { right: 0; }
+        .news-card { background: rgba(0,0,0,0.04); padding: 18px; border-radius: 24px; font-size: 0.85rem; border: 1px solid rgba(0,0,0,0.05); line-height: 1.5; }
+        
+        /* Theme Controls */
+        .color-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 10px 0; }
+        .color-circle { width: 100%; aspect-ratio: 1; border-radius: 50%; cursor: pointer; display: grid; place-items: center; font-size: 0.55rem; font-weight: 900; transition: 0.3s var(--spring); border: 2px solid rgba(0,0,0,0.05); }
+        .color-circle:hover { transform: scale(1.15); }
+        .custom-picker-row { display: flex; align-items: center; gap: 15px; background: rgba(0,0,0,0.04); padding: 12px; border-radius: 16px; margin-top: 5px; }
+        #picker-swatch { width: 44px; height: 44px; border-radius: 12px; border: none; cursor: pointer; background: var(--p); padding: 0; -webkit-appearance: none; }
+        #picker-swatch::-webkit-color-swatch-wrapper { padding: 0; }
+        #picker-swatch::-webkit-color-swatch { border: none; border-radius: 12px; }
     </style>
 </head>
 <body>
-    <div class="glow"></div>
+    <div class="aura-bg"></div>
 
-    <nav id="rail">
-        <div style="font-family:'Space Grotesk'; font-weight:700; color:var(--p); font-size:1.5rem;">P</div>
-    </nav>
+    <div class="status-bar">
+        <div class="weather-chip" onclick="window.open('https://google.com/search?q=weather')">
+            <img id="w-icon" src="https://cdn.weatherapi.com/weather/64x64/day/113.png" style="width:30px">
+            <span id="temp" style="font-weight:700;">72°F</span>
+        </div>
+        <div id="clock" style="font-weight:900; opacity:0.6; font-family:'Space Grotesk'; font-size:1.1rem;">00:00:00 AM</div>
+    </div>
+    
+    <nav class="nav-rail" id="rail">
+        <div class="nav-logo-brand" style="font-family:'Michroma'; font-size:0.8rem; margin-bottom:20px; font-weight:bold;">PIX</div>
+        <div style="font-size:0.65rem; font-weight:900; opacity:0.4; text-transform:uppercase; margin-bottom:5px; letter-spacing:1px;">VER</div>
+        </nav>
 
     <main>
-        <div class="binnacle">
-            <div class="dash-top">
-                <div style="padding:10px 20px; border-radius:100px; background:var(--p-con); color:var(--p); border:1px solid var(--p); font-size:0.7rem; font-weight:900;">
-                    SYSTEM_STATUS // <span id="v-name-badge">ALPHA 0.2</span>
-                </div>
-                <div class="gauges">
-                    <div class="gauge">
-                        <span class="gauge-label">TELEMETRY</span>
-                        <span id="clock" class="gauge-val">00:00:00</span>
-                    </div>
-                    <div class="gauge">
-                        <span class="gauge-label">THERMAL</span>
-                        <span id="temp" class="gauge-val">--°F</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="hero">
-                <div class="content">
-                    <h1 id="v-title">LUCE<br>ENGINE</h1>
-                    <p class="desc" id="v-desc">Precision-engineered with Material 3 Expressive motion and Jony Ive’s tactile depth. Re-calibrated for ultimate clarity.</p>
-                    <div class="actions">
-                        <button class="btn primary" onclick="download('skin')"><b>DOWNLOAD SKIN</b></button>
-                        <button class="btn" onclick="download('model')"><b>EXPORT GLTF</b></button>
-                    </div>
-                </div>
-                <model-viewer id="mv" auto-rotate camera-controls shadow-intensity="2" interaction-prompt="none"></model-viewer>
+        <div class="viewer-box">
+            <model-viewer id="mv" auto-rotate camera-controls shadow-intensity="1" environment-image="neutral" camera-orbit="45deg 55deg 140%" field-of-view="30deg"></model-viewer>
+        </div>
+        <div class="content">
+            <p id="v-tag" style="font-weight:900; opacity:0.3; letter-spacing:5px; font-size:0.8rem;">VERSION // 0.2</p>
+            <h1 id="v-title">ALPHA</h1>
+            <p id="v-desc" style="font-size:1.15rem; opacity:0.7;">Restored stability and visual systems.</p>
+            
+            <div class="btn-group">
+                <button id="btn-skin" class="m3-btn" onclick="forceDownload('skin')">
+                    <div class="progress-bar"></div>
+                    <div class="btn-content"><span>GET SKIN</span></div>
+                </button>
+                <button id="btn-model" class="m3-btn m3-btn-secondary" onclick="forceDownload('model')">
+                    <div class="progress-bar"></div>
+                    <div class="btn-content"><span>GET MODEL</span></div>
+                </button>
             </div>
         </div>
     </main>
 
-    <button id="fab" onclick="toggleSettings()"><span class="material-symbols-rounded" style="font-size:36px">tune</span></button>
+    <button class="v-info-bottom" onclick="toggleSettings()">
+        <span style="font-family:'Space Grotesk'; font-size:0.75rem; font-weight:900; display:block;">v0.4.9</span>
+        <span style="font-size:0.6rem; opacity:0.5; text-transform:uppercase;">System Polish</span>
+    </button>
 
-    <div class="overlay" id="settings-ui" onclick="if(event.target==this) toggleSettings()">
-        <div class="card">
-            <h2 style="font-family:'Space Grotesk'; margin-bottom:32px; font-size:1.8rem;">CALIBRATION</h2>
-            
-            <div class="setting-row">
-                <span>24-HOUR TELEMETRY</span>
-                <div class="switch" id="time-toggle" onclick="togglePref('is24h', this)"></div>
-            </div>
-            
-            <div class="setting-row">
-                <span>DYNAMIC THERMALS</span>
-                <div class="switch on" id="temp-toggle" onclick="togglePref('showTemp', this)"></div>
-            </div>
+    <button id="settings-fab" onclick="toggleSettings()">
+        <span class="material-symbols-rounded" style="font-size:28px;">settings</span>
+    </button>
 
-            <div style="margin-top:40px; padding:20px; background:rgba(255,255,255,0.03); border-radius:20px; font-size:0.8rem; opacity:0.6;">
-                Core Model: Luce Engine v1.3.0<br>Status: Online // Hardware Accelerated
-            </div>
-            
-            <button class="btn" style="width:100%; margin-top:32px;" onclick="toggleSettings()">RETURN TO DRIVE</button>
+    <div class="side-sheet" id="side-sheet">
+        <h2 style="font-family:'Space Grotesk';">SETTINGS</h2>
+        <div class="news-card">
+            <strong>Polish Update</strong><br>
+            • Night Cycle Restored<br>
+            • Camera Zoom Adjusted<br>
+            • 3-Color Randomizer
         </div>
+
+        <h3 style="font-size:0.7rem; opacity:0.5; margin-top:10px;">PRESET THEMES</h3>
+        <div class="color-grid" id="preset-grid"></div>
+
+        <h3 style="font-size:0.7rem; opacity:0.5;">CUSTOM COLOR</h3>
+        <div class="custom-picker-row">
+            <input type="color" id="picker-swatch" oninput="applyHex(this.value)">
+            <span id="hex-label" style="font-family:'Space Grotesk'; font-weight:900; opacity:0.6;">#6750A4</span>
+            <button onclick="randomTheme()" title="Randomize Palette" style="margin-left:auto; background:none; border:none; cursor:pointer; opacity:0.5;"><span class="material-symbols-rounded">casino</span></button>
+        </div>
+
+        <hr style="opacity:0.1; margin:10px 0;">
+        <div style="display:flex; justify-content:space-between; align-items:center;"><span>OLED Mode</span><input type="checkbox" id="oled-toggle" onchange="updateOLED(this.checked)"></div>
+        <div style="display:flex; justify-content:space-between; align-items:center;"><span>Night Cycle</span><input type="checkbox" id="auto-toggle" onchange="updateAuto(this.checked)"></div>
+        <div style="display:flex; justify-content:space-between; align-items:center;"><span>24h Clock</span><input type="checkbox" id="format-toggle" onchange="updateFormat(this.checked)"></div>
+        
+        <button onclick="toggleSettings()" style="margin-top:auto; padding:16px; border-radius:16px; border:none; background:var(--on-s-container); color:white; cursor:pointer; font-weight:900;">DONE</button>
     </div>
 
     <script>
+        const PRESETS = [ 
+            ["#D1E4FF", "#A6C8FF", "#004A77"], ["#C4EED0", "#A2E0B8", "#006D3B"], 
+            ["#FDE293", "#FADB7D", "#A67100"], ["#FFD8E4", "#F9B1C8", "#880E4F"],
+            ["#E2E2E6", "#C6C6CA", "#44474E"], ["#FFDBCB", "#FFB68F", "#8B4100"],
+            ["#D0BCFF", "#B69DF8", "#4F378B"], ["#B2F0FF", "#82DFFF", "#004F58"]
+        ];
         const VERSIONS = [
-            { id: "0.1", name: "ALPHA 0.1", accent: "#D0BCFF", on: "#381E72", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/skin%20alpha.png" },
-            { id: "0.2", name: "ALPHA 0.2", accent: "#FFD400", on: "#000000", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.png" }
+            { id: "0.1", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/skin%20alpha.png", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
+            { id: "0.2", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", skin: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.png", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
         ];
 
-        let state = { is24h: false, currentIdx: 1 };
+        let state = JSON.parse(localStorage.getItem('pix_pref')) || { oled: false, auto: true, is24h: false, themeType: 'default', themeVal: 0 };
+        let currentIdx = 1;
 
-        function toggleSettings() { document.getElementById('settings-ui').classList.toggle('active'); }
+        function toggleSettings() { document.getElementById('side-sheet').classList.toggle('open'); }
 
-        function togglePref(key, el) {
-            state[key] = !state[key];
-            el.classList.toggle('on');
-            updateClock();
+        function setTheme(type, val) {
+            state.themeType = type; state.themeVal = val;
+            let c;
+            
+            if (type === 'default') {
+                c = VERSIONS[currentIdx].colors;
+            } else if (type === 'custom') {
+                c = val; // Should be array [bg1, bg2, p] or single hex
+            } else {
+                c = PRESETS[val];
+            }
+
+            // Handle logic if c is array (preset/random) or string (single hex)
+            if (Array.isArray(c)) {
+                document.documentElement.style.setProperty('--bg-1', c[0]);
+                document.documentElement.style.setProperty('--bg-2', c[1]);
+                document.documentElement.style.setProperty('--p', c[2]);
+                document.getElementById('picker-swatch').value = c[2]; // Set picker to accent
+                document.getElementById('hex-label').innerText = "CUSTOM";
+            } else {
+                // Single Hex fallback
+                document.documentElement.style.setProperty('--bg-1', c);
+                document.documentElement.style.setProperty('--bg-2', c);
+                document.documentElement.style.setProperty('--p', c);
+                document.getElementById('hex-label').innerText = c.toUpperCase();
+            }
+            
+            if(type === 'default') document.getElementById('hex-label').innerText = "DEFAULT";
+            if(type === 'preset') document.getElementById('hex-label').innerText = "PRESET";
+
+            localStorage.setItem('pix_pref', JSON.stringify(state));
+        }
+
+        function applyHex(hex) { 
+            // When user picks manually, we just use that one color for everything to be safe
+            setTheme('custom', [hex, hex, hex]); 
+        }
+
+        function randomTheme() {
+            // Generate 3 random colors for a full theme
+            const r = () => '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+            const palette = [r(), r(), r()];
+            setTheme('custom', palette);
+        }
+
+        async function forceDownload(type) {
+            const btn = type === 'skin' ? document.getElementById('btn-skin') : document.getElementById('btn-model');
+            const bar = btn.querySelector('.progress-bar');
+            const content = btn.querySelector('.btn-content');
+            const url = type === 'skin' ? VERSIONS[currentIdx].skin : VERSIONS[currentIdx].model;
+            
+            content.innerHTML = `<span>FETCHING</span>`; 
+            bar.style.width = "40%";
+
+            try {
+                const response = await fetch(url);
+                bar.style.width = "100%";
+                const blob = await response.blob();
+                const a = document.createElement('a'); 
+                a.href = window.URL.createObjectURL(blob);
+                a.download = url.split('/').pop(); 
+                a.click();
+                content.innerHTML = `<span>READY</span> <span class="material-symbols-rounded" style="font-size:20px;">check_circle</span>`;
+            } catch (e) { 
+                content.innerText = "ERROR"; 
+            } finally { 
+                setTimeout(() => { 
+                    content.innerHTML = `<span>${type === 'skin' ? 'GET SKIN' : 'GET MODEL'}</span>`; 
+                    bar.style.width = "0%"; 
+                }, 3000); 
+            }
+        }
+
+        function updateOLED(v) { state.oled = v; checkMode(); localStorage.setItem('pix_pref', JSON.stringify(state)); }
+        function updateAuto(v) { state.auto = v; checkMode(); localStorage.setItem('pix_pref', JSON.stringify(state)); }
+        function updateFormat(v) { state.is24h = v; localStorage.setItem('pix_pref', JSON.stringify(state)); }
+        
+        function checkMode() { 
+            const h = new Date().getHours();
+            const isNight = state.auto ? (h >= 19 || h < 7) : state.oled;
+            document.body.classList.toggle('oled', isNight);
         }
 
         function switchVersion(idx) {
-            state.currentIdx = idx;
-            const v = VERSIONS[idx];
-            document.documentElement.style.setProperty('--p', v.accent);
-            document.documentElement.style.setProperty('--on-p', v.on);
-            document.documentElement.style.setProperty('--p-con', v.accent + '26');
-            
-            document.getElementById('v-name-badge').innerText = v.name;
-            document.getElementById('mv').setAttribute('src', v.model);
-            document.querySelectorAll('.nav-item').forEach((it, i) => it.classList.toggle('active', i === idx));
-        }
-
-        function updateClock() {
-            document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-GB', { hour12: !state.is24h });
-        }
-
-        async function download(type) {
-            const url = type === 'skin' ? VERSIONS[state.currentIdx].skin : VERSIONS[state.currentIdx].model;
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = url.split('/').pop();
-            link.click();
+            currentIdx = idx;
+            document.getElementById('v-tag').innerText = `VERSION // ${VERSIONS[idx].id}`;
+            document.getElementById('mv').setAttribute('src', VERSIONS[idx].model);
+            document.querySelectorAll('.v-pill').forEach((p, i) => p.classList.toggle('active', i === idx));
+            setTheme(state.themeType, state.themeVal);
         }
 
         window.onload = () => {
+            const grid = document.getElementById('preset-grid');
+            PRESETS.forEach((p, i) => {
+                const d = document.createElement('div'); d.className = 'color-circle';
+                d.style.backgroundColor = p[2]; d.onclick = () => setTheme('preset', i);
+                grid.appendChild(d);
+            });
             const rail = document.getElementById('rail');
-            VERSIONS.forEach((v, i) => {
-                const b = document.createElement('button');
-                b.className = 'nav-item';
-                b.innerHTML = `<div class="ind"></div><b>${i+1}</b><span>V${v.id}</span>`;
-                b.onclick = () => switchVersion(i);
+            VERSIONS.forEach((_, i) => {
+                const b = document.createElement('button'); b.className = 'v-pill';
+                b.innerHTML = i+1; b.onclick = () => switchVersion(i);
                 rail.appendChild(b);
             });
-
-            setInterval(updateClock, 1000);
-            fetch(`https://api.open-meteo.com/v1/forecast?latitude=37.5&longitude=-121.9&current_weather=true&temperature_unit=fahrenheit`)
-                .then(r => r.json()).then(d => { document.getElementById('temp').innerText = `${Math.round(d.current_weather.temperature)}°F`; });
-
-            switchVersion(1);
+            document.getElementById('oled-toggle').checked = state.oled;
+            document.getElementById('auto-toggle').checked = state.auto;
+            document.getElementById('format-toggle').checked = state.is24h;
+            checkMode(); switchVersion(currentIdx);
+            setInterval(() => {
+                document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-US', { hour12: !state.is24h });
+            }, 1000);
         };
     </script>
 </body>
