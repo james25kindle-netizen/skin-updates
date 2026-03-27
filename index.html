@@ -11,6 +11,7 @@
         :root { 
             --p: #6750A4; --on-s-container: #1D192B; --bg-1: #EADDFF; --bg-2: #D0BCFF; 
             --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --m3-expressive: cubic-bezier(0.2, 0, 0, 1);
             --blur: 60px;
         }
 
@@ -39,13 +40,23 @@
         
         h1 { font-family: 'Bebas Neue'; font-size: 8.5rem; line-height: 0.8; letter-spacing: -3px; margin: 10px 0; }
 
-        /* DOWNLOAD BUTTONS WITH ANIMATION */
-        .btn-group { display: flex; gap: 12px; width: 100%; margin-top: 20px; }
-        .m3-btn { flex: 1; height: 64px; border-radius: 32px; background: var(--p); color: white; border: none; font-weight: 800; cursor: pointer; transition: 0.3s; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        /* EXPRESSIVE PUSH BUTTONS */
+        .btn-group { display: flex; gap: 12px; width: 100%; margin-top: 20px; align-items: stretch; }
+        .m3-btn { 
+            flex: 1; height: 64px; border-radius: 32px; 
+            background: var(--p); color: white; border: none; 
+            font-weight: 800; cursor: pointer; 
+            transition: flex 0.6s var(--m3-expressive), transform 0.2s ease, background 0.3s ease; 
+            position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; 
+        }
         .m3-btn-secondary { background: rgba(0,0,0,0.05); color: var(--on-s-container); }
-        .m3-btn:active { transform: scale(0.95); }
-        .btn-content { position: relative; z-index: 2; }
         
+        /* The "Push" Effect */
+        .btn-group:has(.m3-btn:active) .m3-btn:not(:active) { flex: 0.5; opacity: 0.8; }
+        .m3-btn:active { flex: 2; transform: scale(0.98); }
+        .m3-btn:hover { flex: 1.5; }
+
+        .btn-content { position: relative; z-index: 2; pointer-events: none; white-space: nowrap; }
         .progress-bar { position: absolute; bottom: 0; left: 0; height: 100%; background: rgba(255,255,255,0.2); width: 0%; transition: width 1.5s ease-in-out; z-index: 1; }
         .m3-btn-secondary .progress-bar { background: rgba(0,0,0,0.1); }
 
@@ -80,12 +91,12 @@
                 <span class="material-symbols-rounded" style="color:var(--p); font-size:28px;">auto_awesome</span>
             </div>
             <h2 style="font-family:'Space Grotesk';">WHAT'S NEW</h2>
-            <p style="opacity:0.6; font-size: 0.9rem; margin: 4px 0 18px;">v0.5.1 // Bug Fix Patch</p>
+            <p style="opacity:0.6; font-size: 0.9rem; margin: 4px 0 18px;">v0.5.1 // Expressive UI Patch</p>
             <div class="news-card" style="margin-bottom: 25px;">
-                • <strong>Animations Restored:</strong> Download buttons now show progress.<br>
-                • <strong>Preset Cleanup:</strong> Removed duplicate grays; added Indigo.<br>
-                • <strong>Live Weather:</strong> Real-time temperature fetching enabled.<br>
-                • <strong>Persistence:</strong> Logs only auto-pop once per version.
+                • <strong>Expressive Motion:</strong> Buttons now "push" each other dynamically.<br>
+                • <strong>Animations Restored:</strong> Progress bars fully functional.<br>
+                • <strong>Preset Cleanup:</strong> 12 curated Material You palettes.<br>
+                • <strong>Live Weather:</strong> Real-time temperature fetching.
             </div>
             <button onclick="closeUpdateModal()" style="width:100%; padding:18px; border-radius:18px; border:none; background:var(--on-s-container); color:white; font-weight:900; cursor:pointer;">GOT IT</button>
         </div>
@@ -129,7 +140,7 @@
 
     <button class="v-info-bottom" onclick="openUpdateModal()">
         <span style="font-family:'Space Grotesk'; font-size:0.7rem; font-weight:900; display:block;">v0.5.1 <span id="new-indicator" class="new-badge">NEW</span></span>
-        <span style="font-size:0.55rem; opacity:0.5; text-transform:uppercase;">System Polish • Click to View</span>
+        <span style="font-size:0.55rem; opacity:0.5; text-transform:uppercase;">Expressive UI • Click to View</span>
     </button>
 
     <div class="side-sheet" id="side-sheet">
@@ -152,9 +163,9 @@
         const PRESETS = [ 
             ["#D1E4FF", "#A6C8FF", "#004A77"], ["#C4EED0", "#A2E0B8", "#006D3B"], 
             ["#FDE293", "#FADB7D", "#A67100"], ["#FFD8E4", "#F9B1C8", "#880E4F"],
-            ["#E2E2E6", "#C6C6CA", "#44474E"], ["#FFDBCB", "#FFB68F", "#8B4100"], // Replaced duplicate gray below with Indigo
+            ["#E2E2E6", "#C6C6CA", "#44474E"], ["#FFDBCB", "#FFB68F", "#8B4100"],
             ["#D0BCFF", "#B69DF8", "#4F378B"], ["#B2F0FF", "#82DFFF", "#004F58"],
-            ["#FFDAD6", "#FFB4AB", "#930006"], ["#BCC2FF", "#5C6AFF", "#0014A8"], // New Indigo
+            ["#FFDAD6", "#FFB4AB", "#930006"], ["#BCC2FF", "#5C6AFF", "#0014A8"],
             ["#F3E0FF", "#E6BAFF", "#6E329F"], ["#D9E2FF", "#B1C5FF", "#0042A4"]
         ];
         const VERSIONS = [
