@@ -12,6 +12,7 @@
             --p: #6750A4; --on-s-container: #1D192B; --bg-1: #EADDFF; --bg-2: #D0BCFF; 
             --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
             --m3-expressive: cubic-bezier(0.2, 0, 0, 1);
+            --m3-bouncy: cubic-bezier(0.47, 1.64, 0.41, 0.8);
             --blur: 60px;
         }
 
@@ -27,7 +28,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; user-select: none; }
         body { background-color: #fdf8fd; color: var(--on-s-container); font-family: 'Outfit', sans-serif; height: 100vh; width: 100vw; display: flex; overflow: hidden; transition: background 0.5s ease; }
         
-        .aura-bg { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); transition: 0.8s ease; }
+        .aura-bg { position: fixed; inset: 0; background: radial-gradient(circle at var(--ax, 50%) var(--ay, 50%), var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); transition: 0.8s var(--m3-expressive); }
         
         /* NAV RAIL */
         nav.nav-rail { width: 90px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 12px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(15px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; }
@@ -40,32 +41,30 @@
         
         h1 { font-family: 'Bebas Neue'; font-size: 8.5rem; line-height: 0.8; letter-spacing: -3px; margin: 10px 0; }
 
-        /* EXPRESSIVE PUSH BUTTONS */
+        /* BOUNCY PUSH BUTTONS */
         .btn-group { display: flex; gap: 12px; width: 100%; margin-top: 20px; align-items: stretch; }
         .m3-btn { 
             flex: 1; height: 64px; border-radius: 32px; 
             background: var(--p); color: white; border: none; 
             font-weight: 800; cursor: pointer; 
-            transition: flex 0.6s var(--m3-expressive), transform 0.2s ease, background 0.3s ease; 
+            transition: flex 0.6s var(--m3-bouncy), transform 0.4s var(--m3-bouncy), background 0.3s ease; 
             position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; 
         }
         .m3-btn-secondary { background: rgba(0,0,0,0.05); color: var(--on-s-container); }
         
-        /* The "Push" Effect */
-        .btn-group:has(.m3-btn:active) .m3-btn:not(:active) { flex: 0.5; opacity: 0.8; }
-        .m3-btn:active { flex: 2; transform: scale(0.98); }
-        .m3-btn:hover { flex: 1.5; }
+        .btn-group:has(.m3-btn:hover) .m3-btn:not(:hover) { flex: 0.7; opacity: 0.7; }
+        .m3-btn:hover { flex: 1.8; transform: translateY(-4px); }
+        .m3-btn:active { transform: scale(0.92) translateY(2px); flex: 2.2; }
 
         .btn-content { position: relative; z-index: 2; pointer-events: none; white-space: nowrap; }
         .progress-bar { position: absolute; bottom: 0; left: 0; height: 100%; background: rgba(255,255,255,0.2); width: 0%; transition: width 1.5s ease-in-out; z-index: 1; }
-        .m3-btn-secondary .progress-bar { background: rgba(0,0,0,0.1); }
 
         /* VERSION TRIGGER */
         .v-info-bottom { position: fixed; bottom: 20px; left: 110px; background: rgba(0,0,0,0.03); padding: 10px 18px; border-radius: 18px; border: 1px solid rgba(0,0,0,0.05); color: inherit; text-align: left; cursor: pointer; z-index: 100; transition: all 0.3s var(--spring); font-family: inherit; }
         .v-info-bottom:hover { transform: translateY(-3px); background: white; box-shadow: 0 8px 15px rgba(0,0,0,0.04); }
         .new-badge { background: #ff3b30; color: white; font-size: 0.55rem; padding: 1px 6px; border-radius: 8px; margin-left: 4px; font-weight: 900; display: none; }
 
-        /* MODAL SYSTEM */
+        /* MODAL */
         #modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(10px); z-index: 1000; display: none; place-items: center; }
         .update-modal { background: white; width: 380px; padding: 35px; border-radius: 32px; box-shadow: 0 30px 60px rgba(0,0,0,0.2); text-align: center; transform: scale(0.95); transition: 0.4s var(--spring); }
         #modal-overlay.show { display: grid; }
@@ -76,14 +75,12 @@
 
         .side-sheet { position: fixed; top: 0; right: -400px; width: 360px; height: 100%; background: white; z-index: 300; transition: right 0.5s var(--spring); padding: 30px; display: flex; flex-direction: column; gap: 20px; }
         .side-sheet.open { right: 0; }
-        .news-card { background: rgba(0,0,0,0.04); padding: 18px; border-radius: 24px; font-size: 0.85rem; border: 1px solid rgba(0,0,0,0.05); text-align: left; }
         
         .color-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
         .color-circle { width: 100%; aspect-ratio: 1; border-radius: 12px; cursor: pointer; border: 2px solid rgba(0,0,0,0.05); transition: 0.3s; }
-        .color-circle:hover { transform: scale(1.1); }
     </style>
 </head>
-<body>
+<body onmousemove="updateAuraPos(event)">
 
     <div id="modal-overlay">
         <div class="update-modal">
@@ -91,18 +88,18 @@
                 <span class="material-symbols-rounded" style="color:var(--p); font-size:28px;">auto_awesome</span>
             </div>
             <h2 style="font-family:'Space Grotesk';">WHAT'S NEW</h2>
-            <p style="opacity:0.6; font-size: 0.9rem; margin: 4px 0 18px;">v0.5.1 // Expressive UI Patch</p>
-            <div class="news-card" style="margin-bottom: 25px;">
-                • <strong>Expressive Motion:</strong> Buttons now "push" each other dynamically.<br>
-                • <strong>Animations Restored:</strong> Progress bars fully functional.<br>
-                • <strong>Preset Cleanup:</strong> 12 curated Material You palettes.<br>
-                • <strong>Live Weather:</strong> Real-time temperature fetching.
+            <p style="opacity:0.6; font-size: 0.9rem; margin: 4px 0 18px;">v0.5.1 // Bouncy Aura Edition</p>
+            <div style="background: rgba(0,0,0,0.04); padding: 18px; border-radius: 24px; font-size: 0.85rem; border: 1px solid rgba(0,0,0,0.05); text-align: left; margin-bottom: 25px;">
+                • <strong>Spring Physics:</strong> Buttons now "boing" when hovered or clicked.<br>
+                • <strong>Aura Sync:</strong> Background glow follows your movement.<br>
+                • <strong>Live Weather:</strong> Fixed temperature freeze bug.<br>
+                • <strong>Presets:</strong> 12 unique Material You palettes.
             </div>
-            <button onclick="closeUpdateModal()" style="width:100%; padding:18px; border-radius:18px; border:none; background:var(--on-s-container); color:white; font-weight:900; cursor:pointer;">GOT IT</button>
+            <button onclick="closeUpdateModal()" style="width:100%; padding:18px; border-radius:18px; border:none; background:var(--on-s-container); color:white; font-weight:900; cursor:pointer;">LET'S GO</button>
         </div>
     </div>
 
-    <div class="aura-bg"></div>
+    <div class="aura-bg" id="aura"></div>
 
     <div class="status-bar">
         <div class="weather-chip" onclick="window.open('https://google.com/search?q=weather')">
@@ -126,11 +123,11 @@
             <p id="v-desc" style="font-size:1.1rem; opacity:0.7;">Restored stability and visual systems.</p>
             
             <div class="btn-group">
-                <button id="btn-skin" class="m3-btn" onclick="simulateDownload('btn-skin')">
+                <button id="btn-skin" class="m3-btn" onclick="simulateDownload('btn-skin')" onmouseenter="shiftAura('left')" onmouseleave="resetAura()">
                     <div class="progress-bar"></div>
                     <span class="btn-content">GET SKIN</span>
                 </button>
-                <button id="btn-model" class="m3-btn m3-btn-secondary" onclick="simulateDownload('btn-model')">
+                <button id="btn-model" class="m3-btn m3-btn-secondary" onclick="simulateDownload('btn-model')" onmouseenter="shiftAura('right')" onmouseleave="resetAura()">
                     <div class="progress-bar"></div>
                     <span class="btn-content">GET MODEL</span>
                 </button>
@@ -140,7 +137,7 @@
 
     <button class="v-info-bottom" onclick="openUpdateModal()">
         <span style="font-family:'Space Grotesk'; font-size:0.7rem; font-weight:900; display:block;">v0.5.1 <span id="new-indicator" class="new-badge">NEW</span></span>
-        <span style="font-size:0.55rem; opacity:0.5; text-transform:uppercase;">Expressive UI • Click to View</span>
+        <span style="font-size:0.55rem; opacity:0.5; text-transform:uppercase;">Spring Engine • Click to View</span>
     </button>
 
     <div class="side-sheet" id="side-sheet">
@@ -175,6 +172,20 @@
 
         let state = JSON.parse(localStorage.getItem('pix_pref')) || { oled: false, lastSeen: "0.0.0", themeType: 'default', themeVal: 0 };
         let currentIdx = 1;
+
+        // Aura Effects
+        function updateAuraPos(e) {
+            const x = (e.clientX / window.innerWidth) * 100;
+            const y = (e.clientY / window.innerHeight) * 100;
+            document.documentElement.style.setProperty('--ax', `${x}%`);
+            document.documentElement.style.setProperty('--ay', `${y}%`);
+        }
+        function shiftAura(side) {
+            document.documentElement.style.setProperty('--ax', side === 'left' ? '30%' : '70%');
+        }
+        function resetAura() { 
+            document.documentElement.style.setProperty('--ax', '50%'); 
+        }
 
         async function fetchWeather() {
             try {
@@ -227,12 +238,12 @@
             const originalText = label.innerText;
             
             bar.style.width = "100%";
-            label.innerText = "PREPARING...";
+            label.innerText = "SQUASHING...";
             
             setTimeout(() => {
                 bar.style.transition = "none";
                 bar.style.width = "0%";
-                label.innerText = "SUCCESS";
+                label.innerText = "READY!";
                 setTimeout(() => {
                     bar.style.transition = "width 1.5s ease-in-out";
                     label.innerText = originalText;
