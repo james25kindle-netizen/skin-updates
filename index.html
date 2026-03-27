@@ -3,198 +3,216 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PIX_LABS // LUCE</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <title>PIX_LABS // LUCE_EXPRESSIVE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;900&family=Space+Grotesk:wght@300;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <style>
         :root { 
-            --giallo: #FFD400; /* Ferrari Yellow */
-            --charcoal: #0D0D0D; 
-            --silver: #E0E0E0;
-            --anodized: #2A2A2A;
-            --spring: cubic-bezier(0.2, 0.8, 0.2, 1);
+            --giallo: #FFD400; 
+            --charcoal: #080808; 
+            --glass: rgba(255, 255, 255, 0.03);
+            --spring-heavy: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --spring-fluid: cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; user-select: none; }
-        
         body { 
             background-color: var(--charcoal); 
-            color: var(--silver); 
-            font-family: 'Inter', sans-serif; 
-            height: 100vh; width: 100vw; 
-            display: flex; overflow: hidden; 
-            letter-spacing: -0.02em;
+            color: #fff; font-family: 'Outfit', sans-serif;
+            height: 100vh; width: 100vw; display: flex; overflow: hidden;
         }
 
-        /* TACTILE BACKGROUND */
-        .glass-grain {
-            position: fixed; inset: 0;
-            background: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #0d0d0d 100%);
-            z-index: -1;
+        /* TACTILE DEPTH */
+        .viewport-bg {
+            position: fixed; inset: 0; z-index: -1;
+            background: radial-gradient(circle at 50% 120%, #1a1500 0%, #080808 60%);
         }
-        .glass-grain::after {
+        .viewport-bg::before {
             content: ""; position: absolute; inset: 0;
-            background-image: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
-            opacity: 0.03; pointer-events: none;
+            background-image: url('https://www.transparenttextures.com/patterns/stardust.png');
+            opacity: 0.1; mix-blend-mode: overlay;
         }
 
-        /* LUCE BINNACLE (Depth Layers) */
-        .binnacle-layer {
-            position: absolute; border-radius: 50%;
-            border: 1px solid rgba(255,255,255,0.05);
-            pointer-events: none;
-        }
-        .layer-1 { width: 800px; height: 800px; top: -100px; left: -200px; background: radial-gradient(circle, rgba(255,212,0,0.03) 0%, transparent 70%); }
-
-        /* NAV RAIL - Precision Machined */
+        /* MATERIAL 3 NAV RAIL (Expressive) */
         nav.nav-rail { 
-            width: 80px; height: 100%; 
-            display: flex; flex-direction: column; align-items: center; 
-            padding: 40px 0; gap: 20px; 
-            background: rgba(13,13,13,0.8); 
-            border-right: 1px solid rgba(255,255,255,0.05); 
-            z-index: 100;
+            width: 96px; height: 100%; display: flex; flex-direction: column; 
+            align-items: center; padding: 32px 0; gap: 24px;
+            background: rgba(0,0,0,0.4); backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255,255,255,0.05); z-index: 100;
         }
-        .rail-brand { font-family: 'Space Grotesk'; font-weight: 700; font-size: 0.8rem; color: var(--giallo); letter-spacing: 2px; }
-        
-        .v-pill { 
-            width: 44px; height: 44px; border-radius: 4px;
-            background: var(--anodized); border: 1px solid rgba(255,255,255,0.1);
-            color: var(--silver); cursor: pointer;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            transition: 0.3s var(--spring);
-            font-size: 0.7rem; font-weight: 900;
+        .nav-item {
+            width: 56px; height: 56px; border-radius: 16px; 
+            background: transparent; border: none; color: #fff;
+            cursor: pointer; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            transition: 0.4s var(--spring-heavy); position: relative;
         }
-        .v-pill span { font-size: 0.5rem; opacity: 0.4; margin-top: 2px; }
-        .v-pill.active { 
-            background: var(--silver); color: var(--charcoal); 
-            box-shadow: 0 0 20px rgba(255,255,255,0.1);
-            transform: scale(1.1);
+        .nav-item .indicator {
+            position: absolute; inset: 0; background: var(--giallo);
+            border-radius: 28px; transform: scaleX(0); opacity: 0;
+            transition: 0.4s var(--spring-heavy); z-index: -1;
         }
+        .nav-item.active .indicator { transform: scaleX(1); opacity: 1; border-radius: 16px; }
+        .nav-item.active { color: #000; transform: scale(1.1); }
+        .nav-item span { font-size: 0.6rem; font-weight: 900; margin-top: 4px; opacity: 0.5; }
+        .nav-item.active span { opacity: 1; }
 
-        main { flex: 1; display: grid; grid-template-columns: 1fr 400px; padding: 60px; gap: 80px; align-items: center; }
-
-        /* VIEWER - "Lens" Effect */
-        .viewer-wrap {
-            position: relative; height: 85%; width: 100%;
-            background: #000; border-radius: 20px;
-            overflow: hidden; box-shadow: inset 0 0 100px rgba(0,0,0,0.8), 0 40px 100px rgba(0,0,0,0.5);
+        /* THE BINNACLE (Viewer) */
+        main { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; padding: 40px; }
+        .binnacle-wrap {
+            width: 100%; height: 85%; max-width: 1200px;
+            position: relative; border-radius: 40px;
+            background: linear-gradient(145deg, #111, #050505);
+            box-shadow: 0 50px 100px rgba(0,0,0,0.8), inset 0 0 40px rgba(255,212,0,0.02);
             border: 1px solid rgba(255,255,255,0.05);
+            display: flex; align-items: center; padding: 60px; gap: 60px;
         }
-        model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
 
-        /* TYPOGRAPHY & CONTENT */
-        .content { display: flex; flex-direction: column; gap: 10px; }
-        .engine-tag { font-size: 0.65rem; font-weight: 700; color: var(--giallo); letter-spacing: 4px; text-transform: uppercase; opacity: 0.8; }
-        h1 { font-family: 'Space Grotesk'; font-size: 3.8rem; font-weight: 300; line-height: 0.9; color: #fff; }
-        .desc { font-size: 0.9rem; opacity: 0.5; line-height: 1.6; max-width: 320px; margin-top: 10px; }
-
-        /* MULTIGRAPH BUTTONS */
-        .btn-stack { display: flex; flex-direction: column; gap: 12px; margin-top: 40px; }
-        .luce-btn {
-            height: 56px; width: 100%;
-            background: var(--anodized); border: 1px solid rgba(255,255,255,0.1);
-            color: #fff; font-weight: 700; font-size: 0.75rem; letter-spacing: 1px;
-            cursor: pointer; display: flex; align-items: center; justify-content: space-between;
-            padding: 0 24px; border-radius: 2px; transition: 0.3s var(--spring);
+        /* INSTRUMENT CLUSTER (Clock/Weather) */
+        .instruments {
+            position: absolute; top: 40px; right: 60px; display: flex; gap: 32px;
         }
-        .luce-btn:hover { background: #333; border-color: var(--giallo); }
-        .luce-btn.primary { background: var(--giallo); color: #000; border: none; }
-        .luce-btn.primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(255,212,0,0.2); }
+        .gauge { text-align: right; }
+        .gauge-label { font-size: 0.6rem; font-weight: 900; color: var(--giallo); letter-spacing: 2px; opacity: 0.4; }
+        .gauge-val { font-family: 'Space Grotesk'; font-size: 1.6rem; font-weight: 300; display: block; }
 
-        /* STATUS READOUTS */
-        .status-panel { position: fixed; top: 40px; right: 60px; display: flex; gap: 40px; align-items: flex-start; }
-        .gauge { display: flex; flex-direction: column; }
-        .gauge-label { font-size: 0.55rem; font-weight: 700; opacity: 0.3; letter-spacing: 2px; margin-bottom: 4px; }
-        .gauge-val { font-family: 'Space Grotesk'; font-size: 1.4rem; font-weight: 500; color: #fff; }
-
-        /* FOOTER */
-        .footer { 
-            position: fixed; bottom: 40px; left: 120px; 
-            display: flex; align-items: center; gap: 15px;
-            font-size: 0.6rem; font-weight: 700; letter-spacing: 1px; opacity: 0.4;
+        /* CONTENT ENGINE */
+        .info-panel { flex: 1; }
+        .version-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 6px 12px; background: rgba(255,212,0,0.1);
+            border-radius: 100px; color: var(--giallo);
+            font-size: 0.7rem; font-weight: 900; letter-spacing: 1px;
+            margin-bottom: 24px; border: 1px solid rgba(255,212,0,0.2);
         }
-        .footer b { color: var(--giallo); }
+        h1 { font-size: 4.5rem; font-weight: 900; line-height: 0.85; letter-spacing: -4px; margin-bottom: 20px; }
+        .desc { font-size: 1.1rem; opacity: 0.4; line-height: 1.5; max-width: 400px; font-weight: 300; }
 
-        #fab {
-            position: fixed; bottom: 40px; right: 60px;
-            width: 48px; height: 48px; background: transparent;
-            border: 1px solid rgba(255,255,255,0.1); color: #fff;
-            border-radius: 50%; cursor: pointer; display: grid; place-items: center;
-            transition: 0.4s var(--spring);
+        /* EXPRESSIVE BUTTONS */
+        .btn-row { display: flex; gap: 16px; margin-top: 48px; }
+        .m3-action {
+            height: 64px; flex: 1; border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1); background: var(--glass);
+            color: #fff; font-weight: 700; font-size: 0.85rem;
+            cursor: pointer; position: relative; overflow: hidden;
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            transition: 0.4s var(--spring-fluid);
         }
-        #fab:hover { border-color: var(--giallo); color: var(--giallo); transform: rotate(90deg); }
+        .m3-action:hover { background: rgba(255,255,255,0.08); transform: translateY(-4px) scale(1.02); border-color: var(--giallo); }
+        .m3-action:active { transform: scale(0.95); }
+        .m3-action.primary { background: var(--giallo); color: #000; border: none; }
+        
+        .progress-bar {
+            position: absolute; bottom: 0; left: 0; height: 4px;
+            background: rgba(0,0,0,0.2); width: 0%; transition: width 0.3s ease;
+        }
 
-        /* SETTINGS OVERLAY */
-        .overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
-            z-index: 500; display: none; place-items: center;
-            backdrop-filter: blur(20px);
+        /* SETTINGS FAB */
+        #settings-fab {
+            position: fixed; bottom: 40px; right: 40px;
+            width: 72px; height: 72px; border-radius: 24px;
+            background: #1a1a1a; color: var(--giallo);
+            border: 1px solid rgba(255,255,255,0.1); cursor: pointer;
+            display: grid; place-items: center; z-index: 200;
+            transition: 0.5s var(--spring-heavy);
         }
-        .overlay.open { display: grid; }
-        .settings-card { width: 400px; padding: 40px; background: var(--charcoal); border: 1px solid rgba(255,255,255,0.05); }
+        #settings-fab:hover { border-radius: 36px; transform: scale(1.1) rotate(90deg); background: var(--giallo); color: #000; }
+
+        /* CALIBRATION SHEET */
+        .sheet {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(30px); z-index: 500;
+            display: none; place-items: center; opacity: 0; transition: 0.4s;
+        }
+        .sheet.open { display: grid; opacity: 1; }
+        .sheet-card {
+            width: 440px; background: #0d0d0d; border-radius: 40px;
+            padding: 48px; border: 1px solid rgba(255,255,255,0.08);
+            transform: translateY(40px); transition: 0.5s var(--spring-heavy);
+        }
+        .sheet.open .sheet-card { transform: translateY(0); }
+
+        /* FOOTER PRECISION */
+        .footer {
+            position: fixed; bottom: 40px; left: 136px;
+            font-size: 0.65rem; font-weight: 900; letter-spacing: 2px;
+            color: rgba(255,255,255,0.2); text-transform: uppercase;
+        }
+        .footer b { color: var(--giallo); margin-right: 8px; }
+
+        model-viewer { width: 500px; height: 500px; --poster-color: transparent; }
     </style>
 </head>
 <body>
-    <div class="glass-grain"></div>
-    <div class="binnacle-layer layer-1"></div>
+    <div class="viewport-bg"></div>
 
     <nav class="nav-rail" id="rail">
-        <div class="rail-brand">LUCE</div>
-        <div style="flex:1"></div>
+        <div style="font-family:'Space Grotesk'; font-weight:700; color:var(--giallo); margin-bottom:20px;">PIX</div>
         </nav>
 
-    <div class="status-panel">
+    <div class="instruments">
         <div class="gauge">
-            <span class="gauge-label">CHRONO</span>
+            <span class="gauge-label">LOCAL_TIME</span>
             <span id="clock" class="gauge-val">00:00:00</span>
         </div>
         <div class="gauge">
-            <span class="gauge-label">TEMP_EXT</span>
+            <span class="gauge-label">ATMOS_TEMP</span>
             <span id="temp" class="gauge-val">--°F</span>
         </div>
     </div>
 
     <main>
-        <div class="viewer-wrap">
-            <model-viewer id="mv" auto-rotate camera-controls interaction-prompt="none" shadow-intensity="2" environment-image="neutral" camera-orbit="0deg 75deg 105%" bounds="tight" loading="eager"></model-viewer>
-        </div>
-        
-        <div class="content">
-            <p class="engine-tag" id="v-tag">MARANELLO ALPHA // 0.2</p>
-            <h1 id="v-title">TECHNICAL ALPHA</h1>
-            <p class="desc" id="v-desc">A precision-engineered digital companion. Designed for clarity, optimized for the drive.</p>
-            
-            <div class="btn-stack">
-                <button class="luce-btn primary" onclick="forceDownload('skin')">
-                    <span>GENERATE SKIN MAP</span>
-                    <span class="material-symbols-rounded" style="font-size:18px;">download</span>
-                </button>
-                <button class="luce-btn" onclick="forceDownload('model')">
-                    <span>EXPORT GLTF 2.0</span>
-                    <span class="material-symbols-rounded" style="font-size:18px;">box</span>
-                </button>
+        <div class="binnacle-wrap">
+            <div class="info-panel">
+                <div class="version-badge">
+                    <span class="material-symbols-rounded" style="font-size:14px">memory</span>
+                    <span id="v-badge-text">VERSION // 0.2</span>
+                </div>
+                <h1 id="v-title">TECHNICAL<br>ALPHA</h1>
+                <p class="desc" id="v-desc">Mechanical precision meets fluid design. Your high-performance skin hub.</p>
+                
+                <div class="btn-row">
+                    <button class="m3-action primary" onclick="forceDownload('skin')">
+                        <span class="material-symbols-rounded">download_2</span>
+                        <b>GET SKIN</b>
+                        <div class="progress-bar" id="p-skin"></div>
+                    </button>
+                    <button class="m3-action" onclick="forceDownload('model')">
+                        <span class="material-symbols-rounded">deployed_code</span>
+                        <b>GET MODEL</b>
+                        <div class="progress-bar" id="p-model"></div>
+                    </button>
+                </div>
             </div>
+
+            <model-viewer id="mv" auto-rotate camera-controls shadow-intensity="2" environment-image="neutral" camera-orbit="0deg 75deg 105%" loading="eager" interaction-prompt="none"></model-viewer>
         </div>
     </main>
 
     <div class="footer">
-        <b>PIX_LABS</b> <span>•</span> <span id="f-version">V0.2.0</span> <span>•</span> <span id="f-name">LUCE CORE</span>
+        <b>PIX_LABS</b> <span id="f-version">V0.2.0</span> // <span id="f-name">LUCE CORE</span>
     </div>
 
-    <button id="fab" onclick="toggleSettings()">
-        <span class="material-symbols-rounded">settings</span>
+    <button id="settings-fab" onclick="toggleSheet()">
+        <span class="material-symbols-rounded" style="font-size:32px">tune</span>
     </button>
 
-    <div class="overlay" id="overlay">
-        <div class="settings-card">
-            <h2 style="font-family:'Space Grotesk'; margin-bottom:30px;">SYSTEM_CTRL</h2>
-            <div style="display:flex; justify-content:space-between; margin-bottom:20px; opacity:0.6; font-size:0.8rem;">
-                <span>24H TIME</span>
-                <input type="checkbox" onchange="state.is24h = this.checked">
+    <div class="sheet" id="sheet" onclick="if(event.target == this) toggleSheet()">
+        <div class="sheet-card">
+            <h2 style="font-family:'Space Grotesk'; font-size:2rem; margin-bottom:32px;">CALIBRATION</h2>
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+                <span>24h TELEMETRY</span>
+                <input type="checkbox" style="width:40px; height:20px; accent-color:var(--giallo);" onchange="state.is24h = this.checked">
             </div>
-            <button class="luce-btn" onclick="toggleSettings()">RETURN TO COCKPIT</button>
+
+            <div style="background:rgba(255,255,255,0.03); padding:24px; border-radius:24px; margin-bottom:32px;">
+                <p style="font-size:0.7rem; font-weight:900; opacity:0.3; margin-bottom:12px;">SYSTEM STATUS</p>
+                <p style="font-size:0.9rem; opacity:0.8; line-height:1.4;">LUCE Mode active. Physics engine synchronized with Version Pushing.</p>
+            </div>
+
+            <button class="m3-action" style="width:100%" onclick="toggleSheet()">CLOSE SYSTEM</button>
         </div>
     </div>
 
@@ -207,20 +225,27 @@
         let state = { is24h: false };
         let currentIdx = VERSIONS.length - 1;
 
-        function toggleSettings() { document.getElementById('overlay').classList.toggle('open'); }
+        function toggleSheet() { document.getElementById('sheet').classList.toggle('open'); }
 
         function switchVersion(idx) {
             currentIdx = idx;
             const v = VERSIONS[idx];
-            document.getElementById('v-tag').innerText = `MARANELLO ALPHA // ${v.id}`;
+            
+            // Visual Updates
+            document.getElementById('v-badge-text').innerText = `VERSION // ${v.id}`;
             document.getElementById('mv').setAttribute('src', v.model);
             document.getElementById('f-version').innerText = `V${v.id}.0`;
             document.getElementById('f-name').innerText = v.name;
-            document.querySelectorAll('.v-pill').forEach((p, i) => p.classList.toggle('active', i === idx));
+            
+            // Rail Animation
+            document.querySelectorAll('.nav-item').forEach((p, i) => p.classList.toggle('active', i === idx));
         }
 
         async function forceDownload(type) {
+            const bar = document.getElementById(type === 'skin' ? 'p-skin' : 'p-model');
             const url = type === 'skin' ? VERSIONS[currentIdx].skin : VERSIONS[currentIdx].model;
+            
+            bar.style.width = "100%";
             try {
                 const response = await fetch(url);
                 const blob = await response.blob();
@@ -228,15 +253,16 @@
                 link.href = window.URL.createObjectURL(blob);
                 link.download = url.split('/').pop();
                 link.click();
-            } catch (e) { alert("XFER_ERROR"); }
+            } catch (e) { console.error("XFER_ERR"); }
+            setTimeout(() => bar.style.width = "0%", 1000);
         }
 
         window.onload = () => {
             const rail = document.getElementById('rail');
             VERSIONS.forEach((v, i) => {
                 const b = document.createElement('button');
-                b.className = 'v-pill';
-                b.innerHTML = `${i+1}<span>V${v.id}</span>`;
+                b.className = 'nav-item';
+                b.innerHTML = `<div class="indicator"></div><b style="position:relative">${i+1}</b><span>V${v.id}</span>`;
                 b.onclick = () => switchVersion(i);
                 rail.appendChild(b);
             });
