@@ -21,12 +21,14 @@
         body.oled .side-sheet, body.oled .update-modal { background: #000; border: 1px solid #222; color: #fff; }
         body.oled .m3-btn { background: #FFFFFF !important; color: #000000 !important; }
         body.oled .news-card { background: rgba(255,255,255,0.1) !important; color: white; }
+        body.oled .v-info-bottom { background: rgba(255,255,255,0.05); }
 
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; user-select: none; }
         body { background-color: #fdf8fd; color: var(--on-s-container); font-family: 'Outfit', sans-serif; height: 100vh; width: 100vw; display: flex; overflow: hidden; }
         
         .aura-bg { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); transition: 0.8s ease; }
         
+        /* NAV RAIL */
         nav.nav-rail { width: 90px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 12px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(15px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; }
         .v-pill { width: 48px; height: 48px; border-radius: 24px; background: rgba(0,0,0,0.05); border: none; cursor: pointer; display: grid; place-items: center; font-weight: 900; color: inherit; transition: all 0.5s var(--spring); }
         .v-pill.active { height: 80px; width: 34px; border-radius: 17px; background: var(--p); color: white; }
@@ -42,20 +44,26 @@
         .m3-btn-secondary { background: rgba(0,0,0,0.05); color: var(--on-s-container); }
         .progress-bar { position: absolute; bottom: 0; left: 0; height: 100%; background: rgba(255,255,255,0.15); width: 0%; transition: width 0.3s ease; }
 
+        /* INTERACTIVE VERSION TRIGGER */
+        .v-info-bottom { position: fixed; bottom: 30px; left: 125px; background: rgba(0,0,0,0.03); padding: 12px 20px; border-radius: 20px; border: 1px solid rgba(0,0,0,0.05); color: inherit; text-align: left; cursor: pointer; z-index: 100; transition: all 0.3s var(--spring); }
+        .v-info-bottom:hover { transform: translateY(-5px); background: white; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        .new-badge { background: #ff3b30; color: white; font-size: 0.5rem; padding: 2px 6px; border-radius: 10px; margin-left: 5px; vertical-align: middle; display: none; }
+
         /* MODAL SYSTEM */
         #modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(10px); z-index: 1000; display: none; place-items: center; }
         .update-modal { background: white; width: 400px; padding: 40px; border-radius: 32px; box-shadow: 0 30px 60px rgba(0,0,0,0.2); text-align: center; transform: scale(0.9); transition: 0.5s var(--spring); }
         #modal-overlay.show { display: grid; }
         #modal-overlay.show .update-modal { transform: scale(1); }
 
-        .side-sheet { position: fixed; top: 0; right: -400px; width: 360px; height: 100%; background: white; z-index: 300; transition: right 0.5s var(--spring); padding: 30px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
+        .status-bar { position: fixed; top: 30px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; z-index: 100; pointer-events: none; }
+        .weather-chip { pointer-events: auto; background: rgba(255,255,255,0.3); backdrop-filter: blur(20px); padding: 0 16px 0 8px; border-radius: 28px; display: flex; align-items: center; gap: 6px; height: 44px; cursor: pointer; border: 1px solid rgba(255,255,255,0.2); }
+
+        .side-sheet { position: fixed; top: 0; right: -400px; width: 360px; height: 100%; background: white; z-index: 300; transition: right 0.5s var(--spring); padding: 30px; display: flex; flex-direction: column; gap: 20px; }
         .side-sheet.open { right: 0; }
         .news-card { background: rgba(0,0,0,0.04); padding: 18px; border-radius: 24px; font-size: 0.85rem; border: 1px solid rgba(0,0,0,0.05); text-align: left; }
         
         .color-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
         .color-circle { width: 100%; aspect-ratio: 1; border-radius: 12px; cursor: pointer; border: 2px solid rgba(0,0,0,0.05); }
-
-        .status-bar { position: fixed; top: 30px; right: 40px; text-align: right; z-index: 100; }
     </style>
 </head>
 <body>
@@ -65,12 +73,12 @@
                 <span class="material-symbols-rounded" style="color:var(--p); font-size:32px;">auto_awesome</span>
             </div>
             <h2 style="font-family:'Space Grotesk';">WHAT'S NEW</h2>
-            <p style="opacity:0.6; margin: 10px 0 25px;">Version 0.5.1 // Color Spectrum</p>
+            <p style="opacity:0.6; margin: 5px 0 20px;" id="modal-ver-text">v0.5.1 // Color Spectrum</p>
             <div class="news-card" style="margin-bottom: 30px;">
-                • <strong>Expanded Palette:</strong> 12 new curated themes added.<br>
-                • <strong>Persistence Engine:</strong> Update logs only show once.<br>
-                • <strong>Fluid Aura:</strong> Seamless background transitions.<br>
-                • <strong>System Polish:</strong> Navigation logic updated.
+                • <strong>Interactive Version:</strong> Click the version tag to see this panel.<br>
+                • <strong>12 New Themes:</strong> Expanded the preset library.<br>
+                • <strong>Persistent Logic:</strong> Logs only auto-pop once per update.<br>
+                • <strong>Weather Sync:</strong> Real-time conditions restored.
             </div>
             <button onclick="closeUpdateModal()" style="width:100%; padding:20px; border-radius:20px; border:none; background:var(--on-s-container); color:white; font-weight:900; cursor:pointer;">GOT IT</button>
         </div>
@@ -79,16 +87,21 @@
     <div class="aura-bg"></div>
 
     <div class="status-bar">
+        <div class="weather-chip" onclick="window.open('https://google.com/search?q=weather')">
+            <img id="w-icon" src="https://cdn.weatherapi.com/weather/64x64/day/113.png" style="width:30px">
+            <span id="temp" style="font-weight:700;">72°F</span>
+        </div>
         <div id="clock" style="font-weight:900; opacity:0.6; font-family:'Space Grotesk'; font-size:1.1rem;">00:00:00 AM</div>
     </div>
     
     <nav class="nav-rail" id="rail">
         <div style="font-family:'Michroma'; font-size:0.8rem; margin-bottom:20px; font-weight:bold;">PIX</div>
+        <div style="font-size:0.65rem; font-weight:900; opacity:0.4; text-transform:uppercase; margin-bottom:5px; letter-spacing:1px;">VER</div>
     </nav>
 
     <main>
         <div class="viewer-box">
-            <model-viewer id="mv" auto-rotate camera-controls shadow-intensity="1" environment-image="neutral" camera-orbit="45deg 55deg 140%"></model-viewer>
+            <model-viewer id="mv" auto-rotate camera-controls shadow-intensity="1" environment-image="neutral" camera-orbit="45deg 55deg 140%" field-of-view="30deg"></model-viewer>
         </div>
         <div class="content">
             <p id="v-tag" style="font-weight:900; opacity:0.3; letter-spacing:5px; font-size:0.8rem;">VERSION // 0.2</p>
@@ -108,6 +121,11 @@
         </div>
     </main>
 
+    <button class="v-info-bottom" onclick="openUpdateModal()">
+        <span style="font-family:'Space Grotesk'; font-size:0.75rem; font-weight:900; display:block;">v0.5.1 <span id="new-indicator" class="new-badge">NEW</span></span>
+        <span style="font-size:0.6rem; opacity:0.5; text-transform:uppercase;">System Polish • Click to View</span>
+    </button>
+
     <div class="side-sheet" id="side-sheet">
         <h2 style="font-family:'Space Grotesk';">SETTINGS</h2>
         <div class="color-grid" id="preset-grid"></div>
@@ -121,7 +139,7 @@
     </button>
 
     <script>
-        const APP_VERSION = "0.5.1"; // Change this to trigger the "What's New" again
+        const APP_VERSION = "0.5.1"; 
         const PRESETS = [ 
             ["#D1E4FF", "#A6C8FF", "#004A77"], ["#C4EED0", "#A2E0B8", "#006D3B"], 
             ["#FDE293", "#FADB7D", "#A67100"], ["#FFD8E4", "#F9B1C8", "#880E4F"],
@@ -138,6 +156,11 @@
         let state = JSON.parse(localStorage.getItem('pix_pref')) || { oled: false, lastSeen: "0.0.0", themeType: 'default', themeVal: 0 };
         let currentIdx = 1;
 
+        function openUpdateModal() {
+            document.getElementById('modal-overlay').classList.add('show');
+            document.getElementById('new-indicator').style.display = 'none';
+        }
+
         function closeUpdateModal() {
             document.getElementById('modal-overlay').classList.remove('show');
             state.lastSeen = APP_VERSION;
@@ -146,9 +169,8 @@
 
         function checkUpdateStatus() {
             if (state.lastSeen !== APP_VERSION) {
-                setTimeout(() => {
-                    document.getElementById('modal-overlay').classList.add('show');
-                }, 1000);
+                document.getElementById('new-indicator').style.display = 'inline-block';
+                setTimeout(openUpdateModal, 1500);
             }
         }
 
@@ -171,6 +193,13 @@
             document.getElementById('mv').setAttribute('src', VERSIONS[idx].model);
             document.querySelectorAll('.v-pill').forEach((p, i) => p.classList.toggle('active', i === idx));
             setTheme(state.themeType, state.themeVal);
+        }
+
+        async function forceDownload(type) {
+            const btn = document.getElementById(type === 'skin' ? 'btn-skin' : 'btn-model');
+            const bar = btn.querySelector('.progress-bar');
+            bar.style.width = "100%";
+            setTimeout(() => bar.style.width = "0%", 2000);
         }
 
         window.onload = () => {
