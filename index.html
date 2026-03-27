@@ -11,117 +11,74 @@
         :root { 
             --p: #6750A4; --on-s-container: #1D192B; --bg-1: #EADDFF; --bg-2: #D0BCFF; 
             --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-            --m3-expressive: cubic-bezier(0.2, 0, 0, 1);
             --m3-bouncy: cubic-bezier(0.47, 1.64, 0.41, 0.8);
             --blur: 60px;
         }
 
-        /* OLED / NIGHT MODE */
         body.oled { background-color: #000 !important; color: #FFFFFF !important; }
-        body.oled .aura-bg { opacity: 0.3; filter: blur(80px) saturate(0.4); }
         body.oled .viewer-box { background: #0a0a0a !important; border: 1px solid #1a1a1a; }
-        body.oled .side-sheet, body.oled .update-modal { background: #000; border: 1px solid #222; color: #fff; }
-        body.oled .m3-btn { background: #FFFFFF !important; color: #000000 !important; }
-        body.oled .news-card { background: rgba(255,255,255,0.1) !important; color: white; }
-        body.oled .v-info-bottom { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); }
+        body.oled .side-sheet, body.oled .update-modal { background: #121212; border-left: 1px solid #333; color: #fff; }
+        body.oled .m3-btn-secondary { background: rgba(255,255,255,0.1); color: #fff; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; user-select: none; }
-        body { background-color: #fdf8fd; color: var(--on-s-container); font-family: 'Outfit', sans-serif; height: 100vh; width: 100vw; display: flex; overflow: hidden; transition: background 0.5s ease; }
+        body { background-color: #fdf8fd; color: var(--on-s-container); font-family: 'Outfit', sans-serif; height: 100vh; width: 100vw; display: flex; overflow: hidden; transition: 0.5s ease; }
         
-        .aura-bg { position: fixed; inset: 0; background: radial-gradient(circle at var(--ax, 50%) var(--ay, 50%), var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); transition: 0.8s var(--m3-expressive); }
+        .aura-bg { position: fixed; inset: 0; background: radial-gradient(circle at var(--ax, 50%) var(--ay, 50%), var(--bg-1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, var(--bg-2) 0%, transparent 40%); z-index: -1; filter: blur(var(--blur)); transition: 0.8s cubic-bezier(0.2, 0, 0, 1); }
         
-        /* NAV RAIL */
-        nav.nav-rail { width: 90px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 12px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(15px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; }
-        .v-pill { width: 48px; height: 48px; border-radius: 24px; background: rgba(0,0,0,0.05); border: none; cursor: pointer; display: grid; place-items: center; font-weight: 900; color: inherit; transition: all 0.5s var(--spring); }
+        nav.nav-rail { width: 90px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 12px; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; }
+        .v-pill { width: 48px; height: 48px; border-radius: 24px; background: rgba(0,0,0,0.05); border: none; cursor: pointer; display: grid; place-items: center; font-weight: 900; color: inherit; transition: 0.5s var(--spring); }
         .v-pill.active { height: 80px; width: 34px; border-radius: 17px; background: var(--p); color: white; }
 
-        main { flex: 1; display: grid; grid-template-columns: 1fr 450px; padding: 40px; gap: 40px; align-items: center; height: 100%; }
-        .viewer-box { height: 90%; width: 100%; background: white; border-radius: 48px; position: relative; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.03); }
+        main { flex: 1; display: grid; grid-template-columns: 1fr 450px; padding: 40px; gap: 40px; align-items: center; }
+        .viewer-box { height: 90%; background: white; border-radius: 48px; position: relative; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.03); }
         model-viewer { width: 100%; height: 100%; }
         
-        h1 { font-family: 'Bebas Neue'; font-size: 8.5rem; line-height: 0.8; letter-spacing: -3px; margin: 10px 0; }
+        h1 { font-family: 'Bebas Neue'; font-size: 8.5rem; line-height: 0.8; letter-spacing: -3px; }
 
-        /* BOUNCY PUSH BUTTONS */
-        .btn-group { display: flex; gap: 12px; width: 100%; margin-top: 20px; align-items: stretch; }
+        .btn-group { display: flex; gap: 12px; width: 100%; margin-top: 20px; }
         .m3-btn { 
-            flex: 1; height: 64px; border-radius: 32px; 
-            background: var(--p); color: white; border: none; 
-            font-weight: 800; cursor: pointer; 
-            transition: flex 0.6s var(--m3-bouncy), transform 0.4s var(--m3-bouncy), background 0.3s ease; 
+            flex: 1; height: 64px; border-radius: 32px; background: var(--p); color: white; border: none; font-weight: 800; cursor: pointer; 
+            transition: flex 0.6s var(--m3-bouncy), transform 0.4s var(--m3-bouncy); 
             position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; 
         }
         .m3-btn-secondary { background: rgba(0,0,0,0.05); color: var(--on-s-container); }
-        
         .btn-group:has(.m3-btn:hover) .m3-btn:not(:hover) { flex: 0.7; opacity: 0.7; }
         .m3-btn:hover { flex: 1.8; transform: translateY(-4px); }
-        .m3-btn:active { transform: scale(0.92) translateY(2px); flex: 2.2; }
+        .m3-btn:active { transform: scale(0.92); flex: 2.2; }
 
-        .btn-content { position: relative; z-index: 2; pointer-events: none; white-space: nowrap; }
-        .progress-bar { position: absolute; bottom: 0; left: 0; height: 100%; background: rgba(255,255,255,0.2); width: 0%; transition: width 1.5s ease-in-out; z-index: 1; }
+        .progress-bar { position: absolute; bottom: 0; left: 0; height: 100%; background: rgba(255,255,255,0.2); width: 0%; transition: width 1.5s ease; z-index: 1; }
 
-        /* VERSION TRIGGER */
-        .v-info-bottom { position: fixed; bottom: 20px; left: 110px; background: rgba(0,0,0,0.03); padding: 10px 18px; border-radius: 18px; border: 1px solid rgba(0,0,0,0.05); color: inherit; text-align: left; cursor: pointer; z-index: 100; transition: all 0.3s var(--spring); font-family: inherit; }
-        .v-info-bottom:hover { transform: translateY(-3px); background: white; box-shadow: 0 8px 15px rgba(0,0,0,0.04); }
-        .new-badge { background: #ff3b30; color: white; font-size: 0.55rem; padding: 1px 6px; border-radius: 8px; margin-left: 4px; font-weight: 900; display: none; }
-
-        /* MODAL */
-        #modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(10px); z-index: 1000; display: none; place-items: center; }
-        .update-modal { background: white; width: 380px; padding: 35px; border-radius: 32px; box-shadow: 0 30px 60px rgba(0,0,0,0.2); text-align: center; transform: scale(0.95); transition: 0.4s var(--spring); }
-        #modal-overlay.show { display: grid; }
-        #modal-overlay.show .update-modal { transform: scale(1); }
-
-        .status-bar { position: fixed; top: 30px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; z-index: 100; }
-        .weather-chip { background: rgba(255,255,255,0.3); backdrop-filter: blur(20px); padding: 0 16px 0 8px; border-radius: 28px; display: flex; align-items: center; gap: 6px; height: 40px; cursor: pointer; border: 1px solid rgba(255,255,255,0.2); transition: 0.3s; }
-
-        .side-sheet { position: fixed; top: 0; right: -400px; width: 360px; height: 100%; background: white; z-index: 300; transition: right 0.5s var(--spring); padding: 30px; display: flex; flex-direction: column; gap: 20px; }
+        /* SIDE SHEET ENHANCEMENTS */
+        .side-sheet { position: fixed; top: 0; right: -420px; width: 400px; height: 100%; background: white; z-index: 300; transition: right 0.5s var(--spring); padding: 40px; display: flex; flex-direction: column; gap: 25px; box-shadow: -20px 0 60px rgba(0,0,0,0.05); overflow-y: auto; }
         .side-sheet.open { right: 0; }
         
+        .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; }
+        .setting-label { font-weight: 600; font-size: 0.95rem; }
+
+        .custom-color-box { background: rgba(0,0,0,0.04); padding: 15px; border-radius: 20px; margin-top: 10px; }
+        .hex-input { width: 100%; background: transparent; border: 2px solid rgba(0,0,0,0.1); padding: 12px; border-radius: 12px; font-family: 'Space Grotesk'; font-weight: 700; margin-top: 10px; color: inherit; }
+
         .color-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
         .color-circle { width: 100%; aspect-ratio: 1; border-radius: 12px; cursor: pointer; border: 2px solid rgba(0,0,0,0.05); transition: 0.3s; }
+
+        .v-info-bottom { position: fixed; bottom: 20px; left: 110px; background: rgba(0,0,0,0.03); padding: 10px 18px; border-radius: 18px; border: 1px solid rgba(0,0,0,0.05); cursor: pointer; z-index: 100; transition: 0.3s var(--spring); }
     </style>
 </head>
 <body onmousemove="updateAuraPos(event)">
 
-    <div id="modal-overlay">
-        <div class="update-modal">
-            <div style="background: var(--bg-1); width: 54px; height: 54px; border-radius: 18px; display: grid; place-items: center; margin: 0 auto 18px;">
-                <span class="material-symbols-rounded" style="color:var(--p); font-size:28px;">auto_awesome</span>
-            </div>
-            <h2 style="font-family:'Space Grotesk';">WHAT'S NEW</h2>
-            <p style="opacity:0.6; font-size: 0.9rem; margin: 4px 0 18px;">v0.5.1 // Bouncy Aura Edition</p>
-            <div style="background: rgba(0,0,0,0.04); padding: 18px; border-radius: 24px; font-size: 0.85rem; border: 1px solid rgba(0,0,0,0.05); text-align: left; margin-bottom: 25px;">
-                • <strong>Spring Physics:</strong> Buttons now "boing" when hovered or clicked.<br>
-                • <strong>Aura Sync:</strong> Background glow follows your movement.<br>
-                • <strong>Live Weather:</strong> Fixed temperature freeze bug.<br>
-                • <strong>Presets:</strong> 12 unique Material You palettes.
-            </div>
-            <button onclick="closeUpdateModal()" style="width:100%; padding:18px; border-radius:18px; border:none; background:var(--on-s-container); color:white; font-weight:900; cursor:pointer;">LET'S GO</button>
-        </div>
-    </div>
-
     <div class="aura-bg" id="aura"></div>
 
-    <div class="status-bar">
-        <div class="weather-chip" onclick="window.open('https://google.com/search?q=weather')">
-            <img id="w-icon" src="https://cdn.weatherapi.com/weather/64x64/day/113.png" style="width:26px">
-            <span id="temp" style="font-weight:700; font-size:0.9rem;">--°F</span>
-        </div>
-        <div id="clock" style="font-weight:900; opacity:0.6; font-family:'Space Grotesk'; font-size:1rem;">00:00:00 AM</div>
-    </div>
-    
     <nav class="nav-rail" id="rail">
-        <div style="font-family:'Michroma'; font-size:0.75rem; margin-bottom:20px; font-weight:bold;">PIX</div>
+        <div style="font-family:'Michroma'; font-size:0.75rem; margin-bottom:20px;">PIX</div>
     </nav>
 
     <main>
         <div class="viewer-box">
-            <model-viewer id="mv" auto-rotate camera-controls shadow-intensity="1" environment-image="neutral" camera-orbit="45deg 55deg 140%" field-of-view="30deg"></model-viewer>
+            <model-viewer id="mv" auto-rotate camera-controls shadow-intensity="1" environment-image="neutral"></model-viewer>
         </div>
         <div class="content">
             <p id="v-tag" style="font-weight:900; opacity:0.3; letter-spacing:5px; font-size:0.8rem;">VERSION // 0.2</p>
             <h1 id="v-title">ALPHA</h1>
-            <p id="v-desc" style="font-size:1.1rem; opacity:0.7;">Restored stability and visual systems.</p>
-            
             <div class="btn-group">
                 <button id="btn-skin" class="m3-btn" onclick="simulateDownload('btn-skin')" onmouseenter="shiftAura('left')" onmouseleave="resetAura()">
                     <div class="progress-bar"></div>
@@ -135,131 +92,110 @@
         </div>
     </main>
 
-    <button class="v-info-bottom" onclick="openUpdateModal()">
-        <span style="font-family:'Space Grotesk'; font-size:0.7rem; font-weight:900; display:block;">v0.5.1 <span id="new-indicator" class="new-badge">NEW</span></span>
-        <span style="font-size:0.55rem; opacity:0.5; text-transform:uppercase;">Spring Engine • Click to View</span>
-    </button>
-
     <div class="side-sheet" id="side-sheet">
-        <h2 style="font-family:'Space Grotesk';">SETTINGS</h2>
+        <h2 style="font-family:'Space Grotesk'; font-size: 1.8rem;">Settings</h2>
+        
+        <div class="custom-color-box">
+            <span class="setting-label">Custom Theme Color</span>
+            <input type="text" class="hex-input" id="hex-field" placeholder="#6750A4" oninput="applyCustomHex(this.value)">
+            <p style="font-size: 0.7rem; opacity: 0.5; margin-top: 8px;">Enter any HEX code to generate a custom Material You palette.</p>
+        </div>
+
         <div class="color-grid" id="preset-grid"></div>
+
         <hr style="opacity:0.1;">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span>OLED Mode</span>
+
+        <div class="setting-row">
+            <span class="setting-label">OLED Black Mode</span>
             <input type="checkbox" id="oled-toggle" onchange="updateOLED(this.checked)">
         </div>
-        <button onclick="toggleSettings()" style="margin-top:auto; padding:16px; border-radius:16px; border:none; background:var(--on-s-container); color:white; cursor:pointer; font-weight:900;">DONE</button>
+
+        <div class="setting-row">
+            <span class="setting-label">Model Auto-Rotate</span>
+            <input type="checkbox" id="rotate-toggle" checked onchange="toggleRotation(this.checked)">
+        </div>
+
+        <div class="setting-row">
+            <span class="setting-label">Blur Intensity</span>
+            <input type="range" min="20" max="120" value="60" oninput="updateBlur(this.value)">
+        </div>
+
+        <button onclick="toggleSettings()" style="margin-top:auto; padding:20px; border-radius:20px; border:none; background:var(--p); color:white; cursor:pointer; font-weight:900;">SAVE & CLOSE</button>
     </div>
 
-    <button id="settings-fab" onclick="toggleSettings()" style="position:fixed; bottom:30px; right:30px; width:64px; height:64px; border-radius:20px; background:var(--p); color:white; border:none; cursor:pointer; z-index:200; display:grid; place-items:center;">
+    <button id="settings-fab" onclick="toggleSettings()" style="position:fixed; bottom:30px; right:30px; width:64px; height:64px; border-radius:24px; background:var(--p); color:white; border:none; cursor:pointer; z-index:200; display:grid; place-items:center; box-shadow: 0 15px 35px rgba(0,0,0,0.1);">
         <span class="material-symbols-rounded">tune</span>
     </button>
 
     <script>
-        const APP_VERSION = "0.5.1"; 
         const PRESETS = [ 
             ["#D1E4FF", "#A6C8FF", "#004A77"], ["#C4EED0", "#A2E0B8", "#006D3B"], 
-            ["#FDE293", "#FADB7D", "#A67100"], ["#FFD8E4", "#F9B1C8", "#880E4F"],
-            ["#E2E2E6", "#C6C6CA", "#44474E"], ["#FFDBCB", "#FFB68F", "#8B4100"],
-            ["#D0BCFF", "#B69DF8", "#4F378B"], ["#B2F0FF", "#82DFFF", "#004F58"],
-            ["#FFDAD6", "#FFB4AB", "#930006"], ["#BCC2FF", "#5C6AFF", "#0014A8"],
-            ["#F3E0FF", "#E6BAFF", "#6E329F"], ["#D9E2FF", "#B1C5FF", "#0042A4"]
+            ["#FDE293", "#FADB7D", "#A67100"], ["#FFD8E4", "#F9B1C8", "#880E4F"]
         ];
         const VERSIONS = [
             { id: "0.1", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha.gltf", colors: ["#EADDFF", "#D0BCFF", "#6750A4"] },
             { id: "0.2", model: "https://raw.githubusercontent.com/james25kindle-netizen/skin-updates/refs/heads/main/alpha%200.0.2.gltf", colors: ["#A3F7EB", "#4FD8C7", "#006A60"] }
         ];
 
-        let state = JSON.parse(localStorage.getItem('pix_pref')) || { oled: false, lastSeen: "0.0.0", themeType: 'default', themeVal: 0 };
+        let state = JSON.parse(localStorage.getItem('pix_pref')) || { oled: false, blur: 60, customHex: "" };
         let currentIdx = 1;
 
-        // Aura Effects
         function updateAuraPos(e) {
-            const x = (e.clientX / window.innerWidth) * 100;
-            const y = (e.clientY / window.innerHeight) * 100;
-            document.documentElement.style.setProperty('--ax', `${x}%`);
-            document.documentElement.style.setProperty('--ay', `${y}%`);
+            document.documentElement.style.setProperty('--ax', `${(e.clientX / window.innerWidth) * 100}%`);
+            document.documentElement.style.setProperty('--ay', `${(e.clientY / window.innerHeight) * 100}%`);
         }
-        function shiftAura(side) {
-            document.documentElement.style.setProperty('--ax', side === 'left' ? '30%' : '70%');
-        }
-        function resetAura() { 
-            document.documentElement.style.setProperty('--ax', '50%'); 
-        }
-
-        async function fetchWeather() {
-            try {
-                const res = await fetch('https://wttr.in/?format=j1');
-                const data = await res.json();
-                document.getElementById('temp').innerText = `${data.current_condition[0].temp_F}°F`;
-            } catch (e) { console.warn("Weather offline"); }
-        }
-
-        function openUpdateModal() {
-            document.getElementById('modal-overlay').classList.add('show');
-            document.getElementById('new-indicator').style.display = 'none';
-        }
-
-        function closeUpdateModal() {
-            document.getElementById('modal-overlay').classList.remove('show');
-            state.lastSeen = APP_VERSION;
-            saveState();
-        }
+        function shiftAura(side) { document.documentElement.style.setProperty('--ax', side === 'left' ? '20%' : '80%'); }
+        function resetAura() { document.documentElement.style.setProperty('--ax', '50%'); }
 
         function toggleSettings() { document.getElementById('side-sheet').classList.toggle('open'); }
-        function saveState() { localStorage.setItem('pix_pref', JSON.stringify(state)); }
-
-        function setTheme(type, val) {
-            state.themeType = type; state.themeVal = val;
-            let c = (type === 'default') ? VERSIONS[currentIdx].colors : PRESETS[val];
-            document.documentElement.style.setProperty('--bg-1', c[0]);
-            document.documentElement.style.setProperty('--bg-2', c[1]);
-            document.documentElement.style.setProperty('--p', c[2]);
-            saveState();
+        
+        function applyCustomHex(hex) {
+            if (/^#[0-9A-F]{6}$/i.test(hex)) {
+                document.documentElement.style.setProperty('--p', hex);
+                document.documentElement.style.setProperty('--bg-1', hex + "44"); // Tints
+                state.customHex = hex;
+                localStorage.setItem('pix_pref', JSON.stringify(state));
+            }
         }
+
+        function updateBlur(val) {
+            document.documentElement.style.setProperty('--blur', val + 'px');
+            state.blur = val;
+            localStorage.setItem('pix_pref', JSON.stringify(state));
+        }
+
+        function toggleRotation(v) { document.getElementById('mv').autoRotate = v; }
 
         function updateOLED(v) { 
             state.oled = v; document.body.classList.toggle('oled', v); 
-            document.getElementById('oled-toggle').checked = v; saveState(); 
+            localStorage.setItem('pix_pref', JSON.stringify(state)); 
         }
 
         function switchVersion(idx) {
             currentIdx = idx;
-            document.getElementById('v-tag').innerText = `VERSION // ${VERSIONS[idx].id}`;
             document.getElementById('mv').setAttribute('src', VERSIONS[idx].model);
+            const c = VERSIONS[idx].colors;
+            document.documentElement.style.setProperty('--bg-1', c[0]);
+            document.documentElement.style.setProperty('--bg-2', c[1]);
+            document.documentElement.style.setProperty('--p', c[2]);
             document.querySelectorAll('.v-pill').forEach((p, i) => p.classList.toggle('active', i === idx));
-            setTheme(state.themeType, state.themeVal);
         }
 
         function simulateDownload(btnId) {
             const btn = document.getElementById(btnId);
             const bar = btn.querySelector('.progress-bar');
-            const label = btn.querySelector('.btn-content');
-            const originalText = label.innerText;
-            
             bar.style.width = "100%";
-            label.innerText = "SQUASHING...";
-            
-            setTimeout(() => {
-                bar.style.transition = "none";
-                bar.style.width = "0%";
-                label.innerText = "READY!";
-                setTimeout(() => {
-                    bar.style.transition = "width 1.5s ease-in-out";
-                    label.innerText = originalText;
-                }, 1000);
-            }, 1600);
+            setTimeout(() => { bar.style.transition = "none"; bar.style.width = "0%"; setTimeout(() => bar.style.transition = "width 1.5s ease", 100); }, 2000);
         }
 
         window.onload = () => {
-            if (state.lastSeen !== APP_VERSION) {
-                document.getElementById('new-indicator').style.display = 'inline-block';
-                setTimeout(openUpdateModal, 1200);
-            }
             const grid = document.getElementById('preset-grid');
             PRESETS.forEach((p, i) => {
                 const d = document.createElement('div'); d.className = 'color-circle';
-                d.style.backgroundColor = p[2]; d.onclick = () => setTheme('preset', i);
+                d.style.backgroundColor = p[2]; d.onclick = () => {
+                    document.documentElement.style.setProperty('--p', p[2]);
+                    document.documentElement.style.setProperty('--bg-1', p[0]);
+                };
                 grid.appendChild(d);
             });
             VERSIONS.forEach((_, i) => {
@@ -267,10 +203,13 @@
                 b.innerHTML = i+1; b.onclick = () => switchVersion(i);
                 document.getElementById('rail').appendChild(b);
             });
-            fetchWeather();
             updateOLED(state.oled);
+            updateBlur(state.blur);
+            if(state.customHex) {
+                document.getElementById('hex-field').value = state.customHex;
+                applyCustomHex(state.customHex);
+            }
             switchVersion(currentIdx);
-            setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
         };
     </script>
 </body>
